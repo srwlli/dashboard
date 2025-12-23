@@ -1,10 +1,60 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import path from 'path';
+import http from 'http';
+import fs from 'fs';
 
 // Check if running in development mode
 const isDev = process.env.ELECTRON_DEV === 'true' || process.env.NODE_ENV === 'development';
 
 let mainWindow: BrowserWindow | null = null;
+let server: http.Server | null = null;
+const PORT = 9000;
+
+// Simple HTTP server for serving static files
+function startStaticServer() {
+  return new Promise<void>((resolve) => {
+    const dashboardDir = path.join(__dirname, '../../dashboard/out');
+
+    server = http.createServer((req, res) => {
+      const url = req.url || '/';
+      let filePath = path.join(dashboardDir, url === '/' ? 'index.html' : url);
+
+      // Try to serve the file
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          // If not found, serve index.html for SPA routing
+          fs.readFile(path.join(dashboardDir, 'index.html'), (err, data) => {
+            if (err) {
+              res.writeHead(404);
+              res.end('Not found');
+              return;
+            }
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(data);
+          });
+          return;
+        }
+
+        // Set correct content type
+        let contentType = 'text/plain';
+        if (filePath.endsWith('.html')) contentType = 'text/html';
+        if (filePath.endsWith('.js')) contentType = 'application/javascript';
+        if (filePath.endsWith('.css')) contentType = 'text/css';
+        if (filePath.endsWith('.json')) contentType = 'application/json';
+        if (filePath.endsWith('.png')) contentType = 'image/png';
+        if (filePath.endsWith('.ico')) contentType = 'image/x-icon';
+
+        res.writeHead(200, { 'Content-Type': contentType });
+        res.end(data);
+      });
+    });
+
+    server.listen(PORT, '127.0.0.1', () => {
+      console.log(`[Electron] Static server running on http://localhost:${PORT}`);
+      resolve();
+    });
+  });
+}
 
 // Create the browser window
 function createWindow() {
@@ -23,7 +73,7 @@ function createWindow() {
 
   const startUrl = isDev
     ? 'http://localhost:3000'
-    : `file://${path.join(__dirname, '../../dashboard/out/index.html')}`;
+    : `http://localhost:${PORT}`;
 
   mainWindow.loadURL(startUrl);
 
@@ -37,9 +87,19 @@ function createWindow() {
 }
 
 // App event listeners
-app.on('ready', createWindow);
+app.on('ready', async () => {
+  // Start static server in production mode
+  if (!isDev) {
+    await startStaticServer();
+  }
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
+  // Clean up server
+  if (server) {
+    server.close();
+  }
   if (process.platform !== 'darwin') {
     app.quit();
   }
