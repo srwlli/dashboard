@@ -1,0 +1,38 @@
+{
+  "feature_name": "coderef-dashboard-init",
+  "description": "Brand new coderef-dashboard project with correct monorepo architecture and coming-soon widget placeholder. Single-page focus: setup infrastructure, validate with 1 simple widget.",
+  "goal": "Build production-ready architecture with npm workspaces monorepo, unified codebase for PWA + Electron, widget loader/registry system, and coming-soon placeholder widget. Zero existing code - fresh start with clean structure.",
+  "requirements": [
+    "Monorepo structure with npm workspaces (core, widgets, dashboard, electron-app)",
+    "Unified Next.js codebase serving both PWA and Electron",
+    "Standardized widget interface (IScriptboardWidget)",
+    "Widget loader with error boundaries",
+    "Widget registry system",
+    "PWA support (manifest, service worker, offline)",
+    "Electron wrapper with IPC bridge",
+    "Python backend bundled in Electron",
+    "Coming-soon widget as proof of concept",
+    "Testable in both PWA and Electron environments"
+  ],
+  "out_of_scope": [
+    "Prompt workflow widget",
+    "Orchestrator/Workflow widget",
+    "File manager, terminal, system monitor widgets",
+    "User authentication",
+    "Database or persistence",
+    "API endpoints beyond basic health checks",
+    "Multi-user or cloud features"
+  ],
+  "constraints": [
+    "Fresh codebase - no legacy code to migrate",
+    "Unified single build for PWA and Electron",
+    "Python backend must be bundled, not required for PWA",
+    "Widget interface must be strict contract",
+    "No existing code to preserve or maintain compatibility with"
+  ],
+  "_metadata": {
+    "workorder_id": "WO-CODEREF-DASHBOARD-INIT-001",
+    "workorder_assigned_at": "2025-12-23T19:15:00Z",
+    "project": "coderef-dashboard"
+  }
+}

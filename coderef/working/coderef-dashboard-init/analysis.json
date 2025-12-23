@@ -1,0 +1,57 @@
+{
+  "project": "coderef-dashboard",
+  "project_type": "monorepo-pwa-electron",
+  "status": "BRAND_NEW",
+  "analysis_date": "2025-12-23T19:15:00Z",
+  "foundation_docs": {
+    "available": [],
+    "missing": ["All - brand new project"],
+    "note": "Foundation docs will be generated after initial setup"
+  },
+  "existing_codebase": "NONE - Starting from scratch",
+  "technology_stack": {
+    "frontend": "Next.js 16+, React 19, TypeScript, Tailwind CSS",
+    "build": "npm workspaces, PyInstaller, electron-builder",
+    "deployment": "Vercel/Netlify (PWA), electron-builder (Electron)"
+  },
+  "project_structure": {
+    "approach": "Monorepo with npm workspaces",
+    "packages": [
+      {
+        "name": "core",
+        "purpose": "Shared types, interfaces, utilities"
+      },
+      {
+        "name": "widgets",
+        "purpose": "Monorepo for widget packages"
+      },
+      {
+        "name": "dashboard",
+        "purpose": "Next.js PWA app"
+      },
+      {
+        "name": "electron-app",
+        "purpose": "Electron wrapper with IPC bridge"
+      }
+    ]
+  },
+  "key_architectural_decisions": [
+    "Single Next.js build serves both PWA and Electron",
+    "Python backend bundled in Electron, optional for PWA",
+    "Strict widget interface contract (IScriptboardWidget)",
+    "npm workspaces for package management",
+    "Dynamic widget loading with error boundaries",
+    "JSON-based widget registry"
+  ],
+  "scope": {
+    "in_scope": "Monorepo infrastructure + coming-soon widget",
+    "out_of_scope": "Real features, authentication, persistence"
+  },
+  "risks": [
+    "Monorepo complexity - mitigated by npm workspaces standard",
+    "PWA offline caching - mitigated by service worker strategy",
+    "Electron IPC communication - mitigated by simple ping/pong validation",
+    "Widget rendering differences - mitigated by frequent testing"
+  ],
+  "estimated_effort": "5-7 days for infrastructure + coming-soon widget"
+}
