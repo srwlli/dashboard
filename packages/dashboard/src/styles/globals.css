@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+html {
+  @apply dark;
+}
+
+body {
+  @apply bg-grid-pattern text-ind-text font-display antialiased overflow-hidden selection:bg-ind-accent selection:text-black;
+  background-size: 40px 40px;
+  background-color: #0c0c0e;
+}
+
+/* Scrollbar utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Material Symbols Icons */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Grid pattern background */
+.bg-grid-pattern {
+  background-color: #0c0c0e;
+  background-image:
+    linear-gradient(#27272a 1px, transparent 1px),
+    linear-gradient(90deg, #27272a 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Utilities */
+@layer components {
+  .industrial-border {
+    @apply border border-ind-border;
+  }
+
+  .industrial-panel {
+    @apply bg-ind-panel border border-ind-border;
+  }
+
+  .industrial-button {
+    @apply px-6 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider border-2 border-ind-accent transition-all active:translate-y-0.5;
+  }
+
+  .industrial-button-secondary {
+    @apply px-6 py-2 bg-transparent text-ind-text-muted border-2 border-ind-border hover:border-ind-text-muted hover:text-ind-text transition-all active:translate-y-0.5;
+  }
+
+  .industrial-input {
+    @apply block w-full h-12 pl-4 pr-4 bg-ind-panel border-2 border-ind-border text-ind-text placeholder-ind-text-muted font-mono text-sm focus:border-ind-accent focus:ring-0 focus:outline-none transition-all;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
