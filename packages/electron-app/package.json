@@ -11,8 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@coderef-dashboard/dashboard": "file:../dashboard",
-    "electron-is-dev": "^3.0.0"
+    "@coderef-dashboard/dashboard": "file:../dashboard"
   },
   "devDependencies": {
     "@types/electron": "^1.6.10",

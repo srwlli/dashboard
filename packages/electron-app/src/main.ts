@@ -1,6 +1,8 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import path from 'path';
-import isDev from 'electron-is-dev';
+
+// Check if running in development mode
+const isDev = process.env.ELECTRON_DEV === 'true' || process.env.NODE_ENV === 'development';
 
 let mainWindow: BrowserWindow | null = null;
 
