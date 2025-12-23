@@ -14,7 +14,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@coderef-dashboard/core": "workspace:*",
+    "@coderef-dashboard/core": "file:../../../../core",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

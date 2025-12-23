@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "coderef-dashboard PWA application",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,7 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@coderef-dashboard/core": "workspace:*",
+    "@coderef-dashboard/core": "file:../core",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

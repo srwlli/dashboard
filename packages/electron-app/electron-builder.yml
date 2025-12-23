@@ -1,0 +1,33 @@
+appId: com.coderef.dashboard
+productName: CodeRef Dashboard
+directories:
+  buildResources: assets
+  output: dist
+
+files:
+  - dist/**/*
+  - node_modules/**/*
+
+# Backend bundling configuration
+# NOTE: When Python backend is integrated, add to extraResources:
+# extraResources:
+#   - from: ../backend/dist/scriptboard-backend.exe
+#     to: backend/scriptboard-backend.exe
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+
+win:
+  target:
+    - nsis
+    - portable
+  certificateFile: null
+  certificatePassword: null
+  signingHashAlgorithms:
+    - sha256
+
+portable:
+  artifactName: CodeRef-Dashboard-${version}-portable.exe

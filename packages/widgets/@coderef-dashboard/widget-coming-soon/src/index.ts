@@ -35,12 +35,14 @@ export const ComingSoonWidget: IScriptboardWidget = {
     console.log('[ComingSoonWidget] Widget disabled');
   },
 
-  async onSettingsChange(settings: WidgetSettingsChangePayload): Promise<void> {
-    console.log('[ComingSoonWidget] Settings changed:', settings);
+  async onSettingsChange(payload: WidgetSettingsChangePayload): Promise<void> {
+    console.log('[ComingSoonWidget] Settings changed:', payload);
     // Update widget settings
-    if (settings.title) this.settings.title = settings.title;
-    if (settings.description) this.settings.description = settings.description;
-    if (settings.eta) this.settings.eta = settings.eta;
+    if (this.settings) {
+      if ('title' in payload) this.settings.title = payload.title;
+      if ('description' in payload) this.settings.description = payload.description;
+      if ('eta' in payload) this.settings.eta = payload.eta;
+    }
   },
 
   onError(error: Error): boolean {

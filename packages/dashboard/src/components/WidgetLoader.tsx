@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, lazy, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { ErrorBoundary } from '@coderef-dashboard/core';
 import { WidgetConfig, IScriptboardWidget } from '@coderef-dashboard/core';
 
@@ -53,6 +53,7 @@ function WidgetError({ error, retry }: { error: Error; retry: () => void }) {
 
 /**
  * Dynamically loads and renders a widget
+ * Uses Next.js dynamic imports for code splitting
  */
 export function WidgetLoader({
   config,
@@ -61,38 +62,6 @@ export function WidgetLoader({
 }: WidgetLoaderProps) {
   const [retryKey, setRetryKey] = React.useState(0);
 
-  // Dynamically import widget package
-  const Widget = lazy(async () => {
-    try {
-      const module = await import(
-        /* webpackIgnore: true */
-        config.package
-      );
-
-      // Check if default export exists and is a widget
-      if (module.default && typeof module.default === 'object') {
-        return { default: module.default as IScriptboardWidget };
-      }
-
-      // Check for named export
-      const widget = Object.values(module).find(
-        (exp: any) =>
-          typeof exp === 'object' &&
-          exp?.id === config.id &&
-          typeof exp?.render === 'function'
-      ) as IScriptboardWidget | undefined;
-
-      if (widget) {
-        return { default: widget };
-      }
-
-      throw new Error(`Widget "${config.id}" not found in package "${config.package}"`);
-    } catch (error) {
-      console.error(`[WidgetLoader] Failed to load widget "${config.id}":`, error);
-      throw error;
-    }
-  });
-
   const handleRetry = () => {
     setRetryKey((prev) => prev + 1);
   };
@@ -100,7 +69,6 @@ export function WidgetLoader({
   const handleError = (error: Error) => {
     console.error(`[WidgetLoader] Widget error for "${config.id}":`, error);
     onError?.(config.id, error);
-    return false; // Let error bubble to ErrorBoundary
   };
 
   return (
@@ -110,33 +78,37 @@ export function WidgetLoader({
       onError={() => {}}
       fallback={(error) => <WidgetError error={error} retry={handleRetry} />}
     >
-      <Suspense fallback={fallback}>
-        <WidgetRenderer config={config} Widget={Widget} onError={handleError} />
-      </Suspense>
+      <WidgetRenderer config={config} fallback={fallback} onError={handleError} />
     </ErrorBoundary>
   );
 }
 
 /**
  * Internal component that renders the widget
+ * Handles lifecycle hooks and dynamic loading
  */
 function WidgetRenderer({
   config,
-  Widget,
+  fallback,
   onError,
 }: {
   config: WidgetConfig;
-  Widget: React.LazyExoticComponent<{ default: IScriptboardWidget }>;
+  fallback: ReactNode;
   onError: (error: Error) => void;
 }) {
   const [widget, setWidget] = React.useState<IScriptboardWidget | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<Error | null>(null);
 
   React.useEffect(() => {
     let mounted = true;
 
     const loadWidget = async () => {
       try {
-        // Wait for lazy component to load
+        setIsLoading(true);
+        setError(null);
+
+        // Dynamically import the widget module
         const module = await import(
           /* webpackIgnore: true */
           config.package
@@ -144,18 +116,48 @@ function WidgetRenderer({
 
         if (!mounted) return;
 
-        // Get widget instance
+        // Get widget instance (default export should be the widget object)
         const widgetInstance = module.default as IScriptboardWidget;
 
-        // Call onEnable if available
-        if (widgetInstance.onEnable) {
-          await widgetInstance.onEnable();
+        if (!widgetInstance || typeof widgetInstance.render !== 'function') {
+          throw new Error(
+            `Invalid widget: "${config.id}" must export a widget object with a render() method`
+          );
         }
 
-        setWidget(widgetInstance);
-      } catch (error) {
+        // Call onEnable lifecycle hook
+        if (widgetInstance.onEnable) {
+          try {
+            await widgetInstance.onEnable();
+          } catch (err) {
+            console.error(
+              `[WidgetLoader] onEnable failed for "${config.id}":`,
+              err
+            );
+            if (mounted) {
+              setError(
+                err instanceof Error
+                  ? err
+                  : new Error('Widget onEnable failed')
+              );
+            }
+            return;
+          }
+        }
+
         if (mounted) {
-          onError(error instanceof Error ? error : new Error(String(error)));
+          setWidget(widgetInstance);
+        }
+      } catch (err) {
+        if (mounted) {
+          const error =
+            err instanceof Error ? err : new Error(String(err));
+          setError(error);
+          onError(error);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
         }
       }
     };
@@ -164,11 +166,24 @@ function WidgetRenderer({
 
     return () => {
       mounted = false;
+      // Call onDisable lifecycle hook when component unmounts
+      if (widget?.onDisable) {
+        widget.onDisable().catch((err) =>
+          console.error(
+            `[WidgetLoader] onDisable failed for "${config.id}":`,
+            err
+          )
+        );
+      }
     };
   }, [config, onError]);
 
-  if (!widget) {
-    return null;
+  if (error) {
+    throw error;
+  }
+
+  if (isLoading || !widget) {
+    return <>{fallback}</>;
   }
 
   return <React.Fragment>{widget.render()}</React.Fragment>;
