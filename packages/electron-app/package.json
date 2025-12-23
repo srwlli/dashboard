@@ -1,14 +1,16 @@
 {
-  "name": "@coderef-dashboard/electron-app",
+  "name": "coderef-dashboard",
   "version": "0.1.0",
-  "description": "Electron wrapper for coderef-dashboard",
+  "description": "Modular widget dashboard with PWA and Electron support",
+  "author": "CodeRef Dashboard Team",
   "private": true,
   "main": "dist/main.js",
   "preload": "dist/preload.js",
   "scripts": {
     "dev": "electron .",
     "build": "tsc",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "package:win": "electron-builder --win --publish never"
   },
   "dependencies": {
     "@coderef-dashboard/dashboard": "file:../dashboard"
@@ -16,7 +18,7 @@
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "@types/node": "^20.10.6",
-    "electron": "^28.0.0",
+    "electron": "28.0.0",
     "electron-builder": "^24.13.3",
     "typescript": "^5.3.3"
   },
@@ -25,14 +27,31 @@
     "productName": "CodeRef Dashboard",
     "files": [
       "dist/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "../dashboard/out/**/*"
     ],
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "assets",
+      "output": "dist"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
+    },
+    "win": {
+      "certificateFile": null,
+      "certificatePassword": null,
+      "signingHashAlgorithms": ["sha256"],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
     }
   }
 }

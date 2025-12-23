@@ -21,6 +21,7 @@
     "type-check": "npm run type-check -ws --if-present"
   },
   "devDependencies": {
+    "7zip-bin": "^5.2.0",
     "typescript": "^5.3.3"
   },
   "engines": {
