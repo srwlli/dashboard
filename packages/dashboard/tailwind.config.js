@@ -5,6 +5,9 @@ module.exports = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Include widget packages for Tailwind to scan
+    '../widgets/**/*.{js,ts,jsx,tsx}',
+    '../core/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
