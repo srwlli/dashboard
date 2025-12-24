@@ -888,6 +888,60 @@ export const SystemMonitorWidget: IScriptboardWidget = {
 3. Verify `npm run build:dashboard` generated static export
 4. Check Electron dev tools (Ctrl+I) for errors
 
+### Common Widget Loading Errors
+
+**Error: `(0, import_jsx_runtime.jsx) is not a function`**
+
+**Cause:** Widget is using modern JSX transform (`jsx: "react-jsx"`), which requires `react/jsx-runtime` functions that aren't available in bundled widgets.
+
+**Solution:** Change widget's `tsconfig.json` to use classic JSX transform:
+```json
+{
+  "compilerOptions": {
+    "jsx": "react",  // NOT "react-jsx"
+  }
+}
+```
+
+Classic JSX transform uses `React.createElement` which is available from the shared React global.
+
+**Error: `Dynamic require of "react" is not supported`**
+
+**Cause:** esbuild marks React/React-DOM as external (not bundled) to reduce size, but browsers don't have a `require()` function.
+
+**Solution:** This is handled automatically by the build system:
+- `scripts/build-widgets.js` injects a require() shim at the top of each widget bundle
+- `WidgetLoader.tsx` exposes React/ReactDOM as `window.React` and `window.ReactDOM`
+- The shim maps `require('react')` → `window.React`
+
+No action needed - just ensure your widget uses the correct jsx transform (above).
+
+**Error: `Invalid widget: must export a widget object with a render() method`**
+
+**Cause:** Widget bundle isn't exporting the widget object correctly, or the module structure is wrong.
+
+**Solutions:**
+1. Ensure `src/index.ts` has `export default` for the widget object:
+   ```typescript
+   export const MyWidget: IScriptboardWidget = { ... };
+   export default MyWidget;
+   ```
+2. Verify widget object has `render()` method (required)
+3. Check that esbuild build succeeds: `npm run build:widgets`
+
+**Error: `Widget not found in global namespace: CodeRefWidget_*`**
+
+**Cause:** Widget script loaded but didn't create the expected global variable.
+
+**Solutions:**
+1. Check browser Network tab - verify widget .js file downloaded
+2. Check browser Console for JavaScript errors in the bundle
+3. Verify widget ID matches between config and export:
+   - Config: `"id": "my-widget"`
+   - Widget: `id: 'my-widget'` (must match exactly)
+4. Global name pattern is `CodeRefWidget_{id-with-underscores}`
+   - `my-widget` → `CodeRefWidget_my_widget`
+
 ---
 
 ## Quick Reference
@@ -897,13 +951,19 @@ export const SystemMonitorWidget: IScriptboardWidget = {
 - [ ] Create directory: `packages/widgets/@coderef-dashboard/widget-{name}`
 - [ ] Add `package.json` with correct dependencies
 - [ ] Add `tsconfig.json` extending dashboard config
+  - **CRITICAL:** Set `"jsx": "react"` (NOT `"react-jsx"`) for bundled widget compatibility
 - [ ] Create `src/index.ts` exporting widget object
-- [ ] Implement `IScriptboardWidget` interface
-- [ ] Add lifecycle hooks (onEnable/onDisable)
+  - Must have: `export default WidgetObject`
+  - Widget must implement `IScriptboardWidget` interface
+  - Widget must have `render()` method
+- [ ] Add lifecycle hooks (onEnable/onDisable) as needed
 - [ ] Run `npm install`
 - [ ] Run `npm run build:widgets`
-- [ ] Add to `coderef-dashboard.config.json`
+  - Verify widget appears in `packages/dashboard/public/widgets/{widget-id}.js`
+- [ ] Add to `coderef-dashboard.config.json` with `"enabled": true`
 - [ ] Test with `npm run dev`
+  - Check browser DevTools Console for widget loading errors
+  - Verify Network tab shows widget .js file loaded
 - [ ] Test with `npm run dev:electron`
 
 ### Build Commands
