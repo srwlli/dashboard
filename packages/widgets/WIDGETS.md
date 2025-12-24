@@ -2,6 +2,8 @@
 
 Complete guide for creating, developing, and integrating widgets into the CodeRef Dashboard.
 
+> **Note:** Dashboard settings (theme toggle, preferences) are implemented as a dedicated `/settings` page route, not as a widget. This allows settings to use React Context and integrate seamlessly with the Next.js app architecture. Widgets are best suited for dashboard content that displays dynamically loaded information.
+
 ## Table of Contents
 
 1. [Widget Architecture](#widget-architecture)

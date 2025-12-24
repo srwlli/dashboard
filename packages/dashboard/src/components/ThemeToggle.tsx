@@ -1,39 +1,19 @@
-import React, { useState, useEffect } from 'react';
+'use client';
 
-type Theme = 'dark' | 'light';
+import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * ThemeToggle Component
  * Sun/moon icon button to switch between dark and light modes
  * Uses industrial styling with orange accent
- * Manages theme directly via localStorage and DOM manipulation
+ * Works with React Context (not bundled)
  */
 export function ThemeToggle() {
-  const [theme, setThemeState] = useState<Theme>('dark');
-
-  // Initialize theme from localStorage
-  useEffect(() => {
-    const savedTheme = (localStorage.getItem('coderef-dashboard-theme') || 'dark') as Theme;
-    setThemeState(savedTheme);
-  }, []);
+  const { theme, setTheme } = useTheme();
 
   const handleToggle = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setThemeState(newTheme);
-    localStorage.setItem('coderef-dashboard-theme', newTheme);
-    applyTheme(newTheme);
-  };
-
-  const applyTheme = (newTheme: Theme) => {
-    if (typeof window === 'undefined') return;
-    const htmlElement = document.documentElement;
-    if (newTheme === 'light') {
-      htmlElement.classList.add('light');
-      htmlElement.classList.remove('dark');
-    } else {
-      htmlElement.classList.add('dark');
-      htmlElement.classList.remove('light');
-    }
+    setTheme(newTheme);
   };
 
   return (

@@ -1,12 +1,13 @@
-import React from 'react';
+'use client';
+
 import { ThemeToggle } from './ThemeToggle';
 
 /**
- * SettingsWidget Component
+ * SettingsPanel Component
  * Main settings interface with theme toggle and placeholder for future settings
  * Follows industrial design pattern with corner accents
  */
-export function SettingsWidget() {
+export function SettingsPanel() {
   return (
     <div className="w-full space-y-6">
       {/* Main Panel */}
@@ -69,4 +70,4 @@ export function SettingsWidget() {
   );
 }
 
-export default SettingsWidget;
+export default SettingsPanel;

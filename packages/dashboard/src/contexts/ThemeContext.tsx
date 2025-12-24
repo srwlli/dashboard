@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+'use client';
+
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 export type Theme = 'dark' | 'light';
 
@@ -20,7 +22,6 @@ interface ThemeProviderProps {
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -37,8 +38,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       setThemeState('dark');
       applyTheme('dark');
     }
-
-    setMounted(true);
   }, []);
 
   const setTheme = (newTheme: Theme) => {
@@ -59,11 +58,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       htmlElement.classList.remove('dark');
     }
   };
-
-  // Prevent rendering until client-side hydration is complete
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>

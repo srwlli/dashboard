@@ -2,12 +2,6 @@
   "version": "1.0.0",
   "widgets": [
     {
-      "id": "settings",
-      "package": "@coderef-dashboard/widget-settings",
-      "enabled": true,
-      "settings": {}
-    },
-    {
       "id": "coming-soon",
       "package": "@coderef-dashboard/widget-coming-soon",
       "enabled": true,

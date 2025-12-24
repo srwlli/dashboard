@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import RootClientWrapper from '@/components/RootClientWrapper';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -43,9 +44,11 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-ind-bg text-ind-text font-display">
-        <RootClientWrapper>
-          {children}
-        </RootClientWrapper>
+        <ThemeProvider>
+          <RootClientWrapper>
+            {children}
+          </RootClientWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );
