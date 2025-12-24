@@ -4,6 +4,35 @@ Complete guide for creating, developing, and integrating widgets into the CodeRe
 
 > **Note:** Dashboard settings (theme toggle, preferences) are implemented as a dedicated `/settings` page route, not as a widget. This allows settings to use React Context and integrate seamlessly with the Next.js app architecture. Widgets are best suited for dashboard content that displays dynamically loaded information.
 
+### Understanding the Dual Core Architecture
+
+CodeRef Dashboard uses **two separate "cores"** for different purposes:
+
+**1. @coderef-dashboard/core (NPM Package)**
+- **Location:** `packages/core/dist/` (pre-compiled TypeScript)
+- **Purpose:** Framework types and components for the dashboard app
+- **Exports:** `ErrorBoundary`, `WidgetConfig`, `IScriptboardWidget` interfaces
+- **Used by:** Dashboard app (WidgetLoader, layout, page components)
+- **Role:** Defines the contract and structure for widgets at build time
+
+**2. packages/core/src → core.js (Widget Runtime)**
+- **Location:** `packages/core/src/` (TypeScript source)
+- **Purpose:** Shared runtime library bundled as `core.js` for widgets to use
+- **Exports:** `api` (17 methods), `hooks` (useSession, useSessionRefresh), `utils` (clipboard, fileHandlers)
+- **Used by:** All widgets via `window.CodeRefCore` global
+- **Role:** Provides common functionality to reduce code duplication in widgets
+
+**Why Two Cores?**
+- The NPM package provides TypeScript types and framework components (for development)
+- The runtime core provides shared functionality (for production widget execution)
+- Widgets don't use the NPM package directly; they use the bundled `core.js` at runtime
+- This separation allows widgets to be lightweight bundles while the framework remains feature-rich
+
+**For Widget Developers:**
+- Don't import from `@coderef-dashboard/core` in widgets
+- Use `window.CodeRefCore` in widgets to access the shared runtime
+- The build system automatically bundles core.js before widgets
+
 ## Table of Contents
 
 1. [Widget Architecture](#widget-architecture)

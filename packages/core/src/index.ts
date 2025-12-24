@@ -14,6 +14,20 @@ export { hooks };
 export { utils };
 export * from './types';
 
+// Export ErrorBoundary for dashboard use
+export { ErrorBoundary } from './components/ErrorBoundary';
+
+// Re-export widget interface types for TypeScript
+// These define the contract that all widgets must implement
+export type {
+  IScriptboardWidget,
+  WidgetConfig,
+  WidgetStatus,
+  WidgetSettingsChangePayload,
+  WidgetRenderProps,
+  WidgetLoaderError,
+} from './types';
+
 /**
  * Global TypeScript declarations for window.CodeRefCore
  */

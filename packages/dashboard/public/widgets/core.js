@@ -11,10 +11,13 @@ var require = (function() {
 })();
 "use strict";
 var CodeRefCore = (() => {
+  var __create = Object.create;
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
     get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
   }) : x)(function(x) {
@@ -34,13 +37,27 @@ var CodeRefCore = (() => {
     }
     return to;
   };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
+  };
 
   // packages/core/src/index.ts
   var src_exports = {};
   __export(src_exports, {
+    ErrorBoundary: () => ErrorBoundary,
     api: () => api,
     hooks: () => hooks_exports,
+    isScriptboardWidget: () => isScriptboardWidget,
     utils: () => utils_exports,
     version: () => version
   });
@@ -165,6 +182,7 @@ var CodeRefCore = (() => {
         window.addEventListener("session-refresh", handler);
         return () => window.removeEventListener("session-refresh", handler);
       }
+      return void 0;
     }, deps);
   }
 
@@ -282,6 +300,52 @@ var CodeRefCore = (() => {
           input.click();
         });
       }
+    }
+  };
+
+  // packages/core/src/types/widget.ts
+  function isScriptboardWidget(obj) {
+    return typeof obj === "object" && typeof obj.id === "string" && typeof obj.name === "string" && typeof obj.version === "string" && typeof obj.render === "function";
+  }
+
+  // packages/core/src/components/ErrorBoundary.tsx
+  var import_react3 = __toESM(__require("react"));
+  var ErrorBoundary = class extends import_react3.default.Component {
+    constructor(props) {
+      super(props);
+      __publicField(this, "handleRetry", () => {
+        this.setState({ hasError: false, error: null });
+      });
+      this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+      return { hasError: true, error };
+    }
+    componentDidCatch(error, errorInfo) {
+      console.error(
+        `[ErrorBoundary${this.props.widgetId ? ` - ${this.props.widgetId}` : ""}] Error caught:`,
+        error,
+        errorInfo
+      );
+      if (this.props.onError) {
+        this.props.onError(error, errorInfo);
+      }
+    }
+    render() {
+      if (this.state.hasError && this.state.error) {
+        if (this.props.fallback) {
+          return this.props.fallback(this.state.error, this.handleRetry);
+        }
+        return /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-ind-panel border-2 border-ind-accent p-4 rounded" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-start gap-3" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "text-ind-accent text-xl" }, "\u26A0\uFE0F"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex-1" }, /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-ind-accent font-bold uppercase tracking-wide mb-1" }, "Widget Error", this.props.widgetId && ` (${this.props.widgetId})`), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-ind-text-muted text-sm font-mono mb-3" }, this.state.error.message), /* @__PURE__ */ import_react3.default.createElement(
+          "button",
+          {
+            onClick: this.handleRetry,
+            className: "px-3 py-1 bg-ind-accent text-black text-xs font-bold uppercase tracking-wider hover:bg-ind-accent-hover transition-colors"
+          },
+          "Retry"
+        ))));
+      }
+      return this.props.children;
     }
   };
 
