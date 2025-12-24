@@ -4,7 +4,10 @@
       "Bash(find:*)",
       "Bash(cat:*)",
       "Bash(npm run build:*)",
-      "mcp__personas-mcp__create_custom_persona"
+      "mcp__personas-mcp__create_custom_persona",
+      "Bash(echo:*)",
+      "Bash(test:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

@@ -13,7 +13,8 @@
     "package:win": "electron-builder --win --publish never"
   },
   "dependencies": {
-    "@coderef-dashboard/dashboard": "file:../dashboard"
+    "@coderef-dashboard/dashboard": "file:../dashboard",
+    "next": "^16.0.0"
   },
   "devDependencies": {
     "@types/electron": "^1.6.10",

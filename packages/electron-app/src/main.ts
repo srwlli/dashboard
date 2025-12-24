@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import path from 'path';
+import createServer from 'next';
 import http from 'http';
-import fs from 'fs';
 
 // Check if running in development mode
 const isDev = process.env.ELECTRON_DEV === 'true' || process.env.NODE_ENV === 'development';
@@ -10,47 +10,19 @@ let mainWindow: BrowserWindow | null = null;
 let server: http.Server | null = null;
 const PORT = 9000;
 
-// Simple HTTP server for serving static files
-function startStaticServer() {
+// Start Next.js server for both dev and production
+async function startNextServer() {
+  const nextApp = createServer({
+    dev: false,
+    dir: path.join(__dirname, '../../dashboard'),
+  });
+
+  const handle = nextApp.getRequestHandler();
+
   return new Promise<void>((resolve) => {
-    const dashboardDir = path.join(__dirname, '../../dashboard/out');
-
-    server = http.createServer((req, res) => {
-      const url = req.url || '/';
-      let filePath = path.join(dashboardDir, url === '/' ? 'index.html' : url);
-
-      // Try to serve the file
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          // If not found, serve index.html for SPA routing
-          fs.readFile(path.join(dashboardDir, 'index.html'), (err, data) => {
-            if (err) {
-              res.writeHead(404);
-              res.end('Not found');
-              return;
-            }
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(data);
-          });
-          return;
-        }
-
-        // Set correct content type
-        let contentType = 'text/plain';
-        if (filePath.endsWith('.html')) contentType = 'text/html';
-        if (filePath.endsWith('.js')) contentType = 'application/javascript';
-        if (filePath.endsWith('.css')) contentType = 'text/css';
-        if (filePath.endsWith('.json')) contentType = 'application/json';
-        if (filePath.endsWith('.png')) contentType = 'image/png';
-        if (filePath.endsWith('.ico')) contentType = 'image/x-icon';
-
-        res.writeHead(200, { 'Content-Type': contentType });
-        res.end(data);
-      });
-    });
-
+    server = http.createServer(handle);
     server.listen(PORT, '127.0.0.1', () => {
-      console.log(`[Electron] Static server running on http://localhost:${PORT}`);
+      console.log(`[Electron] Next.js server running on http://localhost:${PORT}`);
       resolve();
     });
   });
@@ -101,9 +73,10 @@ function createWindow() {
 
 // App event listeners
 app.on('ready', async () => {
-  // Start static server in production mode
+  // Start Next.js server in production mode
+  // In dev mode, Next.js dev server runs on port 3000 separately
   if (!isDev) {
-    await startStaticServer();
+    await startNextServer();
   }
   createWindow();
 });
