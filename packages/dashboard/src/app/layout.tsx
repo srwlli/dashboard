@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import PWAInitializer from '@/components/PWAInitializer';
+import RootClientWrapper from '@/components/RootClientWrapper';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -21,18 +21,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#0c0c0e" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              const theme = localStorage.getItem('coderef-dashboard-theme') || 'dark';
+              if (theme === 'light') {
+                document.documentElement.classList.add('light');
+                document.documentElement.classList.remove('dark');
+              } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+              }
+            `,
+          }}
+        />
       </head>
       <body className="min-h-screen bg-ind-bg text-ind-text font-display">
-        <PWAInitializer />
-        <main className="flex-1">
+        <RootClientWrapper>
           {children}
-        </main>
+        </RootClientWrapper>
       </body>
     </html>
   );

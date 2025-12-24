@@ -12,6 +12,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Dark mode (default)
         'ind-bg': '#0c0c0e',
         'ind-panel': '#141416',
         'ind-border': '#3f3f46',

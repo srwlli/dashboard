@@ -10,9 +10,34 @@ html {
   color-scheme: dark;
 }
 
+html.light {
+  color-scheme: light;
+}
+
 body {
   @apply bg-ind-bg text-ind-text font-display antialiased overflow-hidden selection:bg-ind-accent selection:text-black;
 }
+
+/* Light mode colors */
+html.light body {
+  @apply bg-white text-gray-900;
+}
+
+html.light {
+  --color-ind-bg: #ffffff;
+  --color-ind-panel: #f5f5f5;
+  --color-ind-border: #e0e0e0;
+  --color-ind-accent: #ff6b00;
+  --color-ind-accent-hover: #e65100;
+  --color-ind-text: #1a1a1a;
+  --color-ind-text-muted: #666666;
+}
+
+html.light .bg-ind-bg { @apply bg-white; }
+html.light .bg-ind-panel { @apply bg-gray-50; }
+html.light .border-ind-border { @apply border-gray-300; }
+html.light .text-ind-text { @apply text-gray-900; }
+html.light .text-ind-text-muted { @apply text-gray-600; }
 
 /* Scrollbar utilities */
 .no-scrollbar::-webkit-scrollbar {
