@@ -43,7 +43,6 @@ var require = (function() {
   const modules = {
     'react': window.React,
     'react-dom': window.ReactDOM,
-    'react/jsx-runtime': window.React,
   };
   return function(id) {
     if (id in modules) return modules[id];
