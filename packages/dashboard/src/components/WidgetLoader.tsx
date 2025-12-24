@@ -140,8 +140,14 @@ function WidgetRenderer({
                 return;
               }
 
-              // Clean up global namespace
-              delete (window as any)[globalName];
+              // Attempt to clean up global namespace
+              try {
+                delete (window as any)[globalName];
+              } catch (e) {
+                // Silently ignore if property cannot be deleted (non-configurable)
+                // This can happen in strict mode or with certain property configurations
+              }
+
               resolve(widgetInstance);
             } catch (err) {
               reject(err);
