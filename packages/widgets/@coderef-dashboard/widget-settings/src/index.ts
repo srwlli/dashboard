@@ -1,7 +1,6 @@
 import React from 'react';
 import { IScriptboardWidget, WidgetSettingsChangePayload } from '@coderef-dashboard/core';
 import { SettingsWidget } from './SettingsWidget';
-import { ThemeProvider } from './ThemeContext';
 
 /**
  * Settings Widget
@@ -20,11 +19,7 @@ export const SettingsWidgetExport: IScriptboardWidget = {
   },
 
   render(): React.ReactNode {
-    return React.createElement(
-      ThemeProvider,
-      {},
-      React.createElement(SettingsWidget)
-    );
+    return React.createElement(SettingsWidget);
   },
 
   async onEnable(): Promise<void> {
