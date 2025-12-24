@@ -1,7 +1,6 @@
 const CACHE_NAME = 'coderef-dashboard-v1';
 const URLS_TO_CACHE = [
   '/',
-  '/offline.html',
 ];
 
 // Install service worker
@@ -56,9 +55,15 @@ self.addEventListener('fetch', (event) => {
             return response;
           }
 
-          // Return offline page
+          // Return generic offline message for navigation requests
           if (event.request.mode === 'navigate') {
-            return caches.match('/offline.html');
+            return new Response('Application is offline', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: new Headers({
+                'Content-Type': 'text/plain',
+              }),
+            });
           }
 
           return new Response('Offline - Resource not available', {
