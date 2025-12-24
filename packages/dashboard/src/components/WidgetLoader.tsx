@@ -1,8 +1,15 @@
 'use client';
 
 import React, { ReactNode } from 'react';
+import ReactDOM from 'react-dom';
 import { ErrorBoundary } from '@coderef-dashboard/core';
 import { WidgetConfig, IScriptboardWidget } from '@coderef-dashboard/core';
+
+// Expose React and ReactDOM as globals for widget bundles
+if (typeof window !== 'undefined') {
+  (window as any).React = React;
+  (window as any).ReactDOM = ReactDOM;
+}
 
 interface WidgetLoaderProps {
   config: WidgetConfig;

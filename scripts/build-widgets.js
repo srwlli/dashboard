@@ -37,6 +37,19 @@ async function buildWidgets() {
     console.log(`\n📦 Building widget: ${dir}...`);
 
     try {
+      // Banner provides require() shim for external dependencies
+      const banner = `
+var require = (function() {
+  const modules = {
+    'react': window.React,
+    'react-dom': window.ReactDOM,
+  };
+  return function(id) {
+    if (id in modules) return modules[id];
+    throw new Error('[WidgetLoader] Cannot find module: ' + id);
+  };
+})();`;
+
       await esbuild.build({
         entryPoints: [entryPoint],
         bundle: true,
@@ -47,6 +60,9 @@ async function buildWidgets() {
         target: 'es2020',
         sourcemap: true,
         external: ['react', 'react-dom'],
+        banner: {
+          js: banner,
+        },
         define: {
           'process.env.NODE_ENV': '"production"',
         },
