@@ -129,12 +129,26 @@ function WidgetRenderer({
             try {
               // Get widget from global variable created by IIFE bundle
               const globalName = `CodeRefWidget_${widgetId.replace(/-/g, '_')}`;
-              const widgetInstance = (window as any)[globalName];
+              const moduleExports = (window as any)[globalName];
 
-              if (!widgetInstance) {
+              if (!moduleExports) {
                 reject(
                   new Error(
                     `Widget not found in global namespace: ${globalName}`
+                  )
+                );
+                return;
+              }
+
+              // Extract widget from CommonJS exports (esbuild wraps in __toCommonJS)
+              // The default export contains the actual widget object
+              const widgetInstance = moduleExports.default || moduleExports;
+
+              // Validate widget has required render method
+              if (!widgetInstance || typeof widgetInstance.render !== 'function') {
+                reject(
+                  new Error(
+                    `Invalid widget: "${widgetId}" must export a widget object with a render() method`
                   )
                 );
                 return;
