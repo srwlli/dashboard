@@ -28,7 +28,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-ind-bg flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-ind-text mb-4 uppercase tracking-wider">
             Code<span className="text-ind-accent">Ref</span>
@@ -50,7 +50,7 @@ export default function Home() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-ind-bg flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <p className="text-ind-accent text-lg font-mono mb-4">⚠️ Error</p>
           <p className="text-ind-text-muted">{error}</p>
@@ -60,7 +60,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-ind-bg p-4">
+    <div className="p-4">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-ind-text uppercase tracking-wider">
