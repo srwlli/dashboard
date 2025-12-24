@@ -1,29 +1,16 @@
 {
   "name": "@coderef-dashboard/core",
-  "version": "0.1.0",
-  "description": "Core types, interfaces, and utilities for coderef-dashboard",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "version": "1.0.0",
+  "description": "Shared core library for CodeRef Dashboard widgets",
+  "main": "src/index.ts",
   "scripts": {
-    "build": "tsc",
-    "type-check": "tsc --noEmit",
-    "dev": "tsc --watch"
+    "build": "echo 'Core is built via scripts/build-widgets.js'"
   },
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "typescript": "^5.3.3"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "typescript": "^5.0.0"
   }
 }

@@ -1,0 +1,40 @@
+{
+  "feature_name": "persona-role-context-system",
+  "description": "Integrate role-specific personas with dynamic context loading from coderef-context. Personas reference standards, workorders, and patterns rather than embedding them, enabling lightweight behavioral definitions backed by authoritative knowledge bases.",
+  "category": "feature",
+  "priority": "high",
+  "created": "2025-12-24T19:45:00Z",
+  "status": "stub",
+  "context": {
+    "problem": "Current personas are static and self-contained. They don't have access to project standards, workorders, or reference implementations. This limits their ability to provide consistent, context-aware guidance.",
+    "vision": "Role-specific personas that dynamically load context from coderef-context system. A Widget Architect persona loads standards docs, past workorders, reference implementations, and established patterns on-demand.",
+    "key_concerns": [
+      "Context staleness and maintenance ownership",
+      "Token budget impact of loading large contexts",
+      "Context versioning and persona pinning",
+      "Tight coupling to project structure",
+      "Authority without verification risk",
+      "Whether persona is the right abstraction or if we need a Role/Knowledge-Base system instead"
+    ]
+  },
+  "design_questions": [
+    "Should context be embedded or lazily loaded from coderef-context?",
+    "How do we version context and keep personas aligned?",
+    "What's the minimal context schema for role-specific personas?",
+    "Should personas pin to specific context versions or always load latest?",
+    "How do we prevent stale context from being cited as authoritative?",
+    "Is 'persona' the right abstraction, or do we need Role Registry + Knowledge Base?"
+  ],
+  "related_stubs": [
+    "coderef-context-integration",
+    "widget-architect-persona",
+    "workorder-system"
+  ],
+  "tags": [
+    "personas",
+    "knowledge-management",
+    "role-based-access",
+    "context-aware-ai",
+    "coderef-integration"
+  ]
+}

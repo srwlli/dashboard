@@ -115,6 +115,13 @@ function WidgetRenderer({
         setIsLoading(true);
         setError(null);
 
+        // Check if core is loaded
+        if (!window.CodeRefCore) {
+          throw new Error(
+            'CodeRefCore not loaded. Please ensure /widgets/core.js is loaded in layout.tsx'
+          );
+        }
+
         // Load widget from public/widgets/ directory
         const widgetId = config.id;
         const scriptUrl = `/widgets/${widgetId}.js`;

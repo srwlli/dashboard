@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const esbuild = require('esbuild');
 
+const CORE_DIR = path.join(__dirname, '../packages/core');
 const WIDGETS_DIR = path.join(__dirname, '../packages/widgets/@coderef-dashboard');
 const OUTPUT_DIR = path.join(__dirname, '../packages/dashboard/public/widgets');
 
@@ -11,6 +12,58 @@ const OUTPUT_DIR = path.join(__dirname, '../packages/dashboard/public/widgets');
 if (!fs.existsSync(OUTPUT_DIR)) {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   console.log(`Created directory: ${OUTPUT_DIR}`);
+}
+
+// Build core first
+async function buildCore() {
+  const coreEntryPoint = path.join(CORE_DIR, 'src/index.ts');
+  const coreOutputFile = path.join(OUTPUT_DIR, 'core.js');
+
+  if (!fs.existsSync(coreEntryPoint)) {
+    console.warn(`⚠️  Core not found at ${coreEntryPoint}`);
+    return false;
+  }
+
+  console.log('\n🏗️  Building core library...');
+
+  try {
+    const coreBanner = `
+var require = (function() {
+  const modules = {
+    'react': window.React,
+    'react-dom': window.ReactDOM,
+  };
+  return function(id) {
+    if (id in modules) return modules[id];
+    throw new Error('[CodeRefCore] Cannot find module: ' + id);
+  };
+})();`;
+
+    await esbuild.build({
+      entryPoints: [coreEntryPoint],
+      bundle: true,
+      outfile: coreOutputFile,
+      format: 'iife',
+      globalName: 'CodeRefCore',
+      platform: 'browser',
+      target: 'es2020',
+      sourcemap: false,
+      external: ['react', 'react-dom'],
+      banner: {
+        js: coreBanner,
+      },
+      define: {
+        'process.env.NODE_ENV': '"production"',
+      },
+      logLevel: 'info',
+    });
+
+    console.log(`✅ Core built: ${coreOutputFile}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to build core:`, error.message);
+    process.exit(1);
+  }
 }
 
 // Find all widget packages
@@ -43,6 +96,7 @@ var require = (function() {
   const modules = {
     'react': window.React,
     'react-dom': window.ReactDOM,
+    'CodeRefCore': window.CodeRefCore,
   };
   return function(id) {
     if (id in modules) return modules[id];
@@ -59,7 +113,7 @@ var require = (function() {
         platform: 'browser',
         target: 'es2020',
         sourcemap: true,
-        external: ['react', 'react-dom'],
+        external: ['react', 'react-dom', 'CodeRefCore'],
         banner: {
           js: banner,
         },
@@ -79,7 +133,20 @@ var require = (function() {
   console.log(`\n✨ All widgets built successfully!\n`);
 }
 
-buildWidgets().catch(error => {
-  console.error('Build failed:', error);
-  process.exit(1);
-});
+// Main build process
+async function build() {
+  try {
+    // Build core first
+    await buildCore();
+
+    // Then build widgets
+    await buildWidgets();
+
+    console.log('\n🎉 Build complete!\n');
+  } catch (error) {
+    console.error('Build failed:', error);
+    process.exit(1);
+  }
+}
+
+build();

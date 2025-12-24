@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 export interface ComingSoonCardProps {
   title?: string;
@@ -11,12 +11,24 @@ export interface ComingSoonCardProps {
 /**
  * Coming Soon placeholder card component
  * Shows a simple message that widgets are coming soon
+ * Demonstrates core usage with session check
  */
 export function ComingSoonCard({
   title = 'More Widgets Coming Soon',
   description = 'Additional widgets are being developed. Check back later!',
   eta = 'Q1 2025',
 }: ComingSoonCardProps) {
+  const [coreStatus, setCoreStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+
+  useEffect(() => {
+    // Check if core is loaded
+    if (typeof window !== 'undefined' && (window as any).CodeRefCore) {
+      setCoreStatus('ready');
+    } else {
+      setCoreStatus('error');
+    }
+  }, []);
+
   return (
     <div className="w-full">
       {/* Main Card */}
@@ -45,6 +57,25 @@ export function ComingSoonCard({
             <p className="text-ind-text-muted font-mono text-sm leading-relaxed">
               {description}
             </p>
+
+            {/* Core Status Badge */}
+            <div className="px-4 py-2 bg-ind-bg border border-ind-border rounded">
+              {coreStatus === 'ready' && (
+                <p className="text-green-500 text-xs font-mono">
+                  ✓ Core loaded • Ready for widgets
+                </p>
+              )}
+              {coreStatus === 'loading' && (
+                <p className="text-ind-text-muted text-xs font-mono">
+                  ⏳ Initializing core...
+                </p>
+              )}
+              {coreStatus === 'error' && (
+                <p className="text-ind-accent text-xs font-mono">
+                  ⚠️ Core not available
+                </p>
+              )}
+            </div>
 
             {/* ETA */}
             <div className="pt-4 border-t-2 border-ind-border">
