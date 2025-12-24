@@ -67,6 +67,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
+      navigateOnDragDrop: false,
     },
     icon: path.join(__dirname, '../assets/icon.png'),
   });
@@ -76,6 +77,18 @@ function createWindow() {
     : `http://localhost:${PORT}`;
 
   mainWindow.loadURL(startUrl);
+
+  // Handle SPA routing - allow same-origin navigation
+  // This prevents Electron from treating route changes as full page loads
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    const parsedUrl = new URL(url);
+    const parsedStart = new URL(startUrl);
+
+    // Allow navigation within the same origin
+    if (parsedUrl.origin !== parsedStart.origin) {
+      event.preventDefault();
+    }
+  });
 
   if (isDev) {
     mainWindow.webContents.openDevTools();
