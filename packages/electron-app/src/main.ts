@@ -17,6 +17,9 @@ async function startNextServer() {
     dir: path.join(__dirname, '../../dashboard'),
   });
 
+  // Next.js requires prepare() to be called before getRequestHandler()
+  await nextApp.prepare();
+
   const handle = nextApp.getRequestHandler();
 
   return new Promise<void>((resolve) => {
