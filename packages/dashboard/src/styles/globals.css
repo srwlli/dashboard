@@ -11,9 +11,7 @@ html {
 }
 
 body {
-  @apply bg-grid-pattern text-ind-text font-display antialiased overflow-hidden selection:bg-ind-accent selection:text-black;
-  background-size: 40px 40px;
-  background-color: #0c0c0e;
+  @apply bg-ind-bg text-ind-text font-display antialiased overflow-hidden selection:bg-ind-accent selection:text-black;
 }
 
 /* Scrollbar utilities */
@@ -44,15 +42,6 @@ body {
 
 .material-symbols-outlined.fill-1 {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-/* Grid pattern background */
-.bg-grid-pattern {
-  background-color: #0c0c0e;
-  background-image:
-    linear-gradient(#27272a 1px, transparent 1px),
-    linear-gradient(90deg, #27272a 1px, transparent 1px);
-  background-size: 40px 40px;
 }
 
 /* Utilities */

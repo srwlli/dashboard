@@ -26,13 +26,6 @@ module.exports = {
       },
       backgroundImage: {
         'hazard': 'repeating-linear-gradient(45deg, #141416, #141416 10px, #1f1f22 10px, #1f1f22 20px)',
-        'grid-pattern': `
-          linear-gradient(#27272a 1px, transparent 1px),
-          linear-gradient(90deg, #27272a 1px, transparent 1px)
-        `,
-      },
-      backgroundSize: {
-        'grid': '40px 40px',
       },
       boxShadow: {
         'industrial': '0 4px 20px rgba(0,0,0,0.5)',
