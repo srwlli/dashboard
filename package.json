@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "npm run dev -w packages/dashboard",
     "dev:electron": "npm run dev -w packages/electron-app",
-    "build": "npm run build -ws --if-present",
+    "build": "npm run build:widgets && npm run build -ws --if-present",
+    "build:widgets": "node scripts/build-widgets.js",
     "build:dashboard": "npm run build -w packages/dashboard",
     "build:electron": "npm run build -w packages/electron-app",
     "package:win": "npm run package:win -w packages/electron-app",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "7zip-bin": "^5.2.0",
+    "esbuild": "^0.19.11",
     "typescript": "^5.3.3"
   },
   "engines": {

@@ -108,16 +108,49 @@ function WidgetRenderer({
         setIsLoading(true);
         setError(null);
 
-        // Dynamically import the widget module
-        const module = await import(
-          /* webpackIgnore: true */
-          config.package
-        );
+        // Load widget from public/widgets/ directory
+        const widgetId = config.id;
+        const scriptUrl = `/widgets/${widgetId}.js`;
+
+        // Load the script
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+        script.async = true;
+
+        const widgetPromise = new Promise<IScriptboardWidget>((resolve, reject) => {
+          script.onload = () => {
+            try {
+              // Get widget from global variable created by IIFE bundle
+              const globalName = `CodeRefWidget_${widgetId.replace(/-/g, '_')}`;
+              const widgetInstance = (window as any)[globalName];
+
+              if (!widgetInstance) {
+                reject(
+                  new Error(
+                    `Widget not found in global namespace: ${globalName}`
+                  )
+                );
+                return;
+              }
+
+              // Clean up global namespace
+              delete (window as any)[globalName];
+              resolve(widgetInstance);
+            } catch (err) {
+              reject(err);
+            }
+          };
+
+          script.onerror = () => {
+            reject(new Error(`Failed to load widget script: ${scriptUrl}`));
+          };
+        });
+
+        document.head.appendChild(script);
 
         if (!mounted) return;
 
-        // Get widget instance (default export should be the widget object)
-        const widgetInstance = module.default as IScriptboardWidget;
+        const widgetInstance = await widgetPromise;
 
         if (!widgetInstance || typeof widgetInstance.render !== 'function') {
           throw new Error(
