@@ -1,0 +1,180 @@
+.container {
+  padding: 24px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.cardTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #FF6B00;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.promptInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promptLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.promptTokens {
+  font-size: 14px;
+  color: #FF6B00;
+  margin: 0;
+}
+
+.empty {
+  font-size: 14px;
+  color: #888888;
+  margin: 0;
+  font-style: italic;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.statLabel {
+  color: #888888;
+}
+
+.statValue {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.tokenCount {
+  font-size: 32px;
+  font-weight: 700;
+  color: #FF6B00;
+  margin: 0;
+  word-break: break-word;
+}
+
+.tokenCount.warning {
+  color: #ff9d33;
+}
+
+.tokenBreakdown {
+  font-size: 12px;
+  color: #888888;
+  margin: 8px 0 0 0;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.languages,
+.fileTypes {
+  margin-bottom: 20px;
+}
+
+.languageBadges,
+.fileTypeBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.languageBadge,
+.fileTypeBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #333333;
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.languageBadge {
+  background: rgba(255, 107, 0, 0.15);
+  color: #FF6B00;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+}
+
+.fileTypeBadge {
+  background: rgba(100, 200, 255, 0.15);
+  color: #64c8ff;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+}
+
+.warningBox {
+  padding: 16px;
+  background: rgba(255, 153, 51, 0.1);
+  border-left: 4px solid #FF9933;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.warningText {
+  font-size: 14px;
+  color: #FF9933;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.warningHint {
+  font-size: 12px;
+  color: #FF9933;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.emptyState {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: #888888;
+  margin: 0;
+  font-style: italic;
+}
