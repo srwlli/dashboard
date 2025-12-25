@@ -9,10 +9,6 @@ interface PromptSelectorProps {
   onSelectPrompt: (prompt: PreloadedPrompt) => void;
 }
 
-/**
- * PromptSelector - Browse and select from 3 preloaded prompts
- * Displays prompt name, description, and estimated tokens
- */
 export const PromptSelector: React.FC<PromptSelectorProps> = ({
   prompts,
   selectedPromptKey,

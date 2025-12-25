@@ -10,10 +10,6 @@ interface AttachmentDropZoneProps {
 
 type DropZoneState = 'idle' | 'drag' | 'loading' | 'success' | 'error';
 
-/**
- * AttachmentDropZone - Drag & drop zone for file attachment
- * Extracts file content and detects language on drop
- */
 export const AttachmentDropZone: React.FC<AttachmentDropZoneProps> = ({
   onFilesAdded,
   disabled = false,

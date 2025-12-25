@@ -12,10 +12,6 @@ interface AttachmentManagerProps {
   onClearAll: () => void;
 }
 
-/**
- * AttachmentManager - Coordinator for file and text attachments
- * Manages drag & drop, paste text, and attachment list display
- */
 export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
   attachments,
   onAddAttachments,

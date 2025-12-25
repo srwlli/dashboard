@@ -5,15 +5,13 @@
   "private": true,
   "workspaces": [
     "packages/core",
-    "packages/widgets/@coderef-dashboard/*",
     "packages/dashboard",
     "packages/electron-app"
   ],
   "scripts": {
     "dev": "npm run dev -w packages/dashboard",
     "dev:electron": "npm run dev -w packages/electron-app",
-    "build": "npm run build:widgets && npm run build -ws --if-present",
-    "build:widgets": "node scripts/build-widgets.js",
+    "build": "npm run build -ws --if-present",
     "build:dashboard": "npm run build -w packages/dashboard",
     "build:electron": "npm run build -w packages/electron-app",
     "package:win": "npm run package:win -w packages/electron-app",

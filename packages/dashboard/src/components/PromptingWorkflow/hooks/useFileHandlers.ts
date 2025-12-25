@@ -25,14 +25,7 @@ export function useFileHandlers() {
       setStatus({ loading: true, error: null });
 
       try {
-        // Try CodeRefCore fileHandlers first (Electron support)
-        if (window.CodeRefCore?.utils?.fileHandlers?.selectFiles) {
-          const files = await window.CodeRefCore.utils.fileHandlers.selectFiles(options);
-          setStatus({ loading: false, error: null });
-          return files || null;
-        }
-
-        // Fallback to HTML file input
+        // Use HTML file input as fallback (CodeRefCore.openFile doesn't support multiple)
         return new Promise((resolve) => {
           const input = document.createElement('input');
           input.type = 'file';
@@ -66,18 +59,12 @@ export function useFileHandlers() {
   /**
    * Open directory selection dialog
    * Returns selected directory path or null if cancelled
+   * Note: Browser fallback uses showDirectoryPicker (Chrome/Edge only)
    */
   const selectDirectory = useCallback(async (): Promise<string | null> => {
     setStatus({ loading: true, error: null });
 
     try {
-      // Try CodeRefCore fileHandlers first (Electron support)
-      if (window.CodeRefCore?.utils?.fileHandlers?.selectDirectory) {
-        const directory = await window.CodeRefCore.utils.fileHandlers.selectDirectory();
-        setStatus({ loading: false, error: null });
-        return directory || null;
-      }
-
       // Browser fallback - use showDirectoryPicker if available (Chrome/Edge only)
       if ('showDirectoryPicker' in window) {
         try {
@@ -85,11 +72,11 @@ export function useFileHandlers() {
           setStatus({ loading: false, error: null });
           return dirHandle.name; // Limited info in browser
         } catch (err) {
-          throw new Error('Directory selection not supported in this browser');
+          throw new Error('Directory selection was cancelled');
         }
       }
 
-      throw new Error('Directory selection not available - use Electron or Chrome/Edge browser');
+      throw new Error('Directory selection not available - use Chrome/Edge browser');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to select directory';
       setStatus({ loading: false, error: errorMessage });
@@ -101,7 +88,7 @@ export function useFileHandlers() {
    * Check if running in Electron
    */
   const isElectron = useCallback(() => {
-    return window.CodeRefCore?.utils?.fileHandlers?.isElectron?.() ?? false;
+    return typeof window !== 'undefined' && !!(window as any).electronAPI;
   }, []);
 
   /**
@@ -120,19 +107,4 @@ export function useFileHandlers() {
   };
 }
 
-/**
- * Declare CodeRefCore global for TypeScript
- */
-declare global {
-  interface Window {
-    CodeRefCore?: {
-      utils?: {
-        fileHandlers?: {
-          selectFiles(options?: { multiple?: boolean; accept?: string }): Promise<File[] | null>;
-          selectDirectory(): Promise<string | null>;
-          isElectron(): boolean;
-        };
-      };
-    };
-  }
-}
+// TypeScript declaration is handled by core package

@@ -9,10 +9,6 @@ interface PasteFinalResultModalProps {
   onClose: () => void;
 }
 
-/**
- * PasteFinalResultModal - Modal for pasting LLM final result and saving workflow
- * Auto-detects clipboard content
- */
 export const PasteFinalResultModal: React.FC<PasteFinalResultModalProps> = ({
   isOpen,
   onResultSaved,

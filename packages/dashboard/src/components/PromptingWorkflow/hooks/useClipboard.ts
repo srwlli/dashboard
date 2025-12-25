@@ -104,18 +104,4 @@ export function useClipboard() {
   };
 }
 
-/**
- * Declare CodeRefCore global for TypeScript
- */
-declare global {
-  interface Window {
-    CodeRefCore?: {
-      utils?: {
-        clipboard?: {
-          write(text: string): Promise<void>;
-          read(): Promise<string>;
-        };
-      };
-    };
-  }
-}
+// TypeScript declaration is handled by core package

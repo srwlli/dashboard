@@ -14,10 +14,6 @@ interface WorkflowMetaProps {
   attachments: Attachment[];
 }
 
-/**
- * WorkflowMeta - Display metadata and statistics about the workflow
- * Shows token counts, file sizes, languages, and warnings
- */
 export const WorkflowMeta: React.FC<WorkflowMetaProps> = ({ prompt, attachments }) => {
   const metadata = useMemo(() => {
     const promptTokens = prompt ? estimatePromptTokens(prompt.text) : 0;

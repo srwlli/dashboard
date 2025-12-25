@@ -33,11 +33,11 @@ export type {
  */
 declare global {
   interface Window {
-    CodeRefCore: {
-      api: typeof api;
-      hooks: typeof hooks;
-      utils: typeof utils;
-      version: string;
+    CodeRefCore?: {
+      api?: typeof api;
+      hooks?: typeof hooks;
+      utils?: typeof utils;
+      version?: string;
     };
   }
 }

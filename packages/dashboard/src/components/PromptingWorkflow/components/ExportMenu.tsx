@@ -8,10 +8,6 @@ interface ExportMenuProps {
   disabled?: boolean;
 }
 
-/**
- * ExportMenu - Dropdown menu for export actions
- * Options: Copy to Clipboard (JSON), Export .json, Export .md
- */
 export const ExportMenu: React.FC<ExportMenuProps> = ({
   onCopyJSON,
   onExportJSON,

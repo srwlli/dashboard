@@ -11,10 +11,6 @@ interface PasteTextModalProps {
   onClose: () => void;
 }
 
-/**
- * PasteTextModal - Modal for pasting raw text as attachment
- * Auto-detects clipboard content and auto-generates filename
- */
 export const PasteTextModal: React.FC<PasteTextModalProps> = ({
   isOpen,
   existingFilenames,
