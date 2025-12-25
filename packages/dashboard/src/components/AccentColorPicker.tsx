@@ -4,7 +4,7 @@ import { useAccentColor, ACCENT_COLORS, type AccentColor } from '@/contexts/Acce
 
 /**
  * AccentColorPicker Component
- * Allows users to select accent color from 7 preset options
+ * Allows users to select accent color from 6 neon preset options
  * Updates CSS variables in real-time
  */
 export function AccentColorPicker() {
@@ -18,23 +18,28 @@ export function AccentColorPicker() {
           Accent Color
         </label>
         <p className="text-xs text-ind-text-muted mb-4">
-          Choose a secondary color for highlights and accents
+          Choose a neon color for highlights and accents
         </p>
       </div>
 
       {/* Color Grid */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-6 gap-3">
         {(Object.keys(ACCENT_COLORS) as AccentColor[]).map((color) => (
           <button
             key={color}
             onClick={() => setAccentColor(color)}
             className={`
-              relative w-full aspect-square rounded-lg border-2 transition-all
-              ${accentColor === color ? 'border-ind-accent ring-2 ring-ind-accent ring-offset-1' : 'border-ind-border hover:border-ind-accent'}
-              active:translate-y-0.5
+              relative w-full aspect-square rounded-lg border-2 transition-all cursor-pointer
+              ${accentColor === color
+                ? 'border-ind-accent ring-4 ring-offset-2'
+                : 'border-ind-border hover:border-ind-text-muted'}
+              active:translate-y-0.5 hover:scale-105
             `}
             style={{
               backgroundColor: ACCENT_COLORS[color].base,
+              boxShadow: accentColor === color
+                ? `0 0 20px ${ACCENT_COLORS[color].base}80`
+                : 'none',
             }}
             title={color.charAt(0).toUpperCase() + color.slice(1)}
             aria-label={`${color.charAt(0).toUpperCase() + color.slice(1)} accent color`}
@@ -42,10 +47,7 @@ export function AccentColorPicker() {
           >
             {/* Checkmark for selected color */}
             {accentColor === color && (
-              <span className={`
-                absolute inset-0 flex items-center justify-center text-2xl
-                ${color === 'white' ? 'text-black' : 'text-white'}
-              `}>
+              <span className="absolute inset-0 flex items-center justify-center text-2xl text-white drop-shadow-lg">
                 ✓
               </span>
             )}

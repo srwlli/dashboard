@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-export type AccentColor = 'red' | 'orange' | 'yellow' | 'green' | 'purple' | 'blue' | 'white';
+export type AccentColor = 'red' | 'orange' | 'yellow' | 'green' | 'purple' | 'blue';
 
 interface ColorVariant {
   base: string;
@@ -16,7 +16,6 @@ export const ACCENT_COLORS: Record<AccentColor, ColorVariant> = {
   green: { base: '#22c55e', hover: '#16a34a' },
   purple: { base: '#a855f7', hover: '#9333ea' },
   blue: { base: '#3b82f6', hover: '#2563eb' },
-  white: { base: '#ffffff', hover: '#f5f5f5' },
 };
 
 interface AccentColorContextType {
