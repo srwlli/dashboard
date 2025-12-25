@@ -8,6 +8,12 @@
       "settings": {
         "showDetails": true
       }
+    },
+    {
+      "id": "prompting-workflow",
+      "package": "@coderef-dashboard/widget-prompting-workflow",
+      "enabled": true,
+      "settings": {}
     }
   ],
   "settings": {

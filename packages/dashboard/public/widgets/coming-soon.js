@@ -1,8 +1,18 @@
 
+var process = { env: { NODE_ENV: 'production' } };
 var require = (function() {
   const modules = {
     'react': window.React,
     'react-dom': window.ReactDOM,
+    'react/jsx-runtime': {
+      jsx: window.React.jsx || function(type, props) {
+        return window.React.createElement(type, props);
+      },
+      jsxs: window.React.jsxs || function(type, props) {
+        return window.React.createElement(type, props);
+      },
+      Fragment: window.React.Fragment
+    },
     'CodeRefCore': window.CodeRefCore,
   };
   return function(id) {

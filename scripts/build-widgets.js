@@ -28,6 +28,7 @@ async function buildCore() {
 
   try {
     const coreBanner = `
+var process = { env: { NODE_ENV: 'production' } };
 var require = (function() {
   const modules = {
     'react': window.React,
@@ -92,10 +93,20 @@ async function buildWidgets() {
     try {
       // Banner provides require() shim for external dependencies
       const banner = `
+var process = { env: { NODE_ENV: 'production' } };
 var require = (function() {
   const modules = {
     'react': window.React,
     'react-dom': window.ReactDOM,
+    'react/jsx-runtime': {
+      jsx: window.React.jsx || function(type, props) {
+        return window.React.createElement(type, props);
+      },
+      jsxs: window.React.jsxs || function(type, props) {
+        return window.React.createElement(type, props);
+      },
+      Fragment: window.React.Fragment
+    },
     'CodeRefCore': window.CodeRefCore,
   };
   return function(id) {
@@ -114,6 +125,10 @@ var require = (function() {
         target: 'es2020',
         sourcemap: true,
         external: ['react', 'react-dom', 'CodeRefCore'],
+        loader: {
+          '.css': 'css',
+          '.module.css': 'local-css',
+        },
         banner: {
           js: banner,
         },

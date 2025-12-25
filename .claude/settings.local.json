@@ -1,14 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find:*)",
-      "Bash(cat:*)",
-      "Bash(npm run build:*)",
-      "mcp__personas-mcp__create_custom_persona",
-      "Bash(echo:*)",
-      "Bash(test:*)",
-      "Bash(git add:*)",
-      "Bash(npm run:*)"
+      "Bash(findstr:*)",
+      "Bash(npm run build:widgets:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

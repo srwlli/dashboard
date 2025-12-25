@@ -1,4 +1,5 @@
 
+var process = { env: { NODE_ENV: 'production' } };
 var require = (function() {
   const modules = {
     'react': window.React,

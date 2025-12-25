@@ -1,0 +1,968 @@
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PromptSelector.module.css */
+.PromptSelector_container {
+  padding: 24px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+.PromptSelector_title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+.PromptSelector_subtitle {
+  font-size: 14px;
+  color: #888888;
+  margin: 0 0 20px 0;
+}
+.PromptSelector_promptGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.PromptSelector_promptCard {
+  padding: 16px;
+  background: #242424;
+  border: 2px solid #333333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-family: inherit;
+}
+.PromptSelector_promptCard:hover {
+  border-color: #FF6B00;
+  background: #2a2a2a;
+  transform: translateY(-2px);
+}
+.PromptSelector_promptCard.PromptSelector_selected {
+  border-color: #FF6B00;
+  background: #2a2a2a;
+  box-shadow: 0 0 12px rgba(255, 107, 0, 0.3);
+}
+.PromptSelector_promptHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.PromptSelector_promptName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  flex: 1;
+}
+.PromptSelector_tokenBadge {
+  background: #FF6B00;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+.PromptSelector_promptDescription {
+  font-size: 13px;
+  color: #aaaaaa;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+.PromptSelector_promptMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #666666;
+}
+.PromptSelector_promptKey {
+  font-weight: 500;
+  color: #888888;
+}
+.PromptSelector_tokenCount {
+  color: #FF6B00;
+  font-weight: 500;
+}
+.PromptSelector_selectedInfo {
+  padding: 12px 16px;
+  background: rgba(255, 107, 0, 0.1);
+  border-left: 3px solid #FF6B00;
+  border-radius: 4px;
+}
+.PromptSelector_selectedText {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/AttachmentDropZone.module.css */
+.AttachmentDropZone_dropZone {
+  border: 2px dashed #333333;
+  border-radius: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #1a1a1a;
+}
+.AttachmentDropZone_dropZone:hover {
+  border-color: #FF6B00;
+  background: #242424;
+}
+.AttachmentDropZone_dropZone.AttachmentDropZone_drag {
+  border-color: #FF6B00;
+  background: rgba(255, 107, 0, 0.1);
+  box-shadow: inset 0 0 12px rgba(255, 107, 0, 0.2);
+}
+.AttachmentDropZone_dropZone.AttachmentDropZone_loading {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.05);
+  pointer-events: none;
+}
+.AttachmentDropZone_dropZone.AttachmentDropZone_success {
+  border-color: #4caf50;
+  background: rgba(76, 175, 80, 0.05);
+}
+.AttachmentDropZone_dropZone.AttachmentDropZone_error {
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.05);
+}
+.AttachmentDropZone_dropZone.AttachmentDropZone_disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.AttachmentDropZone_content {
+  display: block;
+  cursor: pointer;
+}
+.AttachmentDropZone_icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+.AttachmentDropZone_spinner {
+  display: inline-block;
+  animation: AttachmentDropZone_spin 1s linear infinite;
+}
+@keyframes AttachmentDropZone_spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.AttachmentDropZone_message {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+.AttachmentDropZone_hint {
+  font-size: 13px;
+  color: #888888;
+  margin: 0;
+}
+.AttachmentDropZone_error {
+  font-size: 13px;
+  color: #ff6b6b;
+  margin: 8px 0 0 0;
+}
+
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PasteTextModal.module.css */
+.PasteTextModal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.PasteTextModal_modal {
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+.PasteTextModal_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #333333;
+}
+.PasteTextModal_title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+.PasteTextModal_closeButton {
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+.PasteTextModal_closeButton:hover {
+  color: #ffffff;
+}
+.PasteTextModal_body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+.PasteTextModal_formGroup {
+  margin-bottom: 20px;
+}
+.PasteTextModal_label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+.PasteTextModal_input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.PasteTextModal_input:focus {
+  outline: none;
+  border-color: #FF6B00;
+  box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
+}
+.PasteTextModal_textarea {
+  width: 100%;
+  height: 200px;
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: monospace;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.PasteTextModal_textarea:focus {
+  outline: none;
+  border-color: #FF6B00;
+  box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
+}
+.PasteTextModal_textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.PasteTextModal_hint {
+  font-size: 12px;
+  color: #888888;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+.PasteTextModal_footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid #333333;
+}
+.PasteTextModal_cancelButton,
+.PasteTextModal_submitButton {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.PasteTextModal_cancelButton {
+  background: #333333;
+  color: #ffffff;
+}
+.PasteTextModal_cancelButton:hover {
+  background: #444444;
+}
+.PasteTextModal_submitButton {
+  background: #FF6B00;
+  color: #ffffff;
+}
+.PasteTextModal_submitButton:hover:not(:disabled) {
+  background: #ff8a33;
+  transform: translateY(-1px);
+}
+.PasteTextModal_submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/AttachmentManager.module.css */
+.AttachmentManager_container {
+  padding: 24px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+.AttachmentManager_title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+}
+.AttachmentManager_actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+.AttachmentManager_pasteButton,
+.AttachmentManager_clearButton {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.AttachmentManager_pasteButton {
+  background: #FF6B00;
+  color: #ffffff;
+}
+.AttachmentManager_pasteButton:hover {
+  background: #ff8a33;
+  transform: translateY(-1px);
+}
+.AttachmentManager_clearButton {
+  background: #333333;
+  color: #ffffff;
+}
+.AttachmentManager_clearButton:hover {
+  background: #444444;
+}
+.AttachmentManager_summary {
+  display: flex;
+  gap: 24px;
+  padding: 12px 16px;
+  background: #242424;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+.AttachmentManager_summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.AttachmentManager_summaryLabel {
+  font-size: 13px;
+  color: #888888;
+  font-weight: 500;
+}
+.AttachmentManager_summaryValue {
+  font-size: 14px;
+  color: #FF6B00;
+  font-weight: 600;
+}
+.AttachmentManager_attachmentList {
+  margin-top: 20px;
+}
+.AttachmentManager_listTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.AttachmentManager_attachmentItem {
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.AttachmentManager_attachmentItem:hover {
+  border-color: #FF6B00;
+}
+.AttachmentManager_attachmentHeader {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  gap: 12px;
+}
+.AttachmentManager_attachmentIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.AttachmentManager_attachmentInfo {
+  flex: 1;
+  min-width: 0;
+}
+.AttachmentManager_attachmentName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  word-break: break-word;
+}
+.AttachmentManager_attachmentMeta {
+  font-size: 12px;
+  color: #888888;
+  margin: 0;
+}
+.AttachmentManager_removeButton {
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.AttachmentManager_removeButton:hover {
+  background: #333333;
+  color: #ff6b6b;
+}
+.AttachmentManager_attachmentPreview {
+  padding: 12px;
+  background: #1a1a1a;
+  border-top: 1px solid #333333;
+  font-size: 12px;
+  color: #888888;
+  font-family: monospace;
+  max-height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.AttachmentManager_attachmentPreview p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/WorkflowMeta.module.css */
+.WorkflowMeta_container {
+  padding: 24px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+.WorkflowMeta_title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+}
+.WorkflowMeta_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.WorkflowMeta_card {
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  padding: 16px;
+}
+.WorkflowMeta_cardTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #FF6B00;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+.WorkflowMeta_promptInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.WorkflowMeta_promptLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+.WorkflowMeta_promptTokens {
+  font-size: 14px;
+  color: #FF6B00;
+  margin: 0;
+}
+.WorkflowMeta_empty {
+  font-size: 14px;
+  color: #888888;
+  margin: 0;
+  font-style: italic;
+}
+.WorkflowMeta_stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.WorkflowMeta_stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+.WorkflowMeta_statLabel {
+  color: #888888;
+}
+.WorkflowMeta_statValue {
+  color: #ffffff;
+  font-weight: 600;
+}
+.WorkflowMeta_tokenCount {
+  font-size: 32px;
+  font-weight: 700;
+  color: #FF6B00;
+  margin: 0;
+  word-break: break-word;
+}
+.WorkflowMeta_tokenCount.WorkflowMeta_warning {
+  color: #ff9d33;
+}
+.WorkflowMeta_tokenBreakdown {
+  font-size: 12px;
+  color: #888888;
+  margin: 8px 0 0 0;
+}
+.WorkflowMeta_sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.WorkflowMeta_languages,
+.WorkflowMeta_fileTypes {
+  margin-bottom: 20px;
+}
+.WorkflowMeta_languageBadges,
+.WorkflowMeta_fileTypeBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.WorkflowMeta_languageBadge,
+.WorkflowMeta_fileTypeBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #333333;
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.WorkflowMeta_languageBadge {
+  background: rgba(255, 107, 0, 0.15);
+  color: #FF6B00;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+}
+.WorkflowMeta_fileTypeBadge {
+  background: rgba(100, 200, 255, 0.15);
+  color: #64c8ff;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+}
+.WorkflowMeta_warningBox {
+  padding: 16px;
+  background: rgba(255, 153, 51, 0.1);
+  border-left: 4px solid #FF9933;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+.WorkflowMeta_warningText {
+  font-size: 14px;
+  color: #FF9933;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+.WorkflowMeta_warningHint {
+  font-size: 12px;
+  color: #FF9933;
+  margin: 0;
+  opacity: 0.8;
+}
+.WorkflowMeta_emptyState {
+  padding: 40px 20px;
+  text-align: center;
+}
+.WorkflowMeta_emptyText {
+  font-size: 14px;
+  color: #888888;
+  margin: 0;
+  font-style: italic;
+}
+
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/ExportMenu.module.css */
+.ExportMenu_container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ExportMenu_button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.ExportMenu_primary {
+  background: #FF6B00;
+  color: #ffffff;
+}
+.ExportMenu_primary:hover:not(:disabled) {
+  background: #ff8a33;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+.ExportMenu_primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ExportMenu_secondary {
+  background: #333333;
+  color: #ffffff;
+  position: relative;
+}
+.ExportMenu_secondary:hover:not(:disabled) {
+  background: #444444;
+}
+.ExportMenu_secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ExportMenu_menuWrapper {
+  position: relative;
+}
+.ExportMenu_menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  margin-top: 4px;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+.ExportMenu_menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  text-align: left;
+}
+.ExportMenu_menuItem:first-child {
+  border-radius: 5px 5px 0 0;
+}
+.ExportMenu_menuItem:last-child {
+  border-radius: 0 0 5px 5px;
+}
+.ExportMenu_menuItem:hover:not(:disabled) {
+  background: #333333;
+  padding-left: 20px;
+}
+.ExportMenu_menuItem:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ExportMenu_icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.ExportMenu_message {
+  font-size: 13px;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PasteFinalResultModal.module.css */
+.PasteFinalResultModal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.PasteFinalResultModal_modal {
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+.PasteFinalResultModal_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #333333;
+}
+.PasteFinalResultModal_title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+.PasteFinalResultModal_closeButton {
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+.PasteFinalResultModal_closeButton:hover {
+  color: #ffffff;
+}
+.PasteFinalResultModal_body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+.PasteFinalResultModal_description {
+  font-size: 14px;
+  color: #aaaaaa;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+.PasteFinalResultModal_formGroup {
+  margin-bottom: 20px;
+}
+.PasteFinalResultModal_label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+.PasteFinalResultModal_textarea {
+  width: 100%;
+  height: 300px;
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: monospace;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.PasteFinalResultModal_textarea:focus {
+  outline: none;
+  border-color: #FF6B00;
+  box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
+}
+.PasteFinalResultModal_textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.PasteFinalResultModal_hint {
+  font-size: 12px;
+  color: #888888;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+.PasteFinalResultModal_footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid #333333;
+}
+.PasteFinalResultModal_cancelButton,
+.PasteFinalResultModal_saveButton {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.PasteFinalResultModal_cancelButton {
+  background: #333333;
+  color: #ffffff;
+}
+.PasteFinalResultModal_cancelButton:hover {
+  background: #444444;
+}
+.PasteFinalResultModal_saveButton {
+  background: #FF6B00;
+  color: #ffffff;
+}
+.PasteFinalResultModal_saveButton:hover:not(:disabled) {
+  background: #ff8a33;
+  transform: translateY(-1px);
+}
+.PasteFinalResultModal_saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PromptingWorkflow.module.css */
+.PromptingWorkflow_container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif;
+}
+.PromptingWorkflow_header {
+  margin-bottom: 32px;
+}
+.PromptingWorkflow_title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+.PromptingWorkflow_subtitle {
+  font-size: 16px;
+  color: #888888;
+  margin: 0;
+  line-height: 1.5;
+}
+.PromptingWorkflow_content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.PromptingWorkflow_exportSection {
+  padding: 24px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333333;
+}
+.PromptingWorkflow_sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+.PromptingWorkflow_warningText {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 153, 51, 0.1);
+  border-left: 3px solid #FF9933;
+  color: #FF9933;
+  font-size: 14px;
+  border-radius: 4px;
+}
+.PromptingWorkflow_pasteResultButton {
+  margin-top: 16px;
+  padding: 12px 20px;
+  background: #333333;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.PromptingWorkflow_pasteResultButton:hover {
+  background: #444444;
+  transform: translateY(-1px);
+}
+@media (max-width: 768px) {
+  .PromptingWorkflow_container {
+    padding: 16px;
+  }
+  .PromptingWorkflow_title {
+    font-size: 24px;
+  }
+  .PromptingWorkflow_subtitle {
+    font-size: 14px;
+  }
+}
+/*# sourceMappingURL=prompting-workflow.css.map */
