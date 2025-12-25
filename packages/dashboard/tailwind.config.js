@@ -16,8 +16,8 @@ module.exports = {
         'ind-bg': '#0c0c0e',
         'ind-panel': '#141416',
         'ind-border': '#3f3f46',
-        'ind-accent': '#ff6b00', // Industrial Orange
-        'ind-accent-hover': '#e65100',
+        'ind-accent': 'var(--color-ind-accent)', // Uses CSS variable for dynamic theming
+        'ind-accent-hover': 'var(--color-ind-accent-hover)',
         'ind-text': '#f4f4f5',
         'ind-text-muted': '#71717a',
       },
