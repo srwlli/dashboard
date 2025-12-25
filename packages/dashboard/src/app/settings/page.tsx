@@ -1,18 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { SettingsPanel } from '@/components/SettingsPanel';
+import { ThemePanel } from '@/components/ThemePanel';
 
 // Skip static generation for this page since it uses client context
 export const dynamic = 'force-dynamic';
 
 /**
  * Settings Page
- * Full-page settings interface with theme toggle and future configuration options
+ * Settings interface for theme and display options
  */
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen p-4">
+    <div className="p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header with back link */}
         <header className="mb-8 flex items-center justify-between">
@@ -21,7 +21,7 @@ export default function SettingsPage() {
               Code<span className="text-ind-accent">Ref</span> Settings
             </h1>
             <p className="text-ind-text-muted text-sm font-mono">
-              Manage your dashboard configuration
+              Manage display and theme preferences
             </p>
           </div>
           <Link
@@ -33,7 +33,9 @@ export default function SettingsPage() {
         </header>
 
         {/* Settings Content */}
-        <SettingsPanel />
+        <div className="grid gap-6">
+          <ThemePanel />
+        </div>
       </div>
     </div>
   );
