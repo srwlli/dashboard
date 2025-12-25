@@ -10,12 +10,12 @@ interface ColorVariant {
 }
 
 export const ACCENT_COLORS: Record<AccentColor, ColorVariant> = {
-  red: { base: '#ef4444', hover: '#dc2626' },
-  orange: { base: '#ff6b00', hover: '#e65100' },
-  yellow: { base: '#eab308', hover: '#ca8a04' },
-  green: { base: '#22c55e', hover: '#16a34a' },
-  purple: { base: '#a855f7', hover: '#9333ea' },
-  blue: { base: '#3b82f6', hover: '#2563eb' },
+  red: { base: '#FF1744', hover: '#FF0040' },
+  orange: { base: '#FF6600', hover: '#FF5500' },
+  yellow: { base: '#FFFF00', hover: '#FFEE00' },
+  green: { base: '#00FF41', hover: '#00EE38' },
+  purple: { base: '#BB00FF', hover: '#AA00FF' },
+  blue: { base: '#00D4FF', hover: '#00BBFF' },
 };
 
 interface AccentColorContextType {
