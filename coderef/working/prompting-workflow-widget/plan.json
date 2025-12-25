@@ -1,0 +1,544 @@
+{
+  "META_DOCUMENTATION": {
+    "plan_id": "WO-PROMPTING-WORKFLOW-001",
+    "plan_name": "Prompting Workflow Widget - Implementation Plan",
+    "feature_name": "prompting-workflow-widget",
+    "status": "ready_for_approval",
+    "created": "2025-12-24",
+    "total_phases": 7,
+    "total_tasks": 45,
+    "estimated_total_effort": 14,
+    "target_completion_criteria": "All success criteria met, comprehensive testing passed, bundle deployed"
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs_inventory": {
+        "ARCHITECTURE_md": {
+          "exists": true,
+          "location": "coderef/foundation-docs/ARCHITECTURE.md",
+          "key_patterns": [
+            "Widget system via IIFE bundles in /public/widgets/",
+            "Global namespace management for widget isolation",
+            "Dynamic script injection with promise-based loading",
+            "Core library pattern (core.js) shared across widgets"
+          ]
+        },
+        "COMPONENTS_md": {
+          "exists": true,
+          "location": "coderef/foundation-docs/COMPONENTS.md",
+          "key_patterns": [
+            "React functional components with hooks",
+            "PropTypes for type checking",
+            "CSS Modules for styling",
+            "Industrial dark theme with orange (#FF6B00) accents"
+          ]
+        },
+        "API_md": {
+          "exists": true,
+          "location": "PROMPTING-WORKFLOW-BRIEFING.md",
+          "key_patterns": [
+            "window.CodeRefCore.api for backend calls",
+            "window.CodeRefCore.utils.clipboard for clipboard access",
+            "window.CodeRefCore.utils.fileHandlers for file dialogs",
+            "window.CodeRefCore.hooks.useSession for state management",
+            "17 core APIs available, token limit 100K"
+          ]
+        }
+      },
+      "coding_standards_inventory": {
+        "language": "TypeScript/JavaScript",
+        "framework": "React with Next.js",
+        "file_structure": "Componentized with types/, utils/, hooks/ directories",
+        "naming_conventions": "PascalCase components, camelCase functions/variables",
+        "testing": "Jest with React Testing Library (no tests for widget yet)",
+        "styling": "CSS Modules with dark theme tokens"
+      },
+      "similar_components": [
+        "Dashboard widget system (existing widget loader pattern)",
+        "Core library (shared utilities pattern - 13KB base)",
+        "File handling in Electron (via CodeRefCore.utils.fileHandlers)"
+      ],
+      "gaps_identified": [
+        "No existing file content extraction utilities - will need to build",
+        "No existing prompt management system - creating new",
+        "No existing session persistence layer for widgets - creating new"
+      ]
+    },
+    "1_executive_summary": {
+      "what_is_being_built": "A sophisticated prompting workflow widget that enables users to select from 3 preloaded LLM prompts (Code Review, Synthesize, Consolidate), attach code/text files via drag & drop or paste, view metadata, and export the complete workflow as structured JSON to clipboard or formatted .md file for LLM consumption. Includes final result paste-back capability for workflow completion tracking.",
+      "real_world_analogy": "Like a project briefing document builder - users gather source materials, select an analysis template, package everything together, and send to an expert consultant for analysis.",
+      "primary_user_outcome": "Users can efficiently prepare comprehensive code review requests with actual file content, token estimates, and proper formatting for multi-step LLM analysis workflows (single review → synthesized review → master consolidation).",
+      "output_deliverables": [
+        "PromptingWorkflow.tsx - Main widget container component",
+        "3 modified prompts with agent identification metadata headers",
+        "7 supporting components (PromptSelector, AttachmentManager, DropZone, etc.)",
+        "5 utility modules (fileContentExtractor, exportFormatter, tokenEstimator, etc.)",
+        "Session management system with JSON persistence",
+        "Widget bundle (prompting-workflow.js) for integration"
+      ],
+      "success_definition": "Widget loads in dashboard, users can select prompt → attach files → view metadata → copy JSON to clipboard or export as .md → paste LLM result back. All features tested and functional in both web and Electron modes."
+    },
+    "2_risk_assessment": {
+      "high_risks": [
+        {
+          "risk": "File content extraction complexity for various file types",
+          "severity": "HIGH",
+          "probability": "MEDIUM",
+          "mitigation": "Start with text-only files (.ts, .tsx, .js, .json, .md, .txt). Handle binary files gracefully with filename-only fallback. Test with 5 common file types."
+        },
+        {
+          "risk": "Token estimation accuracy affects user expectations",
+          "severity": "HIGH",
+          "probability": "HIGH",
+          "mitigation": "Use conservative estimate: char_count / 4 ≈ tokens. Display as 'estimated' with ±15% accuracy note. Test against actual token counts from Claude API."
+        },
+        {
+          "risk": "Clipboard operations may fail in Electron or restricted browsers",
+          "severity": "HIGH",
+          "probability": "MEDIUM",
+          "mitigation": "Use CodeRefCore.utils.clipboard with proper error handling. Fall back to copy-to-textarea pattern if needed. Test in both web and Electron."
+        },
+        {
+          "risk": "Agent identification headers must appear in LLM responses consistently",
+          "severity": "HIGH",
+          "probability": "LOW",
+          "mitigation": "Prompt wording explicitly requires agent identification in metadata header. Test with 3 different LLMs (Claude, GPT, Gemini) to verify compliance."
+        }
+      ],
+      "medium_risks": [
+        {
+          "risk": "Large file handling (100MB+ files) will cause performance issues if not managed",
+          "severity": "MEDIUM",
+          "probability": "LOW",
+          "mitigation": "Implement file size warning at 10MB. Warn user and suggest splitting at 50MB. Token count warning at 100K tokens. Prevent files > 100MB from being uploaded."
+        },
+        {
+          "risk": "Multiple paste operations with filename conflicts (clipboard_001.txt already exists)",
+          "severity": "MEDIUM",
+          "probability": "MEDIUM",
+          "mitigation": "Auto-increment logic: check existing filenames, find highest number, increment by 1. Test with 10+ pastes."
+        },
+        {
+          "risk": "Browser storage quota exceeded when saving sessions (if using localStorage)",
+          "severity": "MEDIUM",
+          "probability": "LOW",
+          "mitigation": "Use CodeRefCore.api.storage instead of localStorage. Let framework handle quota management. Display 'storage full' error if needed."
+        }
+      ],
+      "breaking_changes": "None - widget is new, no existing functionality changed",
+      "dependencies": {
+        "existing": [
+          "React 18.x (already in dashboard)",
+          "Next.js 14.x (already configured)",
+          "CodeRefCore library (already loaded)"
+        ],
+        "new_external": "None - using existing project dependencies",
+        "new_internal": [
+          "File content extraction utilities",
+          "Export formatting utilities",
+          "Token estimation utilities",
+          "Session management system"
+        ]
+      }
+    },
+    "3_current_state_analysis": {
+      "existing_widget_infrastructure": {
+        "location": "packages/dashboard/public/widgets/",
+        "pattern": "IIFE bundles with global namespace management",
+        "core_library": "packages/dashboard/public/core.js (13KB shared across all widgets)",
+        "loading": "Dynamic script injection with Promise resolution"
+      },
+      "new_files_to_create": [
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PromptingWorkflow.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PromptSelector.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/AttachmentManager.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/AttachmentDropZone.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PasteTextModal.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/WorkflowMeta.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/PasteFinalResultModal.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/components/ExportMenu.tsx",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/utils/fileContentExtractor.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/utils/exportFormatter.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/utils/tokenEstimator.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/utils/filenameGenerator.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/types/index.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/hooks/useWorkflow.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/hooks/useClipboard.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/hooks/useFileHandlers.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/src/index.ts",
+        "packages/widgets/@coderef-dashboard/widget-prompting-workflow/package.json"
+      ],
+      "existing_files_to_reference": [
+        "coderef/foundation-docs/ARCHITECTURE.md - Widget system patterns",
+        "PROMPTING-WORKFLOW-BRIEFING.md - API documentation and preloaded prompts",
+        "packages/dashboard/public/core.js - Shared utilities",
+        "clipboard_compannion config.json - Prompt definitions with agent ID modifications"
+      ],
+      "no_modifications_to_existing": "True - this is a new widget, no existing code modified"
+    },
+    "4_key_features": {
+      "feature_1": "Prompt Selection - User browses and selects from 3 preloaded prompts (Code Review 0001, Synthesize 0002, Consolidate 0003) with descriptions and token estimates. All prompts modified to include agent identification metadata header.",
+      "feature_2": "File Attachment via Drag & Drop - User drags files into drop zone, widget extracts actual file content (not just filename), preserves original filename (UserAuth.tsx, requirements.txt), detects language from extension.",
+      "feature_3": "Text Paste Attachment - User pastes raw text (code snippets, notes, etc.), widget auto-generates filename (clipboard_001.txt, clipboard_002.txt, etc.) with auto-incrementing logic for multiple pastes.",
+      "feature_4": "Metadata Preview - User views comprehensive metadata before export: selected prompt name, token count (prompt + attachments), file count, attachment types, language breakdown, total size in bytes, warning if > 100K tokens.",
+      "feature_5": "Copy All to Clipboard (JSON) - User clicks 'COPY_ALL_TO_CLIPBOARD', widget exports structured JSON containing prompt, all attachments with full content embedded, and metadata. JSON copied to clipboard ready to paste into LLM.",
+      "feature_6": "Export with Format Selection - User clicks 'EXPORT' submenu with 2 options: (1) Export as .json - saves structured JSON to user-selected directory, (2) Export as .md - converts to human-readable markdown with code blocks, saves to user-selected directory.",
+      "feature_7": "Paste Final Result - User runs prompt in LLM (Claude/GPT/Gemini), copies response, clicks 'PASTE FINAL RESULT', widget detects clipboard content, displays token count of result, shows complete workflow summary with original prompt + attachments + LLM result.",
+      "feature_8": "Save Workflow with Final Result - After pasting LLM result, user clicks 'SAVE_WORKFLOW', widget opens file dialog to browse to save directory, saves JSON file containing original workflow (prompt + attachments + metadata) plus final LLM result for future reference.",
+      "edge_case_1": "Empty attachments - User tries to export with no files attached. Widget shows warning and disables export until attachments added.",
+      "edge_case_2": "Large files - User drags 100MB file. Widget warns at file selection, suggests not to exceed 50MB for token budget.",
+      "edge_case_3": "Binary files - User drags PDF or image. Widget extracts filename but notes 'Binary file - content cannot be embedded' in export, includes filename only.",
+      "edge_case_4": "Multiple text pastes - User pastes clipboard content multiple times. Widget auto-increments filenames (clipboard_001.txt → clipboard_002.txt → clipboard_003.txt) to prevent conflicts."
+    },
+    "5_task_id_system": {
+      "workorder": {
+        "id": "WO-PROMPTING-WORKFLOW-001",
+        "name": "Prompting Workflow Widget",
+        "feature_dir": "coderef/working/prompting-workflow-widget",
+        "created_at": "2025-12-24",
+        "status": "planning"
+      },
+      "task_prefixes": {
+        "SETUP": "Package and project structure setup",
+        "TYPES": "TypeScript type definitions",
+        "COMP": "React component implementation",
+        "UTIL": "Utility function implementation",
+        "HOOK": "React hook implementation",
+        "PROM": "Prompt configuration with agent headers",
+        "INT": "Integration with CodeRefCore",
+        "TEST": "Testing and validation",
+        "BUILD": "Build and bundle"
+      }
+    },
+    "6_implementation_phases": {
+      "phase_1": {
+        "name": "Foundation & Setup",
+        "description": "Create project structure, package.json, type definitions, and utility functions for file handling and token estimation",
+        "complexity": "low",
+        "effort_level": 2,
+        "tasks": [
+          "SETUP-001: Create widget package directory structure at packages/widgets/@coderef-dashboard/widget-prompting-workflow/",
+          "SETUP-002: Create package.json with dependencies (React, TypeScript, CSS Modules)",
+          "SETUP-003: Create tsconfig.json for TypeScript compilation",
+          "TYPES-001: Define Attachment interface with fields: id, filename, type, extension, mimeType, size, content, preview, language, isText, isBinary, createdAt",
+          "TYPES-002: Define PreloadedPrompt interface with fields: key, name, label, text (WITH agent identification header), estimatedTokens, description",
+          "TYPES-003: Define Workflow interface with fields: id, selectedPrompt, attachments, finalResult, createdAt, updatedAt",
+          "UTIL-001: Implement fileContentExtractor.ts - async readFileContent(file) function to extract text from files, detect language from extension",
+          "UTIL-002: Implement languageMap object (.ts→typescript, .tsx→typescript, .py→python, .js→javascript, .json→json, .md→markdown, .txt→text, .go→go, .java→java, .cpp→cpp, .c→c, .rs→rust, .rb→ruby)",
+          "UTIL-003: Implement tokenEstimator.ts - estimateTokens(content: string) function using formula: Math.ceil(content.length / 4)",
+          "UTIL-004: Implement filenameGenerator.ts - generateClipboardFilename(existingFiles: string[]) to return clipboard_001.txt, clipboard_002.txt, etc."
+        ],
+        "completion_criteria": "All type definitions exported, all utility functions unit tested, language map covers 12+ file types"
+      },
+      "phase_2": {
+        "name": "Prompt Configuration with Agent Identification",
+        "description": "Create 3 modified prompts with agent identification metadata headers, validate format",
+        "complexity": "low",
+        "effort_level": 1,
+        "tasks": [
+          "PROM-001: Create prompts.ts file with 3 PreloadedPrompt objects",
+          "PROM-002: Add CODE_REVIEW prompt (0001) with agent identification header: '---\\n**Agent:** [Your model name and version]\\n**Date:** [Current date]\\n**Task:** CODE_REVIEW\\n---'",
+          "PROM-003: Add SYNTHESIZE prompt (0002) with agent identification header: '---\\n**Agent:** [Your model name and version]\\n**Date:** [Current date]\\n**Task:** SYNTHESIZE\\n---'",
+          "PROM-004: Add CONSOLIDATE prompt (0003) with agent identification header: '---\\n**Agent:** [Your model name and version]\\n**Date:** [Current date]\\n**Task:** CONSOLIDATE\\n---'",
+          "PROM-005: Add estimatedTokens for each prompt (950, 1300, 1300 respectively)"
+        ],
+        "completion_criteria": "All 3 prompts include agent identification headers, tokens estimates set, prompts exported and ready for use"
+      },
+      "phase_3": {
+        "name": "React Hooks & State Management",
+        "description": "Create custom hooks for workflow state, clipboard access, and file handling",
+        "complexity": "medium",
+        "effort_level": 2,
+        "tasks": [
+          "HOOK-001: Implement useWorkflow.ts - hook managing workflow state: selectedPrompt, attachments, finalResult, handlers for updating each",
+          "HOOK-002: Implement useClipboard.ts - hook wrapping window.CodeRefCore.utils.clipboard.write() and .read() with error handling and status",
+          "HOOK-003: Implement useFileHandlers.ts - hook wrapping window.CodeRefCore.utils.fileHandlers.selectFiles() and .selectDirectory() with error handling"
+        ],
+        "completion_criteria": "All hooks implement error handling, useState patterns correct, side effects managed with useEffect"
+      },
+      "phase_4": {
+        "name": "Core Components - UI Layer",
+        "description": "Build React components for workflow UI: prompt selection, attachment management, metadata display, export menu",
+        "complexity": "medium",
+        "effort_level": 3,
+        "tasks": [
+          "COMP-001: Implement PromptSelector.tsx - component displaying 3 prompts with descriptions, token estimates, click handler to select prompt",
+          "COMP-002: Implement AttachmentDropZone.tsx - drag & drop zone, file selection, calls fileContentExtractor on drop, displays visual feedback (loading, success, error states)",
+          "COMP-003: Implement PasteTextModal.tsx - modal with textarea for pasting, auto-clipboard detection on open, submit handler calls filenameGenerator for auto-increment",
+          "COMP-004: Implement AttachmentManager.tsx - coordinator component displaying list of attachments, file metadata (filename, size, type), remove buttons, integration with DropZone and PasteTextModal",
+          "COMP-005: Implement WorkflowMeta.tsx - metadata summary displaying selected prompt, attachment count/types, total tokens (prompt + files), file sizes, language breakdown, warning if > 100K tokens",
+          "COMP-006: Implement ExportMenu.tsx - dropdown menu with 2 options: (1) Copy All to Clipboard (JSON), (2) Export submenu with .json and .md options",
+          "COMP-007: Implement PasteFinalResultModal.tsx - modal with textarea for pasting LLM result, auto-clipboard detection, token count display, 'Save Workflow' button",
+          "COMP-008: Implement PromptingWorkflow.tsx - main container, manages workflow state, coordinates all components, state transitions (PROMPT_SELECT → ATTACHMENT_MGMT → WORKFLOW_META → optional: PASTE_FINAL_RESULT)"
+        ],
+        "completion_criteria": "All components render correctly, CSS Modules styling applied (dark theme, orange accents), no console errors, industrial aesthetic matches existing dashboard"
+      },
+      "phase_5": {
+        "name": "Export & File Operations",
+        "description": "Implement JSON/Markdown export formatting, clipboard operations, file save dialogs",
+        "complexity": "high",
+        "effort_level": 3,
+        "tasks": [
+          "UTIL-005: Implement exportFormatter.ts - generateJSON(workflow) function returning structured JSON: {session_id, generated_at, prompt, attachments[], metadata}",
+          "UTIL-006: Implement exportFormatter.ts - generateMarkdown(workflow) function returning human-readable markdown with prompt text and code blocks for each file",
+          "INT-001: Implement COPY_ALL_TO_CLIPBOARD action - calls exportFormatter.generateJSON(), writes to clipboard via useClipboard hook, shows success toast",
+          "INT-002: Implement EXPORT .json action - calls exportFormatter.generateJSON(), opens file dialog via useFileHandlers hook, saves to user-selected directory",
+          "INT-003: Implement EXPORT .md action - calls exportFormatter.generateMarkdown(), opens file dialog via useFileHandlers hook, saves to user-selected directory",
+          "INT-004: Implement SAVE_WORKFLOW action - calls exportFormatter.generateJSON() including finalResult field, opens file dialog via useFileHandlers hook, saves complete workflow JSON"
+        ],
+        "completion_criteria": "JSON export valid and parseable, Markdown export properly formatted, all file operations tested, error handling for permission errors"
+      },
+      "phase_6": {
+        "name": "Testing & Validation",
+        "description": "Unit tests for utilities, component rendering tests, integration tests for file operations, validation across browsers/Electron",
+        "complexity": "medium",
+        "effort_level": 2,
+        "tasks": [
+          "TEST-001: Write unit tests for tokenEstimator - test empty string, small text, large text (10MB+), verify formula accuracy",
+          "TEST-002: Write unit tests for filenameGenerator - test single paste (clipboard_001.txt), multiple pastes (auto-increment to 002, 003), collision handling",
+          "TEST-003: Write unit tests for fileContentExtractor - test .txt, .ts, .tsx, .json, .md files, verify language detection correct",
+          "TEST-004: Write component tests for AttachmentDropZone - test drag & drop, file selection, visual feedback states, error on binary file",
+          "TEST-005: Write component tests for PromptSelector - test rendering all 3 prompts, click selection, selected state styling",
+          "TEST-006: Write component tests for WorkflowMeta - test token calculation (prompt + attachments), warning display at 100K tokens, language breakdown",
+          "TEST-007: Write integration test - full workflow: select prompt → add file via drop → add text via paste → view metadata → copy JSON → verify clipboard content",
+          "TEST-008: Test in web mode (npm run dev) - verify all features work in browser, file dialogs work (Electron mode), clipboard operations work",
+          "TEST-009: Test in Electron (npm run dev:electron) - verify file dialogs use native system dialogs, clipboard access works, file paths correct",
+          "TEST-010: Test edge cases - empty attachments (show warning), large file (100MB warning), binary file (filename only), filename conflicts (auto-increment works)"
+        ],
+        "completion_criteria": "Jest test coverage >= 80%, all edge cases pass, web and Electron modes tested and working"
+      },
+      "phase_7": {
+        "name": "Build & Integration",
+        "description": "Build IIFE widget bundle, verify output size, integrate into dashboard, final validation",
+        "complexity": "low",
+        "effort_level": 1,
+        "tasks": [
+          "BUILD-001: Create build script in package.json to transpile TypeScript → JavaScript using tsconfig",
+          "BUILD-002: Configure webpack/rollup to generate IIFE bundle: packages/dashboard/public/widgets/prompting-workflow.js (~85KB with core)",
+          "BUILD-003: Run npm run build:widgets and verify output file created",
+          "BUILD-004: Verify bundle size is reasonable (~85KB including dependencies)",
+          "BUILD-005: Add widget to dashboard widget loader, verify script loads without errors",
+          "BUILD-006: Test widget loads in dashboard by opening http://localhost:3000/dashboard and verifying widget appears",
+          "BUILD-007: Final smoke test - all features working end-to-end in dashboard context"
+        ],
+        "completion_criteria": "Bundle created, size acceptable, widget loads in dashboard, no console errors"
+      }
+    },
+    "7_testing_strategy": {
+      "unit_tests": {
+        "scope": "Pure functions: tokenEstimator, filenameGenerator, exportFormatter, fileContentExtractor, languageMap",
+        "coverage_target": "100% coverage",
+        "tests": [
+          "tokenEstimator: empty string → 0 tokens, '1234' (4 chars) → 1 token, 10MB file → estimate in millions",
+          "filenameGenerator: empty list → clipboard_001.txt, list with [clipboard_001.txt] → clipboard_002.txt, list with [clipboard_001.txt, clipboard_003.txt] → clipboard_002.txt (fills gaps)",
+          "fileContentExtractor: .ts file → typescript language detected, .py file → python language detected, .jpg file → isBinary=true, content=null",
+          "exportFormatter.generateJSON: valid JSON schema, all fields present, attachments include content, metadata calculates correctly",
+          "exportFormatter.generateMarkdown: proper markdown headers, code blocks have language tags, file content embedded, token count in metadata"
+        ]
+      },
+      "component_tests": {
+        "scope": "React component rendering, event handlers, state updates",
+        "coverage_target": "80% coverage",
+        "tests": [
+          "PromptSelector: renders 3 prompts, click handler calls setSelectedPrompt, selected prompt highlighted",
+          "AttachmentDropZone: drag & drop triggers file handler, loading state shows, success shows filename + size, error shows message",
+          "WorkflowMeta: calculates and displays token count (formula verified), shows warning if > 100K, language breakdown correct",
+          "PasteTextModal: textarea accepts input, auto-clipboard detection on mount, submit calls callback with filename",
+          "ExportMenu: dropdown opens/closes, .json export calls fileDialog, .md export calls fileDialog"
+        ]
+      },
+      "integration_tests": {
+        "scope": "Full workflow end-to-end",
+        "tests": [
+          "Full workflow: select CODE_REVIEW prompt → drag UserAuth.tsx (4KB) → paste 'import auth' text → view metadata (shows 2 files, ~1K tokens) → copy JSON to clipboard → verify JSON parseable and includes file content",
+          "Export .json: select SYNTHESIZE → add attachment → click export .json → file dialog opens → save to temp location → verify file contains valid JSON with embeddings",
+          "Export .md: select CONSOLIDATE → add 2 attachments → click export .md → file dialog → save → verify markdown properly formatted with code blocks",
+          "Paste final result: complete workflow → click 'PASTE FINAL RESULT' → paste LLM response → see token count → click 'SAVE_WORKFLOW' → verify session file saved",
+          "Edge case - no attachments: skip attachment step → try to copy → should show warning 'Add files before exporting'",
+          "Edge case - large file: drag 100MB file → should warn 'File > 50MB may exceed token budget'",
+          "Edge case - filename collision: paste text twice → first gets clipboard_001.txt, second gets clipboard_002.txt (not duplicate)"
+        ]
+      },
+      "edge_case_scenarios": {
+        "1_empty_workflow": {
+          "scenario": "User selects prompt but no attachments",
+          "expected_behavior": "Export buttons disabled, tooltip says 'Add files to export'",
+          "test_method": "Try clicking COPY_ALL before adding files, verify disabled state"
+        },
+        "2_binary_file_handling": {
+          "scenario": "User drags PDF or JPG file",
+          "expected_behavior": "File appears in list with filename, 'Binary - content not embedded' label, export includes filename only (no content)",
+          "test_method": "Drag .pdf and .jpg files, verify content field is null, export doesn't crash"
+        },
+        "3_large_file_token_budget": {
+          "scenario": "User attaches 50MB code file",
+          "expected_behavior": "Token count estimated at ~13M tokens, warning shows 'Exceeds 100K budget'",
+          "test_method": "Create 50MB test file, verify token estimate, verify warning message"
+        },
+        "4_paste_text_filename_collision": {
+          "scenario": "User pastes text 3 times without editing attachments",
+          "expected_behavior": "Filenames: clipboard_001.txt, clipboard_002.txt, clipboard_003.txt (no conflicts)",
+          "test_method": "Paste 3 times, verify each has unique auto-incremented filename"
+        },
+        "5_clipboard_operation_failure": {
+          "scenario": "Clipboard API fails or user denies permission",
+          "expected_behavior": "Error toast shown, fallback to copy-to-textarea modal",
+          "test_method": "Mock clipboard.write() to throw error, verify error handling"
+        },
+        "6_file_dialog_cancel": {
+          "scenario": "User opens export dialog but clicks Cancel",
+          "expected_behavior": "No file saved, modal closes, workflow remains intact",
+          "test_method": "Mock fileDialog to return null, verify no state changes"
+        },
+        "7_unsupported_file_type": {
+          "scenario": "User drags .exe or .bin file",
+          "expected_behavior": "File shows in list, isBinary=true, no content extracted, export notes 'Binary format'",
+          "test_method": "Drag binary file, verify behavior matches spec"
+        },
+        "8_simultaneous_paste_and_drop": {
+          "scenario": "User drags file while modal is open for pasting",
+          "expected_behavior": "Drop zone ignores drop while modal open, modal has priority",
+          "test_method": "Open paste modal, try to drag file, verify drop doesn't register"
+        }
+      },
+      "manual_testing_checklist": [
+        "[ ] Web mode: npm run dev → navigate to dashboard → widget loads without errors",
+        "[ ] Electron mode: npm run dev:electron → file dialogs use native system dialogs",
+        "[ ] Drag & drop: drag .ts, .tsx, .py, .json files → all extract content correctly",
+        "[ ] Paste text: paste code snippet twice → generates clipboard_001.txt and clipboard_002.txt",
+        "[ ] Metadata: view summary with 3 files → token count is reasonable, languages detected",
+        "[ ] Copy JSON: click COPY_ALL → paste into text editor → verify valid JSON",
+        "[ ] Export .json: click Export .json → choose directory → verify file saved and readable",
+        "[ ] Export .md: click Export .md → choose directory → verify markdown formatted correctly",
+        "[ ] Paste result: run CODE_REVIEW prompt in Claude → copy response → paste into widget → save workflow",
+        "[ ] Load session: browse to saved session file → verify workflow restored correctly",
+        "[ ] Error handling: try operations without attachments, with too-large files → see appropriate warnings"
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": {
+        "prompt_selection": "User can see all 3 prompts (CODE_REVIEW, SYNTHESIZE, CONSOLIDATE) with descriptions and estimated tokens. Clicking a prompt selects it. Selected state is visually distinct.",
+        "attachment_file_upload": "User can drag files or click to browse. At least 5 file types extract content correctly (.ts, .tsx, .py, .json, .md). Original filename preserved (UserAuth.tsx, not 'attachment.txt'). Binary files handled gracefully.",
+        "attachment_paste_text": "User can paste raw text 3+ times. Each paste gets unique auto-incremented filename (clipboard_001.txt, clipboard_002.txt, clipboard_003.txt). No filename collisions.",
+        "metadata_preview": "Metadata view shows: selected prompt name, attachment count, total tokens (prompt + files), file size breakdown, language breakdown. Warning appears if total > 100K tokens.",
+        "copy_all_json": "Click 'COPY_ALL_TO_CLIPBOARD' copies structured JSON to clipboard. JSON includes: prompt object, all attachments with full content, metadata. JSON is valid and parseable.",
+        "export_json": "Click 'Export .json' opens file dialog. User selects directory. JSON file saved with auto-generated filename (workflow_CODE_REVIEW_YYYYMMDD_HHMMSS.json). File contains same JSON as copy operation.",
+        "export_markdown": "Click 'Export .md' opens file dialog. User selects directory. Markdown file saved with code blocks for each file, language tags included, prompt text visible. Markdown is readable.",
+        "paste_final_result": "User can paste LLM response into modal. Token count of response displayed. 'Save Workflow' button visible.",
+        "save_workflow": "After pasting LLM result, click 'Save Workflow' opens file dialog. User browses to save directory. Complete workflow JSON saved (prompt + attachments + final result + metadata). File loadable later."
+      },
+      "quality_requirements": {
+        "token_estimation": "Token count formula: length / 4. Tested against actual token counts. Accuracy within ±15% for text files. Tested with files 1KB to 50MB.",
+        "language_detection": "Correctly maps extensions to languages: .ts/.tsx → typescript, .py → python, .js → javascript, .json → json, .md → markdown, .txt → text. Supports 12+ file types.",
+        "file_content_extraction": "Text files (.ts, .tsx, .py, .js, .json, .md, .txt, etc.) have content field populated with actual file content. Binary files (.pdf, .jpg, .png, .exe) have content = null, filename preserved.",
+        "error_handling": "All async operations have try-catch. File read errors show user-friendly message. Clipboard failures trigger fallback pattern. File dialog cancellations don't crash widget.",
+        "ui_consistency": "All components use CSS Modules with dark theme tokens. Orange (#FF6B00) accents for interactive elements. Industrial aesthetic matches dashboard. No style conflicts.",
+        "code_quality": "TypeScript strict mode enabled. No 'any' types. Proper error types. PropTypes validated. No console warnings/errors in dev mode."
+      },
+      "performance_requirements": {
+        "file_read_latency": "Text files < 10MB should read in < 500ms. Display progress indicator for files 10-50MB.",
+        "json_export_time": "Generating JSON export < 100ms for 10 attachments.",
+        "bundle_size": "Final widget bundle < 100KB including all dependencies.",
+        "ui_responsiveness": "All clicks/inputs respond within 100ms (no freezing during operations)."
+      },
+      "security_requirements": {
+        "file_content_handling": "Files read from user's device only (no network transfer during read). Content stored in memory only during session. No persistent cache without user permission.",
+        "clipboard_operations": "Only read/write clipboard when user explicitly clicks COPY_ALL or PASTE buttons. No unsolicited clipboard access.",
+        "json_validation": "Exported JSON validated before clipboard write. No injection vulnerabilities in markdown export.",
+        "file_paths": "Use CodeRefCore.utils.fileHandlers for all file dialogs (browser sandbox-safe). No direct file:// URLs in export."
+      },
+      "acceptance_checklist": [
+        "[ ] All 3 prompts display with agent identification headers visible in export",
+        "[ ] File drag & drop extracts content from 5+ file types",
+        "[ ] Paste text creates auto-incremented filenames (clipboard_001, clipboard_002, etc.)",
+        "[ ] Token estimation formula verified (text length / 4)",
+        "[ ] JSON export contains all file contents, valid JSON structure",
+        "[ ] Markdown export readable with proper code block formatting",
+        "[ ] Paste final result and save workflow feature works end-to-end",
+        "[ ] No console errors in web mode (npm run dev)",
+        "[ ] No console errors in Electron mode (npm run dev:electron)",
+        "[ ] Widget loads successfully in dashboard",
+        "[ ] All 8 edge case scenarios tested and working",
+        "[ ] File dialogs work correctly in Electron",
+        "[ ] Clipboard operations work reliably"
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "[ ] Review PROMPTING-WORKFLOW-BRIEFING.md for all API details",
+        "[ ] Review coderef/foundation-docs/ARCHITECTURE.md for widget patterns",
+        "[ ] Confirm CodeRefCore APIs available (clipboard, fileHandlers, storage)",
+        "[ ] Test that build system supports TypeScript compilation"
+      ],
+      "phase_1_foundation_and_setup": [
+        "[ ] SETUP-001: Create package directory structure",
+        "[ ] SETUP-002: Create package.json with React, TypeScript, CSS Modules",
+        "[ ] SETUP-003: Create tsconfig.json",
+        "[ ] TYPES-001: Define Attachment interface (id, filename, type, extension, mimeType, size, content, preview, language, isText, isBinary, createdAt)",
+        "[ ] TYPES-002: Define PreloadedPrompt interface (key, name, label, text, estimatedTokens, description)",
+        "[ ] TYPES-003: Define Workflow interface (id, selectedPrompt, attachments, finalResult, createdAt, updatedAt)",
+        "[ ] UTIL-001: Implement fileContentExtractor.ts with readFileContent(file) async function",
+        "[ ] UTIL-002: Implement languageMap with 12+ file type mappings",
+        "[ ] UTIL-003: Implement tokenEstimator.ts with estimateTokens(content) function",
+        "[ ] UTIL-004: Implement filenameGenerator.ts with generateClipboardFilename(existingFiles) function"
+      ],
+      "phase_2_prompt_configuration": [
+        "[ ] PROM-001: Create prompts.ts with 3 PreloadedPrompt objects",
+        "[ ] PROM-002: Add CODE_REVIEW (0001) with agent ID header",
+        "[ ] PROM-003: Add SYNTHESIZE (0002) with agent ID header",
+        "[ ] PROM-004: Add CONSOLIDATE (0003) with agent ID header",
+        "[ ] PROM-005: Set estimatedTokens for each (950, 1300, 1300)"
+      ],
+      "phase_3_hooks_and_state_management": [
+        "[ ] HOOK-001: Implement useWorkflow.ts hook",
+        "[ ] HOOK-002: Implement useClipboard.ts hook with error handling",
+        "[ ] HOOK-003: Implement useFileHandlers.ts hook with error handling"
+      ],
+      "phase_4_core_components": [
+        "[ ] COMP-001: Implement PromptSelector.tsx",
+        "[ ] COMP-002: Implement AttachmentDropZone.tsx with drag & drop and visual feedback",
+        "[ ] COMP-003: Implement PasteTextModal.tsx with auto-clipboard detection",
+        "[ ] COMP-004: Implement AttachmentManager.tsx coordinator component",
+        "[ ] COMP-005: Implement WorkflowMeta.tsx with token/size display",
+        "[ ] COMP-006: Implement ExportMenu.tsx with dropdown and options",
+        "[ ] COMP-007: Implement PasteFinalResultModal.tsx",
+        "[ ] COMP-008: Implement PromptingWorkflow.tsx main container"
+      ],
+      "phase_5_export_and_file_operations": [
+        "[ ] UTIL-005: Implement exportFormatter.ts - generateJSON(workflow) function",
+        "[ ] UTIL-006: Implement exportFormatter.ts - generateMarkdown(workflow) function",
+        "[ ] INT-001: Implement COPY_ALL_TO_CLIPBOARD action (JSON to clipboard)",
+        "[ ] INT-002: Implement EXPORT .json action (file dialog + save)",
+        "[ ] INT-003: Implement EXPORT .md action (file dialog + save)",
+        "[ ] INT-004: Implement SAVE_WORKFLOW action (file dialog + save with finalResult)"
+      ],
+      "phase_6_testing_and_validation": [
+        "[ ] TEST-001: Unit tests for tokenEstimator",
+        "[ ] TEST-002: Unit tests for filenameGenerator",
+        "[ ] TEST-003: Unit tests for fileContentExtractor",
+        "[ ] TEST-004: Component tests for AttachmentDropZone",
+        "[ ] TEST-005: Component tests for PromptSelector",
+        "[ ] TEST-006: Component tests for WorkflowMeta",
+        "[ ] TEST-007: Integration test - full workflow end-to-end",
+        "[ ] TEST-008: Test in web mode (npm run dev)",
+        "[ ] TEST-009: Test in Electron mode (npm run dev:electron)",
+        "[ ] TEST-010: Test all 8 edge case scenarios"
+      ],
+      "phase_7_build_and_integration": [
+        "[ ] BUILD-001: Create build script in package.json",
+        "[ ] BUILD-002: Configure webpack/rollup for IIFE bundle",
+        "[ ] BUILD-003: Run npm run build:widgets",
+        "[ ] BUILD-004: Verify bundle size acceptable (~85KB)",
+        "[ ] BUILD-005: Add widget to dashboard loader",
+        "[ ] BUILD-006: Test widget loads in dashboard UI",
+        "[ ] BUILD-007: Final smoke test - all features working"
+      ],
+      "post_implementation": [
+        "[ ] All success criteria verified (functional, quality, performance, security)",
+        "[ ] Git commit with WO-PROMPTING-WORKFLOW-001 in message",
+        "[ ] Push to remote repository",
+        "[ ] Create git tag: widget-prompting-workflow-v1.0.0"
+      ]
+    }
+  }
+}
