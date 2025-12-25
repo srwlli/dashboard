@@ -5,8 +5,11 @@ import PWAInitializer from './PWAInitializer';
 
 /**
  * RootClientWrapper
- * Wraps the entire application to handle client-side initialization
- * Manages theme class on html element for dark/light mode
+ * Global layout wrapper providing consistent page structure:
+ * - Client-side theme initialization
+ * - Page padding and container constraints
+ * - Content grid layout
+ * - PWA initialization
  */
 export function RootClientWrapper({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -26,8 +29,12 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
   return (
     <>
       <PWAInitializer />
-      <main className="flex-1">
-        {children}
+      <main className="p-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid gap-6">
+            {children}
+          </div>
+        </div>
       </main>
     </>
   );
