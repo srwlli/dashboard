@@ -15,7 +15,22 @@ html.light {
 }
 
 body {
-  @apply bg-ind-bg text-ind-text font-display antialiased overflow-hidden selection:bg-ind-accent selection:text-black;
+  @apply bg-ind-bg text-ind-text font-display antialiased overflow-y-auto overflow-x-hidden selection:bg-ind-accent selection:text-black;
+}
+
+/* Dark mode colors (default) */
+html.dark {
+  --color-ind-bg: #0c0c0e;
+  --color-ind-panel: #141416;
+  --color-ind-border: #3f3f46;
+  --color-ind-accent: #ff6b00;
+  --color-ind-accent-hover: #e65100;
+  --color-ind-text: #f4f4f5;
+  --color-ind-text-muted: #71717a;
+}
+
+html.dark body {
+  @apply bg-ind-bg text-ind-text;
 }
 
 /* Light mode colors */
