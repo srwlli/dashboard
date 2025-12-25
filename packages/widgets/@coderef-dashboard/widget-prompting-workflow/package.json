@@ -1,0 +1,24 @@
+{
+  "name": "@coderef-dashboard/widget-prompting-workflow",
+  "version": "1.0.0",
+  "description": "Prompting workflow widget for LLM analysis with prompt selection, file attachment, and export",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc && node ../../scripts/bundle-widget.js",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

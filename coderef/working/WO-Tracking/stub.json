@@ -1,0 +1,414 @@
+{
+  "stub_id": "STUB-057",
+  "feature_name": "WO-Tracking",
+  "title": "Orchestrator Workorder Tracking Widget",
+  "description": "Build a widget for CodeRef Dashboard that displays live orchestrator workorder tracking with real-time WebSocket updates, project stats, and filtering capabilities.",
+  "category": "feature",
+  "priority": "high",
+  "status": "stub",
+  "created_at": "2025-12-24T00:00:00Z",
+  "context": {
+    "problem": "Orchestrator tracks workorders in communication.json files and workorders.json centrally. Scriptboard has live WebSocket infrastructure ready. Need a widget to display this data in CodeRef Dashboard.",
+    "solution": "Build modular widget using CodeRef Dashboard's widget system. Leverages existing WebSocket infrastructure for real-time updates. No rebuild needed to deploy updates.",
+    "target_system": "CodeRef Dashboard (modular widget, dynamically loaded)",
+    "data_source": "Orchestrator backend (ws://localhost:8000/orchestrator/ws + /api/orchestrator/* endpoints)"
+  },
+  "widget_architecture": {
+    "package_path": "packages/widgets/@coderef-dashboard/widget-orchestrator-workorders/",
+    "implements": "IScriptboardWidget interface",
+    "lifecycle": {
+      "onEnable": "Connect to WebSocket, load initial data",
+      "onDisable": "Disconnect WebSocket, cleanup subscriptions",
+      "onSettingsChange": "Update filters, refresh view",
+      "onError": "Show error boundary, log to dashboard"
+    },
+    "core_features": [
+      "Real-time WebSocket updates (9 event types)",
+      "Filter by project, status, priority",
+      "Auto-refresh on file changes",
+      "Live connection status indicator",
+      "Expandable/collapsible sections",
+      "Responsive grid layout"
+    ]
+  },
+  "ui_layout": {
+    "header": {
+      "title": "Workorder Tracking",
+      "connection_status": {
+        "elements": ["Wifi icon (green/yellow/red)", "Status text (Live/Connecting/Offline)"],
+        "position": "Top right"
+      },
+      "controls": [
+        "Filter by project dropdown",
+        "Filter by status dropdown",
+        "Refresh button (manual override)"
+      ]
+    },
+    "main_content": {
+      "grid": "Responsive (1 col mobile, 3 cols desktop)",
+      "sections": [
+        {
+          "id": "stats_cards",
+          "title": "Overview Statistics",
+          "layout": "4-column grid",
+          "cards": [
+            {
+              "metric": "Active Projects",
+              "value": "{count}",
+              "icon": "folder",
+              "color": "blue"
+            },
+            {
+              "metric": "Active Workorders",
+              "value": "{count}",
+              "icon": "tasks",
+              "color": "purple"
+            },
+            {
+              "metric": "Pending Stubs",
+              "value": "{count}",
+              "icon": "lightbulb",
+              "color": "amber"
+            },
+            {
+              "metric": "Completed",
+              "value": "{percent}%",
+              "icon": "check-circle",
+              "color": "green"
+            }
+          ]
+        },
+        {
+          "id": "workorders_table",
+          "title": "Active Workorders",
+          "layout": "Sortable table",
+          "columns": [
+            {
+              "header": "Workorder ID",
+              "field": "workorder_id",
+              "width": "20%",
+              "sortable": true
+            },
+            {
+              "header": "Feature",
+              "field": "feature_name",
+              "width": "25%",
+              "sortable": true
+            },
+            {
+              "header": "Project",
+              "field": "project",
+              "width": "15%",
+              "sortable": true
+            },
+            {
+              "header": "Status",
+              "field": "status",
+              "width": "15%",
+              "type": "badge",
+              "colors": {
+                "pending_plan": "gray",
+                "plan_submitted": "blue",
+                "approved": "green",
+                "implementing": "yellow",
+                "complete": "green",
+                "verified": "dark-green"
+              },
+              "sortable": true
+            },
+            {
+              "header": "Progress",
+              "field": "progress",
+              "width": "15%",
+              "type": "progress-bar"
+            },
+            {
+              "header": "Updated",
+              "field": "last_updated",
+              "width": "10%",
+              "sortable": true,
+              "type": "relative-time"
+            }
+          ],
+          "row_actions": [
+            {
+              "action": "View Details",
+              "icon": "external-link",
+              "opens": "Full workorder details (expandable row)"
+            }
+          ]
+        },
+        {
+          "id": "expanded_workorder_detail",
+          "title": "Workorder Details (Expandable)",
+          "layout": "Card/modal",
+          "content": {
+            "tabs": [
+              {
+                "name": "Overview",
+                "fields": [
+                  "Workorder ID",
+                  "Feature Name",
+                  "Project",
+                  "Category",
+                  "Priority",
+                  "Status",
+                  "Created At",
+                  "Last Updated",
+                  "Assigned To"
+                ]
+              },
+              {
+                "name": "Progress",
+                "fields": [
+                  "Overall Progress (%)",
+                  "Current Phase",
+                  "Tasks Completed",
+                  "Tasks Remaining",
+                  "Blockers (if any)"
+                ]
+              },
+              {
+                "name": "Timeline",
+                "fields": [
+                  "Created timestamp",
+                  "Last activity timestamp",
+                  "Status change history (log)"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "stubs_section",
+          "title": "Pending Stubs",
+          "layout": "Collapsible list",
+          "display": "Show only high/medium priority (toggleable)",
+          "items": [
+            {
+              "stub_id": "STUB-XXX",
+              "title": "{title}",
+              "priority": "badge (high/medium/low)",
+              "category": "feature/fix/improvement/idea",
+              "description": "Brief description",
+              "action": "Promote to Workorder button"
+            }
+          ]
+        },
+        {
+          "id": "projects_panel",
+          "title": "Projects Summary",
+          "layout": "List with inline stats",
+          "items": [
+            {
+              "project_name": "{name}",
+              "active_workorders": "{count}",
+              "active_plans": "{count}",
+              "stale_workorders": "{count}",
+              "actions": ["View Project", "Details"]
+            }
+          ]
+        }
+      ]
+    },
+    "sidebar": {
+      "position": "Right (collapsible on mobile)",
+      "sections": [
+        {
+          "title": "Quick Filters",
+          "filters": [
+            "By Project (multi-select)",
+            "By Status (checkboxes)",
+            "By Priority (checkboxes)",
+            "By Category (checkboxes)"
+          ]
+        },
+        {
+          "title": "Quick Stats",
+          "stats": [
+            "Total Workorders: {count}",
+            "In Progress: {count}",
+            "Pending Review: {count}",
+            "Completed: {count}",
+            "Stale (7+ days): {count}"
+          ]
+        },
+        {
+          "title": "Recent Activity",
+          "items": [
+            {
+              "type": "badge",
+              "text": "WO-001 status changed to 'approved'",
+              "timestamp": "2m ago"
+            },
+            {
+              "type": "badge",
+              "text": "STUB-055 created",
+              "timestamp": "5m ago"
+            },
+            {
+              "type": "badge",
+              "text": "Plan updated for WO-002",
+              "timestamp": "12m ago"
+            }
+          ]
+        }
+      ]
+    },
+    "responsive_behavior": {
+      "desktop": "Header | Sidebar (right) | Main Content (3-col grid)",
+      "tablet": "Header (condensed controls) | Main Content (2-col grid) | Collapsible sidebar",
+      "mobile": "Header (hamburger sidebar) | Main Content (1-col stacked) | Drawer sidebar"
+    }
+  },
+  "websocket_integration": {
+    "connection": "ws://localhost:8000/orchestrator/ws",
+    "events_subscribed": [
+      "plan_added → Reload workorders table",
+      "plan_updated → Update row, refresh progress",
+      "plan_deleted → Remove from table",
+      "stub_added → Add to stubs section, update count",
+      "stub_updated → Update stub display",
+      "stub_deleted → Remove from stubs",
+      "workorder_added → Add to table, update stats",
+      "project_added → Update projects panel",
+      "project_removed → Remove from projects panel"
+    ],
+    "reconnect_strategy": "Exponential backoff (1s → 30s), show offline state, fallback to manual refresh",
+    "heartbeat": "Ping/pong every 30 seconds"
+  },
+  "api_integration": {
+    "endpoints_needed": [
+      "GET /orchestrator/stats → Overall metrics (projects, stubs, workorders, plans)",
+      "GET /orchestrator/workorders → List active workorders",
+      "GET /orchestrator/stubs → List pending stubs",
+      "GET /orchestrator/projects → List tracked projects",
+      "GET /orchestrator/plans → List all plans",
+      "GET /orchestrator/stale → List stale workorders (7+ days)"
+    ],
+    "core_extensions": "Extend window.CodeRefCore.api with orchestrator methods or use custom fetch"
+  },
+  "settings": {
+    "defaults": {
+      "project_filter": "all",
+      "status_filter": "all",
+      "priority_filter": "all",
+      "auto_refresh": true,
+      "refresh_interval": "30s (WebSocket primary)",
+      "show_completed": false,
+      "collapsed_sections": ["stubs", "projects"]
+    },
+    "user_configurable": [
+      "Which projects to display",
+      "Which statuses to show",
+      "Auto-refresh toggle",
+      "Stale threshold (days)",
+      "Collapsed/expanded sections",
+      "Sort order (workorders table)"
+    ]
+  },
+  "data_state": {
+    "state_management": "React hooks (useState, useEffect, useContext) or simple local state",
+    "data_structure": {
+      "workorders": "array of {id, feature_name, project, status, progress, updated_at}",
+      "stubs": "array of {id, title, priority, category, description}",
+      "projects": "array of {name, active_wos, active_plans, stale_count}",
+      "stats": "{projects_count, stubs_count, workorders_count, completion_percent}",
+      "connection_status": "connected | connecting | disconnected"
+    }
+  },
+  "error_handling": {
+    "websocket_disconnect": "Show 'Offline' indicator, fallback to manual refresh button",
+    "api_error": "Show error toast/banner, log to console, allow retry",
+    "malformed_data": "Graceful degradation, show what's available, skip invalid entries",
+    "error_boundary": "Widget wrapped in ErrorBoundary, isolates from dashboard"
+  },
+  "implementation_phases": {
+    "phase_1_mvp": {
+      "name": "Minimum Viable Product",
+      "deliverables": [
+        "Stats cards (4 metrics)",
+        "Workorders table (sortable, filterable)",
+        "WebSocket connection indicator",
+        "Basic filtering (project, status)",
+        "Manual refresh button"
+      ],
+      "effort": "2-3 days"
+    },
+    "phase_2_enhancements": {
+      "name": "UI/UX Polish & Interactivity",
+      "deliverables": [
+        "Expandable workorder details (tabs)",
+        "Stubs section (collapsible)",
+        "Projects panel",
+        "Recent activity sidebar",
+        "Responsive design (mobile/tablet)",
+        "Status badge colors",
+        "Progress bars"
+      ],
+      "effort": "3-4 days"
+    },
+    "phase_3_advanced": {
+      "name": "Advanced Features",
+      "deliverables": [
+        "Workorder creation from UI",
+        "Inline status editing",
+        "Export/reporting",
+        "Scheduled notifications",
+        "Dashboards/views (saved filters)",
+        "Custom columns"
+      ],
+      "effort": "TBD"
+    }
+  },
+  "success_criteria": [
+    "✅ Widget loads without errors",
+    "✅ WebSocket connects and shows live status",
+    "✅ Workorders display with correct status/progress",
+    "✅ Filters work correctly (project, status)",
+    "✅ Table rows update in real-time on WebSocket events",
+    "✅ Expandable details show all workorder info",
+    "✅ Responsive layout works on mobile/tablet/desktop",
+    "✅ Offline indicator appears when WebSocket disconnects",
+    "✅ Manual refresh updates all data correctly",
+    "✅ Settings persist across page reloads"
+  ],
+  "build_output": {
+    "location": "packages/dashboard/public/widgets/orchestrator-workorders.js",
+    "format": "IIFE (Immediately Invoked Function Expression)",
+    "global_name": "CodeRefWidget_orchestrator_workorders",
+    "size_target": "<100KB gzipped",
+    "dependencies": "React, from window.CodeRefCore"
+  },
+  "file_structure": {
+    "package": "packages/widgets/@coderef-dashboard/widget-orchestrator-workorders/",
+    "src": [
+      "index.tsx (main widget component)",
+      "hooks/useOrchestrator.ts (WebSocket + API)",
+      "hooks/useFilters.ts (filter state management)",
+      "components/StatsCard.tsx",
+      "components/WorkordersTable.tsx",
+      "components/WorkorderDetail.tsx (expandable)",
+      "components/StubsSection.tsx",
+      "components/ProjectsPanel.tsx",
+      "components/ActivitySidebar.tsx",
+      "types/index.ts (TypeScript interfaces)",
+      "styles/widget.css (layout only, reuse dashboard styles)"
+    ]
+  },
+  "configuration": {
+    "config_entry": "coderef-dashboard.config.json",
+    "example": {
+      "id": "orchestrator-workorders",
+      "package": "@coderef-dashboard/widget-orchestrator-workorders",
+      "enabled": true,
+      "settings": {
+        "project_filter": "all",
+        "auto_refresh": true,
+        "show_completed": false,
+        "collapsed_sections": ["stubs"]
+      }
+    }
+  },
+  "next_action": "Promote to workorder when ready. Agent should build Phase 1 MVP with stats cards, workorders table, and WebSocket connection indicator."
+}

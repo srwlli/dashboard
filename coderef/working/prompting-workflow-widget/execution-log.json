@@ -1,0 +1,295 @@
+[
+  {
+    "timestamp": "2025-12-24T22:28:35.679594",
+    "workorder_id": "WO-PROMPTING-WORKFLOW-WIDGET-001",
+    "feature_name": "prompting-workflow-widget",
+    "task_count": 57,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: [ ] Review PROMPTING-WORKFLOW-BRIEFING.md for all API details",
+        "activeForm": "PRE-IMPL-001: [ing ] Review PROMPTING-WORKFLOW-BRIEFING.md for all API details",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-002: [ ] Review coderef/foundation-docs/ARCHITECTURE.md for widget patterns",
+        "activeForm": "PRE-IMPL-002: [ing ] Review coderef/foundation-docs/ARCHITECTURE.md for widget patterns",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-003: [ ] Confirm CodeRefCore APIs available (clipboard, fileHandlers, storage)",
+        "activeForm": "PRE-IMPL-003: [ing ] Confirm CodeRefCore APIs available (clipboard, fileHandlers, storage)",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-004: [ ] Test that build system supports TypeScript compilation",
+        "activeForm": "PRE-IMPL-004: [ing ] Test that build system supports TypeScript compilation",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] SETUP-001: Create package directory structure",
+        "activeForm": "[ ] SETUP-001: Creating package directory structure",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] SETUP-002: Create package.json with React, TypeScript, CSS Modules",
+        "activeForm": "[ ] SETUP-002: Creating package.json with React, TypeScript, CSS Modules",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] SETUP-003: Create tsconfig.json",
+        "activeForm": "[ ] SETUP-003: Creating tsconfig.json",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TYPES-001: Define Attachment interface (id, filename, type, extension, mimeType, size, content, preview, language, isText, isBinary, createdAt)",
+        "activeForm": "[ ] TYPES-001: Defineing Attachment interface (id, filename, type, extension, mimeType, size, content, preview, language, isText, isBinary, createdAt)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TYPES-002: Define PreloadedPrompt interface (key, name, label, text, estimatedTokens, description)",
+        "activeForm": "[ ] TYPES-002: Defineing PreloadedPrompt interface (key, name, label, text, estimatedTokens, description)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TYPES-003: Define Workflow interface (id, selectedPrompt, attachments, finalResult, createdAt, updatedAt)",
+        "activeForm": "[ ] TYPES-003: Defineing Workflow interface (id, selectedPrompt, attachments, finalResult, createdAt, updatedAt)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] UTIL-001: Implement fileContentExtractor.ts with readFileContent(file) async function",
+        "activeForm": "[ ] UTIL-001: Implementing fileContentExtractor.ts with readFileContent(file) async function",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] UTIL-002: Implement languageMap with 12+ file type mappings",
+        "activeForm": "[ ] UTIL-002: Implementing languageMap with 12+ file type mappings",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] UTIL-003: Implement tokenEstimator.ts with estimateTokens(content) function",
+        "activeForm": "[ ] UTIL-003: Implementing tokenEstimator.ts with estimateTokens(content) function",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] UTIL-004: Implement filenameGenerator.ts with generateClipboardFilename(existingFiles) function",
+        "activeForm": "[ ] UTIL-004: Implementing filenameGenerator.ts with generateClipboardFilename(existingFiles) function",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] PROM-001: Create prompts.ts with 3 PreloadedPrompt objects",
+        "activeForm": "[ ] PROM-001: Creating prompts.ts with 3 PreloadedPrompt objects",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] PROM-002: Add CODE_REVIEW (0001) with agent ID header",
+        "activeForm": "[ ] PROM-002: Adding CODE_REVIEW (0001) with agent ID header",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] PROM-003: Add SYNTHESIZE (0002) with agent ID header",
+        "activeForm": "[ ] PROM-003: Adding SYNTHESIZE (0002) with agent ID header",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] PROM-004: Add CONSOLIDATE (0003) with agent ID header",
+        "activeForm": "[ ] PROM-004: Adding CONSOLIDATE (0003) with agent ID header",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] PROM-005: Set estimatedTokens for each (950, 1300, 1300)",
+        "activeForm": "[ ] PROM-005: Seting estimatedTokens for each (950, 1300, 1300)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] HOOK-001: Implement useWorkflow.ts hook",
+        "activeForm": "[ ] HOOK-001: Implementing useWorkflow.ts hook",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] HOOK-002: Implement useClipboard.ts hook with error handling",
+        "activeForm": "[ ] HOOK-002: Implementing useClipboard.ts hook with error handling",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] HOOK-003: Implement useFileHandlers.ts hook with error handling",
+        "activeForm": "[ ] HOOK-003: Implementing useFileHandlers.ts hook with error handling",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-001: Implement PromptSelector.tsx",
+        "activeForm": "[ ] COMP-001: Implementing PromptSelector.tsx",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-002: Implement AttachmentDropZone.tsx with drag & drop and visual feedback",
+        "activeForm": "[ ] COMP-002: Implementing AttachmentDropZone.tsx with drag & drop and visual feedback",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-003: Implement PasteTextModal.tsx with auto-clipboard detection",
+        "activeForm": "[ ] COMP-003: Implementing PasteTextModal.tsx with auto-clipboard detection",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-004: Implement AttachmentManager.tsx coordinator component",
+        "activeForm": "[ ] COMP-004: Implementing AttachmentManager.tsx coordinator component",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-005: Implement WorkflowMeta.tsx with token/size display",
+        "activeForm": "[ ] COMP-005: Implementing WorkflowMeta.tsx with token/size display",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-006: Implement ExportMenu.tsx with dropdown and options",
+        "activeForm": "[ ] COMP-006: Implementing ExportMenu.tsx with dropdown and options",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-007: Implement PasteFinalResultModal.tsx",
+        "activeForm": "[ ] COMP-007: Implementing PasteFinalResultModal.tsx",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] COMP-008: Implement PromptingWorkflow.tsx main container",
+        "activeForm": "[ ] COMP-008: Implementing PromptingWorkflow.tsx main container",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] UTIL-005: Implement exportFormatter.ts - generateJSON(workflow) function",
+        "activeForm": "[ ] UTIL-005: Implementing exportFormatter.ts - generateJSON(workflow) function",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] UTIL-006: Implement exportFormatter.ts - generateMarkdown(workflow) function",
+        "activeForm": "[ ] UTIL-006: Implementing exportFormatter.ts - generateMarkdown(workflow) function",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] INT-001: Implement COPY_ALL_TO_CLIPBOARD action (JSON to clipboard)",
+        "activeForm": "[ ] INT-001: Implementing COPY_ALL_TO_CLIPBOARD action (JSON to clipboard)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] INT-002: Implement EXPORT .json action (file dialog + save)",
+        "activeForm": "[ ] INT-002: Implementing EXPORT .json action (file dialog + save)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] INT-003: Implement EXPORT .md action (file dialog + save)",
+        "activeForm": "[ ] INT-003: Implementing EXPORT .md action (file dialog + save)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] INT-004: Implement SAVE_WORKFLOW action (file dialog + save with finalResult)",
+        "activeForm": "[ ] INT-004: Implementing SAVE_WORKFLOW action (file dialog + save with finalResult)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-001: Unit tests for tokenEstimator",
+        "activeForm": "[ ] TEST-001: Uniting tests for tokenEstimator",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-002: Unit tests for filenameGenerator",
+        "activeForm": "[ ] TEST-002: Uniting tests for filenameGenerator",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-003: Unit tests for fileContentExtractor",
+        "activeForm": "[ ] TEST-003: Uniting tests for fileContentExtractor",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-004: Component tests for AttachmentDropZone",
+        "activeForm": "[ ] TEST-004: Componenting tests for AttachmentDropZone",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-005: Component tests for PromptSelector",
+        "activeForm": "[ ] TEST-005: Componenting tests for PromptSelector",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-006: Component tests for WorkflowMeta",
+        "activeForm": "[ ] TEST-006: Componenting tests for WorkflowMeta",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-007: Integration test - full workflow end-to-end",
+        "activeForm": "[ ] TEST-007: Integrationing test - full workflow end-to-end",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-008: Test in web mode (npm run dev)",
+        "activeForm": "[ ] TEST-008: Testing in web mode (npm run dev)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-009: Test in Electron mode (npm run dev:electron)",
+        "activeForm": "[ ] TEST-009: Testing in Electron mode (npm run dev:electron)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] TEST-010: Test all 8 edge case scenarios",
+        "activeForm": "[ ] TEST-010: Testing all 8 edge case scenarios",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] BUILD-001: Create build script in package.json",
+        "activeForm": "[ ] BUILD-001: Creating build script in package.json",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] BUILD-002: Configure webpack/rollup for IIFE bundle",
+        "activeForm": "[ ] BUILD-002: Configureing webpack/rollup for IIFE bundle",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] BUILD-003: Run npm run build:widgets",
+        "activeForm": "[ ] BUILD-003: Running npm run build:widgets",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] BUILD-004: Verify bundle size acceptable (~85KB)",
+        "activeForm": "[ ] BUILD-004: Verifying bundle size acceptable (~85KB)",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] BUILD-005: Add widget to dashboard loader",
+        "activeForm": "[ ] BUILD-005: Adding widget to dashboard loader",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] BUILD-006: Test widget loads in dashboard UI",
+        "activeForm": "[ ] BUILD-006: Testing widget loads in dashboard UI",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] BUILD-007: Final smoke test - all features working",
+        "activeForm": "[ ] BUILD-007: Finaling smoke test - all features working",
+        "status": "pending"
+      },
+      {
+        "content": "POST-IMP-001: [ ] All success criteria verified (functional, quality, performance, security)",
+        "activeForm": "POST-IMP-001: [ing ] All success criteria verified (functional, quality, performance, security)",
+        "status": "pending"
+      },
+      {
+        "content": "POST-IMP-002: [ ] Git commit with WO-PROMPTING-WORKFLOW-001 in message",
+        "activeForm": "POST-IMP-002: [ing ] Git commit with WO-PROMPTING-WORKFLOW-001 in message",
+        "status": "pending"
+      },
+      {
+        "content": "POST-IMP-003: [ ] Push to remote repository",
+        "activeForm": "POST-IMP-003: [ing ] Push to remote repository",
+        "status": "pending"
+      },
+      {
+        "content": "[ ] Create git tag: widget-prompting-workflow-v1.0.0",
+        "activeForm": "[ ] Create git tag: widget-prompting-workflow-v1.0.0ing",
+        "status": "pending"
+      }
+    ]
+  }
+]
