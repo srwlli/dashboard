@@ -1,0 +1,88 @@
+{
+  "project": {
+    "name": "coderef-dashboard",
+    "version": "0.1.0",
+    "description": "Modular widget system with PWA and Electron support",
+    "type": "monorepo"
+  },
+  "technology_stack": {
+    "runtime": "Node.js 18+",
+    "package_manager": "npm 9+",
+    "languages": ["TypeScript", "JavaScript", "React"],
+    "frameworks": ["Next.js 16.1.1", "React 19", "Electron"],
+    "build_tools": ["esbuild", "Turbopack", "electron-builder"],
+    "styling": "CSS Modules"
+  },
+  "packages": [
+    {
+      "name": "core",
+      "path": "packages/core",
+      "purpose": "Shared hooks, utilities, and type definitions",
+      "exports": ["CodeRefCore global types", "Utility hooks"]
+    },
+    {
+      "name": "widget-prompting-workflow",
+      "path": "packages/widgets/@coderef-dashboard/widget-prompting-workflow",
+      "purpose": "Original widget for code prompting workflows (TO BE REMOVED)",
+      "status": "deprecated"
+    },
+    {
+      "name": "dashboard",
+      "path": "packages/dashboard",
+      "purpose": "Next.js web application",
+      "technologies": ["Next.js 16.1.1", "React 19", "Turbopack"]
+    },
+    {
+      "name": "electron-app",
+      "path": "packages/electron-app",
+      "purpose": "Electron wrapper for desktop",
+      "technologies": ["Electron", "electron-builder"]
+    }
+  ],
+  "components": {
+    "PromptingWorkflow": {
+      "current_location": "packages/widgets/@coderef-dashboard/widget-prompting-workflow",
+      "planned_location": "packages/dashboard/src/components/PromptingWorkflow",
+      "status": "ready for migration",
+      "sub_components": [
+        "PromptSelector",
+        "AttachmentManager",
+        "AttachmentDropZone",
+        "WorkflowMeta",
+        "ExportMenu",
+        "PasteFinalResultModal",
+        "PasteTextModal"
+      ]
+    }
+  },
+  "build_system": {
+    "root_scripts": {
+      "dev": "npm run dev -w packages/dashboard",
+      "build": "npm run build:widgets && npm run build -ws --if-present",
+      "build:widgets": "node scripts/build-widgets.js",
+      "type-check": "npm run type-check -ws --if-present"
+    },
+    "custom_build": {
+      "script": "scripts/build-widgets.js",
+      "purpose": "Bundle widgets as IIFE modules",
+      "status": "to be removed"
+    }
+  },
+  "key_issues": [
+    "Type declaration conflicts: Multiple CodeRefCore declarations",
+    "Widget system overhead: Complex bundling for single component",
+    "Build coupling: Widget build must succeed before workspace build"
+  ],
+  "restructuring_plan": {
+    "phase_1": "Delete packages/widgets directory",
+    "phase_2": "Move PromptingWorkflow to packages/dashboard/src/components/",
+    "phase_3": "Remove build-widgets.js and update build scripts",
+    "phase_4": "Update configuration and resolve type conflicts",
+    "phase_5": "Test and validate build for web and Electron"
+  },
+  "_metadata": {
+    "generated_at": "2025-12-25T18:15:00Z",
+    "generator": "manual_foundation_docs",
+    "version": "1.0.0"
+  }
+}
