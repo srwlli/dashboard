@@ -1,10 +1,11 @@
 'use client';
 
 import { ThemeToggle } from './ThemeToggle';
+import { AccentColorPicker } from './AccentColorPicker';
 
 /**
  * ThemePanel Component
- * Theme/Display settings interface
+ * Display settings interface with theme toggle and accent color picker
  * Follows industrial design pattern with corner accents
  */
 export function ThemePanel() {
@@ -28,12 +29,20 @@ export function ThemePanel() {
           </p>
         </div>
 
-        {/* Theme Section */}
-        <div>
-          <h3 className="text-sm uppercase tracking-widest text-ind-text-muted font-mono mb-3 font-bold">
-            Theme
-          </h3>
-          <ThemeToggle />
+        {/* Settings Sections */}
+        <div className="space-y-8">
+          {/* Theme Section */}
+          <div>
+            <h3 className="text-sm uppercase tracking-widest text-ind-text-muted font-mono mb-3 font-bold">
+              Theme
+            </h3>
+            <ThemeToggle />
+          </div>
+
+          {/* Accent Color Section */}
+          <div className="border-t border-ind-border pt-8">
+            <AccentColorPicker />
+          </div>
         </div>
       </div>
     </div>

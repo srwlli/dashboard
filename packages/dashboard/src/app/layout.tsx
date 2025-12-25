@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import RootClientWrapper from '@/components/RootClientWrapper';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AccentColorProvider } from '@/contexts/AccentColorContext';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -49,9 +50,11 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-ind-bg text-ind-text font-display">
         <ThemeProvider>
-          <RootClientWrapper>
-            {children}
-          </RootClientWrapper>
+          <AccentColorProvider>
+            <RootClientWrapper>
+              {children}
+            </RootClientWrapper>
+          </AccentColorProvider>
         </ThemeProvider>
       </body>
     </html>
