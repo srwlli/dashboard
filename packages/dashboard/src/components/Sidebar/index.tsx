@@ -43,7 +43,7 @@ export default function Sidebar() {
       </button>
 
       {/* Navigation Items */}
-      <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto overflow-x-hidden">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
