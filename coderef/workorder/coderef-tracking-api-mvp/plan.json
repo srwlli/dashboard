@@ -1,0 +1,636 @@
+{
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "1_executive_summary": {
+      "workorder_id": "WO-TRACKING-SYSTEM-001",
+      "feature_name": "coderef-tracking-api-mvp",
+      "title": "Workorder & Stub Tracking API - File System MVP",
+      "category": "feature",
+      "priority": "critical",
+      "status": "plan",
+      "created": "2025-12-26T13:00:00Z",
+      "estimated_effort": "40 hours",
+      "effort_breakdown": {
+        "implementation": "24 hours",
+        "testing": "12 hours",
+        "documentation": "4 hours"
+      },
+      "mission": "Implement a file system-based API layer that provides live access to workorders and stubs across all orchestrator projects. This is the data foundation for the assistant dashboard.",
+      "why_this_matters": [
+        "Dashboard routes (/coderef-assistant, /coderef-sources) need live data to display",
+        "Unblocks parallel work: API team builds backend, UI team waits for completion",
+        "Creates abstraction layer for future database migration",
+        "Enables real-time visibility of workorder/stub status across 6 tracked projects"
+      ],
+      "success_definition": "3 API endpoints deployed and tested, returning correct schemas, handling graceful degradation, passing 21 test scenarios"
+    },
+
+    "2_risk_assessment": {
+      "risks": [
+        {
+          "id": "RISK-001",
+          "title": "File system performance at scale",
+          "severity": "medium",
+          "probability": "low",
+          "impact": "API slow on large workorder lists",
+          "mitigation": "Add caching layer in Phase 2, implement pagination, profile before optimization"
+        },
+        {
+          "id": "RISK-002",
+          "title": "Missing workorder files (communication.json)",
+          "severity": "low",
+          "probability": "high",
+          "impact": "Incomplete workorder data",
+          "mitigation": "Designed for graceful degradation - missing files return partial data, not errors"
+        },
+        {
+          "id": "RISK-003",
+          "title": "Windows path handling inconsistency",
+          "severity": "low",
+          "probability": "medium",
+          "impact": "API fails on Windows with backslash paths",
+          "mitigation": "Use path.join() and path.resolve() throughout, test on Windows paths"
+        },
+        {
+          "id": "RISK-004",
+          "title": "Circular dependencies in workorder imports",
+          "severity": "medium",
+          "probability": "low",
+          "impact": "Memory issues, infinite loops",
+          "mitigation": "Avoid recursive file reads, set depth limits, track visited folders"
+        },
+        {
+          "id": "RISK-005",
+          "title": "projects.config.json missing or invalid",
+          "severity": "high",
+          "probability": "low",
+          "impact": "API fails to start",
+          "mitigation": "Validate config on startup, provide clear error messages, document required structure"
+        }
+      ],
+      "risk_mitigation_strategy": "Graceful degradation throughout - missing files don't break system, validation on startup, comprehensive error handling"
+    },
+
+    "3_current_state_analysis": {
+      "current_state": {
+        "api_routes": "None - /api endpoints don't exist yet",
+        "data_discovery": "Manual - no automated scanning of workorders/stubs",
+        "project_registry": "Created - projects.config.json exists with 6 projects",
+        "type_definitions": "None - TypeScript interfaces not defined",
+        "error_handling": "None - no API error responses defined",
+        "testing": "None - no test suite exists"
+      },
+      "blockers": [
+        "No API route handlers in packages/dashboard/src/app/api/",
+        "No utility classes for file system reading",
+        "No TypeScript types for API responses",
+        "No tests written"
+      ],
+      "dependencies": {
+        "external": [
+          "Node.js fs module (built-in)",
+          "Next.js API routes (already in framework)"
+        ],
+        "internal": [
+          "projects.config.json (exists)",
+          "workorder folder structure (exists in projects)"
+        ]
+      },
+      "foundational_work_complete": true
+    },
+
+    "4_key_features": {
+      "deliverables": [
+        {
+          "id": "DEL-001",
+          "title": "GET /api/stubs endpoint",
+          "description": "Fetch all stubs from centralized orchestrator directory (assistant/coderef/working/)",
+          "acceptance_criteria": [
+            "Returns 200 with StubListResponse schema",
+            "Scans assistant/coderef/working/ folders for stub.json files",
+            "Aggregates all stubs from all folders",
+            "Returns correct schema: { success, data: { stubs, total, location }, timestamp }"
+          ]
+        },
+        {
+          "id": "DEL-002",
+          "title": "GET /api/workorders endpoint",
+          "description": "Fetch all workorders from all 6 tracked projects",
+          "acceptance_criteria": [
+            "Returns 200 with WorkorderListResponse schema",
+            "Scans {project}/coderef/workorder/ in all 6 projects",
+            "Folder existence = workorder exists (files optional)",
+            "Returns aggregated list with by_project and by_status counts",
+            "Handles missing files gracefully"
+          ]
+        },
+        {
+          "id": "DEL-003",
+          "title": "GET /api/workorders/:workorderId endpoint",
+          "description": "Fetch complete workorder with all files and metadata",
+          "acceptance_criteria": [
+            "Returns 200 with WorkorderDetailResponse schema",
+            "Searches all projects for workorder folder",
+            "Reads all available files: communication.json, plan.json, DELIVERABLES.md",
+            "Returns 404 if folder not found",
+            "Returns 200 with empty files if folder exists but is empty"
+          ]
+        },
+        {
+          "id": "DEL-004",
+          "title": "Utility classes",
+          "description": "Helper modules for file system operations and config loading",
+          "files": [
+            "src/lib/api/projects.ts - ProjectsConfig loader",
+            "src/lib/api/stubs.ts - StubReader class",
+            "src/lib/api/workorders.ts - WorkorderReader class"
+          ],
+          "acceptance_criteria": [
+            "ProjectsConfig: Load and validate projects.config.json",
+            "StubReader: Scan folders, read stub.json, parse content",
+            "WorkorderReader: Scan folders, discover workorders, read optional files"
+          ]
+        },
+        {
+          "id": "DEL-005",
+          "title": "TypeScript type definitions",
+          "description": "Complete type interfaces for all API responses",
+          "files": [
+            "src/types/stubs.ts",
+            "src/types/workorders.ts",
+            "src/types/api.ts"
+          ],
+          "acceptance_criteria": [
+            "All types match response schema specs",
+            "Exported from centralized types module",
+            "Used in route handlers and utility classes"
+          ]
+        },
+        {
+          "id": "DEL-006",
+          "title": "Error handling",
+          "description": "Consistent error responses for all failure scenarios",
+          "acceptance_criteria": [
+            "Missing files: 200 OK with partial data",
+            "Folder not found: 404 NOT_FOUND",
+            "Invalid JSON: 500 PARSE_ERROR with details",
+            "Missing config: 500 CONFIG_ERROR",
+            "Permission denied: 403 FORBIDDEN",
+            "All errors follow: { success: false, error: { code, message, details }, timestamp }"
+          ]
+        },
+        {
+          "id": "DEL-007",
+          "title": "Test suite",
+          "description": "21 test scenarios covering all functionality",
+          "test_categories": {
+            "core_functionality": 6,
+            "graceful_degradation": 7,
+            "error_cases": 4,
+            "edge_cases": 4
+          },
+          "acceptance_criteria": [
+            "All 21 test scenarios pass",
+            "Tests cover happy path and edge cases",
+            "Tests validate response schemas",
+            "Tests verify error handling"
+          ]
+        }
+      ]
+    },
+
+    "5_task_id_system": {
+      "workorder_id": "WO-TRACKING-SYSTEM-001",
+      "task_id_format": "WO-TRACKING-{PHASE}-{SEQUENCE}",
+      "task_id_examples": [
+        "WO-TRACKING-SETUP-001",
+        "WO-TRACKING-IMPL-001",
+        "WO-TRACKING-TEST-001"
+      ],
+      "phases": [
+        {
+          "phase_id": "SETUP",
+          "phase_name": "Setup & Preparation",
+          "description": "Create directory structure, types, utilities"
+        },
+        {
+          "phase_id": "IMPL",
+          "phase_name": "Implementation",
+          "description": "Implement 3 API endpoints and utility classes"
+        },
+        {
+          "phase_id": "TEST",
+          "phase_name": "Testing & Validation",
+          "description": "Write and run tests, verify schemas"
+        },
+        {
+          "phase_id": "DOCS",
+          "phase_name": "Documentation",
+          "description": "Add comments, document behavior"
+        }
+      ]
+    },
+
+    "6_implementation_phases": [
+      {
+        "phase_id": "SETUP",
+        "phase_name": "Setup & Preparation",
+        "duration_hours": 4,
+        "description": "Create directory structure and foundational files",
+        "tasks": [
+          {
+            "task_id": "WO-TRACKING-SETUP-001",
+            "title": "Create directory structure",
+            "description": "Create src/app/api/stubs, src/app/api/workorders/[workorderId], src/lib/api, src/types",
+            "acceptance_criteria": "All directories created, empty files in place"
+          },
+          {
+            "task_id": "WO-TRACKING-SETUP-002",
+            "title": "Define TypeScript types",
+            "description": "Create StubObject, WorkorderObject, response schemas in src/types/",
+            "acceptance_criteria": "All types defined, exported, no missing fields"
+          },
+          {
+            "task_id": "WO-TRACKING-SETUP-003",
+            "title": "Create ProjectsConfig loader",
+            "description": "Implement src/lib/api/projects.ts to load and validate projects.config.json",
+            "acceptance_criteria": "Loads config, validates structure, throws on invalid"
+          },
+          {
+            "task_id": "WO-TRACKING-SETUP-004",
+            "title": "Setup test infrastructure",
+            "description": "Configure Jest/Vitest, create test files, setup mocks",
+            "acceptance_criteria": "Test runner working, can run empty tests"
+          }
+        ]
+      },
+      {
+        "phase_id": "IMPL",
+        "phase_name": "Implementation",
+        "duration_hours": 20,
+        "description": "Implement 3 API endpoints and utility classes",
+        "tasks": [
+          {
+            "task_id": "WO-TRACKING-IMPL-001",
+            "title": "Implement StubReader utility",
+            "description": "Create src/lib/api/stubs.ts - scan folders, read stub.json, parse content",
+            "acceptance_criteria": [
+              "Scans assistant/coderef/working/ folders",
+              "Reads and parses stub.json",
+              "Returns StubObject array",
+              "Handles missing files gracefully"
+            ]
+          },
+          {
+            "task_id": "WO-TRACKING-IMPL-002",
+            "title": "Implement WorkorderReader utility",
+            "description": "Create src/lib/api/workorders.ts - scan projects, discover workorders, read optional files",
+            "acceptance_criteria": [
+              "Scans all projects in projects.config.json",
+              "Discovers workorders by folder (files optional)",
+              "Reads communication.json, plan.json, DELIVERABLES.md",
+              "Falls back to folder stats for missing metadata",
+              "Returns WorkorderObject array"
+            ]
+          },
+          {
+            "task_id": "WO-TRACKING-IMPL-003",
+            "title": "Implement GET /api/stubs route",
+            "description": "Create src/app/api/stubs/route.ts",
+            "acceptance_criteria": [
+              "Calls StubReader",
+              "Returns StubListResponse with correct schema",
+              "Handles errors (missing config, scan failures)",
+              "Returns 500 on ProjectsConfig error",
+              "Returns 200 with stubs array on success"
+            ]
+          },
+          {
+            "task_id": "WO-TRACKING-IMPL-004",
+            "title": "Implement GET /api/workorders route",
+            "description": "Create src/app/api/workorders/route.ts",
+            "acceptance_criteria": [
+              "Calls ProjectsConfig and WorkorderReader",
+              "Scans all 6 projects",
+              "Returns WorkorderListResponse with aggregated data",
+              "Includes by_project and by_status counts",
+              "Handles missing files gracefully"
+            ]
+          },
+          {
+            "task_id": "WO-TRACKING-IMPL-005",
+            "title": "Implement GET /api/workorders/:workorderId route",
+            "description": "Create src/app/api/workorders/[workorderId]/route.ts",
+            "acceptance_criteria": [
+              "Parses workorderId from URL",
+              "Searches all projects for workorder folder",
+              "Reads all files in folder (optional)",
+              "Returns WorkorderDetailResponse",
+              "Returns 404 if folder not found",
+              "Returns 200 with empty files if folder empty"
+            ]
+          },
+          {
+            "task_id": "WO-TRACKING-IMPL-006",
+            "title": "Implement error handling",
+            "description": "Add consistent error handling to all routes and utilities",
+            "acceptance_criteria": [
+              "All errors follow error schema: { success, error: { code, message, details }, timestamp }",
+              "Missing files: 200 OK with partial data",
+              "Folder not found: 404",
+              "Invalid JSON: 500 with parse details",
+              "Config missing: 500 with clear message"
+            ]
+          },
+          {
+            "task_id": "WO-TRACKING-IMPL-007",
+            "title": "Implement graceful degradation",
+            "description": "Handle partial data scenarios (missing communication.json, plan.json, DELIVERABLES.md)",
+            "acceptance_criteria": [
+              "Return 200 OK even if optional files missing",
+              "Include available fields in response",
+              "Empty object for missing files: { communication_json: {}, plan_json: null, deliverables_md: null }",
+              "Use folder stats for timestamps if JSON files missing"
+            ]
+          }
+        ]
+      },
+      {
+        "phase_id": "TEST",
+        "phase_name": "Testing & Validation",
+        "duration_hours": 12,
+        "description": "Write and run 21 test scenarios",
+        "tasks": [
+          {
+            "task_id": "WO-TRACKING-TEST-001",
+            "title": "Test core functionality (6 scenarios)",
+            "description": "Test happy path for all 3 endpoints",
+            "scenarios": [
+              "GET /api/stubs returns all stubs with correct schema",
+              "GET /api/workorders returns all workorders from all projects",
+              "GET /api/workorders/:id returns complete workorder with all files",
+              "StubReader scans folders and finds stub.json",
+              "WorkorderReader discovers workorders by folder",
+              "ProjectsConfig loads and validates projects.config.json"
+            ],
+            "acceptance_criteria": "All 6 scenarios pass"
+          },
+          {
+            "task_id": "WO-TRACKING-TEST-002",
+            "title": "Test graceful degradation (7 scenarios)",
+            "description": "Test behavior when files are missing or incomplete",
+            "scenarios": [
+              "Missing communication.json returns partial workorder (200 OK)",
+              "Missing plan.json returns workorder without tasks",
+              "Missing DELIVERABLES.md returns empty deliverables",
+              "Empty workorder folder returns 200 with empty files",
+              "Folder with only stub.json (no other files) returns partial",
+              "All optional fields can be null without error",
+              "Timestamps fall back to folder stats"
+            ],
+            "acceptance_criteria": "All 7 scenarios pass"
+          },
+          {
+            "task_id": "WO-TRACKING-TEST-003",
+            "title": "Test error cases (4 scenarios)",
+            "description": "Test error handling and edge cases",
+            "scenarios": [
+              "projects.config.json missing returns 500 CONFIG_ERROR",
+              "Invalid JSON in files returns 500 PARSE_ERROR with details",
+              "Workorder folder not found returns 404 WORKORDER_NOT_FOUND",
+              "Permission denied on project folder returns 403 FORBIDDEN"
+            ],
+            "acceptance_criteria": "All 4 scenarios pass"
+          },
+          {
+            "task_id": "WO-TRACKING-TEST-004",
+            "title": "Test edge cases (4 scenarios)",
+            "description": "Test boundary conditions and special cases",
+            "scenarios": [
+              "Empty stubs directory returns 200 with empty stubs array",
+              "Project with no workorders returns 200 with empty workorders",
+              "Large workorder lists (100+) perform efficiently",
+              "Windows paths with backslashes handled correctly"
+            ],
+            "acceptance_criteria": "All 4 scenarios pass"
+          },
+          {
+            "task_id": "WO-TRACKING-TEST-005",
+            "title": "Validate response schemas",
+            "description": "Verify all responses match TypeScript types",
+            "acceptance_criteria": [
+              "StubListResponse matches schema",
+              "WorkorderListResponse matches schema",
+              "WorkorderDetailResponse matches schema",
+              "All fields present and correct types"
+            ]
+          }
+        ]
+      },
+      {
+        "phase_id": "DOCS",
+        "phase_name": "Documentation",
+        "duration_hours": 4,
+        "description": "Add code comments and documentation",
+        "tasks": [
+          {
+            "task_id": "WO-TRACKING-DOCS-001",
+            "title": "Document utility classes",
+            "description": "Add JSDoc comments to StubReader, WorkorderReader, ProjectsConfig",
+            "acceptance_criteria": "All public methods documented with parameters and return types"
+          },
+          {
+            "task_id": "WO-TRACKING-DOCS-002",
+            "title": "Document API routes",
+            "description": "Add comments explaining complex logic in route handlers",
+            "acceptance_criteria": "Implementation logic documented, error cases explained"
+          },
+          {
+            "task_id": "WO-TRACKING-DOCS-003",
+            "title": "Document graceful degradation",
+            "description": "Explain how missing files are handled throughout code",
+            "acceptance_criteria": "All graceful degradation paths documented"
+          },
+          {
+            "task_id": "WO-TRACKING-DOCS-004",
+            "title": "Create API documentation",
+            "description": "Document endpoints, parameters, response schemas for API consumers",
+            "acceptance_criteria": [
+              "All 3 endpoints documented",
+              "Request/response examples provided",
+              "Error cases explained"
+            ]
+          }
+        ]
+      }
+    ],
+
+    "7_testing_strategy": {
+      "testing_approach": "Unit tests + integration tests",
+      "test_framework": "Jest or Vitest",
+      "coverage_target": 85,
+      "test_scenarios": [
+        {
+          "category": "Core Functionality",
+          "count": 6,
+          "scenarios": [
+            "GET /api/stubs returns all stubs",
+            "GET /api/workorders returns all workorders",
+            "GET /api/workorders/:id returns complete workorder",
+            "StubReader finds stub.json files",
+            "WorkorderReader discovers workorders",
+            "ProjectsConfig validates config"
+          ]
+        },
+        {
+          "category": "Graceful Degradation",
+          "count": 7,
+          "scenarios": [
+            "Missing communication.json (200 OK)",
+            "Missing plan.json (200 OK)",
+            "Missing DELIVERABLES.md (200 OK)",
+            "Empty workorder folder (200 OK)",
+            "Partial files (200 OK)",
+            "Null optional fields (200 OK)",
+            "Fallback timestamps (200 OK)"
+          ]
+        },
+        {
+          "category": "Error Handling",
+          "count": 4,
+          "scenarios": [
+            "Missing config (500 CONFIG_ERROR)",
+            "Invalid JSON (500 PARSE_ERROR)",
+            "Folder not found (404 WORKORDER_NOT_FOUND)",
+            "Permission denied (403 FORBIDDEN)"
+          ]
+        },
+        {
+          "category": "Edge Cases",
+          "count": 4,
+          "scenarios": [
+            "Empty stubs directory",
+            "Project with no workorders",
+            "Large workorder lists",
+            "Windows paths"
+          ]
+        }
+      ],
+      "test_execution": "Run all 21 scenarios before marking complete"
+    },
+
+    "8_success_criteria": {
+      "must_have": [
+        "All 3 API endpoints deployed and responding",
+        "GET /api/stubs returns correct schema",
+        "GET /api/workorders aggregates all 6 projects",
+        "GET /api/workorders/:id returns complete workorder",
+        "Graceful degradation works (missing files handled)",
+        "All 21 test scenarios pass",
+        "Error responses consistent format",
+        "TypeScript types match responses"
+      ],
+      "acceptance_tests": [
+        {
+          "test": "curl http://localhost:3000/api/stubs",
+          "expected": "200 OK with StubListResponse schema"
+        },
+        {
+          "test": "curl http://localhost:3000/api/workorders",
+          "expected": "200 OK with WorkorderListResponse, aggregated from 6 projects"
+        },
+        {
+          "test": "curl http://localhost:3000/api/workorders/{valid-id}",
+          "expected": "200 OK with WorkorderDetailResponse with all available files"
+        },
+        {
+          "test": "Run test suite",
+          "expected": "All 21 scenarios pass"
+        }
+      ]
+    },
+
+    "9_implementation_checklist": {
+      "phase_1_setup": [
+        "[ ] Create src/app/api/stubs directory",
+        "[ ] Create src/app/api/workorders directory",
+        "[ ] Create src/app/api/workorders/[workorderId] directory",
+        "[ ] Create src/lib/api directory",
+        "[ ] Create src/types directory",
+        "[ ] Create TypeScript interfaces in src/types/stubs.ts",
+        "[ ] Create TypeScript interfaces in src/types/workorders.ts",
+        "[ ] Create response schemas in src/types/api.ts"
+      ],
+      "phase_2_implementation": [
+        "[ ] Implement ProjectsConfig class in src/lib/api/projects.ts",
+        "[ ] Implement StubReader class in src/lib/api/stubs.ts",
+        "[ ] Implement WorkorderReader class in src/lib/api/workorders.ts",
+        "[ ] Implement GET /api/stubs/route.ts",
+        "[ ] Implement GET /api/workorders/route.ts",
+        "[ ] Implement GET /api/workorders/[workorderId]/route.ts",
+        "[ ] Add error handling to all routes",
+        "[ ] Add graceful degradation for missing files"
+      ],
+      "phase_3_testing": [
+        "[ ] Setup test infrastructure (Jest/Vitest)",
+        "[ ] Write 6 core functionality tests",
+        "[ ] Write 7 graceful degradation tests",
+        "[ ] Write 4 error handling tests",
+        "[ ] Write 4 edge case tests",
+        "[ ] Run all tests - pass 100%",
+        "[ ] Validate response schemas",
+        "[ ] Test with curl/Postman manually"
+      ],
+      "phase_4_documentation": [
+        "[ ] Add JSDoc to ProjectsConfig",
+        "[ ] Add JSDoc to StubReader",
+        "[ ] Add JSDoc to WorkorderReader",
+        "[ ] Comment complex logic in route handlers",
+        "[ ] Document graceful degradation behavior",
+        "[ ] Create API documentation",
+        "[ ] Update DELIVERABLES.md with metrics"
+      ],
+      "final_checks": [
+        "[ ] All endpoints responding",
+        "[ ] All schemas validated",
+        "[ ] All tests passing",
+        "[ ] Error handling comprehensive",
+        "[ ] Code well-commented",
+        "[ ] Ready for handoff to UI team"
+      ]
+    },
+
+    "10_quality_checklist_for_plans": {
+      "completeness": [
+        "✅ All 10 sections present and detailed",
+        "✅ Workorder ID assigned: WO-TRACKING-SYSTEM-001",
+        "✅ 4 implementation phases with clear deliverables",
+        "✅ 21 test scenarios fully specified",
+        "✅ Success criteria measurable and achievable"
+      ],
+      "clarity": [
+        "✅ Mission clear: Build 3 API endpoints for tracking system",
+        "✅ Dependencies explicit: projects.config.json exists, no external DBs needed",
+        "✅ Risks identified and mitigated",
+        "✅ Implementation path step-by-step"
+      ],
+      "feasibility": [
+        "✅ 40-hour estimate reasonable (24h impl + 12h test + 4h docs)",
+        "✅ No blockers - all dependencies ready",
+        "✅ All tools/frameworks already available",
+        "✅ Team has required expertise"
+      ],
+      "quality": [
+        "✅ Graceful degradation designed throughout",
+        "✅ Error handling comprehensive",
+        "✅ Testing strategy thorough (21 scenarios)",
+        "✅ Documentation planned"
+      ],
+      "actionability": [
+        "✅ Task IDs unique and trackable",
+        "✅ Acceptance criteria clear and testable",
+        "✅ Phase breakdown logical",
+        "✅ Can start immediately"
+      ]
+    }
+  }
+}
