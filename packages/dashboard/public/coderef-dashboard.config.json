@@ -1,15 +1,5 @@
 {
   "version": "1.0.0",
-  "widgets": [
-    {
-      "id": "coming-soon",
-      "package": "@coderef-dashboard/widget-coming-soon",
-      "enabled": true,
-      "settings": {
-        "showDetails": true
-      }
-    }
-  ],
   "settings": {
     "theme": "industrial",
     "darkMode": true
