@@ -29,7 +29,7 @@ export default function Header() {
           <span className="text-ind-text">Code</span>
           <span className="text-ind-accent">Ref</span>
         </span>
-        <span className="text-ind-text uppercase tracking-wider text-sm font-bold">{title}</span>
+        <span className="text-2xl text-ind-text tracking-wider">{title}</span>
       </div>
 
       <UserAvatar />
