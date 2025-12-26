@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode } from 'react';
 
 interface SidebarContextType {
   isCollapsed: boolean;
@@ -14,19 +14,17 @@ export const SidebarContext = createContext<SidebarContextType | undefined>(
 /**
  * SidebarProvider
  * Manages sidebar collapsed state with localStorage persistence
+ * Initializes state from localStorage to prevent flash on reload
  */
 export function SidebarProvider({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Load from localStorage on mount
-  useEffect(() => {
+  // Initialize from localStorage to prevent hydration mismatch
+  const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('coderef-dashboard-sidebar-collapsed');
-      setIsCollapsed(saved === 'true');
-      setIsMounted(true);
+      return saved === 'true';
     }
-  }, []);
+    return false;
+  });
 
   // Save to localStorage when state changes
   const toggleSidebar = () => {
@@ -41,11 +39,6 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
       return newState;
     });
   };
-
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!isMounted) {
-    return <>{children}</>;
-  }
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, toggleSidebar }}>
