@@ -26,10 +26,12 @@ export default function Header() {
       "
     >
       <nav className="flex items-center gap-4">
-        <span className="text-2xl font-bold tracking-wider">
-          <span className="text-ind-text">Code</span>
-          <span className="text-ind-accent">Ref</span>
-        </span>
+        <Link href="/">
+          <span className="text-2xl font-bold tracking-wider hover:text-ind-accent transition-colors duration-200 cursor-pointer">
+            <span className="text-ind-text">Code</span>
+            <span className="text-ind-accent">Ref</span>
+          </span>
+        </Link>
 
         <span className="text-ind-text-muted">/</span>
 
