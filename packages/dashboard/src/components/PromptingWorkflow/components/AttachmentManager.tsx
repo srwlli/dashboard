@@ -26,7 +26,7 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
       const clipboardText = await readClipboard();
 
       if (!clipboardText?.trim()) {
-        alert('Clipboard is empty');
+        alert('Unable to read clipboard. Please ensure:\n1. You have copied text to clipboard\n2. The browser has permission to access clipboard\n3. You are using HTTPS or localhost');
         return;
       }
 
