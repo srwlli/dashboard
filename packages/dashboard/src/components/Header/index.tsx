@@ -25,7 +25,7 @@ export default function Header() {
       "
     >
       <div className="flex items-center gap-4">
-        <span className="text-2xl font-bold uppercase tracking-wider">
+        <span className="text-2xl font-bold tracking-wider">
           <span className="text-ind-text">Code</span>
           <span className="text-ind-accent">Ref</span>
         </span>
