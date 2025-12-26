@@ -5,7 +5,7 @@
  * Aggregates workorders from multiple project directories.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ProjectsConfig } from '@/lib/api/projects';
 import { WorkorderReader } from '@/lib/api/workorders';
 import { WorkorderListResponse } from '@/types/workorders';
@@ -16,7 +16,7 @@ import { resolve } from 'path';
  * GET /api/workorders
  * Returns all workorders from all 6 tracked projects, aggregated
  */
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     // Load projects config
     let projectsConfig: ProjectsConfig;

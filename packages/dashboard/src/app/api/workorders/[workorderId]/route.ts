@@ -12,19 +12,16 @@ import { WorkorderDetailResponse } from '@/types/workorders';
 import { createErrorResponse, ErrorCodes, HttpStatus } from '@/types/api';
 import { resolve } from 'path';
 
-interface RouteParams {
-  params: {
-    workorderId: string;
-  };
-}
-
 /**
  * GET /api/workorders/:workorderId
  * Returns specific workorder with all files
  */
-export async function GET(request: NextRequest, { params }: RouteParams): Promise<NextResponse> {
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ workorderId: string }> }
+): Promise<NextResponse> {
   try {
-    const { workorderId } = params;
+    const { workorderId } = await params;
 
     if (!workorderId) {
       const errorResponse = createErrorResponse(ErrorCodes.WORKORDER_NOT_FOUND, {

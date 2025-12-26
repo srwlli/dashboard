@@ -9,6 +9,8 @@ const breadcrumbMap: Record<string, { label: string; href: string }> = {
   '/prompts': { label: 'Prompts', href: '/prompts' },
   '/settings': { label: 'Settings', href: '/settings' },
   '/user-settings': { label: 'User Settings', href: '/user-settings' },
+  '/assistant': { label: 'Assistant', href: '/assistant' },
+  '/sources': { label: 'Sources', href: '/sources' },
 };
 
 export default function Header() {

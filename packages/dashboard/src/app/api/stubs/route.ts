@@ -5,7 +5,7 @@
  * Stubs are the backlog of pending work items.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ProjectsConfig } from '@/lib/api/projects';
 import { StubReader } from '@/lib/api/stubs';
 import { StubListResponse } from '@/types/stubs';
@@ -16,7 +16,7 @@ import { resolve } from 'path';
  * GET /api/stubs
  * Returns all stubs with correct schema
  */
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     // Load projects config
     let projectsConfig: ProjectsConfig;
