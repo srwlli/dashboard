@@ -13,14 +13,14 @@ const navigationItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { isCollapsed, toggleSidebar, isHydrated } = useSidebar();
 
   return (
     <aside
       className={`
         bg-ind-panel border-r border-ind-border flex flex-col
         transition-all duration-300 overflow-hidden
-        ${isCollapsed ? 'w-20' : 'w-64'}
+        ${isHydrated && isCollapsed ? 'w-20' : 'w-64'}
       `}
     >
       {/* Toggle Button */}
@@ -33,9 +33,9 @@ export default function Sidebar() {
           transition-colors duration-200
           text-ind-text-muted hover:text-ind-text
         "
-        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={isHydrated && isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        {isCollapsed ? (
+        {isHydrated && isCollapsed ? (
           <ChevronRight className="w-5 h-5" />
         ) : (
           <ChevronLeft className="w-5 h-5" />
@@ -54,7 +54,7 @@ export default function Sidebar() {
               label={item.label}
               href={item.href}
               isActive={isActive}
-              isCollapsed={isCollapsed}
+              isCollapsed={isHydrated && isCollapsed}
             />
           );
         })}

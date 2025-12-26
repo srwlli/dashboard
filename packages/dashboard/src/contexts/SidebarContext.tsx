@@ -1,10 +1,11 @@
 'use client';
 
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 
 interface SidebarContextType {
   isCollapsed: boolean;
   toggleSidebar: () => void;
+  isHydrated: boolean;
 }
 
 export const SidebarContext = createContext<SidebarContextType | undefined>(
@@ -25,6 +26,12 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
     }
     return false;
   });
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Mark as hydrated after mount to prevent hydration mismatch
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Save to localStorage when state changes
   const toggleSidebar = () => {
@@ -41,7 +48,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <SidebarContext.Provider value={{ isCollapsed, toggleSidebar }}>
+    <SidebarContext.Provider value={{ isCollapsed, toggleSidebar, isHydrated }}>
       {children}
     </SidebarContext.Provider>
   );
@@ -58,6 +65,7 @@ export function useSidebar() {
     return {
       isCollapsed: false,
       toggleSidebar: () => {},
+      isHydrated: false,
     };
   }
   return context;
