@@ -40,7 +40,7 @@ export default function NavItem({
         )}
 
         {isCollapsed && (
-          <div className="absolute left-16 top-1/2 -translate-y-1/2 bg-ind-panel text-ind-text text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap border border-ind-border z-50">
+          <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-ind-panel text-ind-text text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap border border-ind-border z-50">
             {label}
           </div>
         )}
