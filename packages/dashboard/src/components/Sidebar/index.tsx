@@ -27,7 +27,7 @@ export default function Sidebar() {
       <button
         onClick={toggleSidebar}
         className="
-          flex items-center justify-center p-4
+          flex items-center justify-center h-16
           border-b border-ind-border
           hover:bg-ind-bg/50
           transition-colors duration-200
