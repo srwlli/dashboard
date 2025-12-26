@@ -49,13 +49,13 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
         ))}
       </div>
 
-      {selectedPromptKey && (
-        <div className="px-4 py-3 bg-ind-bg border border-ind-border border-dashed rounded">
-          <p className="text-xs text-ind-text m-0">
-            Selected: <strong className="text-ind-accent">{prompts.find((p) => p.key === selectedPromptKey)?.label}</strong>
-          </p>
-        </div>
-      )}
+      <div className="px-4 py-3 bg-ind-bg border border-ind-border border-dashed rounded">
+        <p className="text-xs text-ind-text m-0">
+          Selected: <strong className="text-ind-accent">
+            {selectedPromptKey ? prompts.find((p) => p.key === selectedPromptKey)?.label : 'NONE'}
+          </strong>
+        </p>
+      </div>
     </div>
   );
 };
