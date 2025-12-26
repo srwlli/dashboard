@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 interface ComingSoonProps {
   title?: string;
@@ -11,25 +11,13 @@ interface ComingSoonProps {
 /**
  * ComingSoon Component
  * Placeholder component for features under development
- * Displays status, ETA, and core initialization status
+ * Displays coming soon status, ETA, and in-development indicator
  */
 export const ComingSoon: React.FC<ComingSoonProps> = ({
   title = 'More Features Coming Soon',
   description = 'Additional features are being developed. Check back later!',
   eta = 'Q1 2025',
 }) => {
-  const [coreStatus, setCoreStatus] = useState<'loading' | 'ready' | 'error'>(
-    'loading'
-  );
-
-  // Check if CodeRefCore is available
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.CodeRefCore) {
-      setCoreStatus('ready');
-    } else {
-      setCoreStatus('error');
-    }
-  }, []);
 
   return (
     <div className="w-full">
@@ -57,23 +45,11 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
             {description}
           </p>
 
-          {/* Core Status */}
+          {/* Status */}
           <div className="px-4 py-2 bg-ind-bg border border-ind-border rounded">
-            {coreStatus === 'ready' && (
-              <p className="text-green-500 text-xs font-mono">
-                ✓ Core loaded • Ready for features
-              </p>
-            )}
-            {coreStatus === 'loading' && (
-              <p className="text-ind-text-muted text-xs font-mono">
-                ⏳ Initializing core...
-              </p>
-            )}
-            {coreStatus === 'error' && (
-              <p className="text-ind-accent text-xs font-mono">
-                ⚠️ Core not available
-              </p>
-            )}
+            <p className="text-ind-text-muted text-xs font-mono">
+              Status: Coming Soon
+            </p>
           </div>
 
           {/* ETA Section */}
