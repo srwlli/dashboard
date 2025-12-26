@@ -22,8 +22,8 @@ export default function NavItem({
     <Link href={href}>
       <div
         className={`
-          relative flex items-center gap-3 px-4 py-3 rounded-lg
-          transition-colors duration-200 cursor-pointer group
+          flex items-center gap-3 px-4 py-3 rounded-lg
+          transition-colors duration-200 cursor-pointer
           ${
             isActive
               ? 'text-ind-accent bg-ind-bg'
@@ -37,12 +37,6 @@ export default function NavItem({
           <>
             <span className="flex-1 text-sm font-medium truncate">{label}</span>
           </>
-        )}
-
-        {isCollapsed && (
-          <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-ind-panel text-ind-text text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap border border-ind-border z-50">
-            {label}
-          </div>
         )}
       </div>
     </Link>
