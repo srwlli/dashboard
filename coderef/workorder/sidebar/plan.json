@@ -1,0 +1,635 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "sidebar",
+    "schema_version": "1.0.0",
+    "version": "1.0.0",
+    "status": "complete",
+    "generated_by": "Claude Code",
+    "has_context": false,
+    "has_analysis": false,
+    "created_date": "2025-12-26",
+    "updated_date": "2025-12-26",
+    "changes": "Modified to use single toggle (sidebar only), lucide-react icons, sticky header, NO tooltip on toggle"
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "project_overview": "CodeRef Dashboard - Modular UI/UX improvements",
+      "existing_architecture": {
+        "key_technologies": [
+          "Next.js 16.1.1 (React)",
+          "Tailwind CSS",
+          "TypeScript",
+          "React Context API",
+          "localStorage for persistence",
+          "lucide-react for icons (NEW)"
+        ],
+        "current_structure": "RootClientWrapper provides global layout with PageLayout component for pages",
+        "theme_system": "CSS variables (ind-bg, ind-panel, ind-accent, ind-text, ind-text-muted) + dark/light mode",
+        "component_pattern": "All components using Tailwind with theme variables, no CSS Modules"
+      },
+      "related_systems": [
+        "PageLayout component (page headers)",
+        "RootClientWrapper (global layout)",
+        "AccentColorContext (dynamic colors)",
+        "ThemeContext (dark/light mode)",
+        "PromptingWorkflow (main feature)"
+      ],
+      "dependencies": {
+        "runtime": ["react", "react-dom", "next", "lucide-react"],
+        "build": ["typescript", "tailwindcss"]
+      }
+    },
+    "1_executive_summary": {
+      "feature_name": "Sidebar Navigation with Collapsible Toggle",
+      "goal": "Add persistent collapsible sidebar navigation to dashboard with integrated sticky header containing CodeRef branding, page title, and user profile avatar. Use proper icon library (lucide-react) instead of emojis, with single toggle point in sidebar only.",
+      "primary_intent": "Improve navigation structure with professional sidebar UI, maintain clean sticky header with branding, and provide quick access to user settings. Reduce redundancy by using single toggle button.",
+      "user_benefits": [
+        "Clear navigation between Dashboard, Prompts, Settings, and User Settings pages",
+        "Space-efficient sidebar toggle for focused content viewing",
+        "Persistent sidebar state via localStorage",
+        "Quick access to user profile settings via avatar in header",
+        "Professional header with consistent branding and sticky positioning",
+        "Clean icon library (lucide-react) for professional appearance"
+      ],
+      "business_value": "Enhanced UX with organized navigation, improved visual hierarchy, professional icon system, sets foundation for future dashboard expansion",
+      "scope": "Sidebar component, Header component (sticky), UserAvatar component, SidebarContext, lucide-react integration, updated layout, new User Settings page",
+      "key_changes_from_initial": "Single toggle button in sidebar only (not duplicated in header), lucide-react icons (ChevronLeft/ChevronRight), sticky header positioning"
+    },
+    "2_risk_assessment": {
+      "complexity_estimate": "medium",
+      "implementation_risks": [
+        {
+          "risk": "Layout breaking on responsive transitions",
+          "likelihood": "medium",
+          "impact": "high",
+          "mitigation": "Thorough testing of lg breakpoint, mobile hamburger fallback"
+        },
+        {
+          "risk": "Sticky header pushing content down or overlapping",
+          "likelihood": "medium",
+          "impact": "medium",
+          "mitigation": "Use proper positioning (sticky with z-index), test scrolling behavior"
+        },
+        {
+          "risk": "lucide-react icon rendering inconsistencies",
+          "likelihood": "low",
+          "impact": "low",
+          "mitigation": "Test icons across themes, ensure proper sizing and colors"
+        },
+        {
+          "risk": "Single toggle button not discoverable to users",
+          "likelihood": "low",
+          "impact": "medium",
+          "mitigation": "Tooltip on toggle button, intuitive chevron icon"
+        }
+      ],
+      "dependencies_risk": "Medium - lucide-react needs to be added to dependencies, but it's stable and widely used",
+      "technical_debt": "None - cleaner architecture with single toggle point",
+      "estimated_effort": "8-10 hours"
+    },
+    "3_current_state_analysis": {
+      "files_to_create": [
+        {
+          "path": "packages/dashboard/src/components/Sidebar/index.tsx",
+          "purpose": "Main sidebar component with collapsible toggle (single point), navigation items"
+        },
+        {
+          "path": "packages/dashboard/src/components/Sidebar/NavItem.tsx",
+          "purpose": "Reusable navigation item component with icon, label, active state detection"
+        },
+        {
+          "path": "packages/dashboard/src/components/Header/index.tsx",
+          "purpose": "Sticky top header with CodeRef branding, dynamic page title, user avatar (NO toggle button)"
+        },
+        {
+          "path": "packages/dashboard/src/components/UserAvatar/index.tsx",
+          "purpose": "User avatar button with tooltip, navigates to /user-settings"
+        },
+        {
+          "path": "packages/dashboard/src/contexts/SidebarContext.tsx",
+          "purpose": "React Context for sidebar collapsed state, localStorage persistence, toggle function"
+        },
+        {
+          "path": "packages/dashboard/src/app/user-settings/page.tsx",
+          "purpose": "User Settings page with ComingSoon placeholder"
+        }
+      ],
+      "files_to_modify": [
+        {
+          "path": "packages/dashboard/package.json",
+          "reason": "Add lucide-react dependency"
+        },
+        {
+          "path": "packages/dashboard/src/components/RootClientWrapper.tsx",
+          "reason": "Update layout from grid to flex, add Header component, include Sidebar"
+        },
+        {
+          "path": "packages/dashboard/src/app/layout.tsx",
+          "reason": "Wrap RootClientWrapper with SidebarProvider"
+        }
+      ],
+      "files_to_delete": [],
+      "configuration_changes": "Add lucide-react to package.json dependencies"
+    },
+    "4_key_features": {
+      "feature_1": {
+        "name": "Collapsible Sidebar Navigation",
+        "description": "Sidebar with SINGLE toggle button at top, 3 nav items (Dashboard, Prompts, Settings), smooth collapse animation using lucide-react ChevronLeft/ChevronRight icons",
+        "components": ["Sidebar", "NavItem", "SidebarContext"],
+        "technical_approach": "useState + localStorage for persistence, lucide-react for icons, Tailwind transitions"
+      },
+      "feature_2": {
+        "name": "Sidebar Toggle Button (Single Point)",
+        "description": "Only in Sidebar at top, uses ChevronLeft (collapse) / ChevronRight (expand), synced with SidebarContext",
+        "components": ["Sidebar"],
+        "technical_approach": "lucide-react ChevronLeft/ChevronRight icons, button with onClick listener"
+      },
+      "feature_3": {
+        "name": "Navigation Items with Tooltips",
+        "description": "Dashboard, Prompts, Settings with icons, labels when expanded, tooltips on hover when collapsed",
+        "components": ["NavItem"],
+        "technical_approach": "usePathname() for active detection, Tailwind group-hover for tooltips"
+      },
+      "feature_4": {
+        "name": "Sticky Header with CodeRef Branding",
+        "description": "Top bar with 'CodeRef' text, dynamic page title, user avatar. Sticky positioning (stays at top when scrolling)",
+        "components": ["Header", "UserAvatar"],
+        "technical_approach": "Flex layout, sticky positioning with z-index, usePathname() for dynamic title"
+      },
+      "feature_5": {
+        "name": "User Avatar with Settings Link",
+        "description": "Circular button with 👤 icon, tooltip, navigates to /user-settings page",
+        "components": ["UserAvatar"],
+        "technical_approach": "Link component, hover effects, Tailwind styling"
+      },
+      "feature_6": {
+        "name": "Responsive Layout",
+        "description": "Desktop: sidebar visible/collapsible. Mobile: sidebar hidden, hamburger menu (future)",
+        "components": ["Sidebar", "Header", "RootClientWrapper"],
+        "technical_approach": "Tailwind breakpoints (lg:), CSS media queries for responsive behavior"
+      },
+      "feature_7": {
+        "name": "Persistent Sidebar State",
+        "description": "Sidebar collapsed state saved to localStorage, restored on page reload",
+        "components": ["SidebarContext"],
+        "technical_approach": "useEffect with localStorage.getItem/setItem"
+      },
+      "feature_8": {
+        "name": "Active Route Highlighting",
+        "description": "Current page nav item highlighted with accent color and background",
+        "components": ["NavItem"],
+        "technical_approach": "usePathname() comparison, conditional Tailwind classes"
+      }
+    },
+    "5_task_id_system": {
+      "workorder": {
+        "id": "WO-SIDEBAR-001",
+        "name": "Sidebar Navigation Implementation",
+        "feature_dir": "coderef/workorder/sidebar",
+        "created_date": "2025-12-26"
+      },
+      "tasks": [
+        {
+          "id": "SETUP-001",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Add lucide-react to package.json dependencies",
+          "type": "setup",
+          "files_affected": ["packages/dashboard/package.json"],
+          "acceptance_criteria": [
+            "lucide-react added to dependencies",
+            "npm install succeeds",
+            "lucide-react icons importable and usable"
+          ]
+        },
+        {
+          "id": "SETUP-002",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Create SidebarContext with collapsed state and localStorage persistence",
+          "type": "setup",
+          "files_affected": ["packages/dashboard/src/contexts/SidebarContext.tsx"],
+          "acceptance_criteria": [
+            "Context provides isCollapsed boolean and toggleSidebar function",
+            "State persists to localStorage as 'coderef-dashboard-sidebar-collapsed'",
+            "Default state is not collapsed (false)",
+            "useEffect syncs state from localStorage on mount"
+          ]
+        },
+        {
+          "id": "SETUP-003",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Wrap RootClientWrapper with SidebarProvider in layout.tsx",
+          "type": "setup",
+          "files_affected": ["packages/dashboard/src/app/layout.tsx"],
+          "acceptance_criteria": [
+            "SidebarContext provider wraps RootClientWrapper",
+            "Context is accessible in all child components"
+          ]
+        },
+        {
+          "id": "COMP-001",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Create NavItem component with active state detection and tooltips",
+          "type": "component",
+          "files_affected": ["packages/dashboard/src/components/Sidebar/NavItem.tsx"],
+          "acceptance_criteria": [
+            "NavItem accepts icon, label, href, isActive, isCollapsed props",
+            "Shows icon + label when expanded",
+            "Shows icon only when collapsed",
+            "Active state highlights with accent color and background",
+            "Tooltip shows on hover when collapsed (desktop only, hidden lg:block)",
+            "Uses Link component for navigation"
+          ]
+        },
+        {
+          "id": "COMP-002",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Create Sidebar component with SINGLE toggle button (chevron icons from lucide-react) and navigation items",
+          "type": "component",
+          "files_affected": ["packages/dashboard/src/components/Sidebar/index.tsx"],
+          "acceptance_criteria": [
+            "Sidebar component reads isCollapsed and toggleSidebar from SidebarContext",
+            "Single toggle button at top with ChevronLeft (collapse) / ChevronRight (expand) from lucide-react",
+            "NO tooltip on toggle button (clean UI, icon is self-explanatory)",
+            "3 navigation items: Dashboard (/), Prompts (/prompts), Settings (/settings)",
+            "Uses NavItem component for each nav item",
+            "Smooth transition animation on collapse (transition-all duration-300)",
+            "Width: w-64 expanded, w-20 collapsed",
+            "Navigation items detect active route with usePathname()"
+          ]
+        },
+        {
+          "id": "COMP-003",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Create sticky Header component with CodeRef branding, page title, and user avatar (NO toggle button)",
+          "type": "component",
+          "files_affected": ["packages/dashboard/src/components/Header/index.tsx"],
+          "acceptance_criteria": [
+            "Header is sticky positioned at top (sticky top-0 z-40)",
+            "Header displays 'CodeRef' branding (static)",
+            "Header displays dynamic page title based on usePathname()",
+            "Page titles: 'Dashboard', 'Prompts', 'Settings', 'User Settings'",
+            "Header includes UserAvatar component on right",
+            "Header has border-b and bg-ind-panel",
+            "Flex layout: branding + title (left), avatar (right)",
+            "NO toggle button in header (toggle only in sidebar)"
+          ]
+        },
+        {
+          "id": "COMP-004",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Create UserAvatar component with tooltip and navigation",
+          "type": "component",
+          "files_affected": ["packages/dashboard/src/components/UserAvatar/index.tsx"],
+          "acceptance_criteria": [
+            "Circular button: w-10 h-10, rounded-full, border-2 border-ind-accent",
+            "Icon: 👤 (text-lg)",
+            "Hover effects: scale-105, shadow-lg with accent color",
+            "Tooltip: 'User Settings' on hover (desktop only)",
+            "Links to /user-settings page"
+          ]
+        },
+        {
+          "id": "PAGE-001",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Create /user-settings page with ComingSoon placeholder",
+          "type": "page",
+          "files_affected": ["packages/dashboard/src/app/user-settings/page.tsx"],
+          "acceptance_criteria": [
+            "Page uses PageLayout with title 'CodeRef User Settings'",
+            "ComingSoon component displays with custom message",
+            "ETA: Q1 2025",
+            "Page accessible via user avatar link"
+          ]
+        },
+        {
+          "id": "LAYOUT-001",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Update RootClientWrapper to use flex layout with Sidebar and sticky Header",
+          "type": "layout",
+          "files_affected": ["packages/dashboard/src/components/RootClientWrapper.tsx"],
+          "acceptance_criteria": [
+            "Root uses flex layout: h-screen (full height)",
+            "Sidebar on left (w-64 / w-20 based on collapsed state)",
+            "Main content area: flex-1, flex flex-col overflow-hidden",
+            "Sticky Header inside main content area (top)",
+            "Scrollable content area below header (flex-1 overflow-y-auto)",
+            "Max-width and centering preserved for content",
+            "Sidebar and content properly aligned"
+          ]
+        },
+        {
+          "id": "TEST-001",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Test sidebar toggle (single point) and localStorage persistence",
+          "type": "testing",
+          "files_affected": ["packages/dashboard/src/components/Sidebar/index.tsx"],
+          "acceptance_criteria": [
+            "Toggle button in sidebar expands/collapses sidebar smoothly",
+            "NO toggle button in header (verify it's not there)",
+            "Toggle button has NO tooltip (clean icon only)",
+            "Collapsed state persists on page reload",
+            "Sidebar state syncs across multiple tabs (storage event)",
+            "Animation smooth and not jarring (300ms transition)",
+            "lucide-react ChevronLeft/ChevronRight icons display correctly"
+          ]
+        },
+        {
+          "id": "TEST-002",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Test sticky header positioning and scroll behavior",
+          "type": "testing",
+          "files_affected": ["packages/dashboard/src/components/Header/index.tsx"],
+          "acceptance_criteria": [
+            "Header stays at top when scrolling content",
+            "Header z-index correct (no overlap issues)",
+            "Header doesn't push content down (uses sticky, not fixed)",
+            "No layout shift when header becomes sticky"
+          ]
+        },
+        {
+          "id": "TEST-003",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Test active route detection on all pages",
+          "type": "testing",
+          "files_affected": ["packages/dashboard/src/components/Sidebar/NavItem.tsx"],
+          "acceptance_criteria": [
+            "Dashboard nav item highlighted on / route",
+            "Prompts nav item highlighted on /prompts route",
+            "Settings nav item highlighted on /settings route",
+            "User Settings nav item NOT highlighted (not in sidebar)",
+            "Active highlighting uses accent color + background"
+          ]
+        },
+        {
+          "id": "TEST-004",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Test responsive behavior on mobile vs desktop",
+          "type": "testing",
+          "files_affected": ["packages/dashboard/src/components/Sidebar/index.tsx", "packages/dashboard/src/components/Header/index.tsx"],
+          "acceptance_criteria": [
+            "Desktop (lg+): Sidebar visible, toggle works, tooltips show",
+            "Mobile (below lg): Layout doesn't break (future: hamburger)",
+            "No overflow or layout breaking at any breakpoint",
+            "Header remains functional and sticky on mobile"
+          ]
+        },
+        {
+          "id": "TEST-005",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Test dark/light mode and accent color compatibility",
+          "type": "testing",
+          "files_affected": ["packages/dashboard/src/components/Sidebar/index.tsx", "packages/dashboard/src/components/Header/index.tsx", "packages/dashboard/src/components/UserAvatar/index.tsx"],
+          "acceptance_criteria": [
+            "Sidebar uses theme variables (ind-bg, ind-panel, ind-border, ind-text, ind-accent)",
+            "Header uses theme variables consistently",
+            "Avatar uses ind-accent for border",
+            "All components respect dark/light mode toggle",
+            "Accent color changes reflected in active nav items and avatar",
+            "lucide-react icons visible in both light and dark modes"
+          ]
+        },
+        {
+          "id": "BUILD-001",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Build dashboard and verify no TypeScript or runtime errors",
+          "type": "build",
+          "files_affected": ["packages/dashboard/"],
+          "acceptance_criteria": [
+            "npm run build:dashboard succeeds with no errors",
+            "No TypeScript compilation errors",
+            "All routes build successfully (/, /prompts, /settings, /user-settings)",
+            "No console warnings or runtime errors",
+            "lucide-react icons imported and bundled correctly"
+          ]
+        },
+        {
+          "id": "COMMIT-001",
+          "workorder_id": "WO-SIDEBAR-001",
+          "description": "Commit sidebar implementation with all components and context",
+          "type": "commit",
+          "files_affected": ["packages/dashboard/src/components/Sidebar/", "packages/dashboard/src/components/Header/", "packages/dashboard/src/components/UserAvatar/", "packages/dashboard/src/contexts/SidebarContext.tsx", "packages/dashboard/src/components/RootClientWrapper.tsx", "packages/dashboard/src/app/user-settings/", "packages/dashboard/package.json"],
+          "acceptance_criteria": [
+            "Git commit with descriptive message",
+            "All files properly staged and committed",
+            "Commit message includes workorder WO-SIDEBAR-001",
+            "Commit message mentions lucide-react integration and single toggle"
+          ]
+        }
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Foundation & Setup",
+          "description": "Add lucide-react dependency, create context, provider setup, and component structure",
+          "tasks": ["SETUP-001", "SETUP-002", "SETUP-003"],
+          "deliverables": [
+            "lucide-react added to dependencies",
+            "SidebarContext with toggle state and localStorage",
+            "Provider wrapping RootClientWrapper",
+            "Context accessible in all components"
+          ],
+          "duration_estimate": "1-2 hours",
+          "success_criteria": "lucide-react installs, Context works, state persists, no errors"
+        },
+        {
+          "phase": 2,
+          "name": "Component Development",
+          "description": "Create Sidebar, NavItem, Header, UserAvatar components with lucide-react icons",
+          "tasks": ["COMP-001", "COMP-002", "COMP-003", "COMP-004", "PAGE-001"],
+          "deliverables": [
+            "Sidebar component with single toggle button (ChevronLeft/ChevronRight icons)",
+            "NavItem component with active detection",
+            "Sticky Header component (NO toggle button)",
+            "UserAvatar component with tooltip",
+            "User Settings page"
+          ],
+          "duration_estimate": "4-6 hours",
+          "success_criteria": "All components render, icons display correctly, styling matches spec, no TypeScript errors"
+        },
+        {
+          "phase": 3,
+          "name": "Layout Integration",
+          "description": "Update RootClientWrapper with flex layout and sticky header",
+          "tasks": ["LAYOUT-001"],
+          "deliverables": [
+            "RootClientWrapper updated with flex layout",
+            "Sidebar and sticky Header integrated",
+            "Content area properly scrollable",
+            "All pages display correctly"
+          ],
+          "duration_estimate": "1-2 hours",
+          "success_criteria": "Layout works on all pages, no visual breaking, responsive, sticky header works"
+        },
+        {
+          "phase": 4,
+          "name": "Testing & Refinement",
+          "description": "Test all features, responsive behavior, persistence, sticky positioning, and build",
+          "tasks": ["TEST-001", "TEST-002", "TEST-003", "TEST-004", "TEST-005", "BUILD-001", "COMMIT-001"],
+          "deliverables": [
+            "All tests passing",
+            "Responsive design verified",
+            "Sticky header tested and working",
+            "Dark/light mode compatible",
+            "lucide-react icons rendering correctly",
+            "Build succeeds",
+            "Git commit with all changes"
+          ],
+          "duration_estimate": "2-3 hours",
+          "success_criteria": "All tests pass, build clean, no errors, sticky header functional, production ready"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "SidebarContext: toggle function updates state, localStorage works",
+        "NavItem: active detection, conditional rendering (expanded/collapsed)",
+        "UserAvatar: renders correctly, tooltip text correct"
+      ],
+      "integration_tests": [
+        "Sidebar + Header: toggle controls sidebar width, header stays sticky at top",
+        "RootClientWrapper: layout flex working, sidebar and content aligned",
+        "Navigation: clicking nav items routes correctly, active state updates",
+        "User Avatar: clicking navigates to /user-settings",
+        "Sticky positioning: header stays at top during scroll, no overlap"
+      ],
+      "e2e_scenarios": [
+        "User arrives on Dashboard, sidebar expanded, clicks toggle to collapse",
+        "User navigates to /prompts, sidebar remembers collapsed state, Prompts nav highlighted",
+        "User scrolls content, header stays at top (sticky)",
+        "User navigates to /settings, Settings nav highlighted, header remains visible",
+        "User clicks avatar, navigates to /user-settings",
+        "User refreshes page, sidebar state restored from localStorage",
+        "User switches between pages, active nav item updates, page title updates, header stays sticky"
+      ],
+      "browser_testing": [
+        "Desktop (1920x1080): sidebar visible, toggle works, tooltips show, header sticky",
+        "Tablet (768x1024): sidebar behavior verified, sticky header functional",
+        "Mobile (375x667): layout doesn't break (future: hamburger menu)"
+      ],
+      "theme_testing": [
+        "Dark mode: all colors use theme variables correctly, icons visible",
+        "Light mode: all colors use theme variables correctly, icons visible",
+        "Accent color changes: active nav items update, avatar border updates"
+      ],
+      "icon_testing": [
+        "lucide-react ChevronLeft renders correctly when expanded",
+        "lucide-react ChevronRight renders correctly when collapsed",
+        "Icons scale properly with different sizes",
+        "Icons visible in both light and dark modes"
+      ]
+    },
+    "8_success_criteria": {
+      "functional_criteria": [
+        "Sidebar displays with 3 navigation items (Dashboard, Prompts, Settings)",
+        "SINGLE toggle button at top of sidebar (ChevronLeft/ChevronRight from lucide-react)",
+        "NO toggle button in header",
+        "Toggle button expands/collapses smoothly (300ms transition)",
+        "Collapsed state saves to localStorage and persists on reload",
+        "Header displays CodeRef branding, dynamic page title, user avatar",
+        "Header is sticky and stays at top during scrolling",
+        "Active page nav item highlighted with accent color",
+        "User avatar links to /user-settings page",
+        "All routes accessible: /, /prompts, /settings, /user-settings"
+      ],
+      "ui_ux_criteria": [
+        "Sidebar width: 250px (w-64) expanded, 80px (w-20) collapsed",
+        "Toggle button at top of sidebar with ChevronLeft/ChevronRight icons (not emojis)",
+        "Nav items have icons + labels when expanded, icon only when collapsed",
+        "Tooltips show on hover when collapsed (desktop only)",
+        "Header sticky positioning with proper z-index (z-40 or higher)",
+        "Header has border-b, bg-ind-panel, flex layout",
+        "User avatar: circular, w-10 h-10, border-2 border-ind-accent",
+        "All colors use theme variables (ind-bg, ind-panel, ind-accent, etc)",
+        "lucide-react icons professional and consistent",
+        "No visual glitches, smooth animations, professional appearance"
+      ],
+      "responsive_criteria": [
+        "Works on desktop (1920x1080), tablet (768x1024), mobile (375x667)",
+        "No content overflow or layout breaking at any breakpoint",
+        "Sidebar toggle functional on desktop and touch devices",
+        "Header properly responsive with padding/spacing",
+        "Sticky header works on all devices"
+      ],
+      "code_quality_criteria": [
+        "All TypeScript types defined, no 'any' types",
+        "No console errors or warnings on production build",
+        "Components follow established patterns (hooks, context, Tailwind)",
+        "Code is clean, readable, follows project conventions",
+        "No unused imports or dead code",
+        "lucide-react icons properly imported and typed"
+      ],
+      "performance_criteria": [
+        "Sidebar toggle animation smooth (60 FPS, 300ms duration)",
+        "No layout shifts on toggle",
+        "localStorage operations don't block UI",
+        "Sticky header doesn't cause scroll jank",
+        "Build time not significantly increased",
+        "lucide-react bundle size reasonable"
+      ]
+    },
+    "9_implementation_checklist": {
+      "phase_1": {
+        "name": "Foundation & Setup",
+        "items": [
+          "[ ] Add lucide-react to package.json",
+          "[ ] Run npm install and verify lucide-react installed",
+          "[ ] Create SidebarContext.tsx with collapsed state",
+          "[ ] Implement toggle function in context",
+          "[ ] Add localStorage persistence (getItem/setItem)",
+          "[ ] Wrap RootClientWrapper with SidebarProvider in layout.tsx",
+          "[ ] Test context works with useContext hook"
+        ]
+      },
+      "phase_2": {
+        "name": "Component Development",
+        "items": [
+          "[ ] Create Sidebar/NavItem.tsx component",
+          "[ ] Create Sidebar/index.tsx component with toggle button (ChevronLeft/ChevronRight)",
+          "[ ] Create Header/index.tsx component (sticky, no toggle button)",
+          "[ ] Create UserAvatar/index.tsx component",
+          "[ ] Create app/user-settings/page.tsx with ComingSoon",
+          "[ ] Test each component individually",
+          "[ ] Verify lucide-react icons import and render correctly",
+          "[ ] Verify Tailwind classes apply correctly",
+          "[ ] Verify tooltips render (desktop only)"
+        ]
+      },
+      "phase_3": {
+        "name": "Layout Integration",
+        "items": [
+          "[ ] Update RootClientWrapper to flex layout",
+          "[ ] Add sticky Header component to main content area",
+          "[ ] Add Sidebar to root layout",
+          "[ ] Test layout on all pages (Dashboard, Prompts, Settings, User Settings)",
+          "[ ] Verify sidebar toggle controls width",
+          "[ ] Test scrollable content area",
+          "[ ] Verify max-width and centering preserved",
+          "[ ] Test sticky header positioning during scroll"
+        ]
+      },
+      "phase_4": {
+        "name": "Testing & Refinement",
+        "items": [
+          "[ ] Test sidebar toggle expand/collapse",
+          "[ ] Verify NO toggle button in header",
+          "[ ] Test localStorage persistence (reload page)",
+          "[ ] Test active route detection on each page",
+          "[ ] Test nav item highlighting with accent color",
+          "[ ] Test user avatar tooltip and link",
+          "[ ] Test header page title updates",
+          "[ ] Test sticky header stays at top during scroll",
+          "[ ] Test responsive behavior (desktop/mobile)",
+          "[ ] Test dark/light mode compatibility",
+          "[ ] Test accent color changes",
+          "[ ] Verify lucide-react icons visible in all modes",
+          "[ ] Run npm run build:dashboard",
+          "[ ] Verify no TypeScript errors",
+          "[ ] Verify no console errors",
+          "[ ] Git commit all changes"
+        ]
+      }
+    }
+  }
+}
