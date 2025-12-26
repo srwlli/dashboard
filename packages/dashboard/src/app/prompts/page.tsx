@@ -9,7 +9,7 @@ import { PromptingWorkflow } from '@/components/PromptingWorkflow';
  */
 export default function PromptsPage() {
   return (
-    <PageLayout title="CodeRef Prompts">
+    <PageLayout>
       <PromptingWorkflow />
     </PageLayout>
   );

@@ -9,7 +9,7 @@ import { ComingSoon } from '@/components/ComingSoon';
  */
 export default function Home() {
   return (
-    <PageLayout title="CodeRef Dashboard">
+    <PageLayout>
       <ComingSoon
         title="Dashboard"
         description="Your personalized CodeRef dashboard is being built. Access the full prompting workflow via the Prompts page."

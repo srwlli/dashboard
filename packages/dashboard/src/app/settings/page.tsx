@@ -9,7 +9,7 @@ import { ThemePanel } from '@/components/ThemePanel';
  */
 export default function SettingsPage() {
   return (
-    <PageLayout title="CodeRef Settings">
+    <PageLayout>
       <ThemePanel />
     </PageLayout>
   );
