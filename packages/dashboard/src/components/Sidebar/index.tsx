@@ -5,9 +5,12 @@ import { useSidebar } from '@/contexts/SidebarContext';
 import { ChevronLeft, ChevronRight, Home, BookOpen, Settings } from 'lucide-react';
 import NavItem from './NavItem';
 
-const navigationItems = [
+const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
   { label: 'Prompts', href: '/prompts', icon: BookOpen },
+];
+
+const bottomNavItems = [
   { label: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -42,9 +45,27 @@ export default function Sidebar() {
         )}
       </button>
 
-      {/* Navigation Items */}
+      {/* Main Navigation Items */}
       <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto overflow-x-hidden">
-        {navigationItems.map((item) => {
+        {mainNavItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          return (
+            <NavItem
+              key={item.href}
+              icon={<Icon className="w-5 h-5" />}
+              label={item.label}
+              href={item.href}
+              isActive={isActive}
+              isCollapsed={isHydrated && isCollapsed}
+            />
+          );
+        })}
+      </nav>
+
+      {/* Bottom Navigation Items */}
+      <nav className="border-t border-ind-border px-3 py-4 space-y-2 flex-shrink-0">
+        {bottomNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
