@@ -19,7 +19,7 @@ export default function Sidebar() {
     <aside
       className={`
         bg-ind-panel border-r border-ind-border flex flex-col
-        transition-all duration-300
+        transition-all duration-300 overflow-hidden
         ${isCollapsed ? 'w-20' : 'w-64'}
       `}
     >
