@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from './ExportMenu.module.css';
 
 interface ExportMenuProps {
   onCopyJSON: () => Promise<void>;
@@ -80,9 +79,9 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
   };
 
   return (
-    <div ref={menuRef} className={styles.container}>
+    <div ref={menuRef} className="flex gap-3 flex-wrap items-center">
       <button
-        className={`${styles.button} ${styles.primary}`}
+        className="px-4 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider text-sm hover:bg-ind-accent-hover transition-all active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleCopyJSON}
         disabled={disabled || isLoading}
         type="button"
@@ -91,9 +90,9 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
         {isLoading ? '⟳ Exporting...' : '📋 COPY ALL TO CLIPBOARD'}
       </button>
 
-      <div className={styles.menuWrapper}>
+      <div className="relative">
         <button
-          className={`${styles.button} ${styles.secondary}`}
+          className="px-4 py-2 bg-ind-border text-ind-text font-bold uppercase tracking-wider text-sm hover:bg-ind-text transition-all active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => setIsOpen(!isOpen)}
           disabled={disabled}
           type="button"
@@ -103,30 +102,34 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
         </button>
 
         {isOpen && (
-          <div className={styles.menu}>
+          <div className="absolute top-full right-0 bg-ind-panel border border-ind-border rounded mt-1 min-w-[180px] shadow-lg z-50">
             <button
-              className={styles.menuItem}
+              className="flex items-center gap-3 w-full px-4 py-3 text-ind-text text-sm hover:bg-ind-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed first:rounded-t last:rounded-b text-left"
               onClick={handleExportJSON}
               disabled={isLoading}
               type="button"
             >
-              <span className={styles.icon}>📄</span>
+              <span className="text-base flex-shrink-0">📄</span>
               <span>Export as .json</span>
             </button>
             <button
-              className={styles.menuItem}
+              className="flex items-center gap-3 w-full px-4 py-3 text-ind-text text-sm hover:bg-ind-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed first:rounded-t last:rounded-b text-left"
               onClick={handleExportMarkdown}
               disabled={isLoading}
               type="button"
             >
-              <span className={styles.icon}>📝</span>
+              <span className="text-base flex-shrink-0">📝</span>
               <span>Export as .md</span>
             </button>
           </div>
         )}
       </div>
 
-      {message && <p className={styles.message}>{message}</p>}
+      {message && (
+        <p className="text-xs px-3 py-2 rounded bg-green-900/30 text-green-400 whitespace-nowrap">
+          {message}
+        </p>
+      )}
     </div>
   );
 };

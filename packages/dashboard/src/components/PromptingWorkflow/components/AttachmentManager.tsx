@@ -3,7 +3,6 @@ import { Attachment } from '../types';
 import { AttachmentDropZone } from './AttachmentDropZone';
 import { PasteTextModal } from './PasteTextModal';
 import { formatTokenCount } from '../utils/tokenEstimator';
-import styles from './AttachmentManager.module.css';
 
 interface AttachmentManagerProps {
   attachments: Attachment[];
@@ -35,41 +34,47 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
   );
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Attachments</h2>
+    <div className="w-full space-y-4">
+      <h3 className="text-sm uppercase tracking-widest text-ind-text-muted font-mono font-bold">
+        Attachments
+      </h3>
 
       <AttachmentDropZone onFilesAdded={onAddAttachments} disabled={false} />
 
-      <div className={styles.actions}>
+      <div className="flex gap-3 flex-wrap">
         <button
-          className={styles.pasteButton}
+          className="px-4 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider text-sm hover:bg-ind-accent-hover transition-all active:translate-y-0.5"
           onClick={() => setShowPasteModal(true)}
           type="button"
         >
           + Paste Text
         </button>
         {attachments.length > 0 && (
-          <button className={styles.clearButton} onClick={onClearAll} type="button">
+          <button
+            className="px-4 py-2 bg-ind-border text-ind-text font-bold uppercase tracking-wider text-sm hover:bg-ind-text transition-all active:translate-y-0.5"
+            onClick={onClearAll}
+            type="button"
+          >
             Clear All
           </button>
         )}
       </div>
 
       {attachments.length > 0 && (
-        <div className={styles.summary}>
-          <div className={styles.summaryItem}>
-            <span className={styles.summaryLabel}>Files:</span>
-            <span className={styles.summaryValue}>{attachments.length}</span>
+        <div className="flex gap-6 px-4 py-3 bg-ind-bg border border-ind-border rounded">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-ind-text-muted">Files:</span>
+            <span className="text-sm font-bold text-ind-accent">{attachments.length}</span>
           </div>
-          <div className={styles.summaryItem}>
-            <span className={styles.summaryLabel}>Size:</span>
-            <span className={styles.summaryValue}>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-ind-text-muted">Size:</span>
+            <span className="text-sm font-bold text-ind-accent">
               {(totalSize / 1024).toFixed(1)} KB
             </span>
           </div>
-          <div className={styles.summaryItem}>
-            <span className={styles.summaryLabel}>Tokens:</span>
-            <span className={styles.summaryValue}>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-ind-text-muted">Tokens:</span>
+            <span className="text-sm font-bold text-ind-accent">
               {formatTokenCount(totalTokens)}
             </span>
           </div>
@@ -77,23 +82,23 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
       )}
 
       {attachments.length > 0 && (
-        <div className={styles.attachmentList}>
-          <h3 className={styles.listTitle}>Attached Files</h3>
+        <div className="space-y-3 mt-4">
+          <h4 className="text-xs uppercase tracking-wider text-ind-text font-bold">Attached Files</h4>
           {attachments.map((attachment) => (
-            <div key={attachment.id} className={styles.attachmentItem}>
-              <div className={styles.attachmentHeader}>
-                <span className={styles.attachmentIcon}>
+            <div key={attachment.id} className="bg-ind-panel border border-ind-border rounded overflow-hidden hover:border-ind-accent transition-colors">
+              <div className="flex items-center gap-3 p-3">
+                <span className="text-xl flex-shrink-0">
                   {attachment.type === 'IMAGE' ? '🖼️' : '📄'}
                 </span>
-                <div className={styles.attachmentInfo}>
-                  <p className={styles.attachmentName}>{attachment.filename}</p>
-                  <p className={styles.attachmentMeta}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-ind-text truncate">{attachment.filename}</p>
+                  <p className="text-xs text-ind-text-muted">
                     {(attachment.size / 1024).toFixed(1)} KB
                     {attachment.language && ` • ${attachment.language}`}
                   </p>
                 </div>
                 <button
-                  className={styles.removeButton}
+                  className="flex items-center justify-center w-7 h-7 text-ind-text-muted hover:bg-ind-border rounded transition-colors"
                   onClick={() => onRemoveAttachment(attachment.id)}
                   title="Remove attachment"
                 >
@@ -101,8 +106,8 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
                 </button>
               </div>
               {attachment.preview && (
-                <div className={styles.attachmentPreview}>
-                  <p>{attachment.preview}...</p>
+                <div className="px-3 py-2 bg-ind-bg border-t border-ind-border text-xs text-ind-text-muted font-mono max-h-[100px] overflow-hidden">
+                  <p className="m-0 whitespace-pre-wrap break-words">{attachment.preview}...</p>
                 </div>
               )}
             </div>

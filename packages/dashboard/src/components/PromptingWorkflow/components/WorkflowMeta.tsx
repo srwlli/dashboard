@@ -7,7 +7,6 @@ import {
   formatTokenCount,
   getTokenWarning,
 } from '../utils/tokenEstimator';
-import styles from './WorkflowMeta.module.css';
 
 interface WorkflowMetaProps {
   prompt?: PreloadedPrompt;
@@ -43,46 +42,48 @@ export const WorkflowMeta: React.FC<WorkflowMetaProps> = ({ prompt, attachments 
   }, [prompt, attachments]);
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Workflow Summary</h2>
+    <div className="w-full space-y-4">
+      <h3 className="text-sm uppercase tracking-widest text-ind-text-muted font-mono font-bold">
+        Workflow Summary
+      </h3>
 
-      <div className={styles.grid}>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Prompt</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-ind-panel border border-ind-border rounded p-4">
+          <h4 className="text-xs uppercase tracking-wider text-ind-text-muted font-bold mb-3">Prompt</h4>
           {prompt ? (
-            <div className={styles.promptInfo}>
-              <p className={styles.promptLabel}>{prompt.label}</p>
-              <p className={styles.promptTokens}>
+            <div>
+              <p className="text-sm font-bold text-ind-text">{prompt.label}</p>
+              <p className="text-sm text-ind-accent font-bold mt-1">
                 {formatTokenCount(metadata.promptTokens)} tokens
               </p>
             </div>
           ) : (
-            <p className={styles.empty}>No prompt selected</p>
+            <p className="text-xs text-ind-text-muted">No prompt selected</p>
           )}
         </div>
 
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Attachments</h3>
-          <div className={styles.stats}>
-            <div className={styles.stat}>
-              <span className={styles.statLabel}>Files:</span>
-              <span className={styles.statValue}>{attachments.length}</span>
+        <div className="bg-ind-panel border border-ind-border rounded p-4">
+          <h4 className="text-xs uppercase tracking-wider text-ind-text-muted font-bold mb-3">Attachments</h4>
+          <div className="space-y-2">
+            <div>
+              <span className="text-xs text-ind-text-muted">Files:</span>
+              <span className="text-sm font-bold text-ind-accent ml-2">{attachments.length}</span>
             </div>
-            <div className={styles.stat}>
-              <span className={styles.statLabel}>Size:</span>
-              <span className={styles.statValue}>
+            <div>
+              <span className="text-xs text-ind-text-muted">Size:</span>
+              <span className="text-sm font-bold text-ind-accent ml-2">
                 {metadata.totalSize > 0 ? (metadata.totalSize / 1024).toFixed(1) + ' KB' : '0 KB'}
               </span>
             </div>
           </div>
         </div>
 
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Total Tokens</h3>
-          <p className={`${styles.tokenCount} ${metadata.warning ? styles.warning : ''}`}>
+        <div className="bg-ind-panel border border-ind-border rounded p-4">
+          <h4 className="text-xs uppercase tracking-wider text-ind-text-muted font-bold mb-3">Total Tokens</h4>
+          <p className={`text-2xl font-bold ${metadata.warning ? 'text-red-400' : 'text-ind-accent'}`}>
             {formatTokenCount(metadata.totalTokens)}
           </p>
-          <p className={styles.tokenBreakdown}>
+          <p className="text-xs text-ind-text-muted mt-2">
             Prompt: {formatTokenCount(metadata.promptTokens)} + Attachments:{' '}
             {formatTokenCount(
               metadata.attachmentTokens.reduce((sum, t) => sum + t, 0)
@@ -92,11 +93,14 @@ export const WorkflowMeta: React.FC<WorkflowMetaProps> = ({ prompt, attachments 
       </div>
 
       {metadata.languages.length > 0 && (
-        <div className={styles.languages}>
-          <h3 className={styles.sectionTitle}>Languages Detected</h3>
-          <div className={styles.languageBadges}>
+        <div className="space-y-2">
+          <h4 className="text-xs uppercase tracking-wider text-ind-text-muted font-bold">Languages Detected</h4>
+          <div className="flex gap-2 flex-wrap">
             {metadata.languages.map((lang) => (
-              <span key={lang} className={styles.languageBadge}>
+              <span
+                key={lang}
+                className="px-2 py-1 bg-ind-accent text-black text-xs font-bold rounded"
+              >
                 {lang}
               </span>
             ))}
@@ -105,11 +109,14 @@ export const WorkflowMeta: React.FC<WorkflowMetaProps> = ({ prompt, attachments 
       )}
 
       {metadata.fileTypes.length > 0 && (
-        <div className={styles.fileTypes}>
-          <h3 className={styles.sectionTitle}>File Types</h3>
-          <div className={styles.fileTypeBadges}>
+        <div className="space-y-2">
+          <h4 className="text-xs uppercase tracking-wider text-ind-text-muted font-bold">File Types</h4>
+          <div className="flex gap-2 flex-wrap">
             {metadata.fileTypes.map((type) => (
-              <span key={type} className={styles.fileTypeBadge}>
+              <span
+                key={type}
+                className="px-2 py-1 bg-ind-border text-ind-text text-xs font-bold rounded"
+              >
                 {type}
               </span>
             ))}
@@ -118,15 +125,15 @@ export const WorkflowMeta: React.FC<WorkflowMetaProps> = ({ prompt, attachments 
       )}
 
       {metadata.warning && (
-        <div className={styles.warningBox}>
-          <p className={styles.warningText}>⚠️ {metadata.warning}</p>
-          <p className={styles.warningHint}>Consider splitting large files or removing some attachments</p>
+        <div className="px-4 py-3 bg-red-900/20 border border-red-600/50 rounded">
+          <p className="text-xs text-red-400 font-bold m-0">⚠️ {metadata.warning}</p>
+          <p className="text-xs text-red-300 m-0 mt-1">Consider splitting large files or removing some attachments</p>
         </div>
       )}
 
       {attachments.length === 0 && !prompt && (
-        <div className={styles.emptyState}>
-          <p className={styles.emptyText}>Select a prompt and add attachments to see metadata</p>
+        <div className="text-center py-6">
+          <p className="text-xs text-ind-text-muted">Select a prompt and add attachments to see metadata</p>
         </div>
       )}
     </div>
