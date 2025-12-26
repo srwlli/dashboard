@@ -62,6 +62,12 @@ export function useWorkorders(): UseWorkorersReturn {
     fetchWorkorders();
   }, []);
 
+  useEffect(() => {
+    const handleRefetch = () => fetchWorkorders();
+    window.addEventListener('refetch-workorders', handleRefetch);
+    return () => window.removeEventListener('refetch-workorders', handleRefetch);
+  }, []);
+
   return {
     workorders,
     isLoading,

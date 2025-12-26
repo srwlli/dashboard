@@ -38,11 +38,38 @@ export default function AssistantPage() {
     <PageLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-ind-text mb-2">Assistant</h1>
-          <p className="text-sm text-ind-text-muted">
-            Track workorders across projects, view implementation stubs, and manage documentation.
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-ind-text mb-2">Assistant</h1>
+            <p className="text-sm text-ind-text-muted">
+              Track workorders across projects, view implementation stubs, and manage documentation.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                if (activeTab === 'workorders') {
+                  // Refetch workorders
+                  const event = new Event('refetch-workorders');
+                  window.dispatchEvent(event);
+                }
+                if (activeTab === 'stubs') {
+                  // Refetch stubs
+                  const event = new Event('refetch-stubs');
+                  window.dispatchEvent(event);
+                }
+              }}
+              className="
+                px-4 py-2 rounded
+                bg-ind-bg border border-ind-border
+                text-ind-text hover:text-ind-accent hover:border-ind-accent
+                transition-colors duration-200
+                text-sm font-medium
+              "
+            >
+              ↻ Refresh
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}

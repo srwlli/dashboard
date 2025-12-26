@@ -85,9 +85,9 @@ export function StubList({
 
   return (
     <div className="space-y-3">
-      {filteredStubs.map((stub) => (
+      {filteredStubs.map((stub, idx) => (
         <StubCard
-          key={stub.feature_name}
+          key={stub.id || stub.feature_name || idx}
           stub={stub}
           onClick={() => onStubClick?.(stub.feature_name)}
         />

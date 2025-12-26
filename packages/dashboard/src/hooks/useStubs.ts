@@ -56,6 +56,12 @@ export function useStubs(): UseStubsReturn {
     fetchStubs();
   }, []);
 
+  useEffect(() => {
+    const handleRefetch = () => fetchStubs();
+    window.addEventListener('refetch-stubs', handleRefetch);
+    return () => window.removeEventListener('refetch-stubs', handleRefetch);
+  }, []);
+
   return {
     stubs,
     isLoading,

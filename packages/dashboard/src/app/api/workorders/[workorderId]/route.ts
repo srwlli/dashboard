@@ -33,7 +33,7 @@ export async function GET(
     // Load projects config
     let projectsConfig: ProjectsConfig;
     try {
-      const configPath = resolve(process.cwd(), '../assistant/projects.config.json');
+      const configPath = 'C:\\Users\\willh\\Desktop\\assistant\\projects.config.json';
       projectsConfig = new ProjectsConfig(configPath);
       projectsConfig.load();
     } catch (error) {
