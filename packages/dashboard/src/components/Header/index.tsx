@@ -25,11 +25,11 @@ export default function Header() {
       "
     >
       <div className="flex items-center gap-4">
-        <span className="text-lg font-semibold">
+        <span className="text-2xl font-bold uppercase tracking-wider">
           <span className="text-ind-text">Code</span>
           <span className="text-ind-accent">Ref</span>
         </span>
-        <span className="text-ind-text-muted text-sm">{title}</span>
+        <span className="text-ind-text uppercase tracking-wider text-sm font-bold">{title}</span>
       </div>
 
       <UserAvatar />
