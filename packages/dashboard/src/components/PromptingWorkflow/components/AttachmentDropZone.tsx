@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Attachment } from '../types';
 import { readFileContent } from '../utils/fileContentExtractor';
-import styles from './AttachmentDropZone.module.css';
 
 interface AttachmentDropZoneProps {
   onFilesAdded: (attachments: Attachment[]) => void;
@@ -92,9 +91,25 @@ export const AttachmentDropZone: React.FC<AttachmentDropZoneProps> = ({
     error: '✗ Error processing files',
   };
 
+  const getStateStyles = () => {
+    const base = 'border-2 border-dashed rounded p-8 text-center cursor-pointer transition-all ';
+    switch (state) {
+      case 'drag':
+        return base + 'border-ind-accent bg-ind-accent/10';
+      case 'loading':
+        return base + 'border-ind-text-muted bg-ind-bg/50';
+      case 'success':
+        return base + 'border-green-600 bg-green-900/20';
+      case 'error':
+        return base + 'border-red-600 bg-red-900/20';
+      default:
+        return base + 'border-ind-border hover:border-ind-accent';
+    }
+  };
+
   return (
     <div
-      className={`${styles.dropZone} ${styles[state]} ${disabled ? styles.disabled : ''}`}
+      className={`${getStateStyles()} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -108,16 +123,22 @@ export const AttachmentDropZone: React.FC<AttachmentDropZoneProps> = ({
         id="file-input"
       />
 
-      <label htmlFor="file-input" className={styles.content}>
-        <div className={styles.icon}>
-          {state === 'loading' && <span className={styles.spinner}>⟳</span>}
-          {state === 'success' && <span>✓</span>}
-          {state === 'error' && <span>⚠</span>}
+      <label htmlFor="file-input" className="block cursor-pointer">
+        <div className="text-4xl mb-3">
+          {state === 'loading' && <span className="inline-block animate-spin">⟳</span>}
+          {state === 'success' && <span className="text-green-400">✓</span>}
+          {state === 'error' && <span className="text-red-400">⚠</span>}
           {['idle', 'drag'].includes(state) && <span>📎</span>}
         </div>
-        <p className={styles.message}>{stateMessage[state]}</p>
-        {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-        <p className={styles.hint}>
+        <p className={`text-sm font-bold ${
+          state === 'success' ? 'text-green-400' :
+          state === 'error' ? 'text-red-400' :
+          'text-ind-text'
+        }`}>
+          {stateMessage[state]}
+        </p>
+        {errorMessage && <p className="text-xs text-red-400 mt-2">{errorMessage}</p>}
+        <p className="text-xs text-ind-text-muted mt-2">
           Supports code, text, markdown, JSON, and other text files
         </p>
       </label>

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Attachment } from '../types';
 import { generateClipboardFilename } from '../utils/filenameGenerator';
 import { useClipboard } from '../hooks/useClipboard';
-import styles from './PasteTextModal.module.css';
 
 interface PasteTextModalProps {
   isOpen: boolean;
@@ -78,40 +77,44 @@ export const PasteTextModal: React.FC<PasteTextModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} onClick={handleClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Paste Text as Attachment</h2>
-          <button className={styles.closeButton} onClick={handleClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={handleClose}>
+      <div className="bg-ind-panel border border-ind-border rounded max-w-md w-full mx-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-ind-border">
+          <h2 className="text-lg font-bold text-ind-text">Paste Text as Attachment</h2>
+          <button
+            className="text-ind-text-muted hover:text-ind-text cursor-pointer transition-colors"
+            onClick={handleClose}
+          >
             ✕
           </button>
         </div>
 
-        <div className={styles.body}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Filename</label>
+        <div className="p-4 space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-ind-text uppercase tracking-wider">Filename</label>
             <input
               type="text"
-              className={styles.input}
+              className="w-full bg-ind-bg border border-ind-border rounded p-3 text-ind-text text-sm placeholder-ind-text-muted focus:outline-none focus:ring-2 focus:ring-ind-accent"
               value={filename}
               onChange={(e) => setFilename(e.target.value)}
               placeholder="clipboard_001.txt"
             />
-            <p className={styles.hint}>
+            <p className="text-xs text-ind-text-muted">
               Auto-generated: {generateClipboardFilename(existingFilenames)}
             </p>
           </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Text Content</label>
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-ind-text uppercase tracking-wider">Text Content</label>
             <textarea
-              className={styles.textarea}
+              className="w-full bg-ind-bg border border-ind-border rounded p-3 text-ind-text text-sm placeholder-ind-text-muted focus:outline-none focus:ring-2 focus:ring-ind-accent disabled:opacity-50"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste text here..."
               disabled={isLoading}
+              rows={8}
             />
-            <p className={styles.hint}>
+            <p className="text-xs text-ind-text-muted">
               {text.length > 0
                 ? `${text.length} characters (~${Math.ceil(text.length / 4)} tokens)`
                 : 'Paste or type text here'}
@@ -119,16 +122,19 @@ export const PasteTextModal: React.FC<PasteTextModalProps> = ({
           </div>
         </div>
 
-        <div className={styles.footer}>
-          <button className={styles.cancelButton} onClick={handleClose}>
+        <div className="flex gap-3 p-4 border-t border-ind-border">
+          <button
+            className="flex-1 px-4 py-2 bg-ind-border text-ind-text font-bold uppercase tracking-wider text-sm hover:bg-ind-text hover:text-ind-bg transition-all active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed rounded"
+            onClick={handleClose}
+          >
             Cancel
           </button>
           <button
-            className={styles.submitButton}
+            className="flex-1 px-4 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider text-sm hover:bg-ind-accent-hover transition-all active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed rounded"
             onClick={handleSubmit}
             disabled={isLoading || !text.trim()}
           >
-            {isLoading ? 'Loading...' : 'Add Text as Attachment'}
+            {isLoading ? '⟳ Loading...' : 'Add Text as Attachment'}
           </button>
         </div>
       </div>
