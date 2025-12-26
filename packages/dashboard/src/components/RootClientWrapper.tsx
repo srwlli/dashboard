@@ -2,13 +2,16 @@
 
 import { ReactNode, useEffect } from 'react';
 import PWAInitializer from './PWAInitializer';
+import Sidebar from './Sidebar';
+import Header from './Header';
 
 /**
  * RootClientWrapper
  * Global layout wrapper providing consistent page structure:
  * - Client-side theme initialization
- * - Page padding and container constraints
- * - Content grid layout
+ * - Sidebar navigation with collapsible toggle
+ * - Sticky header with page title and user avatar
+ * - Page content with padding and container constraints
  * - PWA initialization
  */
 export function RootClientWrapper({ children }: { children: ReactNode }) {
@@ -29,13 +32,21 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
   return (
     <>
       <PWAInitializer />
-      <main className="p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid gap-6">
-            {children}
-          </div>
+      <div className="flex h-screen bg-ind-bg">
+        <Sidebar />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header />
+          <main className="flex-1 overflow-y-auto">
+            <div className="p-4">
+              <div className="max-w-6xl mx-auto">
+                <div className="grid gap-6">
+                  {children}
+                </div>
+              </div>
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
     </>
   );
 }

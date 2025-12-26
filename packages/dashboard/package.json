@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@coderef-dashboard/core": "file:../core",
+    "lucide-react": "^0.408.0",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

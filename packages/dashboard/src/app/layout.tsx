@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import RootClientWrapper from '@/components/RootClientWrapper';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AccentColorProvider } from '@/contexts/AccentColorContext';
+import { SidebarProvider } from '@/contexts/SidebarContext';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -62,9 +63,11 @@ export default function RootLayout({
       <body className="min-h-screen bg-ind-bg text-ind-text font-display">
         <ThemeProvider>
           <AccentColorProvider>
-            <RootClientWrapper>
-              {children}
-            </RootClientWrapper>
+            <SidebarProvider>
+              <RootClientWrapper>
+                {children}
+              </RootClientWrapper>
+            </SidebarProvider>
           </AccentColorProvider>
         </ThemeProvider>
       </body>
