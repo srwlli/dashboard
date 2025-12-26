@@ -31,11 +31,11 @@ const statusBgColors: Record<string, string> = {
 };
 
 export function StubCard({ stub, onClick }: StubCardProps) {
-  const categoryIcon = categoryIcons[stub.category] || '•';
-  const priorityColor = priorityColors[stub.priority] || 'text-ind-text';
-  const statusBg = statusBgColors[stub.status] || 'bg-ind-bg text-ind-text';
+  const categoryIcon = categoryIcons[stub.category || ''] || '•';
+  const priorityColor = priorityColors[stub.priority || ''] || 'text-ind-text';
+  const statusBg = statusBgColors[stub.status || 'stub'] || 'bg-ind-bg text-ind-text';
 
-  const createdDate = new Date(stub.created);
+  const createdDate = stub.created ? new Date(stub.created) : new Date();
   const formattedDate = createdDate.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -57,7 +57,7 @@ export function StubCard({ stub, onClick }: StubCardProps) {
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{categoryIcon}</span>
             <h3 className="text-sm font-semibold text-ind-text truncate">
-              {stub.title}
+              {stub.title || stub.feature_name || 'Untitled'}
             </h3>
           </div>
           {stub.description && (
@@ -66,14 +66,16 @@ export function StubCard({ stub, onClick }: StubCardProps) {
             </p>
           )}
         </div>
-        <span className={`text-sm font-semibold shrink-0 ${priorityColor}`}>
-          {stub.priority.charAt(0).toUpperCase() + stub.priority.slice(1)}
-        </span>
+        {stub.priority && (
+          <span className={`text-sm font-semibold shrink-0 ${priorityColor}`}>
+            {stub.priority.charAt(0).toUpperCase() + stub.priority.slice(1)}
+          </span>
+        )}
       </div>
 
       <div className="flex items-center justify-between gap-2 pt-2 border-t border-ind-border/50">
         <span className={`text-xs px-2 py-1 rounded ${statusBg}`}>
-          {stub.status.replace(/_/g, ' ')}
+          {stub.status ? stub.status.replace(/_/g, ' ') : 'stub'}
         </span>
         <span className="text-xs text-ind-text-muted">
           {formattedDate}
