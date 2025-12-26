@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Attachment } from '../types';
 import { AttachmentDropZone } from './AttachmentDropZone';
-import { PasteTextModal } from './PasteTextModal';
 import { formatTokenCount } from '../utils/tokenEstimator';
+import { generateClipboardFilename } from '../utils/filenameGenerator';
+import { useClipboard } from '../hooks/useClipboard';
 
 interface AttachmentManagerProps {
   attachments: Attachment[];
@@ -17,16 +18,40 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
   onRemoveAttachment,
   onClearAll,
 }) => {
-  const [showPasteModal, setShowPasteModal] = useState(false);
-
   const existingFilenames = attachments.map((a) => a.filename);
+  const { read: readClipboard } = useClipboard();
 
-  const handleTextAdded = useCallback(
-    (attachment: Attachment) => {
+  const handleQuickPaste = useCallback(async () => {
+    try {
+      const clipboardText = await readClipboard();
+
+      if (!clipboardText?.trim()) {
+        alert('Clipboard is empty');
+        return;
+      }
+
+      const filename = generateClipboardFilename(existingFilenames);
+
+      const attachment: Attachment = {
+        id: Math.random().toString(36).substring(2, 11),
+        filename,
+        type: 'PASTED_TEXT',
+        extension: '.txt',
+        mimeType: 'text/plain',
+        size: clipboardText.length,
+        content: clipboardText,
+        preview: clipboardText.substring(0, 200),
+        language: 'text',
+        isText: true,
+        isBinary: false,
+        createdAt: new Date(),
+      };
+
       onAddAttachments([attachment]);
-    },
-    [onAddAttachments]
-  );
+    } catch (error) {
+      alert('Failed to read clipboard');
+    }
+  }, [existingFilenames, onAddAttachments, readClipboard]);
 
   const totalSize = attachments.reduce((sum, a) => sum + a.size, 0);
   const totalTokens = Math.ceil(
@@ -44,7 +69,7 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
       <div className="flex gap-3 flex-wrap">
         <button
           className="px-4 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider text-sm hover:bg-ind-accent-hover transition-all active:translate-y-0.5"
-          onClick={() => setShowPasteModal(true)}
+          onClick={handleQuickPaste}
           type="button"
         >
           + Paste Text
@@ -114,13 +139,6 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
           ))}
         </div>
       )}
-
-      <PasteTextModal
-        isOpen={showPasteModal}
-        existingFilenames={existingFilenames}
-        onTextAdded={handleTextAdded}
-        onClose={() => setShowPasteModal(false)}
-      />
     </div>
   );
 };
