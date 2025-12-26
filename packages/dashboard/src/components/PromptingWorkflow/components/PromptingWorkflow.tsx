@@ -140,15 +140,6 @@ export const PromptingWorkflow: React.FC = () => {
         <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-ind-accent"></div>
         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ind-accent"></div>
 
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold uppercase tracking-wider text-ind-text mb-2">
-            Prompting Workflow
-          </h2>
-          <p className="text-ind-text-muted text-sm font-mono">
-            Select a prompt, attach files, review metadata, and export for LLM analysis
-          </p>
-        </div>
-
         <div className="space-y-6">
           {/* Prompt Selection */}
           <PromptSelector
