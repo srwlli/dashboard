@@ -1,0 +1,60 @@
+{
+  "feature_name": "coderef-assistant-route",
+  "title": "Add /coderef-assistant Route - AI Assistant Dashboard",
+  "description": "Create new route displaying workorders, stubs, and documentation with collapsible sidebar and markdown document viewer",
+  "category": "feature",
+  "priority": "high",
+  "created": "2025-12-26T10:00:00Z",
+  "status": "stub",
+  "context": {
+    "motivation": "Add dedicated AI Assistant dashboard to coderef-dashboard. Leverage existing sidebar architecture and theme system.",
+    "requirements": [
+      "Create /coderef-assistant route in Next.js app directory",
+      "Build collapsible sidebar with 3 sections: Workorders, Stubs, Documentation",
+      "Display workorder list with details (tabular format)",
+      "Display stub list with card layout",
+      "Display markdown documentation with full-width viewer (reuse documentation-site pattern)",
+      "Use Lucide React icons (not emoji) for navigation",
+      "Sidebar collapses from full-width to icon-only (80px minimum)",
+      "Integrate with existing Theme, AccentColor, Sidebar contexts",
+      "Support dark/light mode using existing CSS variables",
+      "Fetch data from orchestrator sources (workorder-log.txt, stubs, .md files)"
+    ],
+    "architecture": {
+      "app": "/coderef-assistant/page.tsx",
+      "components": [
+        "CRefAssistant/index.tsx (main container)",
+        "CRefAssistant/Sidebar.tsx (nav: workorders, stubs, docs)",
+        "CRefAssistant/ContentArea.tsx (displays selected item)",
+        "CRefAssistant/WorkordersList.tsx",
+        "CRefAssistant/StubsList.tsx",
+        "CRefAssistant/DocumentViewer.tsx"
+      ],
+      "state_management": "CRefAssistantContext (selected item, sidebar collapse)",
+      "styling": "Tailwind CSS + CSS variables (reuse dashboard theme)"
+    },
+    "data_sources": [
+      "coderef/workorder-log.txt (workorder list)",
+      "coderef/working/*/stub.json (stub definitions)",
+      "PHASE-3-ROADMAP-SYNTHESIS.md (documentation)",
+      "CLAUDE.md (documentation)",
+      "README.md (documentation)"
+    ],
+    "ui_patterns": {
+      "sidebar": "Collapsible icon+label layout (matches CodeRef Prompts design)",
+      "icons": "Lucide React (ChevronLeft, ChevronRight, Zap, etc.)",
+      "document_viewer": "Markdown rendering via marked.js (reuse documentation-site pattern)",
+      "layout": "Sidebar + Content area with sticky header (reuse RootClientWrapper)"
+    },
+    "navigation_entry": {
+      "label": "Assistant",
+      "href": "/coderef-assistant",
+      "icon": "Zap"
+    },
+    "reference_implementations": [
+      "coderef-dashboard/packages/dashboard/src/components/Sidebar (collapsible nav pattern)",
+      "C:\\Users\\willh\\Desktop\\assistant\\documentation-site (markdown viewer, icon-based nav)",
+      "coderef-dashboard/src/contexts/SidebarContext (state management)"
+    ]
+  }
+}
