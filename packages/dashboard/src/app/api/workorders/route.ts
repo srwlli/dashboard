@@ -47,8 +47,13 @@ export async function GET(): Promise<NextResponse> {
 
     for (const projectDir of projectDirs) {
       try {
+        // projectDir.path is already the full workorder directory path
+        // We need the project root, so go up 2 levels from the workorder dir
+        const pathParts = projectDir.path.replace(/\\/g, '/').split('/');
+        const projectRoot = pathParts.slice(0, -2).join('/').replace(/\//g, '\\');
+
         const workorders = WorkorderReader.readProjectWorkorders(
-          projectDir.path.split('/').slice(0, -2).join('/'), // Get project root (go up 2 levels)
+          projectRoot,
           projectDir.projectId,
           projectDir.projectName,
           'coderef/workorder'
