@@ -1,0 +1,198 @@
+/**
+ * StubReader Utility
+ *
+ * Reads and aggregates stubs from the centralized orchestrator directory.
+ * Stubs represent pending work items (ideas/backlog) that haven't been started.
+ */
+
+import { readdirSync, readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
+import { StubObject } from '@/types/stubs';
+
+/**
+ * Raw stub.json file structure
+ */
+interface RawStubData {
+  feature_name: string;
+  title: string;
+  description: string;
+  category: string;
+  priority: string;
+  status: string;
+  created: string;
+  updated: string;
+}
+
+/**
+ * StubReader - Scans and reads stub.json files
+ */
+export class StubReader {
+  private stubsDir: string;
+
+  /**
+   * Create a new StubReader instance
+   * @param stubsDir Path to stubs directory (e.g., assistant/coderef/working/)
+   */
+  constructor(stubsDir: string) {
+    this.stubsDir = stubsDir;
+  }
+
+  /**
+   * Read all stubs from the directory
+   * @throws Error if directory not found
+   * @returns Array of StubObject
+   */
+  readAllStubs(): StubObject[] {
+    const stubs: StubObject[] = [];
+
+    // Check if directory exists
+    if (!existsSync(this.stubsDir)) {
+      throw new Error(`Stubs directory not found: ${this.stubsDir}`);
+    }
+
+    try {
+      // Read all folders in stubs directory
+      const folders = readdirSync(this.stubsDir, { withFileTypes: true });
+
+      for (const entry of folders) {
+        if (!entry.isDirectory()) continue;
+
+        const folderPath = resolve(this.stubsDir, entry.name);
+        const stubFilePath = resolve(folderPath, 'stub.json');
+
+        try {
+          // Check if stub.json exists
+          if (!existsSync(stubFilePath)) {
+            // Folder without stub.json is not a stub
+            continue;
+          }
+
+          // Read and parse stub.json
+          const content = readFileSync(stubFilePath, 'utf-8');
+          const rawData = JSON.parse(content) as RawStubData;
+
+          // Convert to StubObject
+          const stub: StubObject = {
+            id: rawData.feature_name,
+            feature_name: rawData.feature_name,
+            title: rawData.title,
+            description: rawData.description,
+            category: rawData.category as any,
+            priority: rawData.priority as any,
+            status: rawData.status as any,
+            created: rawData.created,
+            updated: rawData.updated,
+            path: stubFilePath,
+          };
+
+          stubs.push(stub);
+        } catch (error) {
+          // Log error but continue processing other folders
+          // This implements graceful degradation - one bad file doesn't break everything
+          console.error(`Error reading stub from ${folderPath}:`, error);
+        }
+      }
+
+      // Sort by priority (critical first) then by created date (newest first)
+      stubs.sort((a, b) => {
+        const priorityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+        const priorityA = priorityOrder[a.priority] ?? 99;
+        const priorityB = priorityOrder[b.priority] ?? 99;
+
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+
+        return new Date(b.created).getTime() - new Date(a.created).getTime();
+      });
+
+      return stubs;
+    } catch (error) {
+      throw new Error(`Failed to read stubs directory: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Read a single stub by feature name
+   * @param featureName Name of the stub folder
+   * @returns StubObject or null if not found
+   */
+  readStub(featureName: string): StubObject | null {
+    const stubPath = resolve(this.stubsDir, featureName, 'stub.json');
+
+    if (!existsSync(stubPath)) {
+      return null;
+    }
+
+    try {
+      const content = readFileSync(stubPath, 'utf-8');
+      const rawData = JSON.parse(content) as RawStubData;
+
+      return {
+        id: rawData.feature_name,
+        feature_name: rawData.feature_name,
+        title: rawData.title,
+        description: rawData.description,
+        category: rawData.category as any,
+        priority: rawData.priority as any,
+        status: rawData.status as any,
+        created: rawData.created,
+        updated: rawData.updated,
+        path: stubPath,
+      };
+    } catch (error) {
+      throw new Error(`Failed to read stub ${featureName}: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Count total stubs
+   */
+  countStubs(): number {
+    try {
+      const folders = readdirSync(this.stubsDir, { withFileTypes: true });
+      let count = 0;
+
+      for (const entry of folders) {
+        if (!entry.isDirectory()) continue;
+
+        const stubPath = resolve(this.stubsDir, entry.name, 'stub.json');
+        if (existsSync(stubPath)) {
+          count++;
+        }
+      }
+
+      return count;
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  /**
+   * Filter stubs by criteria
+   */
+  filterStubs(
+    stubs: StubObject[],
+    options?: {
+      priority?: string;
+      category?: string;
+      status?: string;
+    }
+  ): StubObject[] {
+    let filtered = stubs;
+
+    if (options?.priority) {
+      filtered = filtered.filter((s) => s.priority === options.priority);
+    }
+
+    if (options?.category) {
+      filtered = filtered.filter((s) => s.category === options.category);
+    }
+
+    if (options?.status) {
+      filtered = filtered.filter((s) => s.status === options.status);
+    }
+
+    return filtered;
+  }
+}
