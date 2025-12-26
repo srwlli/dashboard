@@ -9,7 +9,6 @@ import { useClipboard } from '../hooks/useClipboard';
 import { useFileHandlers } from '../hooks/useFileHandlers';
 import { getAllPrompts } from '../utils/prompts';
 import { generateJSON, generateMarkdown } from '../utils/exportFormatter';
-import styles from './PromptingWorkflow.module.css';
 
 /**
  * PromptingWorkflow - Main widget container
@@ -133,57 +132,69 @@ export const PromptingWorkflow: React.FC = () => {
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Prompting Workflow</h1>
-        <p className={styles.subtitle}>
-          Select a prompt, attach files, review metadata, and export for LLM analysis
-        </p>
-      </div>
+    <div className="w-full space-y-6">
+      <div className="bg-ind-panel border-2 border-ind-border p-8 relative">
+        {/* Corner accents */}
+        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-ind-accent"></div>
+        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-ind-accent"></div>
+        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-ind-accent"></div>
+        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ind-accent"></div>
 
-      <div className={styles.content}>
-        {/* Prompt Selection */}
-        <PromptSelector
-          prompts={prompts}
-          selectedPromptKey={workflow.selectedPrompt?.key}
-          onSelectPrompt={setSelectedPrompt}
-        />
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold uppercase tracking-wider text-ind-text mb-2">
+            Prompting Workflow
+          </h2>
+          <p className="text-ind-text-muted text-sm font-mono">
+            Select a prompt, attach files, review metadata, and export for LLM analysis
+          </p>
+        </div>
 
-        {/* Attachment Management */}
-        <AttachmentManager
-          attachments={workflow.attachments}
-          onAddAttachments={addAttachments}
-          onRemoveAttachment={removeAttachment}
-          onClearAll={clearAttachments}
-        />
-
-        {/* Workflow Metadata */}
-        <WorkflowMeta prompt={workflow.selectedPrompt} attachments={workflow.attachments} />
-
-        {/* Export Actions */}
-        <div className={styles.exportSection}>
-          <h2 className={styles.sectionTitle}>Export</h2>
-          <ExportMenu
-            onCopyJSON={handleCopyJSON}
-            onExportJSON={handleExportJSON}
-            onExportMarkdown={handleExportMarkdown}
-            disabled={!isReadyForExport}
+        <div className="space-y-6">
+          {/* Prompt Selection */}
+          <PromptSelector
+            prompts={prompts}
+            selectedPromptKey={workflow.selectedPrompt?.key}
+            onSelectPrompt={setSelectedPrompt}
           />
 
-          {!isReadyForExport && (
-            <p className={styles.warningText}>
-              ⚠️ Select a prompt and add at least one attachment to enable export
-            </p>
-          )}
+          {/* Attachment Management */}
+          <AttachmentManager
+            attachments={workflow.attachments}
+            onAddAttachments={addAttachments}
+            onRemoveAttachment={removeAttachment}
+            onClearAll={clearAttachments}
+          />
 
-          {isReadyForExport && (
-            <button
-              className={styles.pasteResultButton}
-              onClick={() => setShowPasteFinalResult(true)}
-            >
-              📝 Paste Final LLM Result
-            </button>
-          )}
+          {/* Workflow Metadata */}
+          <WorkflowMeta prompt={workflow.selectedPrompt} attachments={workflow.attachments} />
+
+          {/* Export Actions */}
+          <div className="border-t border-ind-border pt-6">
+            <h3 className="text-sm uppercase tracking-widest text-ind-text-muted font-mono mb-4 font-bold">
+              Export
+            </h3>
+            <ExportMenu
+              onCopyJSON={handleCopyJSON}
+              onExportJSON={handleExportJSON}
+              onExportMarkdown={handleExportMarkdown}
+              disabled={!isReadyForExport}
+            />
+
+            {!isReadyForExport && (
+              <p className="mt-4 px-4 py-3 bg-ind-bg border border-ind-border border-dashed rounded text-ind-text-muted text-xs">
+                ⚠️ Select a prompt and add at least one attachment to enable export
+              </p>
+            )}
+
+            {isReadyForExport && (
+              <button
+                className="mt-4 px-4 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider text-sm hover:bg-ind-accent-hover transition-colors active:translate-y-0.5"
+                onClick={() => setShowPasteFinalResult(true)}
+              >
+                📝 Paste Final LLM Result
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
