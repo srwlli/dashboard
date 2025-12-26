@@ -64,7 +64,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom Navigation Items */}
-      <nav className="border-t border-ind-border px-3 py-4 space-y-2 flex-shrink-0">
+      <nav className="px-3 py-4 space-y-2 flex-shrink-0">
         {bottomNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
