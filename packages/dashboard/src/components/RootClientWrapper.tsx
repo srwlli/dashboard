@@ -4,6 +4,7 @@ import { ReactNode, useEffect } from 'react';
 import PWAInitializer from './PWAInitializer';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import MobileNav from './MobileNav';
 
 /**
  * RootClientWrapper
@@ -38,6 +39,8 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
       <PWAInitializer />
       {/* Mobile-first layout: flex-col on mobile, flex-row on md+ */}
       <div className="flex flex-col md:flex-row min-h-screen bg-ind-bg">
+        {/* Mobile Navigation Drawer - hidden on md+ */}
+        <MobileNav />
         {/* Sidebar: hidden on mobile, visible on md+ */}
         <Sidebar className="hidden md:flex" />
         {/* Main content area */}
