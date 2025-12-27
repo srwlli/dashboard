@@ -10,6 +10,14 @@ module.exports = {
     '../core/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
+    screens: {
+      'xs': '320px',   // iPhone SE, small phones
+      'sm': '640px',   // Large phones
+      'md': '768px',   // Tablets (existing)
+      'lg': '1024px',  // Large tablets
+      'xl': '1280px',  // Desktop
+      '2xl': '1536px', // Large desktop
+    },
     extend: {
       colors: {
         // Dark mode (default)
