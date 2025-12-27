@@ -10,7 +10,6 @@ import { ProjectsConfig } from '@/lib/api/projects';
 import { StubReader } from '@/lib/api/stubs';
 import { StubListResponse } from '@/types/stubs';
 import { createErrorResponse, ErrorCodes, HttpStatus } from '@/types/api';
-import { resolve } from 'path';
 
 /**
  * GET /api/stubs

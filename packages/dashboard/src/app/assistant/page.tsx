@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Clipboard, Lightbulb, BookOpen, RotateCw } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import TabNavigation from '@/components/TabNavigation';
 import FilterBar, { FilterConfig } from '@/components/FilterBar';
@@ -22,9 +23,9 @@ export default function AssistantPage() {
   const { stubs, isLoading: stubsLoading, error: stubsError, total: stubsTotal } = useStubs();
 
   const tabs = [
-    { id: 'workorders', label: 'Workorders', icon: '📋' },
-    { id: 'stubs', label: 'Stubs', icon: '💡' },
-    { id: 'documentation', label: 'Documentation', icon: '📚' },
+    { id: 'workorders', label: 'Workorders', icon: Clipboard },
+    { id: 'stubs', label: 'Stubs', icon: Lightbulb },
+    { id: 'documentation', label: 'Documentation', icon: BookOpen },
   ];
 
   // Extract unique projects for filtering
@@ -67,7 +68,8 @@ export default function AssistantPage() {
                 text-sm font-medium
               "
             >
-              ↻ Refresh
+              <RotateCw className="w-4 h-4 inline mr-2" />
+              Refresh
             </button>
           </div>
         </div>

@@ -10,7 +10,6 @@ import { ProjectsConfig } from '@/lib/api/projects';
 import { WorkorderReader } from '@/lib/api/workorders';
 import { WorkorderListResponse } from '@/types/workorders';
 import { createErrorResponse, ErrorCodes, HttpStatus } from '@/types/api';
-import { resolve } from 'path';
 
 /**
  * GET /api/workorders

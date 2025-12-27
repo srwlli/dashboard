@@ -1,5 +1,6 @@
 'use client';
 
+import { Clock, CheckCircle, RefreshCw, Zap, Sparkles, Lock } from 'lucide-react';
 import { WorkorderObject } from '@/types/workorders';
 
 interface WorkorderCardProps {
@@ -7,15 +8,15 @@ interface WorkorderCardProps {
   onClick?: () => void;
 }
 
-const statusIcons: Record<string, string> = {
-  pending_plan: '⏳',
-  plan_submitted: '📋',
-  changes_requested: '🔄',
-  approved: '✅',
-  implementing: '⚙️',
-  complete: '🎉',
-  verified: '✓',
-  closed: '🔒',
+const statusIcons: Record<string, any> = {
+  pending_plan: Clock,
+  plan_submitted: CheckCircle,
+  changes_requested: RefreshCw,
+  approved: CheckCircle,
+  implementing: Zap,
+  complete: Sparkles,
+  verified: CheckCircle,
+  closed: Lock,
 };
 
 const statusColors: Record<string, string> = {
@@ -30,7 +31,7 @@ const statusColors: Record<string, string> = {
 };
 
 export function WorkorderCard({ workorder, onClick }: WorkorderCardProps) {
-  const statusIcon = statusIcons[workorder.status] || '•';
+  const StatusIcon = statusIcons[workorder.status];
   const statusColor = statusColors[workorder.status] || 'text-ind-text';
 
   const lastUpdated = new Date(workorder.updated || workorder.created);
@@ -53,7 +54,7 @@ export function WorkorderCard({ workorder, onClick }: WorkorderCardProps) {
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className={`text-xl ${statusColor}`}>{statusIcon}</span>
+            {StatusIcon && <StatusIcon className={`w-5 h-5 ${statusColor}`} />}
             <h3 className="text-sm font-semibold text-ind-text truncate">
               {workorder.feature_name}
             </h3>

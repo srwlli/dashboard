@@ -7,10 +7,12 @@
 
 'use client';
 
+import { LucideIcon } from 'lucide-react';
+
 interface Tab {
   id: string;
   label: string;
-  icon?: string;
+  icon?: LucideIcon;
 }
 
 interface TabNavigationProps {
@@ -41,7 +43,7 @@ export function TabNavigation({ tabs, activeTabId, onTabChange }: TabNavigationP
             aria-selected={isActive}
             role="tab"
           >
-            {tab.icon && <span className="text-lg">{tab.icon}</span>}
+            {tab.icon && <tab.icon className="w-4 h-4" />}
             <span>{tab.label}</span>
           </button>
         );

@@ -1,5 +1,6 @@
 'use client';
 
+import { Sparkles, Bug, TrendingUp, Lightbulb, Wrench, Beaker } from 'lucide-react';
 import { StubObject } from '@/types/stubs';
 
 interface StubCardProps {
@@ -7,13 +8,13 @@ interface StubCardProps {
   onClick?: () => void;
 }
 
-const categoryIcons: Record<string, string> = {
-  feature: '✨',
-  fix: '🐛',
-  improvement: '⬆️',
-  idea: '💡',
-  refactor: '🔧',
-  test: '🧪',
+const categoryIcons: Record<string, any> = {
+  feature: Sparkles,
+  fix: Bug,
+  improvement: TrendingUp,
+  idea: Lightbulb,
+  refactor: Wrench,
+  test: Beaker,
 };
 
 const priorityColors: Record<string, string> = {
@@ -31,7 +32,7 @@ const statusBgColors: Record<string, string> = {
 };
 
 export function StubCard({ stub, onClick }: StubCardProps) {
-  const categoryIcon = categoryIcons[stub.category || ''] || '•';
+  const CategoryIcon = categoryIcons[stub.category || ''];
   const priorityColor = priorityColors[stub.priority || ''] || 'text-ind-text';
   const statusBg = statusBgColors[stub.status || 'stub'] || 'bg-ind-bg text-ind-text';
 
@@ -55,7 +56,7 @@ export function StubCard({ stub, onClick }: StubCardProps) {
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">{categoryIcon}</span>
+            {CategoryIcon && <CategoryIcon className="w-4 h-4 text-ind-accent" />}
             <h3 className="text-sm font-semibold text-ind-text truncate">
               {stub.title || stub.feature_name || 'Untitled'}
             </h3>
