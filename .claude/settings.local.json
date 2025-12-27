@@ -1,19 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(findstr:*)",
-      "Bash(npm run build:widgets:*)",
+      "Bash(dir:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(npm run build:*)",
-      "mcp__coderef-workflow__validate_implementation_plan",
-      "Bash(git push)",
-      "Bash(npm cache clean:*)",
-      "Bash(npm install:*)",
       "Bash(npm run type-check:*)",
-      "Bash(npm run build:electron:*)",
-      "Bash(npm run build:dashboard:*)",
-      "Bash(curl:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git restore:*)",
+      "Bash(npm run build:*)",
+      "mcp__coderef-docs__generate_individual_doc",
+      "mcp__coderef-workflow__execute_plan",
+      "mcp__coderef-workflow__create_plan"
     ],
     "deny": [],
     "ask": []

@@ -16,7 +16,11 @@ const bottomNavItems = [
   { label: 'Settings', href: '/settings', icon: Settings },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  className?: string;
+}
+
+export default function Sidebar({ className = '' }: SidebarProps) {
   const pathname = usePathname();
   const { isCollapsed, toggleSidebar, isHydrated } = useSidebar();
 
@@ -26,6 +30,7 @@ export default function Sidebar() {
         bg-ind-panel border-r border-ind-border flex flex-col
         transition-all duration-300
         ${isHydrated && isCollapsed ? 'w-20' : 'w-64'}
+        ${className}
       `}
     >
       {/* Toggle Button */}
