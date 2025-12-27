@@ -23,7 +23,7 @@ interface TabNavigationProps {
 
 export function TabNavigation({ tabs, activeTabId, onTabChange }: TabNavigationProps) {
   return (
-    <div className="flex gap-2 border-b border-ind-border pb-4">
+    <div className="flex gap-1 sm:gap-2 border-b border-ind-border pb-4 overflow-x-auto">
       {tabs.map((tab) => {
         const isActive = activeTabId === tab.id;
 
@@ -32,7 +32,8 @@ export function TabNavigation({ tabs, activeTabId, onTabChange }: TabNavigationP
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-t
+              flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-t
+              whitespace-nowrap shrink-0 sm:shrink
               transition-colors duration-200
               ${
                 isActive
@@ -43,8 +44,8 @@ export function TabNavigation({ tabs, activeTabId, onTabChange }: TabNavigationP
             aria-selected={isActive}
             role="tab"
           >
-            {tab.icon && <tab.icon className="w-4 h-4" />}
-            <span>{tab.label}</span>
+            {tab.icon && <tab.icon className="w-3 sm:w-4 h-3 sm:h-4" />}
+            <span className="text-xs sm:text-sm">{tab.label}</span>
           </button>
         );
       })}

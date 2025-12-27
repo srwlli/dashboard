@@ -23,13 +23,14 @@ export default function Header() {
         sticky top-0 z-40
         bg-ind-panel border-b border-ind-border
         flex items-center justify-between
-        px-6 py-4
-        h-16
+        px-2 sm:px-6 py-4
+        h-12 sm:h-16
       "
     >
-      <nav className="flex items-center gap-4">
+      {/* Logo and breadcrumb - hidden on mobile (xs/sm), visible on md+ */}
+      <nav className="hidden sm:flex items-center gap-3 lg:gap-4">
         <Link href="/">
-          <span className="text-2xl font-bold tracking-wider hover:text-ind-accent transition-colors duration-200 cursor-pointer">
+          <span className="text-lg sm:text-2xl font-bold tracking-wider hover:text-ind-accent transition-colors duration-200 cursor-pointer">
             <span className="text-ind-text">Code</span>
             <span className="text-ind-accent">Ref</span>
           </span>
@@ -38,11 +39,21 @@ export default function Header() {
         <span className="text-ind-text-muted">/</span>
 
         <Link href={currentPage.href}>
-          <span className="text-lg text-ind-text tracking-wider hover:text-ind-accent transition-colors duration-200 cursor-pointer">
+          <span className="text-sm sm:text-lg text-ind-text tracking-wider hover:text-ind-accent transition-colors duration-200 cursor-pointer">
             {currentPage.label}
           </span>
         </Link>
       </nav>
+
+      {/* Mobile logo - visible only on mobile (xs/sm) */}
+      <div className="sm:hidden">
+        <Link href="/">
+          <span className="text-lg font-bold tracking-wider hover:text-ind-accent transition-colors duration-200 cursor-pointer">
+            <span className="text-ind-text">C</span>
+            <span className="text-ind-accent">R</span>
+          </span>
+        </Link>
+      </div>
 
       <UserAvatar />
     </header>
