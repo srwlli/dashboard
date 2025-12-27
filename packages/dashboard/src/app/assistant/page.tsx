@@ -27,16 +27,16 @@ export default function AssistantPage() {
 
   return (
     <PageLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0">
           <div>
-            <h1 className="text-3xl font-bold text-ind-text mb-2">Assistant</h1>
-            <p className="text-sm text-ind-text-muted">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-ind-text mb-2">Assistant</h1>
+            <p className="text-xs sm:text-sm md:text-base text-ind-text-muted">
               Track workorders across projects, view implementation stubs, and manage documentation.
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-shrink-0">
             <button
               onClick={() => {
                 if (activeTab === 'workorders') {
@@ -51,11 +51,11 @@ export default function AssistantPage() {
                 }
               }}
               className="
-                px-4 py-2 rounded
+                px-3 sm:px-4 py-2 rounded
                 bg-ind-bg border border-ind-border
                 text-ind-text hover:text-ind-accent hover:border-ind-accent
                 transition-colors duration-200
-                text-sm font-medium
+                text-xs sm:text-sm font-medium
               "
             >
               <RotateCw className="w-4 h-4 inline mr-2" />

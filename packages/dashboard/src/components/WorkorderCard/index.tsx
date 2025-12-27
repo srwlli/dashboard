@@ -45,17 +45,17 @@ export function WorkorderCard({ workorder, onClick }: WorkorderCardProps) {
     <div
       onClick={onClick}
       className={`
-        p-4 rounded-lg
+        p-3 sm:p-4 rounded-lg
         bg-ind-panel border border-ind-border
         transition-all duration-200
         ${onClick ? 'cursor-pointer hover:bg-ind-bg hover:border-ind-accent/50' : ''}
       `}
     >
-      <div className="flex items-start justify-between gap-4 mb-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            {StatusIcon && <StatusIcon className={`w-5 h-5 ${statusColor}`} />}
-            <h3 className="text-sm font-semibold text-ind-text truncate">
+            {StatusIcon && <StatusIcon className={`w-4 sm:w-5 h-4 sm:h-5 ${statusColor}`} />}
+            <h3 className="text-xs sm:text-sm font-semibold text-ind-text truncate">
               {workorder.feature_name}
             </h3>
           </div>
@@ -68,7 +68,7 @@ export function WorkorderCard({ workorder, onClick }: WorkorderCardProps) {
         </span>
       </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-ind-border/50">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 sm:pt-2 border-t border-ind-border/50">
         <span className="text-xs text-ind-text-muted capitalize">
           {workorder.status.replace(/_/g, ' ')}
         </span>
