@@ -1,0 +1,596 @@
+{
+  "workorder_id": "WO-RESPONSIVE-WEB-001",
+  "feature_name": "responsive-web-app",
+  "title": "Transform Dashboard from Desktop PWA to Responsive Web App",
+  "description": "Convert the fixed-width, desktop-first PWA layout into a true mobile-first responsive web application that works seamlessly on phones, tablets, and desktops while maintaining industrial design aesthetic.",
+  "category": "enhancement",
+  "priority": "high",
+  "created_at": "2025-12-27T17:00:00Z",
+  "status": "planning",
+
+  "executive_summary": {
+    "goal": "Create a single responsive codebase that provides optimal user experience across all device sizes (320px phones to 2560px desktops) without separate mobile/desktop builds.",
+    "current_state": "Desktop-first PWA with viewport lock, fixed sidebar, single md: breakpoint, max-width constraint. Works on mobile but designed for desktop.",
+    "target_state": "Mobile-first responsive design with hamburger navigation, responsive typography, fluid layouts, full breakpoint coverage, and user zoom support.",
+    "success_criteria": [
+      "App works optimally on iPhone SE (320px), Android phones (375px), tablets (768px), and desktops (1280px+)",
+      "Users can zoom text for accessibility (pinch-zoom enabled)",
+      "Sidebar converts to hamburger menu on mobile",
+      "All layouts use flex-col mobile, flex-row desktop",
+      "Typography scales responsively across all breakpoints",
+      "Data tables/lists display appropriately per device size",
+      "Build succeeds with no TypeScript errors",
+      "All pages respond to viewport changes"
+    ],
+    "scope": "Core layout architecture, viewport configuration, navigation pattern, typography, spacing, breakpoints, component updates",
+    "out_of_scope": "New features, API changes, database changes, authentication, theme color system redesign"
+  },
+
+  "risk_assessment": {
+    "high_impact_risks": [
+      {
+        "risk": "Breaking changes to existing layout calculations",
+        "probability": "medium",
+        "mitigation": "Create responsive layout on feature branch, test all pages before merging"
+      },
+      {
+        "risk": "PWA functionality loss during viewport unlock",
+        "probability": "low",
+        "mitigation": "Keep manifest.json and service worker intact, only change viewport meta tag"
+      }
+    ],
+    "medium_risks": [
+      {
+        "risk": "Component width constraints (max-w-6xl) becoming problematic on mobile",
+        "probability": "medium",
+        "mitigation": "Add responsive max-width: max-w-full md:max-w-4xl lg:max-w-6xl"
+      }
+    ],
+    "reversibility": "High - all changes are CSS/layout only, can roll back viewport and layout in <1 hour"
+  },
+
+  "current_state_analysis": {
+    "viewport_configuration": {
+      "file": "src/app/layout.tsx:14-19",
+      "issue": "maximumScale: 1 and userScalable: false lock viewport",
+      "impact": "Users cannot zoom, accessibility issue, prevents pinch-to-zoom on mobile"
+    },
+    "layout_architecture": {
+      "file": "src/components/RootClientWrapper.tsx:35-50",
+      "issue": "flex h-screen, flex-row, fixed sidebar width (w-64/w-20)",
+      "impact": "Desktop-only layout, sidebar always visible, content doesn't reflow on mobile"
+    },
+    "breakpoints": {
+      "file": "tailwind.config.js",
+      "issue": "Only md: breakpoint used throughout codebase",
+      "impact": "No coverage for sm/xs (phones), lg/xl (large screens)"
+    },
+    "navigation": {
+      "file": "src/components/Sidebar/index.tsx",
+      "issue": "Sidebar always present, only collapses to w-20",
+      "impact": "Takes 20px even when collapsed on mobile, no hamburger menu"
+    },
+    "typography": {
+      "file": "Multiple components",
+      "issue": "Fixed font sizes (text-sm, text-lg, text-2xl)",
+      "impact": "Text too small on phones, unoptimized on tablets"
+    },
+    "spacing": {
+      "file": "RootClientWrapper + components",
+      "issue": "Fixed padding (p-4, gap-6, max-w-6xl)",
+      "impact": "Wasted space on mobile, cramped on small screens"
+    }
+  },
+
+  "implementation_phases": {
+    "phase_1": {
+      "id": "FOUNDATION",
+      "title": "Responsive Layout Foundation",
+      "duration": "2 hours",
+      "tasks": [
+        {
+          "id": "FOUND-001",
+          "title": "Remove viewport lock for responsive support",
+          "description": "Change viewport meta tag to allow user zoom and enable responsive design",
+          "subtasks": [
+            "Edit layout.tsx viewport config (remove maximumScale: 1, userScalable: false)",
+            "Change to maximumScale: 5, userScalable: true",
+            "Add comment explaining why (accessibility, responsive design)"
+          ],
+          "files_affected": ["src/app/layout.tsx"],
+          "testing": "Open DevTools, verify zoom works, check accessibility",
+          "acceptance": "User can pinch-zoom and double-tap to zoom"
+        },
+        {
+          "id": "FOUND-002",
+          "title": "Convert RootClientWrapper to mobile-first layout",
+          "description": "Change main layout from fixed h-screen, flex-row to responsive flex-col on mobile, flex-row on desktop",
+          "subtasks": [
+            "Change h-screen to min-h-screen",
+            "Change flex to flex flex-col md:flex-row",
+            "Update max-w-6xl to responsive: max-w-full md:max-w-4xl lg:max-w-6xl",
+            "Update padding p-4 to responsive: p-2 md:p-4 lg:p-6",
+            "Test layout stacks vertically on mobile"
+          ],
+          "files_affected": ["src/components/RootClientWrapper.tsx"],
+          "testing": "Resize browser to 320px, 768px, 1280px - verify layout adapts",
+          "acceptance": "Layout is flex-col on mobile, flex-row on md+, content is readable"
+        },
+        {
+          "id": "FOUND-003",
+          "title": "Hide sidebar on mobile, prepare for hamburger menu",
+          "description": "Add hidden md:flex class to Sidebar so it only shows on tablet+",
+          "subtasks": [
+            "Add className property to Sidebar component",
+            "Pass className='hidden md:flex' from RootClientWrapper",
+            "Verify sidebar hidden on mobile resize"
+          ],
+          "files_affected": ["src/components/RootClientWrapper.tsx", "src/components/Sidebar/index.tsx"],
+          "testing": "Mobile view (320px) sidebar hidden, tablet view (768px) sidebar visible",
+          "acceptance": "Sidebar visibility toggles at md breakpoint"
+        }
+      ],
+      "completion_criteria": "All layout changes committed, mobile layout stacks vertically, sidebar hidden on mobile"
+    },
+
+    "phase_2": {
+      "id": "NAVIGATION",
+      "title": "Mobile Navigation Pattern",
+      "duration": "1.5 hours",
+      "tasks": [
+        {
+          "id": "NAV-001",
+          "title": "Create MobileNav hamburger menu component",
+          "description": "New component for mobile navigation drawer (hidden on tablet+)",
+          "subtasks": [
+            "Create src/components/MobileNav/index.tsx",
+            "Implement useState for drawer open/close",
+            "Create hamburger button (☰ icon or Lucide Menu icon)",
+            "Render Sidebar in overlay modal when open",
+            "Add close button in drawer",
+            "Style with md:hidden class"
+          ],
+          "files_affected": ["src/components/MobileNav/index.tsx (new)"],
+          "testing": "Mobile: hamburger visible and clickable. Tablet: hamburger hidden",
+          "acceptance": "MobileNav component renders correctly, drawer opens/closes"
+        },
+        {
+          "id": "NAV-002",
+          "title": "Integrate MobileNav into RootClientWrapper",
+          "description": "Add MobileNav component alongside hidden Sidebar",
+          "subtasks": [
+            "Import MobileNav in RootClientWrapper",
+            "Render <MobileNav /> in flex-col before Sidebar",
+            "Ensure Sidebar has className='hidden md:flex'",
+            "Test both visible simultaneously (shouldn't happen)"
+          ],
+          "files_affected": ["src/components/RootClientWrapper.tsx"],
+          "testing": "Mobile: hamburger visible, tap opens drawer with nav. Tablet: sidebar visible, hamburger hidden",
+          "acceptance": "Mobile and tablet both have proper navigation visible"
+        },
+        {
+          "id": "NAV-003",
+          "title": "Style mobile drawer overlay and animations",
+          "description": "Add transitions and overlay styling for smooth mobile navigation experience",
+          "subtasks": [
+            "Add fade-in animation to overlay (opacity transition)",
+            "Add slide-in animation to sidebar drawer",
+            "Add click-outside-to-close functionality",
+            "Add backdrop blur or dim effect"
+          ],
+          "files_affected": ["src/components/MobileNav/index.tsx", "src/styles/globals.css"],
+          "testing": "Drawer opens/closes smoothly, overlay dims background",
+          "acceptance": "Mobile navigation feels polished with smooth animations"
+        }
+      ],
+      "completion_criteria": "MobileNav component fully functional, hamburger menu works on mobile, sidebar drawer opens/closes smoothly"
+    },
+
+    "phase_3": {
+      "id": "BREAKPOINTS",
+      "title": "Add Responsive Breakpoints",
+      "duration": "1 hour",
+      "tasks": [
+        {
+          "id": "BP-001",
+          "title": "Add all Tailwind breakpoints to config",
+          "description": "Define complete breakpoint coverage: xs (320px) to 2xl (1536px)",
+          "subtasks": [
+            "Edit tailwind.config.js theme.screens",
+            "Add xs: 320px (iPhone SE)",
+            "Add sm: 640px (large phones)",
+            "Add md: 768px (tablets)",
+            "Add lg: 1024px (large tablets)",
+            "Add xl: 1280px (desktop)",
+            "Add 2xl: 1536px (large desktop)",
+            "Verify existing md: breakpoints still work"
+          ],
+          "files_affected": ["tailwind.config.js"],
+          "testing": "Build succeeds, Tailwind classes work at all breakpoints",
+          "acceptance": "All breakpoint prefixes (xs:, sm:, md:, lg:, xl:, 2xl:) available"
+        },
+        {
+          "id": "BP-002",
+          "title": "Update dashboard layout grid to use new breakpoints",
+          "description": "Make dashboard stats grid responsive across all breakpoints",
+          "subtasks": [
+            "Find grid layout in src/app/page.tsx",
+            "Change grid-cols-1 md:grid-cols-2 to grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+            "Ensure stats cards stack 1 col on mobile, 2 on tablet, 3 on large desktop"
+          ],
+          "files_affected": ["src/app/page.tsx"],
+          "testing": "Resize to 320px (1 col), 640px (2 cols), 1024px (3 cols)",
+          "acceptance": "Dashboard grid responds to all breakpoints correctly"
+        }
+      ],
+      "completion_criteria": "Tailwind breakpoints configured, dashboard grid updated, TypeScript builds"
+    },
+
+    "phase_4": {
+      "id": "TYPOGRAPHY",
+      "title": "Responsive Typography & Spacing",
+      "duration": "2 hours",
+      "tasks": [
+        {
+          "id": "TYP-001",
+          "title": "Update page headings to scale responsively",
+          "description": "Make all h1/h2/h3 headings scale from mobile to desktop",
+          "subtasks": [
+            "Find all heading components (h1, h2, h3, h4 classes)",
+            "Update h1 to: text-xl sm:text-2xl md:text-3xl lg:text-4xl",
+            "Update h2 to: text-lg sm:text-xl md:text-2xl lg:text-3xl",
+            "Update h3 to: text-base sm:text-lg md:text-xl",
+            "Scan all page files for heading usage",
+            "Test typography scales smoothly"
+          ],
+          "files_affected": ["src/app/page.tsx", "src/app/assistant/page.tsx", "src/app/prompts/page.tsx", "All page files"],
+          "testing": "Resize browser, verify text scales smoothly from 320px to 1920px",
+          "acceptance": "Typography is legible at all breakpoints without awkward scaling"
+        },
+        {
+          "id": "TYP-002",
+          "title": "Update body text and labels to scale responsively",
+          "description": "Make paragraph and label text responsive",
+          "subtasks": [
+            "Update body text: text-sm md:text-base lg:text-lg",
+            "Update labels: text-xs md:text-sm",
+            "Update button text: text-xs sm:text-sm md:text-base",
+            "Check all component files for fixed text sizes"
+          ],
+          "files_affected": ["src/components/**/*.tsx"],
+          "testing": "All text readable on mobile and desktop",
+          "acceptance": "No text overflow, proper hierarchy maintained across sizes"
+        },
+        {
+          "id": "TYP-003",
+          "title": "Update spacing to scale responsively",
+          "description": "Make padding and gaps responsive per breakpoint",
+          "subtasks": [
+            "Update RootClientWrapper padding: p-2 md:p-4 lg:p-6",
+            "Update gaps: gap-2 md:gap-4 lg:gap-6",
+            "Update component margins: m-2 md:m-4",
+            "Ensure consistent spacing hierarchy"
+          ],
+          "files_affected": ["src/components/RootClientWrapper.tsx", "All component files"],
+          "testing": "Spacing adapts per screen size, not cramped on mobile",
+          "acceptance": "Whitespace is optimized for each breakpoint"
+        }
+      ],
+      "completion_criteria": "All typography and spacing is responsive, scales smoothly, remains legible"
+    },
+
+    "phase_5": {
+      "id": "COMPONENTS",
+      "title": "Responsive Component Updates",
+      "duration": "2 hours",
+      "tasks": [
+        {
+          "id": "COMP-001",
+          "title": "Update WorkorderCard for mobile display",
+          "description": "Make workorder cards stack/wrap appropriately on mobile",
+          "subtasks": [
+            "Review src/components/WorkorderCard/index.tsx layout",
+            "Change flex justify-between to flex flex-col md:flex-row",
+            "Update gap to gap-2 md:gap-4",
+            "Make title and metadata stack on mobile, side-by-side on desktop",
+            "Ensure icon is visible on all sizes"
+          ],
+          "files_affected": ["src/components/WorkorderCard/index.tsx"],
+          "testing": "Card displays well on 320px (stacked) and 1280px (side-by-side)",
+          "acceptance": "Card content is readable and well-organized at all sizes"
+        },
+        {
+          "id": "COMP-002",
+          "title": "Update StubCard for mobile display",
+          "description": "Make stub cards responsive like workorder cards",
+          "subtasks": [
+            "Apply same flex flex-col md:flex-row pattern",
+            "Update spacing for mobile",
+            "Ensure all fields visible on mobile (may truncate)"
+          ],
+          "files_affected": ["src/components/StubCard/index.tsx"],
+          "testing": "Stub card responsive at all breakpoints",
+          "acceptance": "Card layout matches WorkorderCard responsive behavior"
+        },
+        {
+          "id": "COMP-003",
+          "title": "Update StatsCard for mobile display",
+          "description": "Make stats cards responsive for mobile",
+          "subtasks": [
+            "Review stats layout (title + items grid)",
+            "Ensure items grid wraps on mobile: grid-cols-1 md:grid-cols-2",
+            "Update font sizes for readability on mobile"
+          ],
+          "files_affected": ["src/components/StatsCard/index.tsx"],
+          "testing": "Stats display 1 column on mobile, multiple on larger screens",
+          "acceptance": "Stats card is readable on all sizes"
+        },
+        {
+          "id": "COMP-004",
+          "title": "Update TabNavigation for mobile",
+          "description": "Make tab navigation handle overflow on mobile screens",
+          "subtasks": [
+            "Review src/components/TabNavigation/index.tsx",
+            "Add flex-wrap support or horizontal scroll on mobile",
+            "Ensure tabs don't overflow container",
+            "Consider tab text truncation on narrow screens"
+          ],
+          "files_affected": ["src/components/TabNavigation/index.tsx"],
+          "testing": "Tabs display properly on mobile without overflow",
+          "acceptance": "Tab navigation is usable on all screen sizes"
+        },
+        {
+          "id": "COMP-005",
+          "title": "Update Header for mobile",
+          "description": "Make header responsive with collapsible breadcrumb",
+          "subtasks": [
+            "Review header layout (breadcrumb + avatar)",
+            "Hide breadcrumb on mobile (xs/sm), show on md+",
+            "Keep avatar visible always",
+            "Update header height for mobile: h-12 md:h-16"
+          ],
+          "files_affected": ["src/components/Header/index.tsx"],
+          "testing": "Header adapts height and content visibility per breakpoint",
+          "acceptance": "Header is compact on mobile, full on desktop"
+        }
+      ],
+      "completion_criteria": "All components updated to be responsive, cards/sections adapt to mobile/tablet/desktop"
+    },
+
+    "phase_6": {
+      "id": "TESTING_VALIDATION",
+      "title": "Testing & Validation",
+      "duration": "1.5 hours",
+      "tasks": [
+        {
+          "id": "TEST-001",
+          "title": "Browser responsiveness testing",
+          "description": "Test all pages at different breakpoints using browser DevTools",
+          "subtasks": [
+            "Open each page in browser",
+            "Test at 320px (iPhone SE), 375px (Android), 768px (Tablet), 1024px (Large tablet), 1280px (Desktop), 1920px (Large desktop)",
+            "Verify no layout breaks at any size",
+            "Check for unexpected overflow or squishing",
+            "Verify horizontal scrolling not needed (except intentional)"
+          ],
+          "files_affected": ["All pages"],
+          "testing": "Chrome DevTools device emulation, real device testing recommended",
+          "acceptance": "App works without layout issues at all tested breakpoints"
+        },
+        {
+          "id": "TEST-002",
+          "title": "Mobile navigation testing",
+          "description": "Test hamburger menu and drawer on mobile",
+          "subtasks": [
+            "Test hamburger button appears only on xs/sm",
+            "Test drawer opens and closes",
+            "Test clicking nav items navigates correctly",
+            "Test clicking outside drawer closes it",
+            "Test on actual mobile device if possible"
+          ],
+          "files_affected": ["src/components/MobileNav/index.tsx"],
+          "testing": "Mobile browser 320px-640px screen size",
+          "acceptance": "Mobile navigation fully functional and smooth"
+        },
+        {
+          "id": "TEST-003",
+          "title": "Zoom and accessibility testing",
+          "description": "Verify zoom works and accessibility is maintained",
+          "subtasks": [
+            "Test pinch-zoom works on mobile/tablet",
+            "Test double-tap zoom works",
+            "Test text resizing with browser zoom",
+            "Verify colors have sufficient contrast",
+            "Test keyboard navigation (Tab through elements)"
+          ],
+          "files_affected": ["All"],
+          "testing": "Manual accessibility testing using browser zoom and keyboard",
+          "acceptance": "Zoom works, keyboard navigation works, contrast is sufficient"
+        },
+        {
+          "id": "TEST-004",
+          "title": "Build and type checking",
+          "description": "Ensure project builds without errors",
+          "subtasks": [
+            "Run npm run build",
+            "Run npm run type-check",
+            "Verify no TypeScript errors",
+            "Verify no build warnings about missing breakpoints"
+          ],
+          "files_affected": ["All"],
+          "testing": "npm run build && npm run type-check",
+          "acceptance": "Build succeeds, no TypeScript errors"
+        }
+      ],
+      "completion_criteria": "All pages tested at all breakpoints, mobile navigation works, zoom functional, build clean"
+    },
+
+    "phase_7": {
+      "id": "POLISH_DEPLOY",
+      "title": "Polish & Deployment",
+      "duration": "1 hour",
+      "tasks": [
+        {
+          "id": "POLISH-001",
+          "title": "Fine-tune responsive transitions",
+          "description": "Smooth out any jarring layout changes between breakpoints",
+          "subtasks": [
+            "Review each page for smooth transitions",
+            "Add transition: all duration-300 where needed",
+            "Adjust breakpoint values if content jumps awkwardly",
+            "Test smooth resize experience"
+          ],
+          "files_affected": ["src/styles/globals.css", "All components"],
+          "testing": "Resize browser slowly, verify smooth transitions",
+          "acceptance": "No jarring layout shifts between breakpoints"
+        },
+        {
+          "id": "POLISH-002",
+          "title": "Update documentation",
+          "description": "Document responsive design patterns and breakpoint usage",
+          "subtasks": [
+            "Add comment to layout.tsx explaining responsive approach",
+            "Document breakpoint usage in README",
+            "Add responsive design guidelines for future contributors",
+            "Update component README with responsive examples"
+          ],
+          "files_affected": ["README.md", "src/app/layout.tsx"],
+          "testing": "Documentation is clear and helpful",
+          "acceptance": "Responsive design patterns documented"
+        },
+        {
+          "id": "POLISH-003",
+          "title": "Create final commit and merge",
+          "description": "Commit all changes and prepare for deployment",
+          "subtasks": [
+            "Review all changed files",
+            "Create comprehensive commit message",
+            "Merge feature branch to main",
+            "Verify main branch builds successfully",
+            "Tag release if deploying"
+          ],
+          "files_affected": ["All"],
+          "testing": "Final build on main branch",
+          "acceptance": "All changes merged, build clean, ready for deployment"
+        }
+      ],
+      "completion_criteria": "Project polished and ready for deployment, all documentation updated"
+    }
+  },
+
+  "testing_strategy": {
+    "unit_testing": "Existing component tests should pass. Add new tests for MobileNav component.",
+    "integration_testing": "Test navigation flow on mobile: tap hamburger → drawer opens → click nav item → page navigates → drawer closes.",
+    "responsive_testing": [
+      "iPhone SE (320px): All content visible, no horizontal scroll",
+      "Android phone (375px): Navigation via hamburger, layout responsive",
+      "iPad (768px): Sidebar visible, two-column grids work",
+      "Desktop (1280px+): Full layout, three-column grids if applicable"
+    ],
+    "accessibility_testing": [
+      "Zoom works (pinch and double-tap)",
+      "Text resize works (browser zoom)",
+      "Keyboard navigation works (Tab, Enter)",
+      "Color contrast sufficient (WCAG AA)"
+    ],
+    "edge_cases": [
+      "Very long page titles on mobile",
+      "Many navigation items in sidebar",
+      "Tables with many columns",
+      "Lists with 50+ items",
+      "Landscape orientation on mobile"
+    ]
+  },
+
+  "success_criteria": [
+    "App renders correctly at 320px (iPhone SE)",
+    "App renders correctly at 375px (Android)",
+    "App renders correctly at 768px (Tablet)",
+    "App renders correctly at 1024px (Large tablet)",
+    "App renders correctly at 1280px (Desktop)",
+    "App renders correctly at 1920px (Large desktop)",
+    "Hamburger menu visible only on xs/sm screens",
+    "Sidebar visible only on md+ screens",
+    "Zoom works (pinch-zoom and double-tap enabled)",
+    "Keyboard navigation works throughout",
+    "No horizontal scroll on any breakpoint",
+    "Typography scales smoothly",
+    "Spacing is appropriate for each breakpoint",
+    "Components adapt layout (flex-col to flex-row)",
+    "MobileNav opens/closes smoothly",
+    "All pages tested and verified",
+    "Build succeeds with no TypeScript errors",
+    "No console warnings or errors",
+    "Documentation updated"
+  ],
+
+  "completion_metrics": {
+    "estimated_effort": "10-12 hours total",
+    "estimated_duration": "2-3 days (with testing and review)",
+    "files_to_modify": 15,
+    "files_to_create": 1,
+    "commits_expected": 7,
+    "breaking_changes": 1,
+    "new_dependencies": 0
+  },
+
+  "rollback_plan": {
+    "reversibility": "High - all changes are CSS/layout only",
+    "rollback_steps": [
+      "Revert viewport meta tag changes (restore maximumScale: 1, userScalable: false)",
+      "Revert RootClientWrapper to original flex h-screen flex-row layout",
+      "Remove MobileNav component",
+      "Remove responsive classes from components (restore fixed sizes)",
+      "Restore Sidebar to always-visible"
+    ],
+    "rollback_time": "< 30 minutes",
+    "risk": "Low - can safely roll back anytime"
+  },
+
+  "dependencies": {
+    "tools": ["Node.js 18+", "npm", "TypeScript", "Tailwind CSS 3.4"],
+    "external_dependencies": "None - uses existing Tailwind breakpoint system",
+    "blocked_by": "None",
+    "blocks": "None - enhancement only"
+  },
+
+  "notes": {
+    "design_decisions": [
+      "Mobile-first approach: Define base styles for mobile, enhance with md+",
+      "Hamburger menu on mobile, sidebar always visible on tablet+",
+      "Flexible max-width instead of fixed constraint",
+      "Responsive typography without container queries (future enhancement)",
+      "Preserve industrial aesthetic across all breakpoints"
+    ],
+    "future_enhancements": [
+      "Add container queries for component-aware sizing",
+      "Implement touch-friendly gestures (swipe to close drawer)",
+      "Add landscape orientation support",
+      "Optimize images for different screen sizes",
+      "Service worker optimization for mobile"
+    ],
+    "alternative_approaches": [
+      "Alternative 1: Separate mobile app - rejected (maintenance overhead)",
+      "Alternative 2: Bootstrap responsive framework - rejected (design mismatch)",
+      "Alternative 3: CSS Grid auto-fit - considered but flex more flexible for navigation"
+    ]
+  },
+
+  "team_responsibilities": {
+    "frontend_developer": "Implement all layout and component changes, testing",
+    "designer": "Verify responsive layouts match design system",
+    "qa": "Test all breakpoints and edge cases",
+    "devops": "Deploy to staging for testing"
+  },
+
+  "timeline": {
+    "phase_1_foundation": "Day 1: 2 hours",
+    "phase_2_navigation": "Day 1: 1.5 hours",
+    "phase_3_breakpoints": "Day 1: 1 hour",
+    "phase_4_typography": "Day 2: 2 hours",
+    "phase_5_components": "Day 2: 2 hours",
+    "phase_6_testing": "Day 2: 1.5 hours",
+    "phase_7_polish": "Day 3: 1 hour",
+    "total_estimated": "10-12 hours over 2-3 days"
+  }
+}
