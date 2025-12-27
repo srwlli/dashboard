@@ -68,11 +68,11 @@ export function WorkorderCard({ workorder, onClick }: WorkorderCardProps) {
         </span>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 sm:pt-2 border-t border-ind-border/50">
-        <span className="text-xs text-ind-text-muted capitalize">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 sm:pt-2 border-t border-ind-border/50 min-w-0">
+        <span className="text-xs text-ind-text-muted capitalize shrink-0 whitespace-nowrap">
           {workorder.status.replace(/_/g, ' ')}
         </span>
-        <span className="text-xs text-ind-text-muted">
+        <span className="text-xs text-ind-text-muted shrink-0">
           {formattedDate}
         </span>
       </div>

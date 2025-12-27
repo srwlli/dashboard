@@ -74,11 +74,11 @@ export function StubCard({ stub, onClick }: StubCardProps) {
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 border-t border-ind-border/50">
-        <span className={`text-xs px-2 py-1 rounded ${statusBg}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 border-t border-ind-border/50 min-w-0">
+        <span className={`text-xs px-2 py-1 rounded shrink-0 ${statusBg} whitespace-nowrap`}>
           {stub.status ? stub.status.replace(/_/g, ' ') : 'stub'}
         </span>
-        <span className="text-xs text-ind-text-muted">
+        <span className="text-xs text-ind-text-muted shrink-0">
           {formattedDate}
         </span>
       </div>
