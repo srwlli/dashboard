@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { Clipboard, Lightbulb, BookOpen, RotateCw } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import TabNavigation from '@/components/TabNavigation';
-import FilterBar, { FilterConfig } from '@/components/FilterBar';
 import WorkorderList from '@/components/WorkorderList';
 import StubList from '@/components/StubList';
-import StatsCard from '@/components/StatsCard';
 import { useWorkorders } from '@/hooks/useWorkorders';
 import { useStubs } from '@/hooks/useStubs';
 
@@ -17,24 +15,15 @@ import { useStubs } from '@/hooks/useStubs';
  */
 export default function AssistantPage() {
   const [activeTab, setActiveTab] = useState<string>('workorders');
-  const [workorderFilters, setWorkorderFilters] = useState<FilterConfig>({});
-  const [stubFilters, setStubFilters] = useState<FilterConfig>({});
 
-  const { workorders, isLoading: workordersLoading, error: workordersError, byProject, byStatus } = useWorkorders();
-  const { stubs, isLoading: stubsLoading, error: stubsError, total: stubsTotal } = useStubs();
+  const { workorders, isLoading: workordersLoading, error: workordersError } = useWorkorders();
+  const { stubs, isLoading: stubsLoading, error: stubsError } = useStubs();
 
   const tabs = [
     { id: 'workorders', label: 'Workorders', icon: Clipboard },
     { id: 'stubs', label: 'Stubs', icon: Lightbulb },
     { id: 'documentation', label: 'Documentation', icon: BookOpen },
   ];
-
-  // Extract unique projects for filtering
-  const projectOptions = Object.keys(byProject || {}).sort();
-  const workorderStatusOptions = Object.keys(byStatus || {}).sort();
-  const stubStatusOptions = ['stub', 'planned', 'in_progress', 'completed'];
-  const stubPriorityOptions = ['low', 'medium', 'high', 'critical'];
-  const stubCategoryOptions = ['feature', 'fix', 'improvement', 'idea', 'refactor', 'test'];
 
   return (
     <PageLayout>
@@ -84,34 +73,11 @@ export default function AssistantPage() {
 
         {/* Workorders Tab */}
         {activeTab === 'workorders' && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Filter Sidebar */}
-            <div>
-              <FilterBar
-                onFilterChange={setWorkorderFilters}
-                statusOptions={workorderStatusOptions}
-                projectOptions={projectOptions}
-                showSearch={true}
-              />
-
-              {/* Stats */}
-              {!workordersLoading && workorders.length > 0 && (
-                <StatsCard
-                  title="Stats"
-                  items={Object.entries(byStatus || {}).map(([status, count]) => ({
-                    label: status.replace(/_/g, ' '),
-                    count: count as number,
-                  }))}
-                  total={workorders.length}
-                />
-              )}
-            </div>
-
+          <div>
             {/* Content */}
-            <div className="lg:col-span-3">
+            <div>
               <WorkorderList
                 workorders={workorders}
-                filters={workorderFilters}
                 isLoading={workordersLoading}
                 error={workordersError}
                 onWorkorderClick={(id) => console.log('Clicked workorder:', id)}
@@ -122,32 +88,11 @@ export default function AssistantPage() {
 
         {/* Stubs Tab */}
         {activeTab === 'stubs' && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Filter Sidebar */}
-            <div>
-              <FilterBar
-                onFilterChange={setStubFilters}
-                statusOptions={stubStatusOptions}
-                priorityOptions={stubPriorityOptions}
-                categoryOptions={stubCategoryOptions}
-                showSearch={true}
-              />
-
-              {/* Stats */}
-              {!stubsLoading && stubs.length > 0 && (
-                <StatsCard
-                  title="Stats"
-                  items={[]}
-                  total={stubsTotal}
-                />
-              )}
-            </div>
-
+          <div>
             {/* Content */}
-            <div className="lg:col-span-3">
+            <div>
               <StubList
                 stubs={stubs}
-                filters={stubFilters}
                 isLoading={stubsLoading}
                 error={stubsError}
                 onStubClick={(name) => console.log('Clicked stub:', name)}
