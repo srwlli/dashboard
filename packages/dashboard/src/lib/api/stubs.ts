@@ -69,7 +69,35 @@ export class StubReader {
 
           // Read and parse stub.json
           const content = readFileSync(stubFilePath, 'utf-8');
-          const rawData = JSON.parse(content) as RawStubData;
+
+          let rawData: RawStubData;
+          try {
+            rawData = JSON.parse(content) as RawStubData;
+          } catch (parseError) {
+            // Enhanced error message for JSON parsing issues
+            const errorMsg = parseError instanceof SyntaxError
+              ? `Invalid JSON syntax: ${parseError.message}`
+              : 'Failed to parse JSON';
+            console.error(
+              `⚠️  Skipping invalid stub at ${stubFilePath}: ${errorMsg}\n` +
+              `    File: ${entry.name}/stub.json\n` +
+              `    Action: Check the JSON syntax and ensure it conforms to the stub schema\n` +
+              `    Schema: stub.json must contain exactly 7 fields: stub_id, feature_name, description, category, priority, status, created_at`
+            );
+            continue;
+          }
+
+          // Validate required fields
+          const requiredFields = ['feature_name', 'title', 'description', 'category', 'priority', 'status', 'created'];
+          const missingFields = requiredFields.filter(field => !(field in rawData));
+
+          if (missingFields.length > 0) {
+            console.error(
+              `⚠️  Skipping incomplete stub at ${entry.name}/stub.json: Missing fields [${missingFields.join(', ')}]\n` +
+              `    Action: Add missing required fields to the stub`
+            );
+            continue;
+          }
 
           // Convert to StubObject
           const stub: StubObject = {
@@ -87,9 +115,11 @@ export class StubReader {
 
           stubs.push(stub);
         } catch (error) {
-          // Log error but continue processing other folders
+          // Unexpected error - log but continue processing other folders
           // This implements graceful degradation - one bad file doesn't break everything
-          console.error(`Error reading stub from ${folderPath}:`, error);
+          console.error(
+            `⚠️  Unexpected error reading stub from ${entry.name}: ${(error as Error).message}`
+          );
         }
       }
 
@@ -126,7 +156,31 @@ export class StubReader {
 
     try {
       const content = readFileSync(stubPath, 'utf-8');
-      const rawData = JSON.parse(content) as RawStubData;
+      let rawData: RawStubData;
+
+      try {
+        rawData = JSON.parse(content) as RawStubData;
+      } catch (parseError) {
+        const errorMsg = parseError instanceof SyntaxError
+          ? `Invalid JSON syntax: ${parseError.message}`
+          : 'Failed to parse JSON';
+        throw new Error(
+          `Stub ${featureName} has invalid JSON: ${errorMsg}\n` +
+          `    File: ${featureName}/stub.json\n` +
+          `    Ensure the stub.json contains valid JSON with required fields`
+        );
+      }
+
+      // Validate required fields
+      const requiredFields = ['feature_name', 'title', 'description', 'category', 'priority', 'status', 'created'];
+      const missingFields = requiredFields.filter(field => !(field in rawData));
+
+      if (missingFields.length > 0) {
+        throw new Error(
+          `Stub ${featureName} is incomplete. Missing fields: [${missingFields.join(', ')}]\n` +
+          `    Add all required fields: ${requiredFields.join(', ')}`
+        );
+      }
 
       return {
         id: rawData.feature_name,
