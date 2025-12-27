@@ -11,16 +11,28 @@ import { StubObject } from '@/types/stubs';
 
 /**
  * Raw stub.json file structure
+ *
+ * Required fields (6):
+ * - feature_name: Name of the feature
+ * - description: Brief description
+ * - category: Type of work (feature/fix/improvement/idea/refactor/test)
+ * - priority: Priority level (low/medium/high/critical)
+ * - status: Always "stub" for new stubs
+ * - created: ISO 8601 creation timestamp
+ *
+ * Optional fields:
+ * - stub_id: Auto-generated stub ID (added in newer stubs)
+ * - context: Conversation context from when stub was created
  */
 interface RawStubData {
+  stub_id?: string;
   feature_name: string;
-  title: string;
   description: string;
   category: string;
   priority: string;
   status: string;
   created: string;
-  updated: string;
+  context?: string;
 }
 
 /**
@@ -82,18 +94,19 @@ export class StubReader {
               `⚠️  Skipping invalid stub at ${stubFilePath}: ${errorMsg}\n` +
               `    File: ${entry.name}/stub.json\n` +
               `    Action: Check the JSON syntax and ensure it conforms to the stub schema\n` +
-              `    Schema: stub.json must contain exactly 7 fields: stub_id, feature_name, description, category, priority, status, created_at`
+              `    Schema: stub.json must contain 6 required fields: feature_name, description, category, priority, status, created`
             );
             continue;
           }
 
           // Validate required fields
-          const requiredFields = ['feature_name', 'title', 'description', 'category', 'priority', 'status', 'created'];
+          const requiredFields = ['feature_name', 'description', 'category', 'priority', 'status', 'created'];
           const missingFields = requiredFields.filter(field => !(field in rawData));
 
           if (missingFields.length > 0) {
             console.error(
               `⚠️  Skipping incomplete stub at ${entry.name}/stub.json: Missing fields [${missingFields.join(', ')}]\n` +
+              `    Required fields: ${requiredFields.join(', ')}\n` +
               `    Action: Add missing required fields to the stub`
             );
             continue;
@@ -103,13 +116,13 @@ export class StubReader {
           const stub: StubObject = {
             id: rawData.feature_name,
             feature_name: rawData.feature_name,
-            title: rawData.title,
+            title: rawData.description, // Use description as title for display
             description: rawData.description,
             category: rawData.category as any,
             priority: rawData.priority as any,
             status: rawData.status as any,
             created: rawData.created,
-            updated: rawData.updated,
+            updated: rawData.created, // Use created date as updated (stub is immutable)
             path: stubFilePath,
           };
 
@@ -172,26 +185,26 @@ export class StubReader {
       }
 
       // Validate required fields
-      const requiredFields = ['feature_name', 'title', 'description', 'category', 'priority', 'status', 'created'];
+      const requiredFields = ['feature_name', 'description', 'category', 'priority', 'status', 'created'];
       const missingFields = requiredFields.filter(field => !(field in rawData));
 
       if (missingFields.length > 0) {
         throw new Error(
           `Stub ${featureName} is incomplete. Missing fields: [${missingFields.join(', ')}]\n` +
-          `    Add all required fields: ${requiredFields.join(', ')}`
+          `    Required fields: ${requiredFields.join(', ')}`
         );
       }
 
       return {
         id: rawData.feature_name,
         feature_name: rawData.feature_name,
-        title: rawData.title,
+        title: rawData.description, // Use description as title for display
         description: rawData.description,
         category: rawData.category as any,
         priority: rawData.priority as any,
         status: rawData.status as any,
         created: rawData.created,
-        updated: rawData.updated,
+        updated: rawData.created, // Use created date as updated (stub is immutable)
         path: stubPath,
       };
     } catch (error) {
