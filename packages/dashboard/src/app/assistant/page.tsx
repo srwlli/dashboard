@@ -7,6 +7,7 @@ import TabNavigation from '@/components/TabNavigation';
 import FilterBar, { FilterConfig } from '@/components/FilterBar';
 import WorkorderList from '@/components/WorkorderList';
 import StubList from '@/components/StubList';
+import StatsCard from '@/components/StatsCard';
 import { useWorkorders } from '@/hooks/useWorkorders';
 import { useStubs } from '@/hooks/useStubs';
 
@@ -95,19 +96,14 @@ export default function AssistantPage() {
 
               {/* Stats */}
               {!workordersLoading && workorders.length > 0 && (
-                <div className="mt-6 space-y-2 p-4 rounded-lg bg-ind-panel border border-ind-border/50">
-                  <h3 className="text-xs font-semibold text-ind-text-muted uppercase">Stats</h3>
-                  <div className="space-y-1">
-                    <p className="text-sm text-ind-text">
-                      Total: <span className="font-semibold text-ind-accent">{workorders.length}</span>
-                    </p>
-                    {Object.entries(byStatus || {}).map(([status, count]) => (
-                      <p key={status} className="text-xs text-ind-text-muted">
-                        {status.replace(/_/g, ' ')}: <span className="text-ind-text font-medium">{count}</span>
-                      </p>
-                    ))}
-                  </div>
-                </div>
+                <StatsCard
+                  title="Stats"
+                  items={Object.entries(byStatus || {}).map(([status, count]) => ({
+                    label: status.replace(/_/g, ' '),
+                    count: count as number,
+                  }))}
+                  total={workorders.length}
+                />
               )}
             </div>
 
@@ -139,12 +135,11 @@ export default function AssistantPage() {
 
               {/* Stats */}
               {!stubsLoading && stubs.length > 0 && (
-                <div className="mt-6 space-y-2 p-4 rounded-lg bg-ind-panel border border-ind-border/50">
-                  <h3 className="text-xs font-semibold text-ind-text-muted uppercase">Stats</h3>
-                  <p className="text-sm text-ind-text">
-                    Total: <span className="font-semibold text-ind-accent">{stubsTotal}</span>
-                  </p>
-                </div>
+                <StatsCard
+                  title="Stats"
+                  items={[]}
+                  total={stubsTotal}
+                />
               )}
             </div>
 
