@@ -44,14 +44,14 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
         {/* Sidebar: hidden on mobile, visible on md+ */}
         <Sidebar className="hidden md:flex" />
         {/* Main content area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
           <Header />
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden">
             {/* Responsive padding: p-2 on mobile, p-4 on sm+, p-6 on lg+ */}
-            <div className="p-2 sm:p-4 lg:p-6">
+            <div className="p-2 sm:p-4 lg:p-6 min-w-0">
               {/* Responsive max-width: full on mobile, constrained on larger screens */}
-              <div className="max-w-full md:max-w-4xl lg:max-w-6xl mx-auto">
-                <div className="grid gap-6">
+              <div className="max-w-full md:max-w-4xl lg:max-w-6xl mx-auto min-w-0">
+                <div className="grid gap-6 min-w-0">
                   {children}
                 </div>
               </div>

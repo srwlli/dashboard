@@ -27,9 +27,9 @@ export default function AssistantPage() {
 
   return (
     <PageLayout>
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-4 sm:space-y-6 min-w-0">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 min-w-0">
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-ind-text mb-2">Assistant</h1>
             <p className="text-xs sm:text-sm md:text-base text-ind-text-muted">
@@ -88,9 +88,9 @@ export default function AssistantPage() {
 
         {/* Stubs Tab */}
         {activeTab === 'stubs' && (
-          <div>
+          <div className="min-w-0 overflow-hidden">
             {/* Content */}
-            <div>
+            <div className="min-w-0">
               <StubList
                 stubs={stubs}
                 isLoading={stubsLoading}
