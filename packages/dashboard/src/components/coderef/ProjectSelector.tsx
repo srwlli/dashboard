@@ -87,20 +87,23 @@ export function ProjectSelector({
       await saveDirectoryHandle(projectId, dirHandle);
 
       // Step 4: Register project with API
-      await CodeRefApi.projects.create({
+      const response = await CodeRefApi.projects.create({
         id: projectId,
         name: projectName,
         path: projectPath,
       });
 
-      // Step 5: Reload projects and select the new one
-      await loadProjects();
+      // Step 5: Select the new project immediately
+      const newProject: Project = {
+        id: projectId,
+        name: projectName,
+        path: projectPath,
+        addedAt: new Date().toISOString(),
+      };
+      onProjectChange(newProject);
 
-      // Auto-select the new project
-      const newProject = projects.find((p) => p.id === projectId);
-      if (newProject) {
-        onProjectChange(newProject);
-      }
+      // Step 6: Reload projects list to refresh UI
+      await loadProjects();
     } catch (err) {
       setError((err as Error).message);
     } finally {
