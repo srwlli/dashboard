@@ -14,7 +14,8 @@
       "mcp__coderef-docs__generate_foundation_docs",
       "Bash(if not exist \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\coderef\\foundation-docs\" mkdir \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\coderef\\foundation-docs\")",
       "Bash(mkdir:*)",
-      "mcp__coderef-docs__generate_quickref_interactive"
+      "mcp__coderef-docs__generate_quickref_interactive",
+      "mcp__coderef-workflow__list_templates"
     ],
     "deny": [],
     "ask": []
