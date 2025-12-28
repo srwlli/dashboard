@@ -87,7 +87,7 @@ export function ProjectSelector({
       await saveDirectoryHandle(projectId, dirHandle);
 
       // Step 4: Register project with API
-      const response = await CodeRefApi.projects.create({
+      await CodeRefApi.projects.create({
         id: projectId,
         name: projectName,
         path: projectPath,

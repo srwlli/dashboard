@@ -139,14 +139,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(errorResponse, { status: 400 });
     }
 
-    // Verify path exists
-    try {
-      await fs.access(projectPath);
-    } catch {
-      const errorResponse = createErrorResponse(ErrorCodes.FOLDER_NOT_FOUND, {
-        path: projectPath,
-      });
-      return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
+    // Verify path exists (skip for File System Access API paths)
+    const isBrowserPath = projectPath.startsWith('[Directory:');
+    if (!isBrowserPath) {
+      try {
+        await fs.access(projectPath);
+      } catch {
+        const errorResponse = createErrorResponse(ErrorCodes.FOLDER_NOT_FOUND, {
+          path: projectPath,
+        });
+        return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
+      }
     }
 
     // Load existing projects
