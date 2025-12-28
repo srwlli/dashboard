@@ -1,0 +1,462 @@
+{
+  "workorder_id": "WO-MIGRATION-001",
+  "feature_name": "migrate-to-coderef-dashboard",
+  "mode": "multi_agent",
+  "agent_count": 2,
+  "agents": {
+    "agent_1": {
+      "name": "Assistant Agent",
+      "project_path": "C:\\Users\\willh\\Desktop\\assistant\\web",
+      "workorder_id": "WO-MIGRATION-001-A1",
+      "phases": [1, 3, 7],
+      "phase_details": [
+        {
+          "phase": 1,
+          "name": "Setup & Foundation",
+          "shared": true,
+          "notes": "Coordinate with Agent 2 on shared setup tasks"
+        },
+        {
+          "phase": 3,
+          "name": "File System Access API Mode (Local)",
+          "can_run_parallel_with": [4],
+          "notes": "Extract current File System API logic, document patterns for Agent 2 to implement in React"
+        },
+        {
+          "phase": 7,
+          "name": "Feature Parity Validation & Polish",
+          "depends_on_agent_2_phases": [6],
+          "notes": "Test widget against current CodeRef Explorer app side-by-side"
+        }
+      ],
+      "forbidden_files": [
+        "packages/dashboard/**",
+        "packages/core/**",
+        "packages/electron-app/**"
+      ],
+      "allowed_files": [
+        "coderef/workorder/migrate-to-coderef-dashboard/**",
+        "coderef/foundation-docs/**",
+        "src/**",
+        "*.md"
+      ],
+      "responsibilities": [
+        "Phase 1: Create TypeScript type definitions, document current app patterns",
+        "Phase 3: Extract File System API logic, create documentation for React implementation",
+        "Phase 7: Validate feature parity, create comparison checklist, test both modes"
+      ]
+    },
+    "agent_2": {
+      "name": "Dashboard Agent",
+      "project_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+      "workorder_id": "WO-MIGRATION-001-A2",
+      "phases": [1, 2, 4, 5, 6],
+      "phase_details": [
+        {
+          "phase": 1,
+          "name": "Setup & Foundation",
+          "shared": true,
+          "notes": "Coordinate with Agent 1 on shared setup tasks, create directory structure in dashboard"
+        },
+        {
+          "phase": 2,
+          "name": "Core Components (Isolated)",
+          "notes": "Build React components: ProjectSelector, FileTree, FileTreeNode, FileViewer"
+        },
+        {
+          "phase": 4,
+          "name": "Next.js API Routes (Server Mode)",
+          "can_run_parallel_with": [3],
+          "notes": "Create 5 API routes in app/api/coderef/, can work in parallel with Agent 1's Phase 3"
+        },
+        {
+          "phase": 5,
+          "name": "Hybrid Mode Logic (Option D)",
+          "depends_on_agent_1_phases": [3],
+          "notes": "Implement smart routing between local (Agent 1's work) and API (Phase 4)"
+        },
+        {
+          "phase": 6,
+          "name": "Widget Integration",
+          "notes": "Compose components into widget, integrate into dashboard, add navigation"
+        }
+      ],
+      "forbidden_files": [
+        "C:\\Users\\willh\\Desktop\\assistant/**"
+      ],
+      "allowed_files": [
+        "packages/dashboard/src/**",
+        "packages/core/src/**",
+        "coderef/**",
+        "*.md"
+      ],
+      "responsibilities": [
+        "Phase 1: Set up directory structure in dashboard monorepo",
+        "Phase 2: Build all React components with TypeScript and Tailwind",
+        "Phase 4: Implement Next.js API routes for file operations",
+        "Phase 5: Create hybrid routing logic (File System API + API fallback)",
+        "Phase 6: Integrate widget into dashboard, add to navigation"
+      ]
+    }
+  },
+  "coordination": {
+    "handoff_points": [
+      {
+        "from": "agent_1",
+        "to": "agent_2",
+        "after_phase": 1,
+        "deliverable": "TypeScript types, IndexedDB utilities documentation",
+        "location": "coderef/workorder/migrate-to-coderef-dashboard/"
+      },
+      {
+        "from": "agent_1",
+        "to": "agent_2",
+        "after_phase": 3,
+        "deliverable": "File System API logic documentation, local-access.ts patterns",
+        "location": "coderef/workorder/migrate-to-coderef-dashboard/local-api-patterns.md"
+      },
+      {
+        "from": "agent_2",
+        "to": "agent_1",
+        "after_phase": 6,
+        "deliverable": "Completed widget in dashboard",
+        "location": "packages/dashboard/src/app/coderef-explorer/"
+      }
+    ],
+    "parallel_work": [
+      {
+        "agent_1_phase": 3,
+        "agent_2_phase": 4,
+        "notes": "These phases are independent and can run simultaneously"
+      }
+    ],
+    "synchronization_points": [
+      "After Phase 1: Both agents review setup before proceeding",
+      "Before Phase 5: Agent 2 waits for Agent 1 to complete Phase 3",
+      "Before Phase 7: Agent 1 waits for Agent 2 to complete Phase 6"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "SETUP-001",
+      "agent": "agent_2",
+      "phase": 1,
+      "description": "Create directory structure in dashboard: packages/dashboard/src/components/coderef/, lib/coderef/, app/coderef-explorer/",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "SETUP-002",
+      "agent": "agent_1",
+      "phase": 1,
+      "description": "Add File System Access API TypeScript types (@types/wicg-file-system-access or custom declarations)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "SETUP-003",
+      "agent": "agent_1",
+      "phase": 1,
+      "description": "Create lib/coderef/types.ts with shared TypeScript interfaces (Project, TreeNode, FileInfo, DirectoryHandleRecord)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "SETUP-004",
+      "agent": "agent_1",
+      "phase": 1,
+      "description": "Document IndexedDB utilities patterns from current app (openDB, saveDirectoryHandle, getDirectoryHandle, deleteDirectoryHandle)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "COMP-001",
+      "agent": "agent_2",
+      "phase": 2,
+      "description": "Create components/coderef/ProjectSelector.tsx (dropdown + add/remove buttons) with TypeScript props",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "COMP-002",
+      "agent": "agent_2",
+      "phase": 2,
+      "description": "Create components/coderef/FileTreeNode.tsx (recursive tree node component)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "COMP-003",
+      "agent": "agent_2",
+      "phase": 2,
+      "description": "Create components/coderef/FileTree.tsx (tree container, uses FileTreeNode)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "COMP-004",
+      "agent": "agent_2",
+      "phase": 2,
+      "description": "Create components/coderef/FileViewer.tsx (displays file content with syntax highlighting for JSON/MD/code)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "COMP-005",
+      "agent": "agent_2",
+      "phase": 2,
+      "description": "Style all components with Tailwind classes matching dashboard design system",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "LOCAL-001",
+      "agent": "agent_1",
+      "phase": 3,
+      "description": "Extract File System API logic from current app: showDirectoryPicker, buildTreeFromHandle, loadFileFromHandle patterns",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "LOCAL-002",
+      "agent": "agent_1",
+      "phase": 3,
+      "description": "Document ProjectManager component requirements ('use client', Browse Folder flow)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "LOCAL-003",
+      "agent": "agent_1",
+      "phase": 3,
+      "description": "Document permission checking logic (queryPermission, requestPermission patterns)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "LOCAL-004",
+      "agent": "agent_1",
+      "phase": 3,
+      "description": "Create local-api-patterns.md with implementation guide for Agent 2",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "API-001",
+      "agent": "agent_2",
+      "phase": 4,
+      "description": "Create app/api/coderef/projects/route.ts: GET (list), POST (save)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "API-002",
+      "agent": "agent_2",
+      "phase": 4,
+      "description": "Create app/api/coderef/projects/[id]/route.ts: DELETE (remove project by ID)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "API-003",
+      "agent": "agent_2",
+      "phase": 4,
+      "description": "Create app/api/coderef/tree/route.ts: GET with query param ?path=... (returns folder tree JSON)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "API-004",
+      "agent": "agent_2",
+      "phase": 4,
+      "description": "Create app/api/coderef/file/route.ts: GET with query param ?path=... (returns file content + metadata)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "API-005",
+      "agent": "agent_2",
+      "phase": 4,
+      "description": "Add error handling to all API routes (400, 404, 500 status codes with descriptive messages)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "API-006",
+      "agent": "agent_2",
+      "phase": 4,
+      "description": "Create lib/coderef/api-access.ts with fetch wrappers for each endpoint",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "HYBRID-001",
+      "agent": "agent_2",
+      "phase": 5,
+      "description": "Implement ProjectManager: on Browse Folder, store BOTH handle (IndexedDB) AND register with API",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "HYBRID-002",
+      "agent": "agent_2",
+      "phase": 5,
+      "description": "Create lib/coderef/hybrid-router.ts: tries local first, falls back to API",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "HYBRID-003",
+      "agent": "agent_2",
+      "phase": 5,
+      "description": "Update FileTree to use hybrid-router for loading tree",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "HYBRID-004",
+      "agent": "agent_2",
+      "phase": 5,
+      "description": "Update FileViewer to use hybrid-router for loading files",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "HYBRID-005",
+      "agent": "agent_2",
+      "phase": 5,
+      "description": "Add user-friendly error messages for permission denials, API failures, file not found",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "WIDGET-001",
+      "agent": "agent_2",
+      "phase": 6,
+      "description": "Create widgets/coderef-explorer/CodeRefExplorerWidget.tsx (main widget composing all components)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "WIDGET-002",
+      "agent": "agent_2",
+      "phase": 6,
+      "description": "Create widgets/coderef-explorer/index.tsx (export widget)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "WIDGET-003",
+      "agent": "agent_2",
+      "phase": 6,
+      "description": "Create app/coderef-explorer/page.tsx (dashboard route)",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "WIDGET-004",
+      "agent": "agent_2",
+      "phase": 6,
+      "description": "Add navigation link to dashboard sidebar",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "WIDGET-005",
+      "agent": "agent_2",
+      "phase": 6,
+      "description": "Test widget in dashboard layout, ensure responsive behavior",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-001",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Create feature parity checklist comparing current app vs widget",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-002",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Test: Add project (Browse Folder) → verify handle saved AND API registration created",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-003",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Test: Switch projects → verify tree reloads correctly",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-004",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Test: File tree expand/collapse → verify matches current app behavior",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-005",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Test: Click JSON file → verify syntax highlighting matches current app",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-006",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Test: Click MD file → verify markdown rendering matches current app",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-007",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Test: Theme toggle → verify persistence and color matching",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-008",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Test: Hybrid fallback → revoke permission, verify API fallback works",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-009",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Fix any discrepancies found in validation tests",
+      "status": "pending",
+      "completed_at": null
+    },
+    {
+      "id": "VALID-010",
+      "agent": "agent_1",
+      "phase": 7,
+      "description": "Final polish: loading states, error messages, accessibility",
+      "status": "pending",
+      "completed_at": null
+    }
+  ],
+  "progress": {
+    "total_tasks": 42,
+    "completed": 0,
+    "pending": 42,
+    "percent_complete": 0
+  },
+  "status": "planning_complete",
+  "created_at": "2025-12-28T05:00:00Z",
+  "updated_at": "2025-12-28T05:00:00Z"
+}

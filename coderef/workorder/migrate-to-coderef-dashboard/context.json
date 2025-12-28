@@ -1,0 +1,38 @@
+{
+  "feature_name": "migrate-to-coderef-dashboard",
+  "goal": "Migrate CodeRef Explorer from standalone Electron/web app to Next.js CodeRef Dashboard as an integrated widget with hybrid local + API architecture",
+  "description": "Transform the current CodeRef Explorer (standalone Electron app with Python backend) into a Next.js dashboard widget. Implement dual-mode access: File System Access API for local file operations AND Next.js API routes for server-based operations. Maintain exact feature parity with current app while integrating into dashboard's component architecture. Use unified 'Browse Folder' UX that stores both IndexedDB handles and API registrations simultaneously (Option D).",
+  "requirements": [
+    "Widget + components architecture (widget wrapper with reusable components)",
+    "Hybrid access: File System Access API (local) + Next.js API routes (server)",
+    "Unified 'Browse Folder' UX for both modes (Option D: store both handle and API registration)",
+    "Project browser with multi-project file tree navigation",
+    "File viewer with syntax highlighting (JSON, code) and markdown rendering",
+    "Component-based React implementation: ProjectSelector, FileTree, FileViewer, HybridAccessProvider",
+    "Feature parity with current app - must work exactly as it does now",
+    "Integration with dashboard's design system",
+    "Both modes stored simultaneously when user clicks 'Browse Folder'",
+    "Local mode tries File System API first, falls back to API if handle unavailable"
+  ],
+  "out_of_scope": [
+    "Python server.py backend (migrating to Next.js API routes)",
+    "Electron wrapper (dashboard handles desktop packaging)",
+    "Standalone web app maintenance after migration",
+    "New features beyond current app capabilities",
+    "Manual 'Type Path' entry (user always uses 'Browse Folder')"
+  ],
+  "constraints": [
+    "Target dashboard: C:\\Users\\willh\\Desktop\\coderef-dashboard (Next.js)",
+    "Must work exactly as current app does (feature parity mandatory)",
+    "Component-based for reusability across dashboard",
+    "File System Access API for local mode (Chromium browsers)",
+    "Next.js API routes for server mode (all browsers)",
+    "User always uses 'Browse Folder' picker (same UX for both modes)",
+    "System stores both: handle in IndexedDB + API registration",
+    "Current project location: C:\\Users\\willh\\Desktop\\assistant\\web"
+  ],
+  "target_dashboard": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+  "current_project": "C:\\Users\\willh\\Desktop\\assistant\\web",
+  "architecture": "widget_with_components",
+  "access_mode": "hybrid_local_and_api"
+}

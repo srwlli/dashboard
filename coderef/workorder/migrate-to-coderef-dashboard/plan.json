@@ -1,0 +1,567 @@
+{
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "1_executive_summary": {
+      "feature_name": "migrate-to-coderef-dashboard",
+      "workorder_id": "WO-MIGRATION-001",
+      "description": "Migrate CodeRef Explorer from standalone Electron app to Next.js CodeRef Dashboard as an integrated widget with hybrid local + API architecture",
+      "goal": "Transform the current CodeRef Explorer into a dashboard widget that maintains exact feature parity while integrating into the Next.js dashboard's component ecosystem",
+      "business_value": "Centralize all CodeRef tools in a unified dashboard interface, eliminate standalone app maintenance, enable component reuse across dashboard tools",
+      "estimated_effort": "Large (7 phases)",
+      "priority": "HIGH"
+    },
+    "2_technical_context": {
+      "current_state": {
+        "description": "Standalone Electron app with Python backend, vanilla JavaScript frontend, dual access modes (File System API + HTTP API)",
+        "technology_stack": ["Electron 28.x", "Python 3.6+", "Vanilla JS", "IndexedDB", "File System Access API"],
+        "key_components": ["Project manager", "File tree navigator", "File viewer", "Theme system"],
+        "location": "C:\\Users\\willh\\Desktop\\assistant\\web"
+      },
+      "target_state": {
+        "description": "Next.js dashboard widget with React components, TypeScript, hybrid architecture (File System API + Next.js API routes)",
+        "technology_stack": ["Next.js 14", "TypeScript", "React", "Tailwind CSS", "IndexedDB", "File System Access API"],
+        "integration_point": "packages/dashboard/src/ (monorepo)",
+        "location": "C:\\Users\\willh\\Desktop\\coderef-dashboard"
+      },
+      "architecture_decision": "Widget + components pattern: External widget wrapper with internal reusable components (ProjectSelector, FileTree, FileViewer, HybridAccessProvider)",
+      "access_mode": "Hybrid Option D: User browses folder once, system stores both IndexedDB handle (local fast access) and API registration (fallback/compatibility)"
+    },
+    "3_feature_requirements": {
+      "must_have": [
+        "Multi-project management (add, switch, remove projects)",
+        "Unified 'Browse Folder' UX for both local and API modes",
+        "File tree navigation with recursive folder expansion",
+        "File viewer with syntax highlighting (JSON, Markdown, code)",
+        "Hybrid access: File System Access API (primary) + Next.js API routes (fallback)",
+        "IndexedDB storage for directory handles",
+        "Feature parity with current app - works exactly the same",
+        "Dark/light theme support matching dashboard",
+        "Offline capability (File System API mode)"
+      ],
+      "should_have": [
+        "Seamless integration with dashboard design system (Tailwind)",
+        "TypeScript type safety throughout",
+        "Reusable components for potential use elsewhere in dashboard",
+        "Error handling for permission denials",
+        "Loading states during file operations"
+      ],
+      "could_have": [
+        "Unit tests for components (React Testing Library)",
+        "E2E tests for file operations",
+        "Performance monitoring",
+        "Accessibility improvements (keyboard navigation)"
+      ],
+      "wont_have": [
+        "Data migration from old app (users start fresh)",
+        "Standalone web app maintenance after migration",
+        "Python server.py (replacing with Next.js API)",
+        "Electron wrapper (dashboard provides this)",
+        "New features beyond current capabilities"
+      ]
+    },
+    "4_technical_requirements": {
+      "frontend": {
+        "framework": "Next.js 14 (App Router)",
+        "language": "TypeScript (strict mode)",
+        "components": "React functional components with 'use client' directive",
+        "styling": "Tailwind CSS utility classes",
+        "state_management": "React hooks (useState, useEffect) + Context API if needed",
+        "file_location": "packages/dashboard/src/"
+      },
+      "backend": {
+        "api_routes": "Next.js API routes in app/api/coderef/",
+        "endpoints": [
+          "GET /api/coderef/projects - List projects",
+          "POST /api/coderef/projects - Save project",
+          "DELETE /api/coderef/projects/[id] - Delete project",
+          "GET /api/coderef/tree - Get folder tree (query: path)",
+          "GET /api/coderef/file - Get file content (query: path)"
+        ],
+        "runtime": "Node.js (Next.js server)"
+      },
+      "storage": {
+        "local": "IndexedDB (directory handles)",
+        "api": "Server-side file system access",
+        "preference": "LocalStorage (theme)"
+      },
+      "browser_apis": ["File System Access API (Chromium)", "IndexedDB", "LocalStorage"],
+      "compatibility": {
+        "browsers": {
+          "chrome": "86+",
+          "edge": "86+",
+          "firefox": "API mode only (no File System Access)",
+          "safari": "API mode only (no File System Access)"
+        },
+        "deployment": ["PWA (web)", "Electron (desktop)"]
+      }
+    },
+    "5_success_criteria": {
+      "workorder_id": "WO-MIGRATION-001",
+      "functional_criteria": [
+        {
+          "criterion": "User can add projects via 'Browse Folder' picker",
+          "validation": "Click Add Project → Browse Folder → Select directory → Project appears in selector",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "Both local and API modes work from same 'Browse Folder' action",
+          "validation": "Handle saved to IndexedDB AND API registration created",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "File tree navigation matches current app exactly",
+          "validation": "Folder expand/collapse, file click behavior identical",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "File viewer displays JSON with syntax highlighting",
+          "validation": "Click .json file → See colored syntax",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "File viewer renders Markdown as HTML",
+          "validation": "Click .md file → See formatted content",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "Theme toggle works (dark ↔ light)",
+          "validation": "Click theme button → UI colors change → Persists on reload",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "Hybrid mode routing: tries local first, falls back to API",
+          "validation": "If handle available → use File System API; if not → use API",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "Widget integrates cleanly into dashboard layout",
+          "validation": "Widget appears in dashboard, matches design system",
+          "status": "PENDING"
+        }
+      ],
+      "technical_criteria": [
+        {
+          "criterion": "All components are TypeScript with strict mode",
+          "validation": "No TypeScript errors, all types defined",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "Components use 'use client' directive where needed",
+          "validation": "File System API components marked as client",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "Tailwind classes match dashboard design system",
+          "validation": "Colors, spacing, typography consistent",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "API routes follow REST conventions",
+          "validation": "Proper HTTP verbs, status codes, error handling",
+          "status": "PENDING"
+        },
+        {
+          "criterion": "IndexedDB operations handle errors gracefully",
+          "validation": "Permission denials show user-friendly messages",
+          "status": "PENDING"
+        }
+      ],
+      "acceptance_criteria": "Migration is complete when widget provides exact feature parity with current CodeRef Explorer and integrates seamlessly into dashboard"
+    },
+    "6_implementation_phases": [
+      {
+        "phase_number": 1,
+        "name": "Setup & Foundation",
+        "description": "Create directory structure, install dependencies, set up TypeScript types",
+        "tasks": [
+          {
+            "id": "SETUP-001",
+            "description": "Create directory structure: packages/dashboard/src/components/coderef/, packages/dashboard/src/lib/coderef/, packages/dashboard/src/app/coderef-explorer/",
+            "estimated_effort": "15 min",
+            "dependencies": []
+          },
+          {
+            "id": "SETUP-002",
+            "description": "Add File System Access API TypeScript types (@types/wicg-file-system-access or custom declarations)",
+            "estimated_effort": "15 min",
+            "dependencies": []
+          },
+          {
+            "id": "SETUP-003",
+            "description": "Create lib/coderef/types.ts with shared TypeScript interfaces (Project, TreeNode, FileInfo, DirectoryHandleRecord)",
+            "estimated_effort": "30 min",
+            "dependencies": ["SETUP-002"]
+          },
+          {
+            "id": "SETUP-004",
+            "description": "Set up IndexedDB utilities in lib/coderef/indexeddb.ts (openDB, saveDirectoryHandle, getDirectoryHandle, deleteDirectoryHandle)",
+            "estimated_effort": "45 min",
+            "dependencies": ["SETUP-003"]
+          }
+        ],
+        "deliverables": ["Directory structure", "TypeScript types", "IndexedDB utilities"],
+        "success_criteria": "TypeScript compiles without errors, IndexedDB utilities tested in browser console"
+      },
+      {
+        "phase_number": 2,
+        "name": "Core Components (Isolated)",
+        "description": "Build reusable React components without integration",
+        "tasks": [
+          {
+            "id": "COMP-001",
+            "description": "Create components/coderef/ProjectSelector.tsx (dropdown + add/remove buttons) with TypeScript props",
+            "estimated_effort": "1 hour",
+            "dependencies": ["SETUP-003"]
+          },
+          {
+            "id": "COMP-002",
+            "description": "Create components/coderef/FileTreeNode.tsx (recursive tree node component)",
+            "estimated_effort": "1.5 hours",
+            "dependencies": ["SETUP-003"]
+          },
+          {
+            "id": "COMP-003",
+            "description": "Create components/coderef/FileTree.tsx (tree container, uses FileTreeNode)",
+            "estimated_effort": "1 hour",
+            "dependencies": ["COMP-002"]
+          },
+          {
+            "id": "COMP-004",
+            "description": "Create components/coderef/FileViewer.tsx (displays file content with syntax highlighting for JSON/MD/code)",
+            "estimated_effort": "2 hours",
+            "dependencies": ["SETUP-003"]
+          },
+          {
+            "id": "COMP-005",
+            "description": "Style all components with Tailwind classes matching dashboard design system",
+            "estimated_effort": "1.5 hours",
+            "dependencies": ["COMP-001", "COMP-003", "COMP-004"]
+          }
+        ],
+        "deliverables": ["ProjectSelector component", "FileTree + FileTreeNode components", "FileViewer component", "Tailwind styling"],
+        "success_criteria": "Components render in isolation (Storybook or test page), styled with Tailwind, TypeScript types correct"
+      },
+      {
+        "phase_number": 3,
+        "name": "File System Access API Mode (Local)",
+        "description": "Implement client-side local file access using File System Access API",
+        "tasks": [
+          {
+            "id": "LOCAL-001",
+            "description": "Create lib/coderef/local-access.ts with functions: showDirectoryPicker, buildTreeFromHandle, loadFileFromHandle",
+            "estimated_effort": "2 hours",
+            "dependencies": ["SETUP-003", "SETUP-004"]
+          },
+          {
+            "id": "LOCAL-002",
+            "description": "Create components/coderef/ProjectManager.tsx ('use client' component) to handle Add Project → Browse Folder flow",
+            "estimated_effort": "1.5 hours",
+            "dependencies": ["LOCAL-001", "COMP-001"]
+          },
+          {
+            "id": "LOCAL-003",
+            "description": "Implement permission checking and re-validation logic (queryPermission, requestPermission)",
+            "estimated_effort": "1 hour",
+            "dependencies": ["LOCAL-001"]
+          },
+          {
+            "id": "LOCAL-004",
+            "description": "Wire ProjectManager to IndexedDB: save handle on Browse Folder, retrieve on project switch",
+            "estimated_effort": "1 hour",
+            "dependencies": ["LOCAL-002", "SETUP-004"]
+          },
+          {
+            "id": "LOCAL-005",
+            "description": "Integrate ProjectManager with FileTree: load tree from handle, click file → load content",
+            "estimated_effort": "1.5 hours",
+            "dependencies": ["LOCAL-004", "COMP-003"]
+          }
+        ],
+        "deliverables": ["local-access.ts utilities", "ProjectManager component", "Permission handling", "Local mode fully functional"],
+        "success_criteria": "User can Browse Folder → see file tree → click file → view content (all via File System API)"
+      },
+      {
+        "phase_number": 4,
+        "name": "Next.js API Routes (Server Mode)",
+        "description": "Create server-side API endpoints for file operations",
+        "tasks": [
+          {
+            "id": "API-001",
+            "description": "Create app/api/coderef/projects/route.ts: GET (list), POST (save)",
+            "estimated_effort": "1.5 hours",
+            "dependencies": ["SETUP-003"]
+          },
+          {
+            "id": "API-002",
+            "description": "Create app/api/coderef/projects/[id]/route.ts: DELETE (remove project by ID)",
+            "estimated_effort": "45 min",
+            "dependencies": ["API-001"]
+          },
+          {
+            "id": "API-003",
+            "description": "Create app/api/coderef/tree/route.ts: GET with query param ?path=... (returns folder tree JSON)",
+            "estimated_effort": "2 hours",
+            "dependencies": ["SETUP-003"]
+          },
+          {
+            "id": "API-004",
+            "description": "Create app/api/coderef/file/route.ts: GET with query param ?path=... (returns file content + metadata)",
+            "estimated_effort": "1 hour",
+            "dependencies": ["SETUP-003"]
+          },
+          {
+            "id": "API-005",
+            "description": "Add error handling to all API routes (400, 404, 500 status codes with descriptive messages)",
+            "estimated_effort": "1 hour",
+            "dependencies": ["API-001", "API-002", "API-003", "API-004"]
+          },
+          {
+            "id": "API-006",
+            "description": "Create lib/coderef/api-access.ts with fetch wrappers for each endpoint",
+            "estimated_effort": "1 hour",
+            "dependencies": ["API-005"]
+          }
+        ],
+        "deliverables": ["5 API routes (projects, projects/[id], tree, file)", "api-access.ts fetch utilities", "Error handling"],
+        "success_criteria": "All API endpoints tested with curl/Postman, return correct data, handle errors gracefully"
+      },
+      {
+        "phase_number": 5,
+        "name": "Hybrid Mode Logic (Option D)",
+        "description": "Implement dual storage and smart routing between local and API modes",
+        "tasks": [
+          {
+            "id": "HYBRID-001",
+            "description": "Update ProjectManager: on Browse Folder, store BOTH handle (IndexedDB) AND register with API (POST /api/coderef/projects)",
+            "estimated_effort": "1.5 hours",
+            "dependencies": ["LOCAL-002", "API-006"]
+          },
+          {
+            "id": "HYBRID-002",
+            "description": "Create lib/coderef/hybrid-router.ts: function that tries local first (getDirectoryHandle), falls back to API if unavailable",
+            "estimated_effort": "1 hour",
+            "dependencies": ["LOCAL-001", "API-006"]
+          },
+          {
+            "id": "HYBRID-003",
+            "description": "Update FileTree to use hybrid-router for loading tree (try handle, fallback to API tree endpoint)",
+            "estimated_effort": "1 hour",
+            "dependencies": ["HYBRID-002", "COMP-003"]
+          },
+          {
+            "id": "HYBRID-004",
+            "description": "Update FileViewer to use hybrid-router for loading files (try handle, fallback to API file endpoint)",
+            "estimated_effort": "1 hour",
+            "dependencies": ["HYBRID-002", "COMP-004"]
+          },
+          {
+            "id": "HYBRID-005",
+            "description": "Add user-friendly error messages for permission denials, API failures, file not found",
+            "estimated_effort": "45 min",
+            "dependencies": ["HYBRID-003", "HYBRID-004"]
+          }
+        ],
+        "deliverables": ["Hybrid storage (handle + API)", "Smart routing logic", "Fallback handling", "Error messages"],
+        "success_criteria": "Same 'Browse Folder' UX works in both modes, system automatically routes to best available method"
+      },
+      {
+        "phase_number": 6,
+        "name": "Widget Integration",
+        "description": "Compose components into widget wrapper and integrate into dashboard",
+        "tasks": [
+          {
+            "id": "WIDGET-001",
+            "description": "Create widgets/coderef-explorer/CodeRefExplorerWidget.tsx (main widget that composes all components)",
+            "estimated_effort": "1 hour",
+            "dependencies": ["COMP-001", "COMP-003", "COMP-004", "HYBRID-005"]
+          },
+          {
+            "id": "WIDGET-002",
+            "description": "Create widgets/coderef-explorer/index.tsx (export widget for dashboard consumption)",
+            "estimated_effort": "15 min",
+            "dependencies": ["WIDGET-001"]
+          },
+          {
+            "id": "WIDGET-003",
+            "description": "Create app/coderef-explorer/page.tsx (dashboard route that renders widget)",
+            "estimated_effort": "30 min",
+            "dependencies": ["WIDGET-002"]
+          },
+          {
+            "id": "WIDGET-004",
+            "description": "Add navigation link to dashboard sidebar (link to /coderef-explorer)",
+            "estimated_effort": "15 min",
+            "dependencies": ["WIDGET-003"]
+          },
+          {
+            "id": "WIDGET-005",
+            "description": "Test widget in dashboard layout, ensure responsive behavior",
+            "estimated_effort": "45 min",
+            "dependencies": ["WIDGET-004"]
+          }
+        ],
+        "deliverables": ["CodeRefExplorerWidget wrapper", "Dashboard page route", "Sidebar navigation", "Responsive layout"],
+        "success_criteria": "Widget appears in dashboard, navigable from sidebar, layout matches dashboard design"
+      },
+      {
+        "phase_number": 7,
+        "name": "Feature Parity Validation & Polish",
+        "description": "Ensure exact functionality match with current app, final refinements",
+        "tasks": [
+          {
+            "id": "VALID-001",
+            "description": "Create feature parity checklist comparing current app vs widget (side-by-side testing)",
+            "estimated_effort": "30 min",
+            "dependencies": ["WIDGET-005"]
+          },
+          {
+            "id": "VALID-002",
+            "description": "Test: Add project (Browse Folder) → verify handle saved AND API registration created",
+            "estimated_effort": "15 min",
+            "dependencies": ["VALID-001"]
+          },
+          {
+            "id": "VALID-003",
+            "description": "Test: Switch projects → verify tree reloads correctly",
+            "estimated_effort": "15 min",
+            "dependencies": ["VALID-001"]
+          },
+          {
+            "id": "VALID-004",
+            "description": "Test: File tree expand/collapse → verify matches current app behavior",
+            "estimated_effort": "15 min",
+            "dependencies": ["VALID-001"]
+          },
+          {
+            "id": "VALID-005",
+            "description": "Test: Click JSON file → verify syntax highlighting matches current app",
+            "estimated_effort": "15 min",
+            "dependencies": ["VALID-001"]
+          },
+          {
+            "id": "VALID-006",
+            "description": "Test: Click MD file → verify markdown rendering matches current app",
+            "estimated_effort": "15 min",
+            "dependencies": ["VALID-001"]
+          },
+          {
+            "id": "VALID-007",
+            "description": "Test: Theme toggle → verify persistence and color matching",
+            "estimated_effort": "15 min",
+            "dependencies": ["VALID-001"]
+          },
+          {
+            "id": "VALID-008",
+            "description": "Test: Hybrid fallback → revoke permission, verify API fallback works",
+            "estimated_effort": "15 min",
+            "dependencies": ["VALID-001"]
+          },
+          {
+            "id": "VALID-009",
+            "description": "Fix any discrepancies found in validation tests",
+            "estimated_effort": "2 hours",
+            "dependencies": ["VALID-002", "VALID-003", "VALID-004", "VALID-005", "VALID-006", "VALID-007", "VALID-008"]
+          },
+          {
+            "id": "VALID-010",
+            "description": "Final polish: loading states, error messages, accessibility (keyboard nav)",
+            "estimated_effort": "1.5 hours",
+            "dependencies": ["VALID-009"]
+          }
+        ],
+        "deliverables": ["Feature parity checklist", "Validation test results", "Bug fixes", "Final polish"],
+        "success_criteria": "Widget provides exact feature parity with current CodeRef Explorer, all tests pass"
+      }
+    ],
+    "7_dependencies": {
+      "internal_dependencies": [
+        "Foundation docs (API.md, SCHEMA.md, COMPONENTS.md, ARCHITECTURE.md) - already exist",
+        "Dashboard design system (Tailwind config, colors, typography) - already exists",
+        "Dashboard monorepo structure (packages/dashboard, packages/core) - already exists"
+      ],
+      "external_dependencies": [
+        "@types/wicg-file-system-access (npm package for TypeScript types)",
+        "marked or react-markdown (Markdown rendering library)",
+        "Chromium browser (for File System Access API testing)"
+      ],
+      "blockers": "None identified at planning stage"
+    },
+    "8_risks": {
+      "high_risk": [
+        {
+          "risk": "Feature parity validation fails - widget doesn't work exactly like current app",
+          "likelihood": "MEDIUM",
+          "impact": "HIGH",
+          "mitigation": "Comprehensive side-by-side testing checklist (VALID-001), incremental validation during each phase"
+        },
+        {
+          "risk": "File System Access API permission handling differs in Next.js vs Electron context",
+          "likelihood": "MEDIUM",
+          "impact": "MEDIUM",
+          "mitigation": "Early testing in both PWA and Electron modes (Phase 3), clear error messages"
+        }
+      ],
+      "medium_risk": [
+        {
+          "risk": "Design system conversion (Industrial UI → Tailwind) loses visual fidelity",
+          "likelihood": "LOW",
+          "impact": "MEDIUM",
+          "mitigation": "Extract color scheme early, match spacing/typography systematically (COMP-005)"
+        },
+        {
+          "risk": "Hybrid routing logic has edge cases (e.g., handle expires, API unavailable)",
+          "likelihood": "MEDIUM",
+          "impact": "LOW",
+          "mitigation": "Comprehensive error handling (HYBRID-005), fallback logic tested (VALID-008)"
+        }
+      ],
+      "low_risk": [
+        {
+          "risk": "TypeScript type definitions for File System Access API incomplete",
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "mitigation": "Use @types/wicg-file-system-access or create custom types (SETUP-002)"
+        }
+      ]
+    },
+    "9_validation_strategy": {
+      "unit_testing": "Optional (React Testing Library for components)",
+      "integration_testing": "Manual testing with feature parity checklist (Phase 7)",
+      "e2e_testing": "Manual testing in both PWA and Electron modes",
+      "validation_checklist": [
+        "Add project via Browse Folder → Both handle and API registration created",
+        "Switch projects → Tree reloads correctly",
+        "Expand/collapse folders → Matches current app",
+        "Click JSON file → Syntax highlighting correct",
+        "Click Markdown file → Rendered HTML correct",
+        "Theme toggle → Colors change, persists on reload",
+        "Permission revoked → API fallback works",
+        "Widget layout → Matches dashboard design system",
+        "TypeScript compilation → No errors",
+        "Browser compatibility → Chrome/Edge work, Firefox/Safari use API mode"
+      ]
+    },
+    "10_handoff": {
+      "deliverables": [
+        "CodeRef Explorer widget integrated into dashboard",
+        "Reusable components (ProjectSelector, FileTree, FileViewer)",
+        "Next.js API routes (5 endpoints)",
+        "Hybrid access logic (Option D implementation)",
+        "Feature parity with current app validated",
+        "Documentation updates (README, ARCHITECTURE, COMPONENTS)"
+      ],
+      "documentation_to_update": [
+        "coderef-dashboard/README.md (add CodeRef Explorer widget section)",
+        "coderef-dashboard/coderef/foundation-docs/ARCHITECTURE.md (document widget architecture)",
+        "coderef-dashboard/coderef/foundation-docs/COMPONENTS.md (add component descriptions)",
+        "coderef-dashboard/coderef/user/USER-GUIDE.md (usage instructions for widget)"
+      ],
+      "post_implementation": [
+        "Run /update-docs to update changelog",
+        "Run /update-foundation-docs to update API.md, COMPONENTS.md",
+        "Run /archive-feature to move workorder to coderef/archived/",
+        "Optional: Add unit tests for components",
+        "Optional: Set up E2E tests with Playwright"
+      ]
+    }
+  }
+}

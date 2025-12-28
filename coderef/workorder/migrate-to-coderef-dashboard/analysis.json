@@ -1,0 +1,199 @@
+{
+  "feature_name": "migrate-to-coderef-dashboard",
+  "analysis_date": "2025-12-28",
+  "source_project": {
+    "name": "CodeRef Explorer",
+    "path": "C:\\Users\\willh\\Desktop\\assistant\\web",
+    "type": "Electron Desktop App",
+    "technology_stack": {
+      "runtime": "Electron 28.x",
+      "backend": "Python 3.6+ HTTP Server (server.py)",
+      "frontend": "Vanilla JavaScript (ES6+)",
+      "styling": "Custom CSS (Industrial UI)",
+      "data_storage": ["IndexedDB", "LocalStorage", "projects.json"],
+      "apis": ["File System Access API", "HTTP API (localhost:8080)"]
+    },
+    "key_features": [
+      "Multi-project management",
+      "Dual access modes (File System API + HTTP)",
+      "File tree navigation",
+      "File viewer (JSON, Markdown, code)",
+      "Dark/light theme toggle",
+      "Offline-capable"
+    ],
+    "architecture_patterns": [
+      "Event-driven UI (vanilla JS event handlers)",
+      "Direct DOM manipulation",
+      "Async/await for file operations",
+      "IndexedDB for persistent handles",
+      "Hybrid local + server access"
+    ]
+  },
+  "target_project": {
+    "name": "CodeRef Dashboard",
+    "path": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+    "type": "Next.js Monorepo",
+    "technology_stack": {
+      "framework": "Next.js 14 (App Router)",
+      "language": "TypeScript",
+      "styling": "Tailwind CSS",
+      "package_manager": "npm + Turborepo",
+      "deployment": ["PWA (Web)", "Electron (Desktop)"]
+    },
+    "monorepo_structure": {
+      "packages/core": "Shared library (components, hooks, types, utils)",
+      "packages/dashboard": "Next.js web application",
+      "packages/electron-app": "Electron wrapper"
+    },
+    "existing_patterns": {
+      "components": "React functional components with TypeScript",
+      "api_routes": "Next.js API routes in app/api/",
+      "state_management": "React contexts + hooks",
+      "styling": "Tailwind utility classes",
+      "file_structure": "Organized by feature (WorkorderCard, StubCard, etc.)"
+    }
+  },
+  "migration_analysis": {
+    "complexity": "HIGH",
+    "estimated_effort": "Large (multiple phases)",
+    "key_challenges": [
+      {
+        "challenge": "Technology conversion",
+        "description": "Convert vanilla JS to React + TypeScript",
+        "impact": "HIGH",
+        "mitigation": "Incremental component migration, reuse logic"
+      },
+      {
+        "challenge": "Backend migration",
+        "description": "Migrate Python HTTP server to Next.js API routes",
+        "impact": "MEDIUM",
+        "mitigation": "Direct endpoint mapping, similar REST patterns"
+      },
+      {
+        "challenge": "File System Access API integration",
+        "description": "Use browser API in Next.js client components",
+        "impact": "LOW",
+        "mitigation": "Mark components with 'use client', API already browser-native"
+      },
+      {
+        "challenge": "Design system alignment",
+        "description": "Match dashboard's Tailwind design vs Industrial UI",
+        "impact": "MEDIUM",
+        "mitigation": "Extract color scheme, adapt to Tailwind classes"
+      },
+      {
+        "challenge": "Feature parity",
+        "description": "Maintain exact functionality of current app",
+        "impact": "HIGH",
+        "mitigation": "Comprehensive feature mapping, validation checklist"
+      }
+    ],
+    "opportunities": [
+      "TypeScript type safety improves code quality",
+      "React ecosystem enables better testing",
+      "Next.js API routes more maintainable than Python server",
+      "Dashboard integration provides centralized UI",
+      "Monorepo allows shared components across tools"
+    ]
+  },
+  "component_mapping": {
+    "source_to_target": [
+      {
+        "source": "HTML + inline JS",
+        "target": "React client components ('use client')",
+        "files": [
+          "index.html → app/coderef-explorer/page.tsx",
+          "coderef-explorer.html → components/coderef/CodeRefExplorerWidget.tsx"
+        ]
+      },
+      {
+        "source": "Project selector (HTML select + JS)",
+        "target": "components/coderef/ProjectSelector.tsx",
+        "notes": "Dropdown + add/remove buttons"
+      },
+      {
+        "source": "File tree (recursive HTML generation)",
+        "target": "components/coderef/FileTree.tsx + FileTreeNode.tsx",
+        "notes": "Recursive React components"
+      },
+      {
+        "source": "File viewer (syntax highlighting)",
+        "target": "components/coderef/FileViewer.tsx",
+        "notes": "JSON/MD/code rendering"
+      },
+      {
+        "source": "IndexedDB functions",
+        "target": "lib/coderef/indexeddb.ts",
+        "notes": "Utilities for handle storage"
+      },
+      {
+        "source": "File System Access API logic",
+        "target": "lib/coderef/local-access.ts",
+        "notes": "Directory picker, file reading"
+      },
+      {
+        "source": "Python HTTP API (server.py)",
+        "target": "app/api/coderef/* (Next.js API routes)",
+        "endpoints": [
+          "GET /api/projects → GET /api/coderef/projects",
+          "POST /api/projects → POST /api/coderef/projects",
+          "DELETE /api/projects/:id → DELETE /api/coderef/projects/[id]",
+          "GET /api/tree → GET /api/coderef/tree",
+          "GET /api/file → GET /api/coderef/file"
+        ]
+      }
+    ]
+  },
+  "data_migration": {
+    "required": false,
+    "notes": "User adds projects via Browse Folder (fresh start). No need to migrate projects.json or IndexedDB from old app."
+  },
+  "foundation_docs_available": {
+    "current_project": [
+      "coderef/foundation-docs/API.md",
+      "coderef/foundation-docs/SCHEMA.md",
+      "coderef/foundation-docs/COMPONENTS.md",
+      "coderef/foundation-docs/ARCHITECTURE.md",
+      "README.md"
+    ],
+    "target_project": [
+      "coderef/foundation-docs/ARCHITECTURE.md",
+      "packages/dashboard/src/API.md"
+    ]
+  },
+  "coding_standards": {
+    "language": "TypeScript (strict mode)",
+    "component_pattern": "Functional components with hooks",
+    "styling": "Tailwind utility classes",
+    "file_naming": "PascalCase for components (e.g., FileTree.tsx)",
+    "imports": "Absolute imports with @ alias",
+    "client_components": "Mark with 'use client' directive for browser APIs"
+  },
+  "risk_assessment": {
+    "high_risk": [
+      "Feature parity validation - must work exactly like current app",
+      "File System Access API permission handling in Next.js context",
+      "Hybrid mode routing logic (local vs API)"
+    ],
+    "medium_risk": [
+      "Design system conversion (Industrial UI → Tailwind)",
+      "IndexedDB integration in Next.js app",
+      "TypeScript type definitions for File System Access API"
+    ],
+    "low_risk": [
+      "API route creation (straightforward mapping)",
+      "Component structure (clear separation)",
+      "Testing (React Testing Library available)"
+    ]
+  },
+  "recommendations": [
+    "Phase 1: Build core components in isolation (FileTree, FileViewer, ProjectSelector)",
+    "Phase 2: Implement File System Access API mode (local)",
+    "Phase 3: Implement Next.js API routes (server mode)",
+    "Phase 4: Add hybrid mode logic (Option D: store both)",
+    "Phase 5: Integrate into dashboard widget wrapper",
+    "Phase 6: Style with Tailwind to match dashboard",
+    "Phase 7: Feature parity validation checklist",
+    "Consider multi-agent: 7 phases = potential for parallel work"
+  ]
+}
