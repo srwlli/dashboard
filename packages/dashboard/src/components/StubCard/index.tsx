@@ -50,25 +50,26 @@ export function StubCard({ stub, onClick }: StubCardProps) {
         p-3 sm:p-4 rounded-lg
         bg-ind-panel border border-ind-border
         transition-all duration-200
+        overflow-hidden
         ${onClick ? 'cursor-pointer hover:bg-ind-bg hover:border-ind-accent/50' : ''}
       `}
     >
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3 min-w-0">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
-            {CategoryIcon && <CategoryIcon className="w-4 h-4 text-ind-accent" />}
-            <h3 className="text-xs sm:text-sm font-semibold text-ind-text truncate">
+          <div className="flex items-center gap-2 mb-2 min-w-0">
+            {CategoryIcon && <CategoryIcon className="w-4 h-4 text-ind-accent shrink-0" />}
+            <h3 className="text-xs sm:text-sm font-semibold text-ind-text truncate min-w-0">
               {stub.title || stub.feature_name || 'Untitled'}
             </h3>
           </div>
           {stub.description && (
-            <p className="text-xs text-ind-text-muted line-clamp-2">
+            <p className="text-xs text-ind-text-muted line-clamp-2 break-words overflow-hidden">
               {stub.description}
             </p>
           )}
         </div>
         {stub.priority && (
-          <span className={`text-xs sm:text-sm font-semibold shrink-0 ${priorityColor}`}>
+          <span className={`text-xs sm:text-sm font-semibold shrink-0 whitespace-nowrap ${priorityColor}`}>
             {stub.priority.charAt(0).toUpperCase() + stub.priority.slice(1)}
           </span>
         )}
@@ -78,7 +79,7 @@ export function StubCard({ stub, onClick }: StubCardProps) {
         <span className={`text-xs px-2 py-1 rounded shrink-0 ${statusBg} whitespace-nowrap`}>
           {stub.status ? stub.status.replace(/_/g, ' ') : 'stub'}
         </span>
-        <span className="text-xs text-ind-text-muted shrink-0">
+        <span className="text-xs text-ind-text-muted shrink-0 whitespace-nowrap">
           {formattedDate}
         </span>
       </div>

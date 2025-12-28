@@ -17,6 +17,9 @@
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "coderef-context"
+    "coderef-personas",
+    "coderef-context",
+    "coderef-docs",
+    "coderef-workflow"
   ]
 }
