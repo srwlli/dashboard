@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useSidebar } from '@/contexts/SidebarContext';
-import { ChevronLeft, ChevronRight, Home, BookOpen, Zap, Archive, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, BookOpen, Zap, Archive, Settings, FolderTree } from 'lucide-react';
 import NavItem from './NavItem';
 
 const mainNavItems = [
@@ -10,6 +10,7 @@ const mainNavItems = [
   { label: 'Prompts', href: '/prompts', icon: BookOpen },
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Sources', href: '/sources', icon: Archive },
+  { label: 'CodeRef Explorer', href: '/coderef-explorer', icon: FolderTree },
 ];
 
 const bottomNavItems = [

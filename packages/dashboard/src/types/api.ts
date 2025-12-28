@@ -78,9 +78,10 @@ export const HttpStatus = {
 
 /**
  * Utility to create consistent error responses
+ * Accepts either predefined ErrorCodes or custom error objects
  */
 export function createErrorResponse(
-  error: (typeof ErrorCodes)[keyof typeof ErrorCodes],
+  error: (typeof ErrorCodes)[keyof typeof ErrorCodes] | { code: string; message: string },
   details?: Record<string, any>
 ): ApiErrorResponse {
   return {

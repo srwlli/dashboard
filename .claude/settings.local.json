@@ -10,7 +10,11 @@
       "Bash(npm run build:*)",
       "mcp__coderef-docs__generate_individual_doc",
       "mcp__coderef-workflow__execute_plan",
-      "mcp__coderef-workflow__create_plan"
+      "mcp__coderef-workflow__create_plan",
+      "mcp__coderef-docs__generate_foundation_docs",
+      "Bash(if not exist \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\coderef\\foundation-docs\" mkdir \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\coderef\\foundation-docs\")",
+      "Bash(mkdir:*)",
+      "mcp__coderef-docs__generate_quickref_interactive"
     ],
     "deny": [],
     "ask": []
