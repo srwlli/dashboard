@@ -69,7 +69,7 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
   };
 
   const handleCopyPath = async () => {
-    if (!fileData?.path || !project) return;
+    if (!filePath || !project) return;
 
     try {
       // Clean project path - remove [Directory: ...] wrapper if present
@@ -78,8 +78,9 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
         projectPath = projectPath.slice(12, -1); // Remove '[Directory: ' and ']'
       }
 
-      // Construct full path from project directory to file
-      const fullPath = `${projectPath}/${fileData.path}`;
+      // Construct full path from project directory through all subdirectories to file
+      // Uses filePath prop which contains the complete relative path (e.g., coderef/foundation-docs/ARCHITECTURE.md)
+      const fullPath = `${projectPath}/${filePath}`;
       await navigator.clipboard.writeText(fullPath);
       setCopiedPath(true);
       setTimeout(() => setCopiedPath(false), 2000);
