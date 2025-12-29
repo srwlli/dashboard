@@ -1,0 +1,357 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "assistant-page-redesign",
+    "workorder_id": "WO-ASSISTANT-PAGE-REDESIGN-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "PlanningGenerator",
+    "has_context": true,
+    "has_analysis": true
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs_available": [
+        "ARCHITECTURE.md",
+        "API.md",
+        "COMPONENTS.md",
+        "SCHEMA.md",
+        "README.md"
+      ],
+      "context_source": "coderef/workorder/assistant-page-redesign/context.json",
+      "analysis_source": "coderef/workorder/assistant-page-redesign/analysis.json"
+    },
+    "1_executive_summary": {
+      "purpose": "Transform Assistant page from redundant workorder viewer into cross-project intelligence hub",
+      "value_proposition": "Provides bird's-eye view across ALL projects simultaneously while Explorer handles deep-dive into ONE project - complementary not duplicative",
+      "real_world_analogy": "Assistant is like mission control monitoring all spacecraft (projects) on radar screens, while Explorer is like zooming camera into one spacecraft's interior systems",
+      "use_case": "User manages 5 projects and wants to see all CLAUDE.md files, identify stale workorders (>7 days), search for 'authentication' across projects, view recent activity timeline - without manually opening each project folder",
+      "output": "Documentation discovery dashboard, smart workorder aggregation with filters, cross-project search, activity timeline, favorites system"
+    },
+    "2_risk_assessment": {
+      "overall_risk": "low-medium",
+      "complexity": "medium (estimate: 8-10 files, ~800-1000 lines total)",
+      "scope": "Medium - 1 API route, 1 hook, 4-5 components, 1 page modification",
+      "file_system_risk": "low (reads only, leverages existing /api/coderef infrastructure)",
+      "dependencies": [
+        "Existing /api/coderef/projects must be functional",
+        "Existing /api/coderef/tree must support wildcard patterns",
+        "Project registry (~/.coderef-dashboard/projects.json) must have valid projects"
+      ],
+      "performance_concerns": [
+        "Scanning all projects on page load will take 2-3 seconds with 5 projects (mitigate with loading states and skeleton cards)",
+        "Large number of documentation files (50+) will impact render performance (mitigate with virtualization or pagination if >100 docs)"
+      ],
+      "security_considerations": [
+        "File path traversal: ensure all paths are validated through project registry",
+        "XSS: sanitize file content previews if added in future phases"
+      ],
+      "breaking_changes": "none (additive changes only, existing workorder/stub tabs remain functional)"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "packages/dashboard/src/app/api/coderef/docs/route.ts (CREATE)",
+        "packages/dashboard/src/hooks/useDocumentation.ts (CREATE)",
+        "packages/dashboard/src/components/DocumentationCard/index.tsx (CREATE)",
+        "packages/dashboard/src/components/DocumentationList/index.tsx (CREATE)",
+        "packages/dashboard/src/app/assistant/page.tsx (MODIFY - add Documentation tab implementation)",
+        "packages/dashboard/src/types/documentation.ts (CREATE - optional type definitions)"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "/api/coderef/projects - for project registry",
+          "/api/coderef/tree - for directory scanning",
+          "useWorkorders hook - pattern to follow",
+          "WorkorderCard - UI pattern reference"
+        ],
+        "existing_external": [
+          "react - useState, useEffect, useCallback",
+          "next/navigation - useRouter for navigation",
+          "lucide-react - icons (FileText, Code, CheckSquare, etc.)"
+        ],
+        "new_external": [],
+        "new_internal": []
+      },
+      "architecture_context": "Next.js 14 App Router with API routes + React client components. Follows existing pattern: API route → custom hook → component list → card component. Leverages file system infrastructure from Explorer (project registry, hybrid local+API access)."
+    },
+    "4_key_features": {
+      "primary_features": [
+        "Documentation Discovery API - scans all projects for CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md, README.md",
+        "Documentation Cards - color-coded by type with project badges, file metadata (size, last modified)",
+        "Grouped Display - organize docs by project with counts and headers",
+        "Click-to-Open Integration - navigate to Explorer page when clicking doc card"
+      ],
+      "secondary_features": [
+        "Refresh Button - refetch documentation on demand",
+        "Loading States - skeleton cards during fetch",
+        "Empty States - helpful message when no projects or docs found"
+      ],
+      "edge_case_handling": [
+        "No projects registered: show empty state with 'Add projects in Explorer' message",
+        "Project directory missing/inaccessible: gracefully skip and log error, continue with other projects",
+        "Malformed file metadata: fallback to defaults (Unknown size, No date)"
+      ],
+      "configuration_options": [
+        "None (uses project registry from Explorer)"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Create API route file structure and basic GET handler",
+        "SETUP-002: Create hook file with fetch logic and state management",
+        "SETUP-003: Create component directory structure",
+        "IMPL-001: Implement documentation scanning logic (wildcard patterns for nested files)",
+        "IMPL-002: Build DocumentationCard component with type-specific icons and metadata",
+        "IMPL-003: Build DocumentationList component with project grouping",
+        "IMPL-004: Integrate Documentation tab into Assistant page",
+        "IMPL-005: Add click handler to navigate to Explorer",
+        "TEST-001: Test API route with multiple projects and file types",
+        "TEST-002: Test empty states (no projects, no docs)",
+        "TEST-003: Test error handling (missing directories, permissions)",
+        "DOC-001: Add JSDoc comments to API route and hook",
+        "DOC-002: Document click-to-open limitation with comment explaining future URL parameter enhancement"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "API Infrastructure",
+          "title": "Phase 1: API Infrastructure",
+          "purpose": "Build documentation scanning API endpoint",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "SETUP-001",
+            "IMPL-001"
+          ],
+          "deliverables": [
+            "/api/coderef/docs route functional",
+            "Scans all registered projects",
+            "Returns aggregated documentation list"
+          ],
+          "completion_criteria": "API returns valid JSON with docs array, handles empty project list, gracefully handles missing directories"
+        },
+        {
+          "phase": 2,
+          "name": "Data Layer",
+          "title": "Phase 2: Data Layer",
+          "purpose": "Create React hook for documentation fetching",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "SETUP-002"
+          ],
+          "deliverables": [
+            "useDocumentation hook with loading/error states",
+            "Refetch event listener support"
+          ],
+          "completion_criteria": "Hook returns docs array, loading state toggles correctly, refetch event triggers new fetch"
+        },
+        {
+          "phase": 3,
+          "name": "UI Components",
+          "title": "Phase 3: UI Components",
+          "purpose": "Build documentation display components",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "SETUP-003",
+            "IMPL-002",
+            "IMPL-003"
+          ],
+          "deliverables": [
+            "DocumentationCard with type-specific styling",
+            "DocumentationList with project grouping",
+            "Responsive grid layout (mobile/tablet/desktop)"
+          ],
+          "completion_criteria": "Cards render with correct icons and metadata, grouped by project, responsive breakpoints work"
+        },
+        {
+          "phase": 4,
+          "name": "Integration",
+          "title": "Phase 4: Integration",
+          "purpose": "Connect components to Assistant page",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "IMPL-004",
+            "IMPL-005",
+            "TEST-001",
+            "TEST-002",
+            "TEST-003",
+            "DOC-001",
+            "DOC-002"
+          ],
+          "deliverables": [
+            "Documentation tab functional in Assistant",
+            "Click navigation to Explorer works",
+            "All edge cases handled",
+            "Documentation complete"
+          ],
+          "completion_criteria": "Documentation tab shows real data, clicking card navigates to Explorer, empty/error states display correctly"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "Test findFiles function with wildcard patterns (coderef/workorder/*/plan.json)",
+        "Test scanProjectDocs function with various file types",
+        "Test date formatting utility (formatDate: '2 days ago', 'Yesterday', etc.)",
+        "Test file size formatting utility (formatFileSize: bytes → KB → MB)"
+      ],
+      "integration_tests": [
+        "Test /api/coderef/docs with 3 projects containing different doc types",
+        "Test useDocumentation hook fetch lifecycle (loading → success → data)",
+        "Test refetch event triggers new API call",
+        "Test DocumentationList grouping logic with mixed project data"
+      ],
+      "end_to_end_tests": [
+        "User adds project in Explorer → refresh Assistant → new docs appear",
+        "User clicks doc card → navigates to Explorer page",
+        "User removes project → refresh Assistant → docs disappear"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "No projects registered in ~/.coderef-dashboard/projects.json",
+          "setup": "Empty or missing projects.json file",
+          "expected_behavior": "API returns empty docs array, UI shows 'Add projects in Explorer' message",
+          "verification": "Check API response: {success: true, data: {docs: [], total: 0}}, verify empty state renders",
+          "error_handling": "No error (valid state)"
+        },
+        {
+          "scenario": "Project directory deleted but still in registry",
+          "setup": "Delete project folder from filesystem, keep entry in projects.json",
+          "expected_behavior": "API logs error for that project, continues scanning other projects",
+          "verification": "Check console for error message, verify other projects' docs still appear",
+          "error_handling": "Graceful degradation (skip failed project)"
+        },
+        {
+          "scenario": "File permissions denied for documentation file",
+          "setup": "Create CLAUDE.md with restricted permissions",
+          "expected_behavior": "Skip that file, continue scanning other files",
+          "verification": "Other docs from same project appear, denied file doesn't crash API",
+          "error_handling": "Catch error in fs.stat, continue loop"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "User can discover all CLAUDE.md files across projects in <5 seconds",
+          "metric": "API response time + render time",
+          "target": "<5000ms total",
+          "validation": "Browser DevTools Network tab: measure /api/coderef/docs request + React profiler for render"
+        },
+        {
+          "requirement": "Documentation cards display accurate metadata",
+          "metric": "File size and last modified match filesystem",
+          "target": "100% accuracy",
+          "validation": "Compare displayed metadata with actual file properties (fs.stat output)"
+        },
+        {
+          "requirement": "Clicking doc card navigates to Explorer",
+          "metric": "Navigation success rate",
+          "target": "100% (all clicks navigate)",
+          "validation": "Click 10 different doc cards, verify URL changes to /coderef-explorer"
+        },
+        {
+          "requirement": "Empty state shows when no projects exist",
+          "metric": "Empty state visibility",
+          "target": "Displays within 1 second of page load",
+          "validation": "Clear projects.json, reload Assistant, verify 'Add projects' message appears"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "TypeScript type coverage",
+          "metric": "Percentage of typed declarations",
+          "target": "100% (no 'any' types)",
+          "validation": "Run tsc --noEmit, verify no type errors"
+        },
+        {
+          "requirement": "Component reusability",
+          "metric": "DocumentationCard used by DocumentationList only",
+          "target": "Single responsibility principle followed",
+          "validation": "Code review: verify card doesn't contain list logic"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "Initial render performance",
+          "metric": "Time to interactive (TTI)",
+          "target": "<2 seconds with 5 projects, 30 docs",
+          "validation": "Chrome Lighthouse: measure TTI on Assistant page"
+        },
+        {
+          "requirement": "Scroll performance",
+          "metric": "Frame rate during scroll",
+          "target": ">60fps",
+          "validation": "Chrome DevTools Performance tab: record scroll, check FPS"
+        }
+      ],
+      "security_requirements": [
+        {
+          "requirement": "Path validation",
+          "metric": "All file paths validated through project registry",
+          "target": "No direct user input paths",
+          "validation": "Code review: verify all fs.readFile calls use paths from registry"
+        }
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "☐ Review complete plan for gaps",
+        "☐ Verify /api/coderef/projects and /api/coderef/tree are functional",
+        "☐ Check project registry has at least 1 test project"
+      ],
+      "phase_1": [
+        "☐ SETUP-001: Create packages/dashboard/src/app/api/coderef/docs/route.ts",
+        "☐ IMPL-001: Implement findFiles function with wildcard support",
+        "☐ IMPL-001: Implement scanProjectDocs function",
+        "☐ IMPL-001: Implement GET handler with aggregation logic",
+        "☐ Test API manually via browser: http://localhost:3000/api/coderef/docs"
+      ],
+      "phase_2": [
+        "☐ SETUP-002: Create packages/dashboard/src/hooks/useDocumentation.ts",
+        "☐ SETUP-002: Add useState for docs, loading, error",
+        "☐ SETUP-002: Add useEffect for initial fetch",
+        "☐ SETUP-002: Add refetch-documentation event listener",
+        "☐ Test hook in isolation: import in test file, call hook, verify state updates"
+      ],
+      "phase_3": [
+        "☐ SETUP-003: Create packages/dashboard/src/components/DocumentationCard/index.tsx",
+        "☐ IMPL-002: Add type-specific icons and colors (DOC_TYPE_INFO map)",
+        "☐ IMPL-002: Add formatFileSize and formatDate utilities",
+        "☐ IMPL-002: Add project badge UI",
+        "☐ SETUP-003: Create packages/dashboard/src/components/DocumentationList/index.tsx",
+        "☐ IMPL-003: Add grouping logic (docsByProject reduce)",
+        "☐ IMPL-003: Add responsive grid layout (1/2/3 columns)",
+        "☐ IMPL-003: Add loading and empty states",
+        "☐ Test components in Storybook or isolated page"
+      ],
+      "phase_4": [
+        "☐ IMPL-004: Import useDocumentation in Assistant page",
+        "☐ IMPL-004: Import DocumentationList component",
+        "☐ IMPL-004: Replace Documentation tab placeholder with DocumentationList",
+        "☐ IMPL-004: Add documentation refetch to refresh button handler",
+        "☐ IMPL-005: Add handleDocClick with router.push('/coderef-explorer')",
+        "☐ IMPL-005: Add comment explaining URL parameter limitation for future enhancement",
+        "☐ TEST-001: Test with 3 projects, verify all doc types appear",
+        "☐ TEST-002: Test with empty projects.json, verify empty state",
+        "☐ TEST-003: Test with deleted project folder, verify graceful degradation",
+        "☐ DOC-001: Add JSDoc to API route functions",
+        "☐ DOC-001: Add JSDoc to useDocumentation hook",
+        "☐ DOC-002: Add comment explaining click-to-open limitation (URL parameters needed)",
+        "☐ Run npm run build:dashboard - verify no TypeScript errors",
+        "☐ Manual testing: open http://localhost:3000/assistant, click Documentation tab"
+      ],
+      "finalization": [
+        "☐ All TypeScript errors resolved",
+        "☐ All edge cases tested (no projects, deleted folder, permissions)",
+        "☐ Code review: verify follows existing patterns (useWorkorders, WorkorderCard)",
+        "☐ Update CLAUDE.md if needed",
+        "☐ Commit with descriptive message"
+      ]
+    }
+  }
+}

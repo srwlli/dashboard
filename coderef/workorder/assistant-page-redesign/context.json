@@ -1,0 +1,186 @@
+{
+  "feature_name": "assistant-page-redesign",
+  "workorder_id": "WO-ASSISTANT-META-LAYER-001",
+  "created_at": "2025-12-28T22:00:00Z",
+  "status": "planning",
+
+  "goal": "Transform Assistant page from redundant file browser into cross-project intelligence hub and meta-layer dashboard",
+
+  "problem": {
+    "current_state": "Assistant page duplicates Explorer functionality - both show workorders/stubs but with different access patterns",
+    "issues": [
+      "Redundant with Explorer page",
+      "Hardcoded config paths (C:\\Users\\willh\\Desktop\\assistant\\projects.config.json)",
+      "No clear differentiation in value proposition",
+      "Doesn't maximize the file system infrastructure built for Explorer"
+    ]
+  },
+
+  "solution": {
+    "vision": "Assistant becomes the bird's-eye view orchestration layer across ALL projects, while Explorer remains the deep-dive tool for ONE project",
+    "core_differentiators": {
+      "explorer": {
+        "scope": "ONE project at a time",
+        "view": "File tree navigation",
+        "interaction": "Browse and read files",
+        "purpose": "Deep work on specific project",
+        "navigation": "Hierarchical file structure"
+      },
+      "assistant": {
+        "scope": "ALL projects simultaneously",
+        "view": "Aggregated cards/lists/timeline",
+        "interaction": "Search, filter, discover",
+        "purpose": "Overview and cross-project intelligence",
+        "navigation": "Flat/filtered views with search"
+      }
+    }
+  },
+
+  "requirements": {
+    "must_have": [
+      "Leverage same infrastructure as Explorer (project registry, APIs)",
+      "Track common docs across ecosystem (CLAUDE.md, plan.json, DELIVERABLES.md)",
+      "Provide quick glance/overview functionality",
+      "Support favorites/pinning for frequently accessed items",
+      "No redundancy with Explorer - complementary not duplicative"
+    ],
+    "nice_to_have": [
+      "Activity timeline showing recent changes",
+      "Stale workorder detection",
+      "Cross-project full-text search",
+      "Unified notifications for blocked/pending work"
+    ]
+  },
+
+  "features": [
+    {
+      "id": "F1",
+      "name": "Documentation Discovery Dashboard",
+      "description": "Scan ALL projects for key files (CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md, README.md)",
+      "use_case": "User asks: 'Show me all CLAUDE.md files across my 5 projects'",
+      "implementation": "Use /api/coderef/projects + /api/coderef/tree to find docs, display with project badges, click opens in Explorer",
+      "priority": "high"
+    },
+    {
+      "id": "F2",
+      "name": "Smart Workorder Aggregation",
+      "description": "Intelligent workorder views: Recently Active, Stale (>7 days), Recently Completed, In Progress, Pinned",
+      "use_case": "User asks: 'What workorders haven't been touched in a week?'",
+      "implementation": "Read communication.json metadata, check timestamps, add activity indicators",
+      "priority": "high"
+    },
+    {
+      "id": "F3",
+      "name": "Cross-Project Search",
+      "description": "Search ALL projects simultaneously for keywords in workorders, stubs, docs",
+      "use_case": "User asks: 'Find all references to authentication across my projects'",
+      "implementation": "Use /api/coderef/tree + /api/coderef/file to recursively search content",
+      "priority": "medium"
+    },
+    {
+      "id": "F4",
+      "name": "Activity Timeline",
+      "description": "Show recent activity across all projects: status changes, new stubs, doc updates, file modifications",
+      "use_case": "User asks: 'What happened in the last 24 hours across my projects?'",
+      "implementation": "Track git timestamps, monitor file changes, show chronological feed",
+      "priority": "medium"
+    },
+    {
+      "id": "F5",
+      "name": "Favorites & Quick Access",
+      "description": "User-curated shortcuts: pinned workorders, bookmarked docs, saved searches, recent files",
+      "use_case": "User says: 'I need quick access to the 3 workorders I'm actively working on'",
+      "implementation": "Store in localStorage or IndexedDB, sync across sessions",
+      "priority": "low"
+    }
+  ],
+
+  "implementation_phases": [
+    {
+      "phase": 1,
+      "name": "Documentation Discovery",
+      "tasks": [
+        "Migrate Assistant to use /api/coderef/projects instead of hardcoded config",
+        "Scan all projects for CLAUDE.md, plan.json, DELIVERABLES.md files",
+        "Display documentation cards with project badges",
+        "Implement click → open in Explorer integration"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Smart Workorders",
+      "tasks": [
+        "Add filters: Recent, Stale, By Status, By Project",
+        "Implement pinning/favorites functionality",
+        "Add activity indicators (last modified, status)",
+        "Create stale detection logic (>7 days no update)"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Unified Search",
+      "tasks": [
+        "Build search across all workorders/stubs",
+        "Add full-text search for documentation content",
+        "Implement highlighting for search matches",
+        "Create search results view with context"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Timeline & Activity",
+      "tasks": [
+        "Track changes via git timestamps",
+        "Build 'what's new' activity feed",
+        "Add notifications for stale/blocked work",
+        "Create time-based filters (24hrs, 7 days, 30 days)"
+      ]
+    }
+  ],
+
+  "infrastructure_leverage": {
+    "shared_apis": [
+      "/api/coderef/projects - Project registry (same as Explorer)",
+      "/api/coderef/tree - Directory scanning for doc discovery",
+      "/api/coderef/file - File content reading for search"
+    ],
+    "file_system_access_api": "Use browser API for hybrid local+API access (same pattern as Explorer)",
+    "project_registry": "~/.coderef-dashboard/projects.json (shared with Explorer)",
+    "no_duplication": "Reuse all infrastructure, differentiate at application layer"
+  },
+
+  "success_criteria": {
+    "functional": [
+      "User can discover all CLAUDE.md files across projects in <5 seconds",
+      "User can identify stale workorders (>7 days) instantly",
+      "User can search for keywords across all projects",
+      "User can pin/favorite important workorders and docs"
+    ],
+    "experiential": [
+      "Clear differentiation from Explorer (no confusion about which tool to use)",
+      "Feels like 'mission control' for all projects",
+      "Reduces context switching between projects",
+      "Provides actionable insights (what needs attention, what's new)"
+    ]
+  },
+
+  "constraints": {
+    "technical": [
+      "Must use same project registry as Explorer",
+      "Cannot hardcode project paths",
+      "Must support dynamic project addition/removal"
+    ],
+    "design": [
+      "No file tree navigation (that's Explorer's job)",
+      "Focus on aggregated views and discovery",
+      "Emphasize cross-project patterns and insights"
+    ]
+  },
+
+  "notes": [
+    "This redesign transforms Assistant from a redundant tool into a complementary meta-layer",
+    "Explorer = zoom in (one project), Assistant = zoom out (all projects)",
+    "Maximizes the file system infrastructure without duplication",
+    "Creates clear value proposition: overview vs deep dive"
+  ]
+}

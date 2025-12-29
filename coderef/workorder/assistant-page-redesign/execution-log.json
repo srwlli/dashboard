@@ -1,0 +1,215 @@
+[
+  {
+    "timestamp": "2025-12-28T19:38:39.798864",
+    "workorder_id": "WO-ASSISTANT-PAGE-REDESIGN-001",
+    "feature_name": "assistant-page-redesign",
+    "task_count": 41,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: Review complete plan for gaps",
+        "activeForm": "PRE-IMPL-001: Reviewing complete plan for gaps",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-002: Verify /api/coderef/projects and /api/coderef/tree are functional",
+        "activeForm": "PRE-IMPL-002: Verifying /api/coderef/projects and /api/coderef/tree are functional",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-003: Check project registry has at least 1 test project",
+        "activeForm": "PRE-IMPL-003: Checking project registry has at least 1 test project",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-001: Create packages/dashboard/src/app/api/coderef/docs/route.ts",
+        "activeForm": "SETUP-001: Creating packages/dashboard/src/app/api/coderef/docs/route.ts",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-001: Implement findFiles function with wildcard support",
+        "activeForm": "IMPL-001: Implementing findFiles function with wildcard support",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-001: Implement scanProjectDocs function",
+        "activeForm": "IMPL-001: Implementing scanProjectDocs function",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-001: Implement GET handler with aggregation logic",
+        "activeForm": "IMPL-001: Implementing GET handler with aggregation logic",
+        "status": "pending"
+      },
+      {
+        "content": "Test API manually via browser: http://localhost:3000/api/coderef/docs",
+        "activeForm": "Test API manually via browser: http://localhost:3000/api/coderef/docsing",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-002: Create packages/dashboard/src/hooks/useDocumentation.ts",
+        "activeForm": "SETUP-002: Creating packages/dashboard/src/hooks/useDocumentation.ts",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-002: Add useState for docs, loading, error",
+        "activeForm": "SETUP-002: Adding useState for docs, loading, error",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-002: Add useEffect for initial fetch",
+        "activeForm": "SETUP-002: Adding useEffect for initial fetch",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-002: Add refetch-documentation event listener",
+        "activeForm": "SETUP-002: Adding refetch-documentation event listener",
+        "status": "pending"
+      },
+      {
+        "content": "Test hook in isolation: import in test file, call hook, verify state updates",
+        "activeForm": "Test hook in isolation: importing in test file, call hook, verify state updates",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-003: Create packages/dashboard/src/components/DocumentationCard/index.tsx",
+        "activeForm": "SETUP-003: Creating packages/dashboard/src/components/DocumentationCard/index.tsx",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-002: Add type-specific icons and colors (DOC_TYPE_INFO map)",
+        "activeForm": "IMPL-002: Adding type-specific icons and colors (DOC_TYPE_INFO map)",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-002: Add formatFileSize and formatDate utilities",
+        "activeForm": "IMPL-002: Adding formatFileSize and formatDate utilities",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-002: Add project badge UI",
+        "activeForm": "IMPL-002: Adding project badge UI",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-003: Create packages/dashboard/src/components/DocumentationList/index.tsx",
+        "activeForm": "SETUP-003: Creating packages/dashboard/src/components/DocumentationList/index.tsx",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-003: Add grouping logic (docsByProject reduce)",
+        "activeForm": "IMPL-003: Adding grouping logic (docsByProject reduce)",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-003: Add responsive grid layout (1/2/3 columns)",
+        "activeForm": "IMPL-003: Adding responsive grid layout (1/2/3 columns)",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-003: Add loading and empty states",
+        "activeForm": "IMPL-003: Adding loading and empty states",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-3-009: Test components in Storybook or isolated page",
+        "activeForm": "PHASE-3-009: Testing components in Storybook or isolated page",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-004: Import useDocumentation in Assistant page",
+        "activeForm": "IMPL-004: Importing useDocumentation in Assistant page",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-004: Import DocumentationList component",
+        "activeForm": "IMPL-004: Importing DocumentationList component",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-004: Replace Documentation tab placeholder with DocumentationList",
+        "activeForm": "IMPL-004: Replaceing Documentation tab placeholder with DocumentationList",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-004: Add documentation refetch to refresh button handler",
+        "activeForm": "IMPL-004: Adding documentation refetch to refresh button handler",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Add handleDocClick with router.push('/coderef-explorer')",
+        "activeForm": "IMPL-005: Adding handleDocClick with router.push('/coderef-explorer')",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Add comment explaining URL parameter limitation for future enhancement",
+        "activeForm": "IMPL-005: Adding comment explaining URL parameter limitation for future enhancement",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-001: Test with 3 projects, verify all doc types appear",
+        "activeForm": "TEST-001: Testing with 3 projects, verify all doc types appear",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-002: Test with empty projects.json, verify empty state",
+        "activeForm": "TEST-002: Testing with empty projects.json, verify empty state",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-003: Test with deleted project folder, verify graceful degradation",
+        "activeForm": "TEST-003: Testing with deleted project folder, verify graceful degradation",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Add JSDoc to API route functions",
+        "activeForm": "DOC-001: Adding JSDoc to API route functions",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Add JSDoc to useDocumentation hook",
+        "activeForm": "DOC-001: Adding JSDoc to useDocumentation hook",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-002: Add comment explaining click-to-open limitation (URL parameters needed)",
+        "activeForm": "DOC-002: Adding comment explaining click-to-open limitation (URL parameters needed)",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-4-013: Run npm run build:dashboard - verify no TypeScript errors",
+        "activeForm": "PHASE-4-013: Running npm run build:dashboard - verify no TypeScript errors",
+        "status": "pending"
+      },
+      {
+        "content": "Manual testing: open http://localhost:3000/assistant, click Documentation tab",
+        "activeForm": "Manual testing: opening http://localhost:3000/assistant, click Documentation tab",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-001: All TypeScript errors resolved",
+        "activeForm": "FINALIZA-001: Alling TypeScript errors resolved",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-002: All edge cases tested (no projects, deleted folder, permissions)",
+        "activeForm": "FINALIZA-002: Alling edge cases tested (no projects, deleted folder, permissions)",
+        "status": "pending"
+      },
+      {
+        "content": "Code review: verify follows existing patterns (useWorkorders, WorkorderCard)",
+        "activeForm": "Code review: verifying follows existing patterns (useWorkorders, WorkorderCard)",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-004: Update CLAUDE.md if needed",
+        "activeForm": "FINALIZA-004: Updating CLAUDE.md if needed",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-005: Commit with descriptive message",
+        "activeForm": "FINALIZA-005: Commiting with descriptive message",
+        "status": "pending"
+      }
+    ]
+  }
+]
