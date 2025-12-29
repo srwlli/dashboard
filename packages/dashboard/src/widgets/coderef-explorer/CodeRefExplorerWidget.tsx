@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import type { Project, TreeNode } from '@/lib/coderef/types';
+import { ViewModeToggle, type ViewMode } from '@/components/coderef/ViewModeToggle';
 import { ProjectSelector } from '@/components/coderef/ProjectSelector';
 import { FileTree } from '@/components/coderef/FileTree';
 import { FileViewer } from '@/components/coderef/FileViewer';
 
 export function CodeRefExplorerWidget() {
+  const [viewMode, setViewMode] = useState<ViewMode>('projects');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
 
@@ -27,11 +29,17 @@ export function CodeRefExplorerWidget() {
       {/* Page Sidebar - extends to top */}
       <div className="w-80 border-r border-ind-border bg-ind-panel flex flex-col">
         {/* Controls section - matches header height */}
-        <div className="flex-shrink-0 p-4 border-b border-ind-border sticky top-0 z-10 bg-ind-panel">
-          <ProjectSelector
-            selectedProjectId={selectedProject?.id}
-            onProjectChange={handleProjectChange}
-          />
+        <div className="flex-shrink-0 p-4 border-b border-ind-border sticky top-0 z-10 bg-ind-panel space-y-3">
+          {/* View Mode Toggle */}
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+
+          {/* Project Selector - visible only in Projects mode */}
+          {viewMode === 'projects' && (
+            <ProjectSelector
+              selectedProjectId={selectedProject?.id}
+              onProjectChange={handleProjectChange}
+            />
+          )}
         </div>
 
         {/* File tree */}
