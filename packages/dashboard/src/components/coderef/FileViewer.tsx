@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { Project, FileInfo, AccessMode } from '@/lib/coderef/types';
 import { loadFileContent } from '@/lib/coderef/hybrid-router';
-import { Loader2, AlertCircle, FileText, Copy, Check, Zap, Cloud } from 'lucide-react';
+import { Loader2, AlertCircle, FileText, Copy, Check, Zap, Cloud, Share2, FolderTree } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -25,6 +25,8 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedPath, setCopiedPath] = useState(false);
+  const [shared, setShared] = useState(false);
   const [accessMode, setAccessMode] = useState<AccessMode | null>(null);
 
   // Load file when project or path changes
@@ -63,6 +65,42 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleCopyPath = async () => {
+    if (!fileData?.path) return;
+
+    try {
+      await navigator.clipboard.writeText(fileData.path);
+      setCopiedPath(true);
+      setTimeout(() => setCopiedPath(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy path:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!fileData) return;
+
+    try {
+      // Use Web Share API if available, otherwise copy to clipboard
+      if (navigator.share) {
+        await navigator.share({
+          title: fileData.name,
+          text: `${fileData.name}\n\n${fileData.content}`,
+        });
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      } else {
+        // Fallback: copy file URL or content to clipboard
+        const shareText = `File: ${fileData.name}\nPath: ${fileData.path}\n\nContent:\n${fileData.content}`;
+        await navigator.clipboard.writeText(shareText);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to share:', err);
     }
   };
 
@@ -168,29 +206,85 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
             <span className="truncate font-mono">{fileData.path}</span>
           </div>
         </div>
-        <button
-          onClick={handleCopyContent}
-          className="
-            ml-3 px-3 py-1.5 rounded text-xs
-            bg-ind-bg border border-ind-border
-            text-ind-text-muted hover:text-ind-text
-            hover:border-ind-accent/50
-            transition-colors duration-200
-            flex items-center gap-2
-          "
-        >
-          {copied ? (
-            <>
-              <Check className="w-3.5 h-3.5 text-green-500" />
-              <span>Copied</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3.5 h-3.5" />
-              <span>Copy</span>
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Copy Path button - copies file path from project folder to file */}
+          <button
+            onClick={handleCopyPath}
+            className="
+              px-3 py-1.5 rounded text-xs
+              bg-ind-bg border border-ind-border
+              text-ind-text-muted hover:text-ind-text
+              hover:border-ind-accent/50
+              transition-colors duration-200
+              flex items-center gap-2
+            "
+            title="Copy file path"
+          >
+            {copiedPath ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-green-500" />
+                <span>Path Copied</span>
+              </>
+            ) : (
+              <>
+                <FolderTree className="w-3.5 h-3.5" />
+                <span>Path</span>
+              </>
+            )}
+          </button>
+
+          {/* Copy Content button */}
+          <button
+            onClick={handleCopyContent}
+            className="
+              px-3 py-1.5 rounded text-xs
+              bg-ind-bg border border-ind-border
+              text-ind-text-muted hover:text-ind-text
+              hover:border-ind-accent/50
+              transition-colors duration-200
+              flex items-center gap-2
+            "
+            title="Copy file content"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-green-500" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy</span>
+              </>
+            )}
+          </button>
+
+          {/* Share button - shares file via Web Share API or clipboard */}
+          <button
+            onClick={handleShare}
+            className="
+              px-3 py-1.5 rounded text-xs
+              bg-ind-bg border border-ind-border
+              text-ind-text-muted hover:text-ind-text
+              hover:border-ind-accent/50
+              transition-colors duration-200
+              flex items-center gap-2
+            "
+            title="Share file"
+          >
+            {shared ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-green-500" />
+                <span>Shared</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3.5 h-3.5" />
+                <span>Share</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* File content - renders markdown as HTML, code with syntax highlighting */}
