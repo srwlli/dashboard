@@ -7,6 +7,7 @@ import { Loader2, AlertCircle, FileText, Copy, Check, Zap, Cloud } from 'lucide-
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import rehypeSlug from 'rehype-slug';
 
 interface FileViewerProps {
   /** Project containing the file */
@@ -205,9 +206,10 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
             </p>
           </div>
         ) : isMarkdown ? (
-          // Render markdown as HTML with syntax-highlighted code blocks
+          // Render markdown as HTML with syntax-highlighted code blocks and heading IDs for TOC links
           <div className="prose prose-sm prose-invert max-w-none">
             <ReactMarkdown
+              rehypePlugins={[rehypeSlug]}
               components={{
                 code(props) {
                   const { children, className, ...rest } = props;
