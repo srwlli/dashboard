@@ -208,13 +208,7 @@ export function ProjectSelector({
         </div>
       )}
 
-      {selectedProjectId && (
-        <div className="text-xs text-ind-text-muted truncate">
-          <span className="font-mono truncate block">
-            {projects.find((p) => p.id === selectedProjectId)?.path || 'N/A'}
-          </span>
-        </div>
-      )}
+      {/* Directory path display removed - cleaner UI */}
 
       {/* Context menu */}
       {contextMenu && selectedProjectId && (
