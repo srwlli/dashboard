@@ -155,12 +155,7 @@ export function FileTreeNode({
           <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 flex-shrink-0" />
         )}
 
-        {/* File size (only for files) */}
-        {!isDirectory && node.size !== undefined && (
-          <span className="text-xs text-ind-text-muted ml-auto flex-shrink-0">
-            {formatFileSize(node.size)}
-          </span>
-        )}
+        {/* File size metadata removed - cleaner sidebar UI */}
       </div>
 
       {/* Recursively render children if directory is expanded */}
@@ -200,14 +195,6 @@ export function FileTreeNode({
   );
 }
 
-/**
- * Format file size in human-readable format
- */
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-}
+// formatFileSize function removed - file size metadata no longer displayed in sidebar
 
 export default FileTreeNode;
