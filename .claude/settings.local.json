@@ -25,7 +25,8 @@
       "Bash(move coderefworkordercontext.json coderefworkorderassistant-page-redesigncontext.json)",
       "mcp__coderef-workflow__coderef_foundation_docs",
       "mcp__coderef-workflow__analyze_project_for_planning",
-      "mcp__coderef-workflow__validate_implementation_plan"
+      "mcp__coderef-workflow__validate_implementation_plan",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

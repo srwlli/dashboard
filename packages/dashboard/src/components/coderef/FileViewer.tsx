@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import type { Project, FileInfo, AccessMode } from '@/lib/coderef/types';
 import { loadFileContent } from '@/lib/coderef/hybrid-router';
 import { Loader2, AlertCircle, FileText, Copy, Check, Zap, Cloud } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface FileViewerProps {
   /** Project containing the file */
@@ -105,6 +108,25 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
       fileData.extension
     );
 
+  // Map file extension to syntax highlighter language
+  const getLanguage = (ext: string): string => {
+    const langMap: Record<string, string> = {
+      '.ts': 'typescript',
+      '.tsx': 'tsx',
+      '.js': 'javascript',
+      '.jsx': 'jsx',
+      '.py': 'python',
+      '.java': 'java',
+      '.c': 'c',
+      '.cpp': 'cpp',
+      '.rs': 'rust',
+      '.go': 'go',
+      '.json': 'json',
+      '.md': 'markdown',
+    };
+    return langMap[ext] || 'text';
+  };
+
   // Format JSON for display
   let displayContent = fileData.content;
   if (isJson && fileData.encoding === 'utf-8') {
@@ -170,7 +192,7 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
         </button>
       </div>
 
-      {/* File content */}
+      {/* File content - renders markdown as HTML, code with syntax highlighting */}
       <div className="flex-1 overflow-auto p-4 bg-ind-bg">
         {fileData.encoding === 'base64' ? (
           <div className="text-center py-8">
@@ -182,20 +204,57 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
               {fileData.mimeType} • {formatFileSize(fileData.size)}
             </p>
           </div>
-        ) : isJson ? (
-          <pre className="text-xs font-mono overflow-x-auto">
-            <code className="text-ind-text">{displayContent}</code>
-          </pre>
         ) : isMarkdown ? (
+          // Render markdown as HTML with syntax-highlighted code blocks
           <div className="prose prose-sm prose-invert max-w-none">
-            <pre className="text-sm whitespace-pre-wrap font-sans text-ind-text">
+            <ReactMarkdown
+              components={{
+                code(props) {
+                  const { children, className, ...rest } = props;
+                  const match = /language-(\w+)/.exec(className || '');
+                  const language = match ? match[1] : 'text';
+                  const isInline = !match;
+
+                  return !isInline ? (
+                    <SyntaxHighlighter
+                      style={vscDarkPlus}
+                      language={language}
+                      PreTag="div"
+                      customStyle={{
+                        margin: 0,
+                        borderRadius: '0.375rem',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...rest}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            >
               {displayContent}
-            </pre>
+            </ReactMarkdown>
           </div>
-        ) : isCode ? (
-          <pre className="text-xs font-mono overflow-x-auto">
-            <code className="text-ind-text">{displayContent}</code>
-          </pre>
+        ) : isJson || isCode ? (
+          // Render code files with syntax highlighting
+          <SyntaxHighlighter
+            language={getLanguage(fileData.extension)}
+            style={vscDarkPlus}
+            customStyle={{
+              margin: 0,
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.75rem',
+              lineHeight: '1.5',
+            }}
+            showLineNumbers
+          >
+            {displayContent}
+          </SyntaxHighlighter>
         ) : (
           <pre className="text-sm whitespace-pre-wrap font-sans text-ind-text">
             {displayContent}
