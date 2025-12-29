@@ -203,9 +203,6 @@ export function CodeRefExplorerWidget() {
       <div className="w-80 border-r border-ind-border bg-ind-panel flex flex-col">
         {/* Controls section - matches header height */}
         <div className="flex-shrink-0 p-4 border-b border-ind-border sticky top-0 z-10 bg-ind-panel space-y-3">
-          {/* View Mode Toggle */}
-          <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
-
           {/* Project Selector - visible only in Projects mode */}
           {viewMode === 'projects' && (
             <ProjectSelector
@@ -213,6 +210,9 @@ export function CodeRefExplorerWidget() {
               onProjectChange={handleProjectChange}
             />
           )}
+
+          {/* View Mode Toggle */}
+          <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
 
           {/* File Type Filter - visible only in CodeRef mode */}
           {viewMode === 'coderef' && (
