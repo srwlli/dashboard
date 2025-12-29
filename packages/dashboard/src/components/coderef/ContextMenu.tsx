@@ -1,23 +1,34 @@
 /**
  * ContextMenu Component
  *
- * Right-click context menu for file/folder operations
+ * Right-click context menu for various operations
  */
 
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Star } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
+export interface ContextMenuItem {
+  /** Menu item label */
+  label: string;
+  /** Menu item icon */
+  icon: LucideIcon;
+  /** Click handler */
+  onClick: () => void;
+  /** Optional icon class name (for styling like fill color) */
+  iconClassName?: string;
+  /** Optional text color class */
+  textClassName?: string;
+}
 
 interface ContextMenuProps {
   /** X coordinate for menu position */
   x: number;
   /** Y coordinate for menu position */
   y: number;
-  /** Whether the item is currently favorited */
-  isFavorited: boolean;
-  /** Callback when favorite is toggled */
-  onToggleFavorite: () => void;
+  /** Menu items to display */
+  items: ContextMenuItem[];
   /** Callback when menu should close */
   onClose: () => void;
 }
@@ -25,8 +36,7 @@ interface ContextMenuProps {
 export function ContextMenu({
   x,
   y,
-  isFavorited,
-  onToggleFavorite,
+  items,
   onClose,
 }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
@@ -54,8 +64,8 @@ export function ContextMenu({
     };
   }, [onClose]);
 
-  const handleFavoriteClick = () => {
-    onToggleFavorite();
+  const handleItemClick = (onClick: () => void) => {
+    onClick();
     onClose();
   };
 
@@ -65,15 +75,21 @@ export function ContextMenu({
       className="fixed z-50 bg-ind-panel border border-ind-border rounded shadow-lg py-1 min-w-[180px]"
       style={{ left: `${x}px`, top: `${y}px` }}
     >
-      <button
-        onClick={handleFavoriteClick}
-        className="w-full px-3 py-2 text-left text-sm text-ind-text hover:bg-ind-bg flex items-center gap-2"
-      >
-        <Star
-          className={`w-4 h-4 ${isFavorited ? 'fill-yellow-400 text-yellow-400' : ''}`}
-        />
-        <span>{isFavorited ? 'Remove from Favorites' : 'Add to Favorites'}</span>
-      </button>
+      {items.map((item, index) => {
+        const Icon = item.icon;
+        return (
+          <button
+            key={index}
+            onClick={() => handleItemClick(item.onClick)}
+            className={`w-full px-3 py-2 text-left text-sm hover:bg-ind-bg flex items-center gap-2 ${
+              item.textClassName || 'text-ind-text'
+            }`}
+          >
+            <Icon className={`w-4 h-4 ${item.iconClassName || ''}`} />
+            <span>{item.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

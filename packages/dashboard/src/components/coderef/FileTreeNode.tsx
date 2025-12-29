@@ -185,8 +185,14 @@ export function FileTreeNode({
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
-          isFavorited={favorited}
-          onToggleFavorite={handleToggleFavorite}
+          items={[
+            {
+              label: favorited ? 'Remove from Favorites' : 'Add to Favorites',
+              icon: Star,
+              onClick: handleToggleFavorite,
+              iconClassName: favorited ? 'fill-yellow-400 text-yellow-400' : '',
+            },
+          ]}
           onClose={() => setContextMenu(null)}
         />
       )}

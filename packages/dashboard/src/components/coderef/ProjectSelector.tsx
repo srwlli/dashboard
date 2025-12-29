@@ -7,6 +7,7 @@ import { showDirectoryPicker } from '@/lib/coderef/local-access';
 import { saveDirectoryHandle, deleteDirectoryHandle } from '@/lib/coderef/indexeddb';
 import { isFileSystemAccessSupported } from '@/lib/coderef/permissions';
 import { Folder, Plus, Trash2, AlertCircle } from 'lucide-react';
+import { ContextMenu } from './ContextMenu';
 
 interface ProjectSelectorProps {
   /** Currently selected project ID */
@@ -27,8 +28,8 @@ export function ProjectSelector({
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [removing, setRemoving] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
   // Load projects on mount
   useEffect(() => {
@@ -118,8 +119,6 @@ export function ProjectSelector({
     if (!confirmed) return;
 
     try {
-      setRemoving(true);
-
       // Remove from API
       await CodeRefApi.projects.remove(selectedProjectId);
 
@@ -135,8 +134,6 @@ export function ProjectSelector({
       onProjectChange(null);
     } catch (err) {
       setError((err as Error).message);
-    } finally {
-      setRemoving(false);
     }
   };
 
@@ -146,6 +143,13 @@ export function ProjectSelector({
     onProjectChange(project || null);
   };
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (!selectedProjectId) return; // Only show context menu if a project is selected
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center gap-1.5">
@@ -153,6 +157,7 @@ export function ProjectSelector({
           <select
             value={selectedProjectId || ''}
             onChange={handleSelectChange}
+            onContextMenu={handleContextMenu}
             disabled={loading || projects.length === 0}
             className="
               w-full px-2 py-1.5 pl-7 pr-6 rounded text-sm
@@ -192,23 +197,6 @@ export function ProjectSelector({
         >
           <Plus className="w-3.5 h-3.5" />
         </button>
-
-        <button
-          onClick={handleRemoveProject}
-          disabled={!selectedProjectId || removing || loading}
-          className="
-            p-1.5 rounded flex-shrink-0
-            bg-ind-bg text-ind-text-muted
-            border border-ind-border
-            hover:border-red-500/50 hover:text-red-500
-            disabled:opacity-50 disabled:cursor-not-allowed
-            transition-colors duration-200
-            flex items-center justify-center
-          "
-          title="Remove project"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
       </div>
 
       {error && (
@@ -226,6 +214,24 @@ export function ProjectSelector({
             {projects.find((p) => p.id === selectedProjectId)?.path || 'N/A'}
           </span>
         </div>
+      )}
+
+      {/* Context menu */}
+      {contextMenu && selectedProjectId && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={[
+            {
+              label: 'Remove Project',
+              icon: Trash2,
+              onClick: handleRemoveProject,
+              textClassName: 'text-red-500',
+              iconClassName: 'text-red-500',
+            },
+          ]}
+          onClose={() => setContextMenu(null)}
+        />
       )}
     </div>
   );
