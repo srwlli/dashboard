@@ -31,6 +31,9 @@ export interface TreeNode {
 
   /** File extension (only for files) */
   extension?: string;
+
+  /** Last modified timestamp in ISO 8601 format (only for files) */
+  lastModified?: string;
 }
 
 /**
@@ -103,6 +106,7 @@ async function buildTree(
           path: relativePath.replace(/\\/g, '/'),
           size: stats.size,
           extension: ext || undefined,
+          lastModified: stats.mtime.toISOString(),
         });
       }
     }

@@ -10,9 +10,12 @@ import { FileViewer } from '@/components/coderef/FileViewer';
 import { CodeRefApi } from '@/lib/coderef/api-access';
 import { aggregateCodeRefTrees, filterTreeByPattern, flattenTree } from '@/lib/coderef/aggregateCodeRefTrees';
 
+export type SortMode = 'name' | 'date' | 'project';
+
 export function CodeRefExplorerWidget() {
   const [viewMode, setViewMode] = useState<ViewMode>('projects');
   const [fileType, setFileType] = useState<FileType>('all');
+  const [sortBy, setSortBy] = useState<SortMode>('name');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
 
@@ -88,6 +91,53 @@ export function CodeRefExplorerWidget() {
     setSelectedFile(null); // Clear selection when filter changes
   };
 
+  // Sort tree nodes
+  const sortTree = (nodes: TreeNode[], mode: SortMode): TreeNode[] => {
+    const sorted = [...nodes];
+
+    const sortRecursive = (items: TreeNode[]): TreeNode[] => {
+      const sortedItems = [...items];
+
+      // Sort current level
+      sortedItems.sort((a, b) => {
+        // Always keep directories before files
+        if (a.type !== b.type) {
+          return a.type === 'directory' ? -1 : 1;
+        }
+
+        // For files, apply the selected sort mode
+        if (a.type === 'file' && b.type === 'file') {
+          switch (mode) {
+            case 'date':
+              if (a.lastModified && b.lastModified) {
+                return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime();
+              }
+              return 0;
+            case 'project':
+              // Extract project name from path (first segment)
+              const projectA = a.path.split('/')[0];
+              const projectB = b.path.split('/')[0];
+              return projectA.localeCompare(projectB);
+            case 'name':
+            default:
+              return a.name.localeCompare(b.name);
+          }
+        }
+
+        // For directories, always sort by name
+        return a.name.localeCompare(b.name);
+      });
+
+      // Recursively sort children
+      return sortedItems.map((item) => ({
+        ...item,
+        children: item.children ? sortRecursive(item.children) : undefined,
+      }));
+    };
+
+    return sortRecursive(sorted);
+  };
+
   // Get the tree to display based on mode and filter
   const getDisplayTree = (): TreeNode[] => {
     if (viewMode === 'projects') {
@@ -104,6 +154,9 @@ export function CodeRefExplorerWidget() {
         tree = filterTreeByPattern(tree, option.pattern);
       }
     }
+
+    // Apply sorting
+    tree = sortTree(tree, sortBy);
 
     return tree;
   };
@@ -163,11 +216,30 @@ export function CodeRefExplorerWidget() {
 
           {/* File Type Filter - visible only in CodeRef mode */}
           {viewMode === 'coderef' && (
-            <FileTypeFilter
-              value={fileType}
-              onChange={handleFileTypeChange}
-              counts={fileCounts}
-            />
+            <>
+              <FileTypeFilter
+                value={fileType}
+                onChange={handleFileTypeChange}
+                counts={fileCounts}
+              />
+
+              {/* Sort Dropdown */}
+              <div className="space-y-2">
+                <label htmlFor="sort-select" className="text-xs text-ind-text-muted font-medium">
+                  Sort by:
+                </label>
+                <select
+                  id="sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortMode)}
+                  className="w-full px-2.5 py-1.5 rounded text-sm bg-ind-bg text-ind-text border border-ind-border hover:border-ind-accent focus:border-ind-accent focus:outline-none focus:ring-1 focus:ring-ind-accent"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="date">Date Modified (Newest)</option>
+                  <option value="project">Project Name</option>
+                </select>
+              </div>
+            </>
           )}
         </div>
 
