@@ -201,46 +201,49 @@ export function CodeRefExplorerWidget() {
     <div className="h-full flex overflow-hidden bg-ind-bg">
       {/* Page Sidebar - extends to top */}
       <div className="w-80 border-r border-ind-border bg-ind-panel flex flex-col">
-        {/* Controls section - matches header height */}
-        <div className="flex-shrink-0 p-4 border-b border-ind-border sticky top-0 z-10 bg-ind-panel space-y-3">
-          {/* Project Selector - visible only in Projects mode */}
-          {viewMode === 'projects' && (
-            <ProjectSelector
-              selectedProjectId={selectedProject?.id}
-              onProjectChange={handleProjectChange}
-            />
-          )}
-
-          {/* View Mode Toggle */}
-          <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
-
-          {/* File Type Filter - visible only in CodeRef mode */}
-          {viewMode === 'coderef' && (
-            <>
-              <FileTypeFilter
-                value={fileType}
-                onChange={handleFileTypeChange}
-                counts={fileCounts}
+        {/* Controls section */}
+        <div className="flex-shrink-0 sticky top-0 z-10 bg-ind-panel">
+          {/* Top controls area with padding */}
+          <div className="p-4 space-y-3">
+            {/* Project Selector - visible only in Projects mode */}
+            {viewMode === 'projects' && (
+              <ProjectSelector
+                selectedProjectId={selectedProject?.id}
+                onProjectChange={handleProjectChange}
               />
+            )}
 
-              {/* Sort Dropdown */}
-              <div className="space-y-2">
-                <label htmlFor="sort-select" className="text-xs text-ind-text-muted font-medium">
-                  Sort by:
-                </label>
-                <select
-                  id="sort-select"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortMode)}
-                  className="w-full px-2.5 py-1.5 rounded text-sm bg-ind-bg text-ind-text border border-ind-border hover:border-ind-accent focus:border-ind-accent focus:outline-none focus:ring-1 focus:ring-ind-accent"
-                >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="date">Date Modified (Newest)</option>
-                  <option value="project">Project Name</option>
-                </select>
-              </div>
-            </>
-          )}
+            {/* File Type Filter - visible only in CodeRef mode */}
+            {viewMode === 'coderef' && (
+              <>
+                <FileTypeFilter
+                  value={fileType}
+                  onChange={handleFileTypeChange}
+                  counts={fileCounts}
+                />
+
+                {/* Sort Dropdown */}
+                <div className="space-y-2">
+                  <label htmlFor="sort-select" className="text-xs text-ind-text-muted font-medium">
+                    Sort by:
+                  </label>
+                  <select
+                    id="sort-select"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as SortMode)}
+                    className="w-full px-2.5 py-1.5 rounded text-sm bg-ind-bg text-ind-text border border-ind-border hover:border-ind-accent focus:border-ind-accent focus:outline-none focus:ring-1 focus:ring-ind-accent"
+                  >
+                    <option value="name">Name (A-Z)</option>
+                    <option value="date">Date Modified (Newest)</option>
+                    <option value="project">Project Name</option>
+                  </select>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* View Mode Toggle - border-attached tabs at bottom */}
+          <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
         </div>
 
         {/* File tree */}

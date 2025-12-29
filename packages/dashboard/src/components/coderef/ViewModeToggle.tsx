@@ -1,8 +1,9 @@
 /**
  * ViewModeToggle Component
  *
- * Tab toggle for switching between Projects and CodeRef view modes in Explorer.
- * Displays [Projects] [CodeRef] tabs above ProjectSelector.
+ * Tab toggle for switching between Project and CodeRef view modes in Explorer.
+ * Displays [Project] [CodeRef] tabs as border-attached tabs.
+ * Project = full project directory, CodeRef = coderef/ subdirectory only.
  */
 
 'use client';
@@ -19,16 +20,17 @@ interface ViewModeToggleProps {
 }
 
 /**
- * ViewModeToggle component with Projects/CodeRef tabs
+ * ViewModeToggle component with Project/CodeRef tabs
+ * Styled as border-attached tabs (browser-style)
  */
 export function ViewModeToggle({ value, onChange, className = '' }: ViewModeToggleProps) {
   const tabs: Array<{ id: ViewMode; label: string }> = [
-    { id: 'projects', label: 'Projects' },
+    { id: 'projects', label: 'Project' },
     { id: 'coderef', label: 'CodeRef' },
   ];
 
   return (
-    <div className={`flex gap-1 ${className}`}>
+    <div className={`flex gap-0.5 border-b border-ind-border ${className}`}>
       {tabs.map((tab) => {
         const isActive = value === tab.id;
 
@@ -37,13 +39,15 @@ export function ViewModeToggle({ value, onChange, className = '' }: ViewModeTogg
             key={tab.id}
             onClick={() => onChange(tab.id)}
             className={`
-              px-3 py-1.5 rounded text-sm font-medium
-              transition-colors duration-200
+              px-4 py-2 text-sm font-medium
+              transition-all duration-200
+              border-t border-l border-r
               ${
                 isActive
-                  ? 'bg-ind-accent text-white'
-                  : 'bg-ind-bg text-ind-text hover:bg-ind-panel hover:text-ind-accent border border-ind-border'
+                  ? 'bg-ind-panel text-ind-accent border-ind-border border-b-0 translate-y-px'
+                  : 'bg-ind-bg text-ind-text-muted hover:text-ind-text border-transparent hover:border-ind-border/50'
               }
+              rounded-t
             `}
           >
             {tab.label}
