@@ -2,11 +2,12 @@
   "META_DOCUMENTATION": {
     "feature_name": "assistant-page-redesign",
     "workorder_id": "WO-ASSISTANT-PAGE-REDESIGN-001",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "status": "planning",
     "generated_by": "PlanningGenerator",
     "has_context": true,
-    "has_analysis": true
+    "has_analysis": true,
+    "plan_revision": "Simplified approach - CodeRef view in Explorer instead of separate Assistant page"
   },
   "UNIVERSAL_PLANNING_STRUCTURE": {
     "0_preparation": {
@@ -18,77 +19,77 @@
         "README.md"
       ],
       "context_source": "coderef/workorder/assistant-page-redesign/context.json",
-      "analysis_source": "coderef/workorder/assistant-page-redesign/analysis.json"
+      "analysis_source": "coderef/workorder/assistant-page-redesign/analysis.json",
+      "design_change": "Pivoted from separate Assistant page to 'All Projects (CodeRef)' view mode in existing Explorer - 10x simpler, reuses all infrastructure"
     },
     "1_executive_summary": {
-      "purpose": "Transform Assistant page from redundant workorder viewer into cross-project intelligence hub",
-      "value_proposition": "Provides bird's-eye view across ALL projects simultaneously while Explorer handles deep-dive into ONE project - complementary not duplicative",
-      "real_world_analogy": "Assistant is like mission control monitoring all spacecraft (projects) on radar screens, while Explorer is like zooming camera into one spacecraft's interior systems",
-      "use_case": "User manages 5 projects and wants to see all CLAUDE.md files, identify stale workorders (>7 days), search for 'authentication' across projects, view recent activity timeline - without manually opening each project folder",
-      "output": "Documentation discovery dashboard, smart workorder aggregation with filters, cross-project search, activity timeline, favorites system"
+      "purpose": "Add 'All Projects (CodeRef)' view to Explorer with file type filtering for cross-project CodeRef browsing",
+      "value_proposition": "Browse all CLAUDE.md, plan.json, DELIVERABLES.md files across projects in one view - no separate page needed, reuses existing Explorer infrastructure",
+      "real_world_analogy": "Like switching your file explorer from 'This PC' (one project) to 'Network' (all projects) - same interface, different scope",
+      "use_case": "User manages 5 projects and wants to audit all CLAUDE.md files or check which projects have stale DELIVERABLES.md - selects 'All Projects (CodeRef)' from dropdown, clicks CLAUDE.md filter, sees flat list of all CLAUDE.md files with last modified dates, clicks one to read",
+      "output": "ProjectSelector dropdown option, file type filter buttons, aggregated tree view, flat list view with pagination"
     },
     "2_risk_assessment": {
-      "overall_risk": "low-medium",
-      "complexity": "medium (estimate: 8-10 files, ~800-1000 lines total)",
-      "scope": "Medium - 1 API route, 1 hook, 4-5 components, 1 page modification",
-      "file_system_risk": "low (reads only, leverages existing /api/coderef infrastructure)",
+      "overall_risk": "low",
+      "complexity": "low (estimate: 3-4 files modified, ~300-400 lines total)",
+      "scope": "Small - modify ProjectSelector, add FileTypeFilter component, update FileTree aggregation logic",
+      "file_system_risk": "low (read-only, reuses existing /api/coderef/tree)",
       "dependencies": [
-        "Existing /api/coderef/projects must be functional",
-        "Existing /api/coderef/tree must support wildcard patterns",
-        "Project registry (~/.coderef-dashboard/projects.json) must have valid projects"
+        "Existing /api/coderef/projects must return all registered projects",
+        "Existing FileTree component must support flat list mode",
+        "Project registry must have at least 2 projects for meaningful testing"
       ],
       "performance_concerns": [
-        "Scanning all projects on page load will take 2-3 seconds with 5 projects (mitigate with loading states and skeleton cards)",
-        "Large number of documentation files (50+) will impact render performance (mitigate with virtualization or pagination if >100 docs)"
+        "Aggregating coderef/ folders from 10+ projects will take 3-5 seconds (mitigate with loading skeleton)",
+        "Rendering 50+ files in list view will impact scroll performance (mitigate with react-window virtualization if >100 files)"
       ],
       "security_considerations": [
-        "File path traversal: ensure all paths are validated through project registry",
-        "XSS: sanitize file content previews if added in future phases"
+        "Path validation: ensure aggregated paths cannot escape coderef/ boundaries",
+        "Project registry validation: only scan projects in ~/.coderef-dashboard/projects.json"
       ],
-      "breaking_changes": "none (additive changes only, existing workorder/stub tabs remain functional)"
+      "breaking_changes": "none (additive feature, existing project selection unchanged)"
     },
     "3_current_state_analysis": {
       "affected_files": [
-        "packages/dashboard/src/app/api/coderef/docs/route.ts (CREATE)",
-        "packages/dashboard/src/hooks/useDocumentation.ts (CREATE)",
-        "packages/dashboard/src/components/DocumentationCard/index.tsx (CREATE)",
-        "packages/dashboard/src/components/DocumentationList/index.tsx (CREATE)",
-        "packages/dashboard/src/app/assistant/page.tsx (MODIFY - add Documentation tab implementation)",
-        "packages/dashboard/src/types/documentation.ts (CREATE - optional type definitions)"
+        "packages/dashboard/src/components/coderef/ProjectSelector.tsx (MODIFY - add 'All Projects (CodeRef)' option)",
+        "packages/dashboard/src/components/coderef/FileTypeFilter.tsx (CREATE - filter buttons component)",
+        "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx (MODIFY - handle aggregated mode)",
+        "packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts (CREATE - tree aggregation utility)"
       ],
       "dependencies": {
         "existing_internal": [
-          "/api/coderef/projects - for project registry",
-          "/api/coderef/tree - for directory scanning",
-          "useWorkorders hook - pattern to follow",
-          "WorkorderCard - UI pattern reference"
+          "ProjectSelector - add new dropdown option",
+          "FileTree - support flat list mode",
+          "FileViewer - works unchanged",
+          "/api/coderef/projects - fetch all projects",
+          "/api/coderef/tree - scan each project's coderef/ folder"
         ],
         "existing_external": [
-          "react - useState, useEffect, useCallback",
-          "next/navigation - useRouter for navigation",
-          "lucide-react - icons (FileText, Code, CheckSquare, etc.)"
+          "react - useState for filter selection",
+          "lucide-react - icons for filter buttons (FileText, Code, CheckSquare)"
         ],
         "new_external": [],
         "new_internal": []
       },
-      "architecture_context": "Next.js 14 App Router with API routes + React client components. Follows existing pattern: API route → custom hook → component list → card component. Leverages file system infrastructure from Explorer (project registry, hybrid local+API access)."
+      "architecture_context": "Explorer page widget-based architecture. Add new view mode to existing ProjectSelector, aggregate trees from multiple projects, render in existing FileTree component with list/tree toggle."
     },
     "4_key_features": {
       "primary_features": [
-        "Documentation Discovery API - scans all projects for CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md, README.md",
-        "Documentation Cards - color-coded by type with project badges, file metadata (size, last modified)",
-        "Grouped Display - organize docs by project with counts and headers",
-        "Click-to-Open Integration - navigate to Explorer page when clicking doc card"
+        "All Projects (CodeRef) dropdown option - select to view aggregated coderef/ folders from all projects",
+        "File Type Filter buttons - filter by CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md, or All Files",
+        "Tree View mode - hierarchical display grouped by project (default for 'All Files')",
+        "List View mode - flat list with metadata (auto-enabled when file type filter selected)"
       ],
       "secondary_features": [
-        "Refresh Button - refetch documentation on demand",
-        "Loading States - skeleton cards during fetch",
-        "Empty States - helpful message when no projects or docs found"
+        "Sort options - Last Modified, Project Name, Alphabetical",
+        "File count badge - show '(5)' next to filter button if 5 files match",
+        "Last modified timestamps - display relative dates (2 days ago, 1 week ago)"
       ],
       "edge_case_handling": [
-        "No projects registered: show empty state with 'Add projects in Explorer' message",
-        "Project directory missing/inaccessible: gracefully skip and log error, continue with other projects",
-        "Malformed file metadata: fallback to defaults (Unknown size, No date)"
+        "No projects registered: show empty state 'Add projects to see CodeRef files'",
+        "No coderef/ folder in project: skip that project silently",
+        "Empty coderef/ folder: show 'No CodeRef files found' message",
+        "Single project only: still show aggregated view (future-proof for when they add more)"
       ],
       "configuration_options": [
         "None (uses project registry from Explorer)"
@@ -96,260 +97,260 @@
     },
     "5_task_id_system": {
       "tasks": [
-        "SETUP-001: Create API route file structure and basic GET handler",
-        "SETUP-002: Create hook file with fetch logic and state management",
-        "SETUP-003: Create component directory structure",
-        "IMPL-001: Implement documentation scanning logic (wildcard patterns for nested files)",
-        "IMPL-002: Build DocumentationCard component with type-specific icons and metadata",
-        "IMPL-003: Build DocumentationList component with project grouping",
-        "IMPL-004: Integrate Documentation tab into Assistant page",
-        "IMPL-005: Add click handler to navigate to Explorer",
-        "TEST-001: Test API route with multiple projects and file types",
-        "TEST-002: Test empty states (no projects, no docs)",
-        "TEST-003: Test error handling (missing directories, permissions)",
-        "DOC-001: Add JSDoc comments to API route and hook",
-        "DOC-002: Document click-to-open limitation with comment explaining future URL parameter enhancement"
+        "SETUP-001: Add 'All Projects (CodeRef)' option to ProjectSelector dropdown with special ID marker",
+        "SETUP-002: Create FileTypeFilter component with button group UI",
+        "IMPL-001: Create aggregateCodeRefTrees utility to merge coderef/ folders from all projects",
+        "IMPL-002: Modify CodeRefExplorerWidget to detect 'All Projects' mode and call aggregation",
+        "IMPL-003: Add tree/list view toggle logic based on filter selection",
+        "IMPL-004: Implement file type filtering in aggregated tree (pattern matching)",
+        "IMPL-005: Add sorting logic (last modified, project name, alphabetical)",
+        "IMPL-006: Add file count badges to filter buttons",
+        "IMPL-007: Format last modified timestamps with relative dates",
+        "TEST-001: Test with 3 projects, verify all coderef/ folders appear",
+        "TEST-002: Test file type filters (CLAUDE.md, plan.json, etc.)",
+        "TEST-003: Test tree vs list view modes",
+        "TEST-004: Test sorting options",
+        "TEST-005: Test edge cases (no projects, no coderef/, empty folders)",
+        "DOC-001: Add JSDoc to aggregateCodeRefTrees utility",
+        "DOC-002: Update COMPONENTS.md with FileTypeFilter component"
       ]
     },
     "6_implementation_phases": {
       "phases": [
         {
           "phase": 1,
-          "name": "API Infrastructure",
-          "title": "Phase 1: API Infrastructure",
-          "purpose": "Build documentation scanning API endpoint",
-          "complexity": "medium",
-          "effort_level": 3,
+          "name": "Core Infrastructure",
+          "title": "Phase 1: Core Infrastructure",
+          "purpose": "Add 'All Projects (CodeRef)' mode and tree aggregation",
+          "complexity": "low",
+          "effort_level": 2,
           "tasks": [
             "SETUP-001",
-            "IMPL-001"
+            "IMPL-001",
+            "IMPL-002"
           ],
           "deliverables": [
-            "/api/coderef/docs route functional",
-            "Scans all registered projects",
-            "Returns aggregated documentation list"
+            "ProjectSelector has 'All Projects (CodeRef)' option",
+            "aggregateCodeRefTrees utility functional",
+            "CodeRefExplorerWidget detects and handles aggregated mode"
           ],
-          "completion_criteria": "API returns valid JSON with docs array, handles empty project list, gracefully handles missing directories"
+          "completion_criteria": "Selecting 'All Projects (CodeRef)' loads and displays aggregated tree of all coderef/ folders"
         },
         {
           "phase": 2,
-          "name": "Data Layer",
-          "title": "Phase 2: Data Layer",
-          "purpose": "Create React hook for documentation fetching",
-          "complexity": "low",
-          "effort_level": 2,
-          "tasks": [
-            "SETUP-002"
-          ],
-          "deliverables": [
-            "useDocumentation hook with loading/error states",
-            "Refetch event listener support"
-          ],
-          "completion_criteria": "Hook returns docs array, loading state toggles correctly, refetch event triggers new fetch"
-        },
-        {
-          "phase": 3,
-          "name": "UI Components",
-          "title": "Phase 3: UI Components",
-          "purpose": "Build documentation display components",
+          "name": "File Type Filtering",
+          "title": "Phase 2: File Type Filtering",
+          "purpose": "Add filter buttons and list/tree view modes",
           "complexity": "medium",
           "effort_level": 3,
           "tasks": [
-            "SETUP-003",
-            "IMPL-002",
-            "IMPL-003"
+            "SETUP-002",
+            "IMPL-003",
+            "IMPL-004"
           ],
           "deliverables": [
-            "DocumentationCard with type-specific styling",
-            "DocumentationList with project grouping",
-            "Responsive grid layout (mobile/tablet/desktop)"
+            "FileTypeFilter component with button group",
+            "Tree/list view toggle logic",
+            "Pattern matching for file type filtering"
           ],
-          "completion_criteria": "Cards render with correct icons and metadata, grouped by project, responsive breakpoints work"
+          "completion_criteria": "Clicking 'CLAUDE.md' filter shows flat list of only CLAUDE.md files across all projects"
         },
         {
-          "phase": 4,
-          "name": "Integration",
-          "title": "Phase 4: Integration",
-          "purpose": "Connect components to Assistant page",
+          "phase": 3,
+          "name": "Enhancements",
+          "title": "Phase 3: Enhancements",
+          "purpose": "Add sorting, badges, and timestamps",
           "complexity": "low",
           "effort_level": 2,
           "tasks": [
-            "IMPL-004",
             "IMPL-005",
+            "IMPL-006",
+            "IMPL-007",
             "TEST-001",
             "TEST-002",
             "TEST-003",
+            "TEST-004",
+            "TEST-005",
             "DOC-001",
             "DOC-002"
           ],
           "deliverables": [
-            "Documentation tab functional in Assistant",
-            "Click navigation to Explorer works",
-            "All edge cases handled",
-            "Documentation complete"
+            "Sort dropdown (Last Modified, Project Name, Alphabetical)",
+            "File count badges on filter buttons",
+            "Relative timestamp formatting",
+            "All edge cases tested",
+            "Documentation updated"
           ],
-          "completion_criteria": "Documentation tab shows real data, clicking card navigates to Explorer, empty/error states display correctly"
+          "completion_criteria": "Sort works correctly, badges show accurate counts, timestamps display relative dates, all tests pass"
         }
       ]
     },
     "7_testing_strategy": {
       "unit_tests": [
-        "Test findFiles function with wildcard patterns (coderef/workorder/*/plan.json)",
-        "Test scanProjectDocs function with various file types",
-        "Test date formatting utility (formatDate: '2 days ago', 'Yesterday', etc.)",
-        "Test file size formatting utility (formatFileSize: bytes → KB → MB)"
+        "Test aggregateCodeRefTrees with 3 projects returning merged tree structure",
+        "Test file type pattern matching (*.md, **/plan.json, etc.)",
+        "Test relative date formatting (formatRelativeDate: 'Today', 'Yesterday', '2 days ago')",
+        "Test sorting functions (sortByLastModified, sortByProjectName, sortAlphabetical)"
       ],
       "integration_tests": [
-        "Test /api/coderef/docs with 3 projects containing different doc types",
-        "Test useDocumentation hook fetch lifecycle (loading → success → data)",
-        "Test refetch event triggers new API call",
-        "Test DocumentationList grouping logic with mixed project data"
+        "Test ProjectSelector switching to 'All Projects (CodeRef)' triggers aggregation",
+        "Test FileTypeFilter selection updates FileTree display mode",
+        "Test clicking file in aggregated view opens in FileViewer",
+        "Test switching between tree and list views preserves selection"
       ],
       "end_to_end_tests": [
-        "User adds project in Explorer → refresh Assistant → new docs appear",
-        "User clicks doc card → navigates to Explorer page",
-        "User removes project → refresh Assistant → docs disappear"
+        "User adds 3 projects → selects 'All Projects (CodeRef)' → sees all coderef/ folders",
+        "User clicks 'CLAUDE.md' filter → sees flat list → clicks one → FileViewer opens",
+        "User sorts by Last Modified → list reorders → most recent at top"
       ],
       "edge_case_scenarios": [
         {
-          "scenario": "No projects registered in ~/.coderef-dashboard/projects.json",
-          "setup": "Empty or missing projects.json file",
-          "expected_behavior": "API returns empty docs array, UI shows 'Add projects in Explorer' message",
-          "verification": "Check API response: {success: true, data: {docs: [], total: 0}}, verify empty state renders",
+          "scenario": "No projects registered",
+          "setup": "Empty projects.json",
+          "expected_behavior": "ProjectSelector shows 'All Projects (CodeRef)' option but selecting it shows empty state: 'Add projects to see CodeRef files'",
+          "verification": "Verify empty state message renders, no errors in console",
           "error_handling": "No error (valid state)"
         },
         {
-          "scenario": "Project directory deleted but still in registry",
-          "setup": "Delete project folder from filesystem, keep entry in projects.json",
-          "expected_behavior": "API logs error for that project, continues scanning other projects",
-          "verification": "Check console for error message, verify other projects' docs still appear",
-          "error_handling": "Graceful degradation (skip failed project)"
+          "scenario": "Project has no coderef/ folder",
+          "setup": "Add project without coderef/ directory",
+          "expected_behavior": "Skip that project silently, show other projects' coderef/ folders",
+          "verification": "Aggregated tree shows projects with coderef/, missing project not shown, no errors",
+          "error_handling": "Graceful skip (continue with other projects)"
         },
         {
-          "scenario": "File permissions denied for documentation file",
-          "setup": "Create CLAUDE.md with restricted permissions",
-          "expected_behavior": "Skip that file, continue scanning other files",
-          "verification": "Other docs from same project appear, denied file doesn't crash API",
-          "error_handling": "Catch error in fs.stat, continue loop"
+          "scenario": "All projects have empty coderef/ folders",
+          "setup": "Create coderef/ directories but no files inside",
+          "expected_behavior": "Show 'No CodeRef files found' message",
+          "verification": "Empty state renders with helpful message",
+          "error_handling": "No error (valid state)"
+        },
+        {
+          "scenario": "Only one project registered",
+          "setup": "Single project in registry",
+          "expected_behavior": "Aggregated view still works (shows that one project's coderef/)",
+          "verification": "Tree renders with single project, no errors, future-proof for adding more projects",
+          "error_handling": "No error (valid state)"
         }
       ]
     },
     "8_success_criteria": {
       "functional_requirements": [
         {
-          "requirement": "User can discover all CLAUDE.md files across projects in <5 seconds",
-          "metric": "API response time + render time",
-          "target": "<5000ms total",
-          "validation": "Browser DevTools Network tab: measure /api/coderef/docs request + React profiler for render"
+          "requirement": "User can view all CLAUDE.md files across projects in <5 seconds",
+          "metric": "Time from clicking 'CLAUDE.md' filter to list render",
+          "target": "<5000ms with 5 projects",
+          "validation": "Browser DevTools Performance: measure filter click → list render complete"
         },
         {
-          "requirement": "Documentation cards display accurate metadata",
-          "metric": "File size and last modified match filesystem",
+          "requirement": "File type filters show accurate counts",
+          "metric": "Badge number matches actual file count",
           "target": "100% accuracy",
-          "validation": "Compare displayed metadata with actual file properties (fs.stat output)"
+          "validation": "Manually count files in filesystem, compare to badge numbers"
         },
         {
-          "requirement": "Clicking doc card navigates to Explorer",
+          "requirement": "Clicking file opens in FileViewer",
           "metric": "Navigation success rate",
-          "target": "100% (all clicks navigate)",
-          "validation": "Click 10 different doc cards, verify URL changes to /coderef-explorer"
+          "target": "100% (all clicks work)",
+          "validation": "Click 10 different files from aggregated view, verify all open correctly"
         },
         {
-          "requirement": "Empty state shows when no projects exist",
-          "metric": "Empty state visibility",
-          "target": "Displays within 1 second of page load",
-          "validation": "Clear projects.json, reload Assistant, verify 'Add projects' message appears"
+          "requirement": "Sorting reorders list correctly",
+          "metric": "Sort order matches selected criteria",
+          "target": "100% correct order",
+          "validation": "Sort by Last Modified, verify newest at top; sort by Name, verify alphabetical"
         }
       ],
       "quality_requirements": [
         {
-          "requirement": "TypeScript type coverage",
-          "metric": "Percentage of typed declarations",
-          "target": "100% (no 'any' types)",
-          "validation": "Run tsc --noEmit, verify no type errors"
+          "requirement": "Code reuse",
+          "metric": "Percentage of existing components reused",
+          "target": ">90% (FileTree, FileViewer, ProjectSelector base)",
+          "validation": "Code review: verify FileTree and FileViewer unchanged, only mode logic added"
         },
         {
-          "requirement": "Component reusability",
-          "metric": "DocumentationCard used by DocumentationList only",
-          "target": "Single responsibility principle followed",
-          "validation": "Code review: verify card doesn't contain list logic"
+          "requirement": "TypeScript type coverage",
+          "metric": "No 'any' types in new code",
+          "target": "100% typed",
+          "validation": "Run tsc --noEmit, verify no type errors"
         }
       ],
       "performance_requirements": [
         {
-          "requirement": "Initial render performance",
-          "metric": "Time to interactive (TTI)",
-          "target": "<2 seconds with 5 projects, 30 docs",
-          "validation": "Chrome Lighthouse: measure TTI on Assistant page"
+          "requirement": "Aggregation performance",
+          "metric": "Time to aggregate 10 projects' coderef/ folders",
+          "target": "<3 seconds",
+          "validation": "Chrome DevTools: measure API calls + tree merge time"
         },
         {
-          "requirement": "Scroll performance",
-          "metric": "Frame rate during scroll",
+          "requirement": "List view scroll performance",
+          "metric": "Frame rate during scroll with 50 files",
           "target": ">60fps",
-          "validation": "Chrome DevTools Performance tab: record scroll, check FPS"
+          "validation": "Chrome DevTools Performance: record scroll, check FPS counter"
         }
       ],
       "security_requirements": [
         {
-          "requirement": "Path validation",
-          "metric": "All file paths validated through project registry",
-          "target": "No direct user input paths",
-          "validation": "Code review: verify all fs.readFile calls use paths from registry"
+          "requirement": "Path boundary validation",
+          "metric": "All aggregated paths stay within coderef/ folders",
+          "target": "No parent directory traversal",
+          "validation": "Code review: verify aggregation only includes coderef/** paths"
         }
       ]
     },
     "9_implementation_checklist": {
       "pre_implementation": [
-        "☐ Review complete plan for gaps",
-        "☐ Verify /api/coderef/projects and /api/coderef/tree are functional",
-        "☐ Check project registry has at least 1 test project"
+        "☐ Review simplified plan vs original 41-task plan",
+        "☐ Verify at least 2 projects registered for testing",
+        "☐ Ensure projects have coderef/ folders with test files"
       ],
       "phase_1": [
-        "☐ SETUP-001: Create packages/dashboard/src/app/api/coderef/docs/route.ts",
-        "☐ IMPL-001: Implement findFiles function with wildcard support",
-        "☐ IMPL-001: Implement scanProjectDocs function",
-        "☐ IMPL-001: Implement GET handler with aggregation logic",
-        "☐ Test API manually via browser: http://localhost:3000/api/coderef/docs"
+        "☐ SETUP-001: Add 'All Projects (CodeRef)' option to ProjectSelector",
+        "☐ SETUP-001: Use special ID like '__all_projects_coderef__' to distinguish from regular projects",
+        "☐ IMPL-001: Create lib/coderef/aggregateCodeRefTrees.ts utility file",
+        "☐ IMPL-001: Implement tree merging logic (fetch all projects, call /api/coderef/tree for each, merge results)",
+        "☐ IMPL-001: Add project name prefix to paths (e.g., 'Project Alpha/coderef/workorder/plan.json')",
+        "☐ IMPL-002: Detect 'All Projects' mode in CodeRefExplorerWidget",
+        "☐ IMPL-002: Call aggregateCodeRefTrees when mode detected",
+        "☐ IMPL-002: Pass aggregated tree to FileTree component",
+        "☐ Test: Select 'All Projects (CodeRef)', verify tree shows all coderef/ folders"
       ],
       "phase_2": [
-        "☐ SETUP-002: Create packages/dashboard/src/hooks/useDocumentation.ts",
-        "☐ SETUP-002: Add useState for docs, loading, error",
-        "☐ SETUP-002: Add useEffect for initial fetch",
-        "☐ SETUP-002: Add refetch-documentation event listener",
-        "☐ Test hook in isolation: import in test file, call hook, verify state updates"
+        "☐ SETUP-002: Create components/coderef/FileTypeFilter.tsx",
+        "☐ SETUP-002: Add button group with options: All Files, CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md",
+        "☐ SETUP-002: Style with Tailwind (similar to existing filter components)",
+        "☐ IMPL-003: Add useState for active filter and view mode (tree/list)",
+        "☐ IMPL-003: Auto-switch to list view when specific file type selected",
+        "☐ IMPL-003: Switch back to tree view when 'All Files' selected",
+        "☐ IMPL-004: Implement pattern matching (e.g., CLAUDE.md → exact match, plan.json → **/plan.json)",
+        "☐ IMPL-004: Filter aggregated tree based on active filter",
+        "☐ IMPL-004: Flatten tree to list when in list mode",
+        "☐ Test: Click 'CLAUDE.md' filter, verify only CLAUDE.md files appear in flat list"
       ],
       "phase_3": [
-        "☐ SETUP-003: Create packages/dashboard/src/components/DocumentationCard/index.tsx",
-        "☐ IMPL-002: Add type-specific icons and colors (DOC_TYPE_INFO map)",
-        "☐ IMPL-002: Add formatFileSize and formatDate utilities",
-        "☐ IMPL-002: Add project badge UI",
-        "☐ SETUP-003: Create packages/dashboard/src/components/DocumentationList/index.tsx",
-        "☐ IMPL-003: Add grouping logic (docsByProject reduce)",
-        "☐ IMPL-003: Add responsive grid layout (1/2/3 columns)",
-        "☐ IMPL-003: Add loading and empty states",
-        "☐ Test components in Storybook or isolated page"
-      ],
-      "phase_4": [
-        "☐ IMPL-004: Import useDocumentation in Assistant page",
-        "☐ IMPL-004: Import DocumentationList component",
-        "☐ IMPL-004: Replace Documentation tab placeholder with DocumentationList",
-        "☐ IMPL-004: Add documentation refetch to refresh button handler",
-        "☐ IMPL-005: Add handleDocClick with router.push('/coderef-explorer')",
-        "☐ IMPL-005: Add comment explaining URL parameter limitation for future enhancement",
-        "☐ TEST-001: Test with 3 projects, verify all doc types appear",
-        "☐ TEST-002: Test with empty projects.json, verify empty state",
-        "☐ TEST-003: Test with deleted project folder, verify graceful degradation",
-        "☐ DOC-001: Add JSDoc to API route functions",
-        "☐ DOC-001: Add JSDoc to useDocumentation hook",
-        "☐ DOC-002: Add comment explaining click-to-open limitation (URL parameters needed)",
+        "☐ IMPL-005: Add sort dropdown with 3 options",
+        "☐ IMPL-005: Implement sortByLastModified function (newest first)",
+        "☐ IMPL-005: Implement sortByProjectName function (alphabetical by project)",
+        "☐ IMPL-005: Implement sortAlphabetical function (by filename)",
+        "☐ IMPL-006: Count files for each filter type",
+        "☐ IMPL-006: Display badge with count (e.g., 'CLAUDE.md (5)')",
+        "☐ IMPL-007: Create formatRelativeDate utility (Today, Yesterday, X days/weeks/months ago)",
+        "☐ IMPL-007: Display timestamps in list view",
+        "☐ TEST-001: Test with 3 projects containing various coderef/ structures",
+        "☐ TEST-002: Test all file type filters individually",
+        "☐ TEST-003: Test tree/list view switching",
+        "☐ TEST-004: Test all 3 sort options",
+        "☐ TEST-005: Test all 4 edge cases",
+        "☐ DOC-001: Add JSDoc to aggregateCodeRefTrees functions",
+        "☐ DOC-002: Update COMPONENTS.md with FileTypeFilter entry",
         "☐ Run npm run build:dashboard - verify no TypeScript errors",
-        "☐ Manual testing: open http://localhost:3000/assistant, click Documentation tab"
+        "☐ Manual testing: Select 'All Projects (CodeRef)', test all filters and sort options"
       ],
       "finalization": [
         "☐ All TypeScript errors resolved",
-        "☐ All edge cases tested (no projects, deleted folder, permissions)",
-        "☐ Code review: verify follows existing patterns (useWorkorders, WorkorderCard)",
-        "☐ Update CLAUDE.md if needed",
+        "☐ All edge cases tested and handled gracefully",
+        "☐ Code review: verify follows existing Explorer patterns",
+        "☐ Update CLAUDE.md with new feature description",
         "☐ Commit with descriptive message"
       ]
     }
