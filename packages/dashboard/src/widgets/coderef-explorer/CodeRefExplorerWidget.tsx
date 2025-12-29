@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Project, TreeNode } from '@/lib/coderef/types';
 import { ViewModeToggle, type ViewMode } from '@/components/coderef/ViewModeToggle';
 import { ProjectSelector } from '@/components/coderef/ProjectSelector';
@@ -18,6 +18,38 @@ export function CodeRefExplorerWidget() {
   const [viewMode, setViewMode] = useState<ViewMode>('projects');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
+
+  // Favorites state - persisted per project in localStorage
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Load favorites from localStorage when project changes
+  useEffect(() => {
+    if (selectedProject) {
+      const storageKey = `coderef-favorites-${selectedProject.id}`;
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        try {
+          const favArray = JSON.parse(stored) as string[];
+          setFavorites(new Set(favArray));
+        } catch (e) {
+          console.error('Failed to parse favorites from localStorage:', e);
+          setFavorites(new Set());
+        }
+      } else {
+        setFavorites(new Set());
+      }
+    } else {
+      setFavorites(new Set());
+    }
+  }, [selectedProject?.id]);
+
+  // Save favorites to localStorage whenever they change
+  useEffect(() => {
+    if (selectedProject) {
+      const storageKey = `coderef-favorites-${selectedProject.id}`;
+      localStorage.setItem(storageKey, JSON.stringify(Array.from(favorites)));
+    }
+  }, [favorites, selectedProject?.id]);
 
   // DORMANT: Multi-project aggregation state and sorting (for future use)
   // const [sortBy, setSortBy] = useState<SortMode>('name');
@@ -41,6 +73,22 @@ export function CodeRefExplorerWidget() {
     setViewMode(mode);
     // Clear selection when switching modes
     setSelectedFile(null);
+  };
+
+  const handleToggleFavorite = (path: string) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(path)) {
+        next.delete(path);
+      } else {
+        next.add(path);
+      }
+      return next;
+    });
+  };
+
+  const isFavorite = (path: string): boolean => {
+    return favorites.has(path);
   };
 
   // DORMANT: Sorting logic (for future use with multi-project aggregation)
@@ -86,6 +134,9 @@ export function CodeRefExplorerWidget() {
           onFileClick={handleFileClick}
           className="flex-1"
           filterPath={viewMode === 'coderef' ? 'coderef' : undefined}
+          onToggleFavorite={handleToggleFavorite}
+          isFavorite={isFavorite}
+          showOnlyFavorites={viewMode === 'favorites'}
         />
       </div>
 
@@ -94,7 +145,7 @@ export function CodeRefExplorerWidget() {
         {/* Page-level header - sticky */}
         <div className="flex-shrink-0 p-4 border-b border-ind-border bg-ind-panel sticky top-0 z-10">
           <h1 className="text-xl font-semibold text-ind-text">
-            {selectedFile?.name || (viewMode === 'coderef' ? 'CodeRef' : 'Project')}
+            {selectedFile?.name || (viewMode === 'favorites' ? 'Favorites' : viewMode === 'coderef' ? 'CodeRef' : 'Project')}
           </h1>
           {selectedFile && (
             <div className="text-sm text-ind-text-muted mt-1">

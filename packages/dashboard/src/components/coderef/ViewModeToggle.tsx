@@ -1,14 +1,16 @@
 /**
  * ViewModeToggle Component
  *
- * Tab toggle for switching between Project and CodeRef view modes in Explorer.
- * Displays [Project] [CodeRef] tabs as border-attached tabs.
- * Project = full project directory, CodeRef = coderef/ subdirectory only.
+ * Tab toggle for switching between Project, CodeRef, and Favorites view modes in Explorer.
+ * Displays [Project] [CodeRef] [Favorites] tabs as border-attached tabs.
+ * - Project = full project directory
+ * - CodeRef = coderef/ subdirectory only
+ * - Favorites = user-favorited files/folders
  */
 
 'use client';
 
-export type ViewMode = 'projects' | 'coderef';
+export type ViewMode = 'projects' | 'coderef' | 'favorites';
 
 interface ViewModeToggleProps {
   /** Current active view mode */
@@ -20,13 +22,14 @@ interface ViewModeToggleProps {
 }
 
 /**
- * ViewModeToggle component with Project/CodeRef tabs
+ * ViewModeToggle component with Project/CodeRef/Favorites tabs
  * Styled as border-attached tabs (browser-style)
  */
 export function ViewModeToggle({ value, onChange, className = '' }: ViewModeToggleProps) {
   const tabs: Array<{ id: ViewMode; label: string }> = [
     { id: 'projects', label: 'Project' },
     { id: 'coderef', label: 'CodeRef' },
+    { id: 'favorites', label: 'Favorites' },
   ];
 
   return (

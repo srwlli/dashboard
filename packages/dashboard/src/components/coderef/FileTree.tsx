@@ -25,6 +25,15 @@ interface FileTreeProps {
   /** Optional filter to show only a specific subfolder (e.g., 'coderef') */
   filterPath?: string;
 
+  /** Callback to toggle favorite status */
+  onToggleFavorite?: (path: string) => void;
+
+  /** Function to check if a path is favorited */
+  isFavorite?: (path: string) => boolean;
+
+  /** Show only favorited items */
+  showOnlyFavorites?: boolean;
+
   /** Optional custom class name */
   className?: string;
 }
@@ -36,6 +45,9 @@ export function FileTree({
   onFileClick,
   loading: externalLoading,
   filterPath,
+  onToggleFavorite,
+  isFavorite,
+  showOnlyFavorites = false,
   className = '',
 }: FileTreeProps) {
   const [tree, setTree] = useState<TreeNode[]>([]);
@@ -95,8 +107,40 @@ export function FileTree({
     return [];
   };
 
-  // Apply filter if specified
-  const displayTree = filterPath ? filterTreeToFolder(tree, filterPath) : tree;
+  // Filter tree to show only favorited items
+  const filterTreeToFavorites = (nodes: TreeNode[]): TreeNode[] => {
+    if (!isFavorite) return nodes;
+
+    const filtered: TreeNode[] = [];
+
+    for (const node of nodes) {
+      const nodeFavorited = isFavorite(node.path);
+      const childrenFiltered = node.children ? filterTreeToFavorites(node.children) : [];
+
+      // Include node if it's favorited OR if any of its children are favorited
+      if (nodeFavorited || childrenFiltered.length > 0) {
+        filtered.push({
+          ...node,
+          children: childrenFiltered.length > 0 ? childrenFiltered : node.children,
+        });
+      }
+    }
+
+    return filtered;
+  };
+
+  // Apply filters
+  let displayTree = tree;
+
+  // First apply folder filter if specified
+  if (filterPath) {
+    displayTree = filterTreeToFolder(displayTree, filterPath);
+  }
+
+  // Then apply favorites filter if specified
+  if (showOnlyFavorites) {
+    displayTree = filterTreeToFavorites(displayTree);
+  }
 
   if (!project && !customTree) {
     return (
@@ -175,6 +219,8 @@ export function FileTree({
             depth={0}
             selectedPath={selectedPath}
             onFileClick={onFileClick}
+            onToggleFavorite={onToggleFavorite}
+            isFavorite={isFavorite}
           />
         ))}
       </div>

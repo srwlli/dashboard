@@ -11,7 +11,9 @@ import {
   FileJson,
   FileCode,
   FileText,
+  Star,
 } from 'lucide-react';
+import { ContextMenu } from './ContextMenu';
 
 interface FileTreeNodeProps {
   /** Tree node data */
@@ -25,6 +27,12 @@ interface FileTreeNodeProps {
 
   /** Callback when a file is clicked */
   onFileClick: (node: TreeNode) => void;
+
+  /** Callback to toggle favorite status */
+  onToggleFavorite?: (path: string) => void;
+
+  /** Function to check if a path is favorited */
+  isFavorite?: (path: string) => boolean;
 
   /** Optional custom class name */
   className?: string;
@@ -62,13 +70,17 @@ export function FileTreeNode({
   depth,
   selectedPath,
   onFileClick,
+  onToggleFavorite,
+  isFavorite,
   className = '',
 }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
   const isDirectory = node.type === 'directory';
   const isSelected = selectedPath === node.path;
   const hasChildren = isDirectory && node.children && node.children.length > 0;
+  const favorited = isFavorite ? isFavorite(node.path) : false;
 
   const handleClick = () => {
     if (isDirectory) {
@@ -78,12 +90,25 @@ export function FileTreeNode({
     }
   };
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleToggleFavorite = () => {
+    if (onToggleFavorite) {
+      onToggleFavorite(node.path);
+    }
+  };
+
   const paddingLeft = `${depth * 12 + 8}px`;
 
   return (
     <div className={className}>
       <div
         onClick={handleClick}
+        onContextMenu={handleContextMenu}
         style={{ paddingLeft }}
         className={`
           flex items-center gap-2 py-1.5 px-2 cursor-pointer
@@ -125,6 +150,11 @@ export function FileTreeNode({
         {/* Name */}
         <span className="text-sm truncate">{node.name}</span>
 
+        {/* Favorite indicator */}
+        {favorited && (
+          <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 flex-shrink-0" />
+        )}
+
         {/* File size (only for files) */}
         {!isDirectory && node.size !== undefined && (
           <span className="text-xs text-ind-text-muted ml-auto flex-shrink-0">
@@ -143,9 +173,22 @@ export function FileTreeNode({
               depth={depth + 1}
               selectedPath={selectedPath}
               onFileClick={onFileClick}
+              onToggleFavorite={onToggleFavorite}
+              isFavorite={isFavorite}
             />
           ))}
         </div>
+      )}
+
+      {/* Context menu */}
+      {contextMenu && onToggleFavorite && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          isFavorited={favorited}
+          onToggleFavorite={handleToggleFavorite}
+          onClose={() => setContextMenu(null)}
+        />
       )}
     </div>
   );
