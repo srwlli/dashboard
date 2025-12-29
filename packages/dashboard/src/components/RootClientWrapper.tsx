@@ -5,6 +5,7 @@ import PWAInitializer from './PWAInitializer';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import MobileNav from './MobileNav';
+import { WorkflowProvider } from '@/contexts/WorkflowContext';
 
 /**
  * RootClientWrapper
@@ -35,7 +36,7 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <>
+    <WorkflowProvider>
       <PWAInitializer />
       {/* Mobile-first layout: flex-col on mobile, flex-row on md+ */}
       <div className="flex flex-col md:flex-row min-h-screen bg-ind-bg">
@@ -54,7 +55,7 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
           </main>
         </div>
       </div>
-    </>
+    </WorkflowProvider>
   );
 }
 

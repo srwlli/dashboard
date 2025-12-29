@@ -216,6 +216,7 @@ export function FileTree({
           <FileTreeNode
             key={node.path}
             node={node}
+            project={project}
             depth={0}
             selectedPath={selectedPath}
             onFileClick={onFileClick}

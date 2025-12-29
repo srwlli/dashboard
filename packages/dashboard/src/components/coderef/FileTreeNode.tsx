@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { TreeNode } from '@/app/api/coderef/tree/route';
+import type { Project } from '@/lib/coderef/types';
 import {
   ChevronRight,
   ChevronDown,
@@ -12,12 +13,19 @@ import {
   FileCode,
   FileText,
   Star,
+  Plus,
 } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
+import { useWorkflow } from '@/contexts/WorkflowContext';
+import { loadFileContent } from '@/lib/coderef/hybrid-router';
+import type { Attachment } from '@/components/PromptingWorkflow/types';
 
 interface FileTreeNodeProps {
   /** Tree node data */
   node: TreeNode;
+
+  /** Project containing this file */
+  project?: Project | null;
 
   /** Current depth level (for indentation) */
   depth: number;
@@ -65,8 +73,32 @@ function getFileIcon(extension?: string): React.ReactNode {
   }
 }
 
+/**
+ * Get language identifier from file extension for syntax highlighting
+ */
+function getLanguageFromExtension(extension: string): string {
+  const ext = extension.toLowerCase();
+  const langMap: Record<string, string> = {
+    '.ts': 'typescript',
+    '.tsx': 'tsx',
+    '.js': 'javascript',
+    '.jsx': 'jsx',
+    '.py': 'python',
+    '.java': 'java',
+    '.c': 'c',
+    '.cpp': 'cpp',
+    '.rs': 'rust',
+    '.go': 'go',
+    '.json': 'json',
+    '.md': 'markdown',
+    '.txt': 'text',
+  };
+  return langMap[ext] || 'text';
+}
+
 export function FileTreeNode({
   node,
+  project,
   depth,
   selectedPath,
   onFileClick,
@@ -76,6 +108,7 @@ export function FileTreeNode({
 }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const { addAttachments } = useWorkflow();
 
   const isDirectory = node.type === 'directory';
   const isSelected = selectedPath === node.path;
@@ -99,6 +132,44 @@ export function FileTreeNode({
   const handleToggleFavorite = () => {
     if (onToggleFavorite) {
       onToggleFavorite(node.path);
+    }
+  };
+
+  const handleAddToPrompt = async () => {
+    if (!project || node.type === 'directory') return;
+
+    try {
+      // Load file content
+      const result = await loadFileContent(project, node.path);
+      const fileData = result.data;
+
+      // Create attachment object
+      const attachment: Attachment = {
+        id: Math.random().toString(36).substring(2, 11),
+        filename: fileData.name,
+        type: 'FILE',
+        extension: fileData.extension,
+        mimeType: fileData.mimeType,
+        size: fileData.size,
+        content: fileData.content,
+        preview: fileData.content.substring(0, 200),
+        language: getLanguageFromExtension(fileData.extension),
+        isText: fileData.encoding === 'utf-8',
+        isBinary: fileData.encoding === 'base64',
+        createdAt: new Date(),
+      };
+
+      // Add to workflow
+      addAttachments([attachment]);
+
+      // Close context menu
+      setContextMenu(null);
+
+      // Show feedback (optional)
+      console.log(`Added ${fileData.name} to prompt`);
+    } catch (error) {
+      console.error('Failed to add file to prompt:', error);
+      alert('Failed to add file to prompt');
     }
   };
 
@@ -165,6 +236,7 @@ export function FileTreeNode({
             <FileTreeNode
               key={child.path}
               node={child}
+              project={project}
               depth={depth + 1}
               selectedPath={selectedPath}
               onFileClick={onFileClick}
@@ -187,6 +259,17 @@ export function FileTreeNode({
               onClick: handleToggleFavorite,
               iconClassName: favorited ? 'fill-yellow-400 text-yellow-400' : '',
             },
+            // Only show "Add to Prompt" for files (not directories)
+            ...(node.type === 'file' && project
+              ? [
+                  {
+                    label: 'Add to Prompt',
+                    icon: Plus,
+                    onClick: handleAddToPrompt,
+                    iconClassName: '',
+                  },
+                ]
+              : []),
           ]}
           onClose={() => setContextMenu(null)}
         />

@@ -4,7 +4,7 @@ import { AttachmentManager } from './AttachmentManager';
 import { WorkflowMeta } from './WorkflowMeta';
 import { ExportMenu } from './ExportMenu';
 import { PasteFinalResultModal } from './PasteFinalResultModal';
-import { useWorkflow } from '../hooks/useWorkflow';
+import { useWorkflow } from '@/contexts/WorkflowContext';
 import { useClipboard } from '../hooks/useClipboard';
 import { useFileHandlers } from '../hooks/useFileHandlers';
 import { getAllPrompts } from '../utils/prompts';
