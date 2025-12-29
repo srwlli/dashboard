@@ -47,14 +47,9 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
           <Header />
           <main className="flex-1 overflow-y-auto overflow-x-hidden">
-            {/* Responsive padding: p-2 on mobile, p-4 on sm+, p-6 on lg+ */}
-            <div className="p-2 sm:p-4 lg:p-6 min-w-0">
-              {/* Responsive max-width: full on mobile, constrained on larger screens */}
-              <div className="max-w-full md:max-w-4xl lg:max-w-6xl mx-auto min-w-0">
-                <div className="grid gap-6 min-w-0">
-                  {children}
-                </div>
-              </div>
+            {/* No padding, full width for all routes */}
+            <div className="h-full w-full min-w-0">
+              {children}
             </div>
           </main>
         </div>

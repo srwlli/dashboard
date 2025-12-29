@@ -15,7 +15,12 @@
       "Bash(if not exist \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\coderef\\foundation-docs\" mkdir \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\coderef\\foundation-docs\")",
       "Bash(mkdir:*)",
       "mcp__coderef-docs__generate_quickref_interactive",
-      "mcp__coderef-workflow__list_templates"
+      "mcp__coderef-workflow__list_templates",
+      "Bash(npm run build:dashboard:*)",
+      "Bash(del packagesdashboardsrcappapicoderefdocsroute.ts)",
+      "Bash(del packagesdashboardsrchooksuseDocumentation.ts)",
+      "Bash(del packagesdashboardsrccomponentsDocumentationCardindex.tsx)",
+      "Bash(del packagesdashboardsrccomponentsDocumentationListindex.tsx)"
     ],
     "deny": [],
     "ask": []

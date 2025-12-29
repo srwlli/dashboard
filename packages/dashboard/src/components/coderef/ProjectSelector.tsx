@@ -147,25 +147,26 @@ export function ProjectSelector({
   };
 
   return (
-    <div className={`space-y-3 ${className}`}>
-      <div className="flex items-center gap-2">
-        <div className="flex-1 relative">
+    <div className={`space-y-2 ${className}`}>
+      <div className="flex items-center gap-1.5">
+        <div className="flex-1 relative min-w-0">
           <select
             value={selectedProjectId || ''}
             onChange={handleSelectChange}
             disabled={loading || projects.length === 0}
             className="
-              w-full px-3 py-2 pl-9 rounded
+              w-full px-2 py-1.5 pl-7 pr-6 rounded text-sm
               bg-ind-bg border border-ind-border
               text-ind-text
               focus:outline-none focus:border-ind-accent focus:ring-1 focus:ring-ind-accent/30
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-colors duration-200
               appearance-none
+              truncate
             "
           >
             <option value="">
-              {loading ? 'Loading...' : projects.length === 0 ? 'No projects' : 'Select a project'}
+              {loading ? 'Loading...' : projects.length === 0 ? 'No projects' : 'Select'}
             </option>
             {projects.map((project) => (
               <option key={project.id} value={project.id}>
@@ -173,58 +174,55 @@ export function ProjectSelector({
               </option>
             ))}
           </select>
-          <Folder className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ind-text-muted pointer-events-none" />
+          <Folder className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ind-text-muted pointer-events-none" />
         </div>
 
         <button
           onClick={handleAddProject}
           disabled={loading || adding}
           className="
-            px-3 py-2 rounded
-            bg-ind-accent text-ind-panel font-medium
+            p-1.5 rounded flex-shrink-0
+            bg-ind-accent text-ind-panel
             hover:bg-ind-accent/90
             disabled:opacity-50 disabled:cursor-not-allowed
             transition-colors duration-200
-            flex items-center gap-2
+            flex items-center justify-center
           "
           title="Browse folder to add project"
         >
-          <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">{adding ? 'Adding...' : 'Add'}</span>
+          <Plus className="w-3.5 h-3.5" />
         </button>
 
         <button
           onClick={handleRemoveProject}
           disabled={!selectedProjectId || removing || loading}
           className="
-            px-3 py-2 rounded
+            p-1.5 rounded flex-shrink-0
             bg-ind-bg text-ind-text-muted
             border border-ind-border
             hover:border-red-500/50 hover:text-red-500
             disabled:opacity-50 disabled:cursor-not-allowed
             transition-colors duration-200
-            flex items-center gap-2
+            flex items-center justify-center
           "
           title="Remove project"
         >
-          <Trash2 className="w-4 h-4" />
-          <span className="hidden sm:inline">Remove</span>
+          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 p-3 rounded bg-red-500/10 border border-red-500/30">
-          <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-red-500">
+        <div className="flex items-start gap-1.5 p-2 rounded bg-red-500/10 border border-red-500/30">
+          <AlertCircle className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
+          <div className="text-xs text-red-500">
             <strong>Error:</strong> {error}
           </div>
         </div>
       )}
 
       {selectedProjectId && (
-        <div className="text-xs text-ind-text-muted">
-          <strong>Path:</strong>{' '}
-          <span className="font-mono">
+        <div className="text-xs text-ind-text-muted truncate">
+          <span className="font-mono truncate block">
             {projects.find((p) => p.id === selectedProjectId)?.path || 'N/A'}
           </span>
         </div>
