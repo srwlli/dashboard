@@ -72,8 +72,9 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
     if (!fileData?.path || !project) return;
 
     try {
-      // Construct full path from project level: [project]/coderef/workorder/...
-      const fullPath = `${project.name}/${fileData.path}`;
+      // Construct full path from project directory to file
+      // Uses project.path (full directory path) instead of project.name
+      const fullPath = `${project.path}/${fileData.path}`;
       await navigator.clipboard.writeText(fullPath);
       setCopiedPath(true);
       setTimeout(() => setCopiedPath(false), 2000);
