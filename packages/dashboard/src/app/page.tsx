@@ -22,21 +22,21 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <div className="space-y-6 sm:space-y-8">
-        <div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-ind-text mb-2">Dashboard</h1>
-          <p className="text-xs sm:text-sm md:text-base text-ind-text-muted">
-            Overview of your workorders and implementation stubs across all projects.
-          </p>
-        </div>
+      {/* Card with corner accents wrapping all dashboard content */}
+      <div className="bg-ind-panel border-2 border-ind-border p-8 relative">
+        {/* Corner accents */}
+        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-ind-accent"></div>
+        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-ind-accent"></div>
+        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-ind-accent"></div>
+        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ind-accent"></div>
 
-        {/* Card with corner accents wrapping dashboard components */}
-        <div className="bg-ind-panel border-2 border-ind-border p-8 relative">
-          {/* Corner accents */}
-          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-ind-accent"></div>
-          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-ind-accent"></div>
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-ind-accent"></div>
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ind-accent"></div>
+        <div className="space-y-6 sm:space-y-8">
+          <div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-ind-text mb-2">Dashboard</h1>
+            <p className="text-xs sm:text-sm md:text-base text-ind-text-muted">
+              Overview of your workorders and implementation stubs across all projects.
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
             <StatsCard
