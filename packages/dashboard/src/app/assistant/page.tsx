@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Clipboard, Lightbulb, BookOpen, RotateCw } from 'lucide-react';
+import { Clipboard, Lightbulb, RotateCw } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import TabNavigation from '@/components/TabNavigation';
 import WorkorderList from '@/components/WorkorderList';
@@ -11,7 +11,7 @@ import { useStubs } from '@/hooks/useStubs';
 
 /**
  * Assistant Route
- * AI-powered assistant dashboard with workorders, stubs, and documentation
+ * AI-powered assistant dashboard with workorders and stubs
  */
 export default function AssistantPage() {
   const [activeTab, setActiveTab] = useState<string>('workorders');
@@ -22,7 +22,6 @@ export default function AssistantPage() {
   const tabs = [
     { id: 'workorders', label: 'Workorders', icon: Clipboard },
     { id: 'stubs', label: 'Stubs', icon: Lightbulb },
-    { id: 'documentation', label: 'Documentation', icon: BookOpen },
   ];
 
   return (
@@ -105,19 +104,6 @@ export default function AssistantPage() {
                   error={stubsError}
                   onStubClick={(name) => console.log('Clicked stub:', name)}
                 />
-              </div>
-            </div>
-          )}
-
-          {/* Documentation Tab */}
-          {activeTab === 'documentation' && (
-            <div className="p-6 rounded-lg bg-ind-panel border border-ind-border">
-              <div className="text-center">
-                <p className="text-sm text-ind-text-muted mb-2">📚</p>
-                <h2 className="text-lg font-semibold text-ind-text mb-2">Documentation</h2>
-                <p className="text-sm text-ind-text-muted">
-                  Project documentation and guides coming soon.
-                </p>
               </div>
             </div>
           )}
