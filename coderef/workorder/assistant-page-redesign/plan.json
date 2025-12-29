@@ -23,11 +23,11 @@
       "design_change": "Pivoted from separate Assistant page to 'All Projects (CodeRef)' view mode in existing Explorer - 10x simpler, reuses all infrastructure"
     },
     "1_executive_summary": {
-      "purpose": "Add 'All Projects (CodeRef)' view to Explorer with file type filtering for cross-project CodeRef browsing",
+      "purpose": "Add CodeRef view mode to Explorer with tab toggle and file type filtering for cross-project CodeRef browsing",
       "value_proposition": "Browse all CLAUDE.md, plan.json, DELIVERABLES.md files across projects in one view - no separate page needed, reuses existing Explorer infrastructure",
       "real_world_analogy": "Like switching your file explorer from 'This PC' (one project) to 'Network' (all projects) - same interface, different scope",
-      "use_case": "User manages 5 projects and wants to audit all CLAUDE.md files or check which projects have stale DELIVERABLES.md - selects 'All Projects (CodeRef)' from dropdown, clicks CLAUDE.md filter, sees flat list of all CLAUDE.md files with last modified dates, clicks one to read",
-      "output": "ProjectSelector dropdown option, file type filter buttons, aggregated tree view, flat list view with pagination"
+      "use_case": "User manages 5 projects and wants to audit all CLAUDE.md files - clicks 'CodeRef' tab in sidebar controls, clicks CLAUDE.md filter, sees flat list of all CLAUDE.md files with last modified dates, clicks one to read",
+      "output": "Tab toggle (Projects/CodeRef) above ProjectSelector, file type filter buttons, aggregated tree view, flat list view with sorting"
     },
     "2_risk_assessment": {
       "overall_risk": "low",
@@ -51,9 +51,10 @@
     },
     "3_current_state_analysis": {
       "affected_files": [
-        "packages/dashboard/src/components/coderef/ProjectSelector.tsx (MODIFY - add 'All Projects (CodeRef)' option)",
+        "packages/dashboard/src/components/coderef/ViewModeToggle.tsx (CREATE - Projects/CodeRef tab toggle)",
+        "packages/dashboard/src/components/coderef/ProjectSelector.tsx (MODIFY - hide in CodeRef mode)",
         "packages/dashboard/src/components/coderef/FileTypeFilter.tsx (CREATE - filter buttons component)",
-        "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx (MODIFY - handle aggregated mode)",
+        "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx (MODIFY - handle view modes)",
         "packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts (CREATE - tree aggregation utility)"
       ],
       "dependencies": {
@@ -75,8 +76,10 @@
     },
     "4_key_features": {
       "primary_features": [
-        "All Projects (CodeRef) dropdown option - select to view aggregated coderef/ folders from all projects",
-        "File Type Filter buttons - filter by CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md, or All Files",
+        "View Mode Toggle - [Projects] [CodeRef] tabs above ProjectSelector to switch between single-project and all-projects modes",
+        "Projects Mode - shows ProjectSelector dropdown with individual projects (current behavior)",
+        "CodeRef Mode - hides ProjectSelector, shows aggregated coderef/ folders from all projects",
+        "File Type Filter buttons - filter by CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md, or All Files (visible only in CodeRef mode)",
         "Tree View mode - hierarchical display grouped by project (default for 'All Files')",
         "List View mode - flat list with metadata (auto-enabled when file type filter selected)"
       ],
@@ -97,22 +100,26 @@
     },
     "5_task_id_system": {
       "tasks": [
-        "SETUP-001: Add 'All Projects (CodeRef)' option to ProjectSelector dropdown with special ID marker",
-        "SETUP-002: Create FileTypeFilter component with button group UI",
+        "SETUP-001: Create ViewModeToggle component with [Projects] [CodeRef] tabs",
+        "SETUP-002: Add view mode state to CodeRefExplorerWidget (projects vs coderef)",
+        "SETUP-003: Create FileTypeFilter component with button group UI",
         "IMPL-001: Create aggregateCodeRefTrees utility to merge coderef/ folders from all projects",
-        "IMPL-002: Modify CodeRefExplorerWidget to detect 'All Projects' mode and call aggregation",
-        "IMPL-003: Add tree/list view toggle logic based on filter selection",
-        "IMPL-004: Implement file type filtering in aggregated tree (pattern matching)",
-        "IMPL-005: Add sorting logic (last modified, project name, alphabetical)",
-        "IMPL-006: Add file count badges to filter buttons",
-        "IMPL-007: Format last modified timestamps with relative dates",
-        "TEST-001: Test with 3 projects, verify all coderef/ folders appear",
-        "TEST-002: Test file type filters (CLAUDE.md, plan.json, etc.)",
-        "TEST-003: Test tree vs list view modes",
-        "TEST-004: Test sorting options",
-        "TEST-005: Test edge cases (no projects, no coderef/, empty folders)",
-        "DOC-001: Add JSDoc to aggregateCodeRefTrees utility",
-        "DOC-002: Update COMPONENTS.md with FileTypeFilter component"
+        "IMPL-002: Modify CodeRefExplorerWidget to handle view mode switching",
+        "IMPL-003: Hide ProjectSelector in CodeRef mode, show in Projects mode",
+        "IMPL-004: Show FileTypeFilter only in CodeRef mode",
+        "IMPL-005: Add tree/list view toggle logic based on filter selection",
+        "IMPL-006: Implement file type filtering in aggregated tree (pattern matching)",
+        "IMPL-007: Add sorting logic (last modified, project name, alphabetical)",
+        "IMPL-008: Add file count badges to filter buttons",
+        "IMPL-009: Format last modified timestamps with relative dates",
+        "TEST-001: Test tab switching between Projects and CodeRef modes",
+        "TEST-002: Test with 3 projects, verify all coderef/ folders appear in CodeRef mode",
+        "TEST-003: Test file type filters (CLAUDE.md, plan.json, etc.)",
+        "TEST-004: Test tree vs list view modes",
+        "TEST-005: Test sorting options",
+        "TEST-006: Test edge cases (no projects, no coderef/, empty folders)",
+        "DOC-001: Add JSDoc to ViewModeToggle and aggregateCodeRefTrees",
+        "DOC-002: Update COMPONENTS.md with ViewModeToggle and FileTypeFilter"
       ]
     },
     "6_implementation_phases": {
@@ -126,15 +133,18 @@
           "effort_level": 2,
           "tasks": [
             "SETUP-001",
+            "SETUP-002",
             "IMPL-001",
-            "IMPL-002"
+            "IMPL-002",
+            "IMPL-003"
           ],
           "deliverables": [
-            "ProjectSelector has 'All Projects (CodeRef)' option",
+            "ViewModeToggle component with [Projects] [CodeRef] tabs",
+            "View mode state management in CodeRefExplorerWidget",
             "aggregateCodeRefTrees utility functional",
-            "CodeRefExplorerWidget detects and handles aggregated mode"
+            "ProjectSelector visibility controlled by mode"
           ],
-          "completion_criteria": "Selecting 'All Projects (CodeRef)' loads and displays aggregated tree of all coderef/ folders"
+          "completion_criteria": "Clicking 'CodeRef' tab hides ProjectSelector and displays aggregated tree of all coderef/ folders"
         },
         {
           "phase": 2,
@@ -144,16 +154,17 @@
           "complexity": "medium",
           "effort_level": 3,
           "tasks": [
-            "SETUP-002",
-            "IMPL-003",
-            "IMPL-004"
+            "SETUP-003",
+            "IMPL-004",
+            "IMPL-005",
+            "IMPL-006"
           ],
           "deliverables": [
-            "FileTypeFilter component with button group",
+            "FileTypeFilter component with button group (visible only in CodeRef mode)",
             "Tree/list view toggle logic",
             "Pattern matching for file type filtering"
           ],
-          "completion_criteria": "Clicking 'CLAUDE.md' filter shows flat list of only CLAUDE.md files across all projects"
+          "completion_criteria": "In CodeRef mode, clicking 'CLAUDE.md' filter shows flat list of only CLAUDE.md files across all projects"
         },
         {
           "phase": 3,
@@ -163,14 +174,15 @@
           "complexity": "low",
           "effort_level": 2,
           "tasks": [
-            "IMPL-005",
-            "IMPL-006",
             "IMPL-007",
+            "IMPL-008",
+            "IMPL-009",
             "TEST-001",
             "TEST-002",
             "TEST-003",
             "TEST-004",
             "TEST-005",
+            "TEST-006",
             "DOC-001",
             "DOC-002"
           ],
@@ -305,46 +317,56 @@
         "☐ Ensure projects have coderef/ folders with test files"
       ],
       "phase_1": [
-        "☐ SETUP-001: Add 'All Projects (CodeRef)' option to ProjectSelector",
-        "☐ SETUP-001: Use special ID like '__all_projects_coderef__' to distinguish from regular projects",
+        "☐ SETUP-001: Create components/coderef/ViewModeToggle.tsx component",
+        "☐ SETUP-001: Add [Projects] [CodeRef] tab buttons with active state styling",
+        "☐ SETUP-001: Place ViewModeToggle above ProjectSelector in controls section",
+        "☐ SETUP-002: Add viewMode state to CodeRefExplorerWidget ('projects' | 'coderef')",
+        "☐ SETUP-002: Connect ViewModeToggle to viewMode state",
         "☐ IMPL-001: Create lib/coderef/aggregateCodeRefTrees.ts utility file",
         "☐ IMPL-001: Implement tree merging logic (fetch all projects, call /api/coderef/tree for each, merge results)",
         "☐ IMPL-001: Add project name prefix to paths (e.g., 'Project Alpha/coderef/workorder/plan.json')",
-        "☐ IMPL-002: Detect 'All Projects' mode in CodeRefExplorerWidget",
-        "☐ IMPL-002: Call aggregateCodeRefTrees when mode detected",
+        "☐ IMPL-002: Add conditional rendering based on viewMode in CodeRefExplorerWidget",
+        "☐ IMPL-002: Call aggregateCodeRefTrees when viewMode === 'coderef'",
         "☐ IMPL-002: Pass aggregated tree to FileTree component",
-        "☐ Test: Select 'All Projects (CodeRef)', verify tree shows all coderef/ folders"
+        "☐ IMPL-003: Hide ProjectSelector when viewMode === 'coderef'",
+        "☐ IMPL-003: Show ProjectSelector when viewMode === 'projects'",
+        "☐ Test: Click 'CodeRef' tab, verify ProjectSelector hides and aggregated tree shows all coderef/ folders"
       ],
       "phase_2": [
-        "☐ SETUP-002: Create components/coderef/FileTypeFilter.tsx",
-        "☐ SETUP-002: Add button group with options: All Files, CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md",
-        "☐ SETUP-002: Style with Tailwind (similar to existing filter components)",
-        "☐ IMPL-003: Add useState for active filter and view mode (tree/list)",
-        "☐ IMPL-003: Auto-switch to list view when specific file type selected",
-        "☐ IMPL-003: Switch back to tree view when 'All Files' selected",
-        "☐ IMPL-004: Implement pattern matching (e.g., CLAUDE.md → exact match, plan.json → **/plan.json)",
-        "☐ IMPL-004: Filter aggregated tree based on active filter",
-        "☐ IMPL-004: Flatten tree to list when in list mode",
-        "☐ Test: Click 'CLAUDE.md' filter, verify only CLAUDE.md files appear in flat list"
+        "☐ SETUP-003: Create components/coderef/FileTypeFilter.tsx",
+        "☐ SETUP-003: Add button group with options: All Files, CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md",
+        "☐ SETUP-003: Style with Tailwind (similar to existing filter components)",
+        "☐ IMPL-004: Show FileTypeFilter only when viewMode === 'coderef'",
+        "☐ IMPL-004: Place FileTypeFilter below ViewModeToggle in controls section",
+        "☐ IMPL-005: Add useState for active filter and display mode (tree/list)",
+        "☐ IMPL-005: Auto-switch to list view when specific file type selected",
+        "☐ IMPL-005: Switch back to tree view when 'All Files' selected",
+        "☐ IMPL-006: Implement pattern matching (e.g., CLAUDE.md → exact match, plan.json → **/plan.json)",
+        "☐ IMPL-006: Filter aggregated tree based on active filter",
+        "☐ IMPL-006: Flatten tree to list when in list mode",
+        "☐ Test: In CodeRef mode, click 'CLAUDE.md' filter, verify only CLAUDE.md files appear in flat list"
       ],
       "phase_3": [
-        "☐ IMPL-005: Add sort dropdown with 3 options",
-        "☐ IMPL-005: Implement sortByLastModified function (newest first)",
-        "☐ IMPL-005: Implement sortByProjectName function (alphabetical by project)",
-        "☐ IMPL-005: Implement sortAlphabetical function (by filename)",
-        "☐ IMPL-006: Count files for each filter type",
-        "☐ IMPL-006: Display badge with count (e.g., 'CLAUDE.md (5)')",
-        "☐ IMPL-007: Create formatRelativeDate utility (Today, Yesterday, X days/weeks/months ago)",
-        "☐ IMPL-007: Display timestamps in list view",
-        "☐ TEST-001: Test with 3 projects containing various coderef/ structures",
-        "☐ TEST-002: Test all file type filters individually",
-        "☐ TEST-003: Test tree/list view switching",
-        "☐ TEST-004: Test all 3 sort options",
-        "☐ TEST-005: Test all 4 edge cases",
-        "☐ DOC-001: Add JSDoc to aggregateCodeRefTrees functions",
-        "☐ DOC-002: Update COMPONENTS.md with FileTypeFilter entry",
+        "☐ IMPL-007: Add sort dropdown with 3 options",
+        "☐ IMPL-007: Implement sortByLastModified function (newest first)",
+        "☐ IMPL-007: Implement sortByProjectName function (alphabetical by project)",
+        "☐ IMPL-007: Implement sortAlphabetical function (by filename)",
+        "☐ IMPL-008: Count files for each filter type",
+        "☐ IMPL-008: Display badge with count (e.g., 'CLAUDE.md (5)')",
+        "☐ IMPL-009: Create formatRelativeDate utility (Today, Yesterday, X days/weeks/months ago)",
+        "☐ IMPL-009: Display timestamps in list view",
+        "☐ TEST-001: Test tab switching between Projects and CodeRef modes",
+        "☐ TEST-001: Verify ProjectSelector visible in Projects mode, hidden in CodeRef mode",
+        "☐ TEST-001: Verify FileTypeFilter visible only in CodeRef mode",
+        "☐ TEST-002: Test with 3 projects containing various coderef/ structures",
+        "☐ TEST-003: Test all file type filters individually",
+        "☐ TEST-004: Test tree/list view switching",
+        "☐ TEST-005: Test all 3 sort options",
+        "☐ TEST-006: Test all 4 edge cases",
+        "☐ DOC-001: Add JSDoc to ViewModeToggle and aggregateCodeRefTrees functions",
+        "☐ DOC-002: Update COMPONENTS.md with ViewModeToggle and FileTypeFilter entries",
         "☐ Run npm run build:dashboard - verify no TypeScript errors",
-        "☐ Manual testing: Select 'All Projects (CodeRef)', test all filters and sort options"
+        "☐ Manual testing: Click CodeRef tab, test all filters and sort options"
       ],
       "finalization": [
         "☐ All TypeScript errors resolved",
