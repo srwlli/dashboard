@@ -7,8 +7,6 @@
 
 'use client';
 
-import { useState } from 'react';
-
 export type ViewMode = 'projects' | 'coderef';
 
 interface ViewModeToggleProps {

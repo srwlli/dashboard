@@ -38,8 +38,8 @@ export function CodeRefExplorerWidget() {
   const loadAllProjects = async () => {
     try {
       setIsLoadingAggregate(true);
-      const projects = await CodeRefApi.getProjects();
-      setAllProjects(projects);
+      const result = await CodeRefApi.projects.list();
+      setAllProjects(result.projects);
     } catch (error) {
       console.error('Failed to load projects for CodeRef view:', error);
       setAllProjects([]);

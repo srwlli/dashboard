@@ -99,7 +99,7 @@ function prefixPaths(nodes: TreeNode[], projectName: string): TreeNode[] {
  * Filter tree by file type pattern
  *
  * @param nodes - Tree nodes to filter
- * @param pattern - Pattern to match (e.g., 'CLAUDE.md', '**/plan.json')
+ * @param pattern - Pattern to match (e.g., CLAUDE.md, plan.json with wildcards)
  * @returns Filtered tree nodes
  */
 export function filterTreeByPattern(nodes: TreeNode[], pattern: string): TreeNode[] {
