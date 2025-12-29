@@ -10,11 +10,17 @@ interface FileTreeProps {
   /** Project to load tree from */
   project: Project | null;
 
+  /** Optional custom tree (for CodeRef mode) - bypasses project loading */
+  customTree?: TreeNode[];
+
   /** Currently selected file path */
   selectedPath?: string;
 
   /** Callback when a file is clicked */
   onFileClick: (node: TreeNode) => void;
+
+  /** Optional loading state (for CodeRef mode) */
+  loading?: boolean;
 
   /** Optional custom class name */
   className?: string;
@@ -22,8 +28,10 @@ interface FileTreeProps {
 
 export function FileTree({
   project,
+  customTree,
   selectedPath,
   onFileClick,
+  loading: externalLoading,
   className = '',
 }: FileTreeProps) {
   const [tree, setTree] = useState<TreeNode[]>([]);
@@ -31,16 +39,25 @@ export function FileTree({
   const [error, setError] = useState<string | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode | null>(null);
 
-  // Load tree when project changes
+  // Use custom tree if provided (CodeRef mode)
   useEffect(() => {
-    if (project) {
+    if (customTree) {
+      setTree(customTree);
+      setError(null);
+      setAccessMode(null);
+    }
+  }, [customTree]);
+
+  // Load tree when project changes (Projects mode)
+  useEffect(() => {
+    if (project && !customTree) {
       loadTree(project);
-    } else {
+    } else if (!project && !customTree) {
       setTree([]);
       setError(null);
       setAccessMode(null);
     }
-  }, [project?.id]);
+  }, [project?.id, customTree]);
 
   const loadTree = async (proj: Project) => {
     try {
@@ -58,16 +75,20 @@ export function FileTree({
     }
   };
 
-  if (!project) {
+  if (!project && !customTree) {
     return (
       <div className={`p-4 text-center ${className}`}>
         <FolderOpen className="w-12 h-12 mx-auto mb-3 text-ind-text-muted opacity-50" />
-        <p className="text-sm text-ind-text-muted">Select a project to browse files</p>
+        <p className="text-sm text-ind-text-muted">
+          {customTree !== undefined ? 'No projects registered' : 'Select a project to browse files'}
+        </p>
       </div>
     );
   }
 
-  if (loading) {
+  const isLoading = externalLoading !== undefined ? externalLoading : loading;
+
+  if (isLoading) {
     return (
       <div className={`p-4 text-center ${className}`}>
         <Loader2 className="w-8 h-8 mx-auto mb-2 text-ind-accent animate-spin" />
