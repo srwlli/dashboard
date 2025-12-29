@@ -20,7 +20,12 @@
       "Bash(del packagesdashboardsrcappapicoderefdocsroute.ts)",
       "Bash(del packagesdashboardsrchooksuseDocumentation.ts)",
       "Bash(del packagesdashboardsrccomponentsDocumentationCardindex.tsx)",
-      "Bash(del packagesdashboardsrccomponentsDocumentationListindex.tsx)"
+      "Bash(del packagesdashboardsrccomponentsDocumentationListindex.tsx)",
+      "Bash(if not exist \"coderef\\workorder\\assistant-page-redesign\" mkdir \"coderef\\workorder\\assistant-page-redesign\")",
+      "Bash(move coderefworkordercontext.json coderefworkorderassistant-page-redesigncontext.json)",
+      "mcp__coderef-workflow__coderef_foundation_docs",
+      "mcp__coderef-workflow__analyze_project_for_planning",
+      "mcp__coderef-workflow__validate_implementation_plan"
     ],
     "deny": [],
     "ask": []
