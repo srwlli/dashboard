@@ -22,6 +22,9 @@ interface FileTreeProps {
   /** Optional loading state (for CodeRef mode) */
   loading?: boolean;
 
+  /** Optional filter to show only a specific subfolder (e.g., 'coderef') */
+  filterPath?: string;
+
   /** Optional custom class name */
   className?: string;
 }
@@ -32,6 +35,7 @@ export function FileTree({
   selectedPath,
   onFileClick,
   loading: externalLoading,
+  filterPath,
   className = '',
 }: FileTreeProps) {
   const [tree, setTree] = useState<TreeNode[]>([]);
@@ -75,6 +79,25 @@ export function FileTree({
     }
   };
 
+  // Filter tree to show only a specific subfolder
+  const filterTreeToFolder = (nodes: TreeNode[], folderName: string): TreeNode[] => {
+    for (const node of nodes) {
+      if (node.type === 'directory' && node.name === folderName) {
+        // Return the children of the matching folder
+        return node.children || [];
+      }
+      // Recursively search in children
+      if (node.children) {
+        const found = filterTreeToFolder(node.children, folderName);
+        if (found.length > 0) return found;
+      }
+    }
+    return [];
+  };
+
+  // Apply filter if specified
+  const displayTree = filterPath ? filterTreeToFolder(tree, filterPath) : tree;
+
   if (!project && !customTree) {
     return (
       <div className={`p-4 text-center ${className}`}>
@@ -111,11 +134,13 @@ export function FileTree({
     );
   }
 
-  if (tree.length === 0) {
+  if (displayTree.length === 0) {
     return (
       <div className={`p-4 text-center ${className}`}>
         <FolderOpen className="w-12 h-12 mx-auto mb-3 text-ind-text-muted opacity-50" />
-        <p className="text-sm text-ind-text-muted">No files found in this project</p>
+        <p className="text-sm text-ind-text-muted">
+          {filterPath ? `No ${filterPath}/ folder found in this project` : 'No files found in this project'}
+        </p>
       </div>
     );
   }
@@ -143,7 +168,7 @@ export function FileTree({
 
       {/* File tree */}
       <div className="overflow-y-auto">
-        {tree.map((node) => (
+        {displayTree.map((node) => (
           <FileTreeNode
             key={node.path}
             node={node}
