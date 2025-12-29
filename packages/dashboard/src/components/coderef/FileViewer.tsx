@@ -69,10 +69,12 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
   };
 
   const handleCopyPath = async () => {
-    if (!fileData?.path) return;
+    if (!fileData?.path || !project) return;
 
     try {
-      await navigator.clipboard.writeText(fileData.path);
+      // Construct full path from project level: [project]/coderef/workorder/...
+      const fullPath = `${project.name}/${fileData.path}`;
+      await navigator.clipboard.writeText(fullPath);
       setCopiedPath(true);
       setTimeout(() => setCopiedPath(false), 2000);
     } catch (err) {
