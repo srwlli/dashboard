@@ -6,6 +6,12 @@ export function useServiceWorker() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // Only register service worker in production
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[ServiceWorker] Skipping registration in development mode');
+      return;
+    }
+
     // Check if service workers are supported
     if (!('serviceWorker' in navigator)) {
       console.warn('Service Workers are not supported in this browser');
