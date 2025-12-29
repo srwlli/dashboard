@@ -72,9 +72,14 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
     if (!fileData?.path || !project) return;
 
     try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1); // Remove '[Directory: ' and ']'
+      }
+
       // Construct full path from project directory to file
-      // Uses project.path (full directory path) instead of project.name
-      const fullPath = `${project.path}/${fileData.path}`;
+      const fullPath = `${projectPath}/${fileData.path}`;
       await navigator.clipboard.writeText(fullPath);
       setCopiedPath(true);
       setTimeout(() => setCopiedPath(false), 2000);
