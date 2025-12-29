@@ -140,23 +140,8 @@ export function CodeRefExplorerWidget() {
         />
       </div>
 
-      {/* Right column - page header + file viewer */}
+      {/* Right column - file viewer only (page-level header removed to avoid redundancy with FileViewer header) */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Page-level header - sticky - displays: file name OR view mode label OR project title */}
-        <div className="flex-shrink-0 p-4 border-b border-ind-border bg-ind-panel sticky top-0 z-10">
-          <h1 className="text-xl font-semibold text-ind-text">
-            {selectedFile?.name ||
-             (viewMode === 'favorites' ? 'Favorites' :
-              viewMode === 'coderef' ? 'CodeRef' :
-              selectedProject?.name || 'Project')}
-          </h1>
-          {selectedFile && (
-            <div className="text-sm text-ind-text-muted mt-1">
-              {selectedProject?.name} • {selectedFile.path}
-            </div>
-          )}
-        </div>
-
         {/* File viewer */}
         <FileViewer
           project={selectedProject}
