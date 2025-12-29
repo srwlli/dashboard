@@ -497,6 +497,16 @@ npm run package:win
 
 ## Recent Changes
 
+### v0.2.0 - CodeRef View Mode (2025-12-29)
+- ✅ CodeRef view mode in Explorer: Switch between single-project (Projects) and multi-project (CodeRef) views
+- ✅ File type filtering: Filter aggregated files by type (CLAUDE.md, plan.json, DELIVERABLES.md, ARCHITECTURE.md)
+- ✅ Tree aggregation: Automatically merge coderef/ folders from all registered projects
+- ✅ File count badges: Display number of files per filter type
+- ✅ View mode toggle: Tab interface above ProjectSelector for seamless switching
+- ✅ Pattern matching: Support for exact match, wildcard, and extension patterns
+
+**Workorder:** WO-ASSISTANT-PAGE-REDESIGN-001
+
 ### v0.1.0 - Initial Public Release
 - ✅ Phase 6 - Widget Integration: Modular widget system with File System Access API
 - ✅ Phase 5 - Mobile Responsive: Comprehensive overflow prevention, touch-optimized cards

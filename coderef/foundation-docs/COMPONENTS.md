@@ -448,6 +448,98 @@ import { TabNavigation } from '@/components/TabNavigation';
 
 ---
 
+### ViewModeToggle
+
+**Source:** `packages/dashboard/src/components/coderef/ViewModeToggle.tsx`
+
+Tab toggle for switching between Projects and CodeRef view modes in Explorer.
+
+**Props:**
+```typescript
+interface ViewModeToggleProps {
+  /** Current active view mode */
+  value: ViewMode;
+  /** Callback when view mode changes */
+  onChange: (mode: ViewMode) => void;
+  /** Optional className for styling */
+  className?: string;
+}
+
+export type ViewMode = 'projects' | 'coderef';
+```
+
+**Features:**
+- Two-tab toggle (Projects / CodeRef)
+- Active state styling with accent color
+- Used in CodeRef Explorer for switching between single-project and multi-project views
+
+**Usage:**
+```tsx
+import { ViewModeToggle, ViewMode } from '@/components/coderef/ViewModeToggle';
+
+const [viewMode, setViewMode] = useState<ViewMode>('projects');
+
+<ViewModeToggle value={viewMode} onChange={setViewMode} />
+```
+
+---
+
+### FileTypeFilter
+
+**Source:** `packages/dashboard/src/components/coderef/FileTypeFilter.tsx`
+
+Filter buttons for CodeRef view mode to filter files by type with count badges.
+
+**Props:**
+```typescript
+interface FileTypeFilterProps {
+  /** Current active filter */
+  value: FileType;
+  /** Callback when filter changes */
+  onChange: (type: FileType) => void;
+  /** Optional file counts per type */
+  counts?: Record<FileType, number>;
+  /** Optional className for styling */
+  className?: string;
+}
+
+export type FileType = 'all' | 'claude' | 'plan' | 'deliverables' | 'architecture' | 'readme';
+```
+
+**Features:**
+- Button group with file type options
+- Icons for each file type (Lucide React)
+- Dynamic count badges showing number of files per type
+- Active state highlighting
+- Supports pattern matching (exact, wildcard `**/`, extension `*.`)
+
+**File Type Options:**
+```typescript
+const FILE_TYPE_OPTIONS = [
+  { id: 'all', label: 'All Files', pattern: '*', icon: FileText },
+  { id: 'claude', label: 'CLAUDE.md', pattern: 'CLAUDE.md', icon: Code },
+  { id: 'plan', label: 'plan.json', pattern: '**/plan.json', icon: FileCode },
+  { id: 'deliverables', label: 'DELIVERABLES.md', pattern: '**/DELIVERABLES.md', icon: CheckSquare },
+  { id: 'architecture', label: 'ARCHITECTURE.md', pattern: 'ARCHITECTURE.md', icon: BookOpen },
+];
+```
+
+**Usage:**
+```tsx
+import { FileTypeFilter, FileType } from '@/components/coderef/FileTypeFilter';
+
+const [fileType, setFileType] = useState<FileType>('all');
+const fileCounts = { all: 42, claude: 5, plan: 8, deliverables: 8, architecture: 3 };
+
+<FileTypeFilter
+  value={fileType}
+  onChange={setFileType}
+  counts={fileCounts}
+/>
+```
+
+---
+
 ## List Components
 
 ### WorkorderList
