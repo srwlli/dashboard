@@ -1,0 +1,228 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "unified-card-component",
+    "workorder_id": "WO-UNIFIED-CARD-COMPONENT-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "PlanningGenerator",
+    "has_context": true,
+    "has_analysis": false,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2025-12-30",
+      "ai_assistance": true,
+      "next_review": "2026-01-29"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "available": [],
+        "missing": [
+          "Run /analyze-for-planning to discover docs"
+        ]
+      },
+      "coding_standards": {
+        "available": [],
+        "missing": [
+          "Run /analyze-for-planning to discover standards"
+        ]
+      },
+      "reference_components": {
+        "primary": "Unknown",
+        "secondary": []
+      },
+      "key_patterns_identified": [
+        "Run /analyze-for-planning to identify patterns"
+      ],
+      "technology_stack": {
+        "languages": [],
+        "frameworks": [],
+        "key_libraries": []
+      },
+      "gaps_and_risks": [
+        "Missing project analysis - run /analyze-for-planning first"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Create a unified card component shared by StubCard and WorkorderCard for consistent UI and reduced code duplication",
+      "value_proposition": "Eliminate duplicate card styling logic, ensure visual consistency across stub and workorder cards, reduce maintenance burden",
+      "real_world_analogy": "TODO: Add real-world analogy",
+      "use_case": "TODO: Add use case workflow",
+      "output": "TODO: List tangible artifacts"
+    },
+    "2_risk_assessment": {
+      "overall_risk": "medium",
+      "complexity": "medium (TODO: estimate file count and lines)",
+      "scope": "Medium - TODO files, TODO components affected",
+      "file_system_risk": "low",
+      "dependencies": [
+        "Do NOT modify StubList or WorkorderList components",
+        "Do NOT change component APIs (StubCard/WorkorderCard props remain the same)",
+        "Maintain backward compatibility with existing data hooks (useStubs, useWorkorders)",
+        "Keep same responsive breakpoints (sm:, md:, lg:)",
+        "Preserve industrial theme variables (ind-panel, ind-border, ind-accent, etc.)",
+        "No external dependencies - use existing lucide-react only"
+      ],
+      "performance_concerns": [
+        "TODO: identify performance concerns"
+      ],
+      "security_considerations": [
+        "TODO: identify security considerations"
+      ],
+      "breaking_changes": "none"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "TODO: List all files to create/modify"
+      ],
+      "dependencies": {
+        "existing_internal": [],
+        "existing_external": [],
+        "new_external": [],
+        "new_internal": []
+      },
+      "architecture_context": "TODO: Describe architecture layer and patterns"
+    },
+    "4_key_features": {
+      "primary_features": [
+        "Create UnifiedCard component in src/components/UnifiedCard/index.tsx",
+        "Support both 'stub' and 'workorder' card types via type discrimination",
+        "Accept generic metadata (icon, title, subtitle, badges, footer content)",
+        "Refactor StubCard to use UnifiedCard as wrapper (maintain existing API)",
+        "Refactor WorkorderCard to use UnifiedCard as wrapper (maintain existing API)"
+      ],
+      "secondary_features": [
+        "Preserve all existing functionality (click handlers, hover states, responsive design)",
+        "Maintain all existing visual styles (corner accents, borders, colors, spacing)",
+        "Support all existing icons from lucide-react",
+        "Ensure accessibility (ARIA labels, keyboard navigation)",
+        "No breaking changes to StubList or WorkorderList components"
+      ],
+      "edge_case_handling": [
+        "TODO: Define edge cases"
+      ],
+      "configuration_options": [
+        "None"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: TODO: Initial setup task",
+        "LOGIC-001: TODO: Core logic task",
+        "TEST-001: TODO: Testing task",
+        "DOC-001: TODO: Documentation task"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "title": "Phase 1: Foundation",
+          "purpose": "Setup and scaffolding",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "SETUP-001"
+          ],
+          "completion_criteria": "All files exist, dependencies installed"
+        },
+        {
+          "title": "Phase 2: Core Implementation",
+          "purpose": "Implement primary features",
+          "complexity": "high",
+          "effort_level": 4,
+          "tasks": [
+            "LOGIC-001"
+          ],
+          "completion_criteria": "Happy path works end-to-end"
+        },
+        {
+          "title": "Phase 3: Testing",
+          "purpose": "Comprehensive testing",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "TEST-001"
+          ],
+          "completion_criteria": "All tests passing"
+        },
+        {
+          "title": "Phase 4: Documentation",
+          "purpose": "Complete documentation",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "DOC-001"
+          ],
+          "completion_criteria": "All docs complete"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "TODO: List unit tests"
+      ],
+      "integration_tests": [
+        "TODO: List integration tests"
+      ],
+      "end_to_end_tests": [
+        "Not applicable"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "TODO: Edge case 1",
+          "setup": "TODO: How to create",
+          "expected_behavior": "TODO: What should happen",
+          "verification": "TODO: How to verify",
+          "error_handling": "TODO: Error type or 'No error'"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "TODO",
+          "metric": "TODO",
+          "target": "TODO",
+          "validation": "TODO"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "Code coverage",
+          "metric": "Line coverage",
+          "target": ">80%",
+          "validation": "Run coverage tool"
+        }
+      ],
+      "performance_requirements": [],
+      "security_requirements": []
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "\u2610 Review complete plan for gaps",
+        "\u2610 Get stakeholder approval",
+        "\u2610 Set up development environment"
+      ],
+      "phase_1": [
+        "\u2610 SETUP-001: TODO"
+      ],
+      "phase_2": [
+        "\u2610 LOGIC-001: TODO"
+      ],
+      "phase_3": [
+        "\u2610 TEST-001: TODO"
+      ],
+      "phase_4": [
+        "\u2610 DOC-001: TODO"
+      ],
+      "finalization": [
+        "\u2610 All tests passing",
+        "\u2610 Code review completed",
+        "\u2610 Documentation updated",
+        "\u2610 Changelog entry created"
+      ]
+    }
+  }
+}
