@@ -54,6 +54,7 @@ export function StubCard({ stub, onClick }: StubCardProps) {
       icon={CategoryIcon}
       iconColor="text-ind-accent"
       title={stub.title || stub.feature_name || 'Untitled'}
+      subtitle={stub.target_project}
       description={stub.description}
       headerRight={
         stub.priority ? (

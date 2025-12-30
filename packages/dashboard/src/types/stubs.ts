@@ -43,6 +43,9 @@ export interface StubObject {
 
   /** File system path to stub.json */
   path: string;
+
+  /** Optional target project name */
+  target_project?: string;
 }
 
 /**
