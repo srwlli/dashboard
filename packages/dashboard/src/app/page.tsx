@@ -18,7 +18,32 @@ export default function Home() {
     count: count as number,
   }));
 
-  const stubStats = stubs.length > 0 ? [{ label: 'Total Stubs', count: stubs.length }] : [];
+  // Status breakdown
+  const stubsByStatus = {
+    stub: stubs.filter(s => s.status === 'stub').length,
+    planned: stubs.filter(s => s.status === 'planned').length,
+    in_progress: stubs.filter(s => s.status === 'in_progress').length,
+    completed: stubs.filter(s => s.status === 'completed').length,
+  };
+
+  // Priority breakdown
+  const stubsByPriority = {
+    low: stubs.filter(s => s.priority === 'low').length,
+    medium: stubs.filter(s => s.priority === 'medium').length,
+    high: stubs.filter(s => s.priority === 'high').length,
+    critical: stubs.filter(s => s.priority === 'critical').length,
+  };
+
+  const stubStats = stubs.length > 0 ? [
+    { label: 'Stub', count: stubsByStatus.stub },
+    { label: 'Planned', count: stubsByStatus.planned },
+    { label: 'In Progress', count: stubsByStatus.in_progress },
+    { label: 'Completed', count: stubsByStatus.completed },
+    { label: 'Low Priority', count: stubsByPriority.low },
+    { label: 'Medium Priority', count: stubsByPriority.medium },
+    { label: 'High Priority', count: stubsByPriority.high },
+    { label: 'Critical Priority', count: stubsByPriority.critical },
+  ] : [];
 
   return (
     <PageLayout>
