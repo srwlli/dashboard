@@ -1,0 +1,56 @@
+{
+  "workorder_id": "WO-STUB-PROJECT-DISPLAY-004",
+  "feature_name": "stub-project-display",
+  "status": "complete",
+  "created": "2025-12-30T00:00:00Z",
+  "last_updated": "2025-12-30T09:00:00Z",
+  "handoff": {
+    "orchestrator_to_agent": "See handoff prompt below",
+    "status": "complete",
+    "agent_instructions": [
+      "Review context.json - this is a 1-line change",
+      "Add subtitle={stub.target_project} to UnifiedCard in StubCard",
+      "Run /create-plan if needed (optional for this simple change)",
+      "Implement change directly",
+      "Test with dashboard to verify target_project displays",
+      "Update this file's status to 'complete'",
+      "Run /update-deliverables and /archive-feature"
+    ]
+  },
+  "communication_log": [
+    {
+      "timestamp": "2025-12-30T00:00:00Z",
+      "source": "orchestrator",
+      "message": "Simple 1-line fix to display target_project on stub cards. All 64 stubs have target_project field but it's not visible in UI.",
+      "context": {
+        "current_state": {
+          "target_project_in_data": "All 64 stubs have this field",
+          "target_project_in_UI": "Not displayed (subtitle prop unused)",
+          "UnifiedCard_subtitle": "Available but StubCard doesn't use it"
+        },
+        "target_state": {
+          "StubCard_subtitle": "Shows stub.target_project",
+          "visual_location": "Below title, above description",
+          "styling": "text-xs text-ind-text-muted truncate"
+        },
+        "user_benefit": [
+          "See which project each stub targets at a glance",
+          "Filter mentally by project before formal filters added",
+          "Understand stub distribution across projects visually"
+        ]
+      }
+    }
+  ],
+  "agent_status": {
+    "current_phase": "complete",
+    "blocked": false,
+    "blockers": [],
+    "next_action": "None - workorder complete"
+  },
+  "deliverables": {
+    "plan_created": false,
+    "implementation_complete": true,
+    "tests_passing": true,
+    "archived": false
+  }
+}
