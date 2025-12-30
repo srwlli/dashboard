@@ -32,8 +32,10 @@ export function CodeRefExplorerWidget() {
     console.log('[CodeRefExplorer] Restoring saved project ID:', savedProjectId);
     if (savedProjectId) {
       setInitialProjectId(savedProjectId);
+    } else {
+      // No saved project, mark restoration as complete
+      setIsRestoringProject(false);
     }
-    setIsRestoringProject(false);
   }, []);
 
   // Load favorites from localStorage when project changes
@@ -94,12 +96,14 @@ export function CodeRefExplorerWidget() {
   // const [isLoadingAggregate, setIsLoadingAggregate] = useState(false);
 
   const handleProjectChange = (project: Project | null) => {
+    console.log('[CodeRefExplorer] Project changed:', project?.name, 'isRestoring:', isRestoringProject);
     setSelectedProject(project);
     // Clear selected file when project changes
     setSelectedFile(null);
 
-    // Mark restoration as complete once a project is manually selected
+    // Mark restoration as complete after first project selection (including restored)
     if (isRestoringProject) {
+      console.log('[CodeRefExplorer] Marking restoration as complete');
       setIsRestoringProject(false);
     }
   };
