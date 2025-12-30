@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Menu } from 'lucide-react';
 import UserAvatar from '@/components/UserAvatar';
 
 const breadcrumbMap: Record<string, { label: string; href: string }> = {
@@ -14,7 +15,11 @@ const breadcrumbMap: Record<string, { label: string; href: string }> = {
   '/coderef-explorer': { label: 'Explorer', href: '/coderef-explorer' },
 };
 
-export default function Header() {
+interface HeaderProps {
+  onMobileMenuClick?: () => void;
+}
+
+export default function Header({ onMobileMenuClick }: HeaderProps) {
   const pathname = usePathname();
   const currentPage = breadcrumbMap[pathname] || { label: 'Dashboard', href: '/' };
 
@@ -28,6 +33,17 @@ export default function Header() {
         h-12 sm:h-16
       "
     >
+      {/* Mobile hamburger button - visible only on mobile */}
+      {onMobileMenuClick && (
+        <button
+          onClick={onMobileMenuClick}
+          className="md:hidden flex items-center justify-center p-2 rounded-lg hover:bg-ind-bg/50 transition-colors duration-200 text-ind-text"
+          aria-label="Toggle navigation menu"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      )}
+
       {/* Logo and breadcrumb - hidden on mobile (xs/sm), visible on md+ */}
       <nav className="hidden sm:flex items-center gap-3 lg:gap-4">
         <Link href="/">

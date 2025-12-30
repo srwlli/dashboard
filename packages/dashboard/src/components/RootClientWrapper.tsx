@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import PWAInitializer from './PWAInitializer';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -17,10 +17,12 @@ import { WorkflowProvider } from '@/contexts/WorkflowContext';
  * - PWA initialization
  *
  * Responsive Layout:
- * - Mobile (< md): vertical flex layout, sidebar hidden
+ * - Mobile (< md): vertical flex layout, sidebar hidden, mobile nav drawer
  * - Desktop (md+): horizontal flex layout, sidebar visible
  */
 export function RootClientWrapper({ children }: { children: ReactNode }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     // Apply saved theme from localStorage
     const savedTheme = localStorage.getItem('coderef-dashboard-theme') || 'dark';
@@ -40,13 +42,16 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
       <PWAInitializer />
       {/* Mobile-first layout: flex-col on mobile, flex-row on md+ */}
       <div className="flex flex-col md:flex-row min-h-screen bg-ind-bg">
-        {/* Mobile Navigation Drawer - hidden on md+ */}
-        <MobileNav />
+        {/* Mobile Navigation Drawer - controlled by Header hamburger button */}
+        <MobileNav
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+        />
         {/* Sidebar: hidden on mobile, visible on md+ */}
         <Sidebar className="hidden md:flex" />
         {/* Main content area */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          <Header />
+          <Header onMobileMenuClick={() => setIsMobileMenuOpen(true)} />
           <main className="flex-1 overflow-y-auto overflow-x-hidden">
             {/* No padding, full width for all routes */}
             <div className="h-full w-full min-w-0">
