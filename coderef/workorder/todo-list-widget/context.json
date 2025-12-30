@@ -1,0 +1,35 @@
+{
+  "workorder_id": "WO-TODO-LIST-001",
+  "stub_id": "STUB-063",
+  "feature_name": "todo-list-widget",
+  "description": "Reusable todo list component for coderef-dashboard with file system persistence",
+  "target_project": "coderef-dashboard",
+  "created": "2025-12-30",
+  "requirements": [
+    "Create a simple, reusable TodoList component that can be imported anywhere",
+    "Support basic operations: add task, remove task, mark complete/incomplete",
+    "Persist todos to JSON file using existing file system API",
+    "Save todos to todos.json in project directory",
+    "Clean, minimal UI that matches dashboard design",
+    "Handle loading states and errors gracefully"
+  ],
+  "constraints": [
+    "Must use existing file system API patterns from dashboard",
+    "Component should be framework-agnostic (can be used in any route)",
+    "No external dependencies beyond what's already in the project",
+    "File operations must respect permissions and handle errors"
+  ],
+  "technical_context": {
+    "persistence_pattern": "Use existing file system API (same pattern as project manager)",
+    "file_location": "todos.json in project root or user-selected directory",
+    "component_type": "Reusable React component with TypeScript",
+    "state_management": "Local component state + file system sync"
+  },
+  "success_criteria": [
+    "Component can be imported and used in any route",
+    "Todos persist across page refreshes",
+    "Add/remove/complete operations work correctly",
+    "File system errors are handled gracefully",
+    "UI matches dashboard design patterns"
+  ]
+}

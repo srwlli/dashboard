@@ -47,9 +47,13 @@ export function ProjectSelector({
   // Auto-select initial project after projects load (for persistence restoration)
   useEffect(() => {
     if (!hasRestoredInitial && !loading && projects.length > 0 && initialProjectId) {
+      console.log('[ProjectSelector] Attempting to restore project:', initialProjectId);
       const projectToRestore = projects.find((p) => p.id === initialProjectId);
       if (projectToRestore) {
+        console.log('[ProjectSelector] Found project to restore:', projectToRestore.name);
         onProjectChange(projectToRestore);
+      } else {
+        console.log('[ProjectSelector] Project not found in list:', initialProjectId);
       }
       setHasRestoredInitial(true);
     }

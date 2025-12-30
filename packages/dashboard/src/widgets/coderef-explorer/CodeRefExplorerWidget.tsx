@@ -29,6 +29,7 @@ export function CodeRefExplorerWidget() {
   // Load saved project ID from localStorage on mount
   useEffect(() => {
     const savedProjectId = localStorage.getItem('coderef-explorer-selected-project');
+    console.log('[CodeRefExplorer] Restoring saved project ID:', savedProjectId);
     if (savedProjectId) {
       setInitialProjectId(savedProjectId);
     }
@@ -81,6 +82,7 @@ export function CodeRefExplorerWidget() {
   // Save selected project ID to localStorage
   useEffect(() => {
     if (selectedProject && !isRestoringProject) {
+      console.log('[CodeRefExplorer] Saving project ID to localStorage:', selectedProject.id);
       localStorage.setItem('coderef-explorer-selected-project', selectedProject.id);
     }
   }, [selectedProject?.id, isRestoringProject]);

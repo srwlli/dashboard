@@ -29,7 +29,11 @@
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
       "mcp__coderef-workflow__generate_deliverables_template",
-      "mcp__coderef-workflow__update_all_documentation"
+      "mcp__coderef-workflow__update_all_documentation",
+      "mcp__coderef-workflow__log_workorder",
+      "mcp__coderef-workflow__archive_feature",
+      "Bash(if exist .next rmdir /s /q .next)",
+      "mcp__coderef-context__coderef_scan"
     ],
     "deny": [],
     "ask": []
