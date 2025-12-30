@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { TreeNode } from '@/lib/coderef/types';
 import type { FavoritesData } from '@/lib/coderef/favorites-types';
+import { ContextMenu } from './ContextMenu';
 import {
   ChevronRight,
   ChevronDown,
@@ -21,6 +22,9 @@ interface FavoritesListProps {
   onCreateGroup?: (name: string) => void;
   onDeleteGroup?: (groupId: string) => void;
   onRenameGroup?: (groupId: string, newName: string) => void;
+  onToggleFavorite?: (path: string) => void;
+  onAssignToGroup?: (path: string, groupName?: string) => void;
+  availableGroups?: { id: string; name: string }[];
 }
 
 export function FavoritesList({
@@ -30,12 +34,16 @@ export function FavoritesList({
   onCreateGroup,
   onDeleteGroup,
   onRenameGroup,
+  onToggleFavorite,
+  onAssignToGroup,
+  availableGroups = [],
 }: FavoritesListProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [creatingGroup, setCreatingGroup] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [editingGroupName, setEditingGroupName] = useState('');
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; path: string } | null>(null);
 
   // Group favorites by group name
   const ungroupedFavorites = favoritesData.favorites.filter(f => !f.group);
@@ -81,6 +89,24 @@ export function FavoritesList({
       extension: '.' + (path.split('.').pop() || ''),
     };
     onFileClick(node);
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, path: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY, path });
+  };
+
+  const handleRemoveFavorite = () => {
+    if (contextMenu && onToggleFavorite) {
+      onToggleFavorite(contextMenu.path);
+    }
+  };
+
+  const handleReassignToGroup = (groupName?: string) => {
+    if (contextMenu && onAssignToGroup) {
+      onAssignToGroup(contextMenu.path, groupName);
+    }
   };
 
   if (favoritesData.favorites.length === 0) {
@@ -217,6 +243,7 @@ export function FavoritesList({
                   <div
                     key={fav.path}
                     onClick={() => handleFileClick(fav.path)}
+                    onContextMenu={(e) => handleContextMenu(e, fav.path)}
                     className={`
                       flex items-center gap-2 py-1.5 px-2 pl-12 cursor-pointer
                       transition-colors duration-150
@@ -246,6 +273,7 @@ export function FavoritesList({
               <div
                 key={fav.path}
                 onClick={() => handleFileClick(fav.path)}
+                onContextMenu={(e) => handleContextMenu(e, fav.path)}
                 className={`
                   flex items-center gap-2 py-1.5 px-2 pl-8 cursor-pointer
                   transition-colors duration-150
@@ -263,6 +291,41 @@ export function FavoritesList({
           </div>
         )}
       </div>
+
+      {/* Context menu */}
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={[
+            {
+              label: 'Remove from Favorites',
+              icon: Star,
+              onClick: handleRemoveFavorite,
+              iconClassName: 'fill-yellow-400 text-yellow-400',
+            },
+            {
+              label: 'Reassign to Group',
+              icon: Folder,
+              submenu: [
+                {
+                  label: 'Ungrouped',
+                  icon: Star,
+                  onClick: () => handleReassignToGroup(undefined),
+                  iconClassName: '',
+                },
+                ...availableGroups.map((group) => ({
+                  label: group.name,
+                  icon: Folder,
+                  onClick: () => handleReassignToGroup(group.name),
+                  iconClassName: '',
+                })),
+              ],
+            },
+          ]}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </div>
   );
 }

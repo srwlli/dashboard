@@ -10,7 +10,7 @@ const mainNavItems = [
   { label: 'Prompts', href: '/prompts', icon: BookOpen },
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Sources', href: '/sources', icon: Archive },
-  { label: 'CodeRef Explorer', href: '/coderef-explorer', icon: FolderTree },
+  { label: 'Explorer', href: '/coderef-explorer', icon: FolderTree },
 ];
 
 const bottomNavItems = [

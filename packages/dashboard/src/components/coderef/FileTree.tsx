@@ -211,6 +211,9 @@ export function FileTree({
           onCreateGroup={onCreateGroup}
           onDeleteGroup={onDeleteGroup}
           onRenameGroup={onRenameGroup}
+          onToggleFavorite={onToggleFavorite}
+          onAssignToGroup={onAssignToGroup}
+          availableGroups={favoritesData.groups}
         />
       </div>
     );

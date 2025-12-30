@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-UNIFIED-CARD-COMPONENT-001",
+  "feature_name": "unified-card-component",
+  "status": "pending_plan",
+  "created": "2025-12-29T00:00:00Z",
+  "last_updated": "2025-12-29T00:00:00Z",
+  "handoff": {
+    "orchestrator_to_agent": "See handoff prompt below",
+    "status": "pending_plan",
+    "agent_instructions": [
+      "Review context.json for detailed component requirements",
+      "Analyze existing StubCard and WorkorderCard for shared patterns",
+      "Design UnifiedCard API with flexible slot-based architecture",
+      "Run /create-plan to generate implementation plan",
+      "Update this file's status to 'plan_submitted'",
+      "Add entry to communication_log with plan summary",
+      "Wait for approval before implementing"
+    ]
+  },
+  "communication_log": [
+    {
+      "timestamp": "2025-12-29T00:00:00Z",
+      "source": "orchestrator",
+      "message": "Workorder created. Dashboard agent should create unified card component to eliminate code duplication between StubCard and WorkorderCard.",
+      "context": {
+        "current_code": {
+          "StubCard": "91 lines",
+          "WorkorderCard": "84 lines",
+          "total_duplication": "~175 lines"
+        },
+        "target_code": {
+          "UnifiedCard": "~60-80 lines",
+          "StubCard_wrapper": "<30 lines",
+          "WorkorderCard_wrapper": "<30 lines",
+          "total": "~120-140 lines",
+          "reduction": "~20-30% less code"
+        },
+        "benefits": [
+          "Single source of truth for card styling",
+          "Consistent visual design",
+          "Easier maintenance",
+          "Reduced bundle size"
+        ]
+      }
+    }
+  ],
+  "agent_status": {
+    "current_phase": "planning",
+    "blocked": false,
+    "blockers": [],
+    "next_action": "Review context.json, analyze existing cards, and run /create-plan"
+  },
+  "deliverables": {
+    "plan_created": false,
+    "implementation_complete": false,
+    "tests_passing": false,
+    "archived": false
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "workorder_id": "WO-UNIFIED-CARD-COMPONENT-001",
+  "stub_id": null,
+  "feature_name": "unified-card-component",
+  "created": "2025-12-29",
+  "target_project": "coderef-dashboard",
+  "description": "Create a unified card component shared by StubCard and WorkorderCard for consistent UI and reduced code duplication",
+  "goal": "Eliminate duplicate card styling logic, ensure visual consistency across stub and workorder cards, reduce maintenance burden",
+  "requirements": [
+    "Create UnifiedCard component in src/components/UnifiedCard/index.tsx",
+    "Support both 'stub' and 'workorder' card types via type discrimination",
+    "Accept generic metadata (icon, title, subtitle, badges, footer content)",
+    "Refactor StubCard to use UnifiedCard as wrapper (maintain existing API)",
+    "Refactor WorkorderCard to use UnifiedCard as wrapper (maintain existing API)",
+    "Preserve all existing functionality (click handlers, hover states, responsive design)",
+    "Maintain all existing visual styles (corner accents, borders, colors, spacing)",
+    "Support all existing icons from lucide-react",
+    "Ensure accessibility (ARIA labels, keyboard navigation)",
+    "No breaking changes to StubList or WorkorderList components"
+  ],
+  "constraints": [
+    "Do NOT modify StubList or WorkorderList components",
+    "Do NOT change component APIs (StubCard/WorkorderCard props remain the same)",
+    "Maintain backward compatibility with existing data hooks (useStubs, useWorkorders)",
+    "Keep same responsive breakpoints (sm:, md:, lg:)",
+    "Preserve industrial theme variables (ind-panel, ind-border, ind-accent, etc.)",
+    "No external dependencies - use existing lucide-react only"
+  ],
+  "technical_context": {
+    "existing_components": {
+      "StubCard": {
+        "location": "src/components/StubCard/index.tsx",
+        "lines": 91,
+        "features": [
+          "Category icons (6 types: feature, fix, improvement, idea, refactor, test)",
+          "Priority badge (low, medium, high, critical) with color coding",
+          "Status badge (stub, planned, in_progress, completed)",
+          "Description with line-clamp-2",
+          "Created date formatting"
+        ],
+        "props": {
+          "stub": "StubObject",
+          "onClick": "() => void (optional)"
+        }
+      },
+      "WorkorderCard": {
+        "location": "src/components/WorkorderCard/index.tsx",
+        "lines": 84,
+        "features": [
+          "Status icons (8 types: pending_plan, plan_submitted, changes_requested, approved, implementing, complete, verified, closed)",
+          "Feature name display",
+          "Project name subtitle",
+          "Workorder ID (monospace font)",
+          "Last updated date formatting"
+        ],
+        "props": {
+          "workorder": "WorkorderObject",
+          "onClick": "() => void (optional)"
+        }
+      }
+    },
+    "shared_patterns": {
+      "layout": "p-3 sm:p-4 rounded-lg bg-ind-panel border border-ind-border",
+      "hover": "hover:bg-ind-bg hover:border-ind-accent/50 transition-all duration-200",
+      "header_section": "flex items-start justify-between gap-2 sm:gap-4 mb-3",
+      "footer_section": "flex items-center justify-between gap-2 pt-2 border-t border-ind-border/50",
+      "icon_size": "w-4 h-4 or w-4 sm:w-5 h-4 sm:h-5",
+      "text_truncate": "truncate min-w-0",
+      "date_format": "toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: conditional })"
+    },
+    "theme_variables": [
+      "bg-ind-panel",
+      "border-ind-border",
+      "text-ind-text",
+      "text-ind-text-muted",
+      "text-ind-accent",
+      "text-ind-warning",
+      "text-ind-error",
+      "text-ind-success",
+      "hover:bg-ind-bg",
+      "hover:border-ind-accent/50"
+    ]
+  },
+  "success_criteria": [
+    "UnifiedCard component created with ~60-80 lines (vs 175 combined currently)",
+    "StubCard refactored to <30 lines (wrapper around UnifiedCard)",
+    "WorkorderCard refactored to <30 lines (wrapper around UnifiedCard)",
+    "All existing tests pass (if any)",
+    "Visual regression: Cards look identical to before refactor",
+    "No prop drilling - clean component API",
+    "TypeScript types fully defined for UnifiedCard props"
+  ],
+  "implementation_plan": {
+    "phase_1": "Create UnifiedCard component with flexible slot-based architecture",
+    "phase_2": "Refactor StubCard to use UnifiedCard (test visually)",
+    "phase_3": "Refactor WorkorderCard to use UnifiedCard (test visually)",
+    "phase_4": "Remove duplicate styling code, verify no regressions"
+  },
+  "example_api": {
+    "UnifiedCard_props": {
+      "variant": "'stub' | 'workorder'",
+      "icon": "LucideIcon",
+      "iconColor": "string (Tailwind class)",
+      "title": "string",
+      "subtitle": "string (optional)",
+      "description": "string (optional)",
+      "primaryBadge": "{ label: string; color: string } (optional)",
+      "statusBadge": "{ label: string; color: string }",
+      "footer": "{ left: ReactNode; right: ReactNode }",
+      "onClick": "() => void (optional)"
+    },
+    "usage_example": "StubCard maps stub data to UnifiedCard props, WorkorderCard maps workorder data to UnifiedCard props"
+  },
+  "related_files": [
+    "src/components/StubCard/index.tsx",
+    "src/components/WorkorderCard/index.tsx",
+    "src/components/StubList/index.tsx",
+    "src/components/WorkorderList/index.tsx",
+    "src/types/stubs.ts",
+    "src/types/workorders.ts"
+  ],
+  "workorder_type": "delegated",
+  "priority": "medium",
+  "estimated_effort": "1-2 hours"
+}
