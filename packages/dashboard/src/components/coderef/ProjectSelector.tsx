@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { CodeRefApi } from '@/lib/coderef/api-access';
 import type { Project } from '@/lib/coderef/types';
 import { showDirectoryPicker } from '@/lib/coderef/local-access';
-import { saveDirectoryHandle, deleteDirectoryHandle, getDirectoryHandle } from '@/lib/coderef/indexeddb';
+import { deleteDirectoryHandle, getDirectoryHandle } from '@/lib/coderef/indexeddb';
 import { isFileSystemAccessSupported, verifyHandleValid, ensurePermission } from '@/lib/coderef/permissions';
 import { initializePersistence, saveDirectoryHandlePersistent } from '@/lib/coderef/persistence';
-import { Folder, Plus, Trash2, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react';
+import { Folder, Plus, Trash2, AlertCircle } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
+import { BatchRestoreUI } from './BatchRestoreUI';
 
 interface ProjectSelectorProps {
   /** Currently selected project ID */
@@ -38,7 +39,28 @@ export function ProjectSelector({
     loadProjects();
   }, []);
 
-  // Check for stale directory handles when projects load
+  // Initialize persistence layer on mount - attempt silent restoration
+  useEffect(() => {
+    if (!isFileSystemAccessSupported()) return;
+    if (projects.length === 0) return;
+
+    const initPersistence = async () => {
+      try {
+        const needsReauth = await initializePersistence(projects);
+
+        // Update stale projects with those that need re-authorization
+        if (needsReauth.length > 0) {
+          setStaleProjects(new Set(needsReauth));
+        }
+      } catch (error) {
+        console.error('[ProjectSelector] Persistence initialization failed:', error);
+      }
+    };
+
+    initPersistence();
+  }, [projects]);
+
+  // Check for stale directory handles when projects load (fallback detection)
   useEffect(() => {
     checkForStaleHandles();
   }, [projects]);
@@ -91,8 +113,8 @@ export function ProjectSelector({
       const projectName = dirHandle.name;
       const projectPath = `[Directory: ${dirHandle.name}]`;
 
-      // Step 3: Store directory handle in IndexedDB
-      await saveDirectoryHandle(projectId, dirHandle);
+      // Step 3: Store directory handle in IndexedDB with persistent storage
+      await saveDirectoryHandlePersistent(projectId, dirHandle);
 
       // Step 4: Register project with API
       await CodeRefApi.projects.create({
@@ -189,35 +211,17 @@ export function ProjectSelector({
   };
 
   /**
-   * Re-grant access to a project with stale directory handle
+   * Handle project restore from BatchRestoreUI
    */
-  const handleRegrantAccess = async (projectId: string) => {
-    try {
-      setError(null);
+  const handleProjectRestore = (projectId: string) => {
+    setStaleProjects((prev) => {
+      const next = new Set(prev);
+      next.delete(projectId);
+      return next;
+    });
 
-      // Show directory picker
-      const dirHandle = await showDirectoryPicker();
-
-      if (!dirHandle) {
-        // User cancelled
-        return;
-      }
-
-      // Save new directory handle
-      await saveDirectoryHandle(projectId, dirHandle);
-
-      // Remove from stale list
-      setStaleProjects((prev) => {
-        const next = new Set(prev);
-        next.delete(projectId);
-        return next;
-      });
-
-      // Trigger recheck
-      await checkForStaleHandles();
-    } catch (err) {
-      setError((err as Error).message);
-    }
+    // Trigger recheck to update UI
+    checkForStaleHandles();
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -285,30 +289,12 @@ export function ProjectSelector({
         </div>
       )}
 
-      {/* Stale handle warning */}
-      {selectedProjectId && staleProjects.has(selectedProjectId) && (
-        <div className="flex items-start gap-2 p-2 rounded bg-yellow-500/10 border border-yellow-500/30">
-          <AlertCircle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="text-xs text-yellow-500 mb-1.5">
-              <strong>Access Required:</strong> Directory access lost. Re-grant permission to view files.
-            </div>
-            <button
-              onClick={() => handleRegrantAccess(selectedProjectId)}
-              className="
-                flex items-center gap-1.5 px-2 py-1 rounded text-xs
-                bg-yellow-500/20 hover:bg-yellow-500/30
-                text-yellow-500
-                border border-yellow-500/30
-                transition-colors duration-200
-              "
-            >
-              <RefreshCw className="w-3 h-3" />
-              Re-grant Access
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Batch restore UI for stale projects */}
+      <BatchRestoreUI
+        staleProjects={staleProjects}
+        projects={projects}
+        onRestore={handleProjectRestore}
+      />
 
       {/* Directory path display removed - cleaner UI */}
 

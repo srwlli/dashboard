@@ -1,0 +1,130 @@
+[
+  {
+    "timestamp": "2025-12-30T15:25:35.848267",
+    "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+    "feature_name": "enhanced-persistence",
+    "task_count": 24,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: \u2705 Review complete plan for gaps",
+        "activeForm": "PRE-IMPL-001: \u2705ing Review complete plan for gaps",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-002: \u2705 persistence.ts module already created",
+        "activeForm": "PRE-IMPL-002: \u2705ing persistence.ts module already created",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-003: Get user approval to proceed",
+        "activeForm": "PRE-IMPL-003: Geting user approval to proceed",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-001: Add initializePersistence call in ProjectSelector",
+        "activeForm": "SETUP-001: Adding initializePersistence call in ProjectSelector",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-002: Replace saveDirectoryHandle with persistent version",
+        "activeForm": "IMPL-002: Replaceing saveDirectoryHandle with persistent version",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-1-003: Verify console logs show restoration attempts",
+        "activeForm": "PHASE-1-003: Verifying console logs show restoration attempts",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-1-004: Test that UI doesn't block during initialization",
+        "activeForm": "PHASE-1-004: Testing that UI doesn't block during initialization",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-001: Create BatchRestoreUI component",
+        "activeForm": "IMPL-001: Creating BatchRestoreUI component",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-003: Integrate BatchRestoreUI into ProjectSelector",
+        "activeForm": "IMPL-003: Integrateing BatchRestoreUI into ProjectSelector",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-2-003: Remove individual stale warnings (lines 289-311)",
+        "activeForm": "PHASE-2-003: Removeing individual stale warnings (lines 289-311)",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-2-004: Verify styling matches industrial theme",
+        "activeForm": "PHASE-2-004: Verifying styling matches industrial theme",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-001: Cross-session persistence test",
+        "activeForm": "TEST-001: Cross-sessioning persistence test",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-002: Batch restore UI workflow test",
+        "activeForm": "TEST-002: Batching restore UI workflow test",
+        "status": "pending"
+      },
+      {
+        "content": "Test edge case: persistent storage denied",
+        "activeForm": "Test edge case: persistenting storage denied",
+        "status": "pending"
+      },
+      {
+        "content": "Test edge case: all handles stale",
+        "activeForm": "Test edge case: alling handles stale",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-3-005: Verify no regression in existing features",
+        "activeForm": "PHASE-3-005: Verifying no regression in existing features",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Update PERSISTENCE_ANALYSIS.md",
+        "activeForm": "DOC-001: Updating PERSISTENCE_ANALYSIS.md",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-4-002: Update README.md with feature description",
+        "activeForm": "PHASE-4-002: Updating README.md with feature description",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-4-003: Mark testing checklist complete",
+        "activeForm": "PHASE-4-003: Marking testing checklist complete",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-001: All tests passing",
+        "activeForm": "FINALIZA-001: Alling tests passing",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-002: TypeScript type-check passing",
+        "activeForm": "FINALIZA-002: TypeScripting type-check passing",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-003: Code review completed",
+        "activeForm": "FINALIZA-003: Codeing review completed",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-004: Documentation updated",
+        "activeForm": "FINALIZA-004: Documentationing updated",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-005: Git commit with workorder ID",
+        "activeForm": "FINALIZA-005: Giting commit with workorder ID",
+        "status": "pending"
+      }
+    ]
+  }
+]

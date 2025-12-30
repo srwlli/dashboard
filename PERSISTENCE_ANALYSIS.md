@@ -162,10 +162,10 @@ Multi-layered approach with persistent storage + silent restoration.
 ## Next Steps
 
 1. ✅ Create `persistence.ts` module (DONE)
-2. ⏳ Integrate into `ProjectSelector.tsx`
-3. ⏳ Update UX for batch re-authorization
-4. ⏳ Test cross-session persistence
-5. ⏳ Update documentation
+2. ✅ Integrate into `ProjectSelector.tsx` (DONE - WO-ENHANCED-PERSISTENCE-001)
+3. ✅ Update UX for batch re-authorization (DONE - BatchRestoreUI component)
+4. ⏳ Test cross-session persistence (Manual testing required)
+5. ✅ Update documentation (DONE)
 
 ## Testing Checklist
 

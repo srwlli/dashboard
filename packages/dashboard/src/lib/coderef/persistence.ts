@@ -6,7 +6,7 @@
  */
 
 import { getDirectoryHandle, saveDirectoryHandle } from './indexeddb';
-import { ensurePermission, verifyHandleValid } from './permissions';
+import { verifyHandleValid } from './permissions';
 import type { Project } from './types';
 
 /**
