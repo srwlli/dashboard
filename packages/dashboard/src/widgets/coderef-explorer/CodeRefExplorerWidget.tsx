@@ -20,9 +20,20 @@ export function CodeRefExplorerWidget() {
   const [viewMode, setViewMode] = useState<ViewMode>('projects');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
+  const [isRestoringProject, setIsRestoringProject] = useState(true);
+  const [initialProjectId, setInitialProjectId] = useState<string | undefined>(undefined);
 
   // Favorites state - persisted per project in localStorage
   const [favoritesData, setFavoritesData] = useState<FavoritesData>(createEmptyFavoritesData());
+
+  // Load saved project ID from localStorage on mount
+  useEffect(() => {
+    const savedProjectId = localStorage.getItem('coderef-explorer-selected-project');
+    if (savedProjectId) {
+      setInitialProjectId(savedProjectId);
+    }
+    setIsRestoringProject(false);
+  }, []);
 
   // Load favorites from localStorage when project changes
   useEffect(() => {
@@ -67,6 +78,13 @@ export function CodeRefExplorerWidget() {
     }
   }, [favoritesData, selectedProject?.id]);
 
+  // Save selected project ID to localStorage
+  useEffect(() => {
+    if (selectedProject && !isRestoringProject) {
+      localStorage.setItem('coderef-explorer-selected-project', selectedProject.id);
+    }
+  }, [selectedProject?.id, isRestoringProject]);
+
   // DORMANT: Multi-project aggregation state and sorting (for future use)
   // const [sortBy, setSortBy] = useState<SortMode>('name');
   // const [allProjects, setAllProjects] = useState<Project[]>([]);
@@ -77,6 +95,11 @@ export function CodeRefExplorerWidget() {
     setSelectedProject(project);
     // Clear selected file when project changes
     setSelectedFile(null);
+
+    // Mark restoration as complete once a project is manually selected
+    if (isRestoringProject) {
+      setIsRestoringProject(false);
+    }
   };
 
   const handleFileClick = (node: TreeNode) => {
@@ -185,6 +208,7 @@ export function CodeRefExplorerWidget() {
             <ProjectSelector
               selectedProjectId={selectedProject?.id}
               onProjectChange={handleProjectChange}
+              initialProjectId={initialProjectId}
             />
 
             {/* DORMANT: Sort Dropdown - will be used for multi-project view in future */}

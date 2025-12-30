@@ -18,6 +18,9 @@ interface ProjectSelectorProps {
   /** Callback when project selection changes */
   onProjectChange: (project: Project | null) => void;
 
+  /** Initial project ID to auto-select on first load (for persistence) */
+  initialProjectId?: string;
+
   /** Optional custom class name */
   className?: string;
 }
@@ -25,6 +28,7 @@ interface ProjectSelectorProps {
 export function ProjectSelector({
   selectedProjectId,
   onProjectChange,
+  initialProjectId,
   className = '',
 }: ProjectSelectorProps) {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -33,11 +37,23 @@ export function ProjectSelector({
   const [adding, setAdding] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [staleProjects, setStaleProjects] = useState<Set<string>>(new Set());
+  const [hasRestoredInitial, setHasRestoredInitial] = useState(false);
 
   // Load projects on mount
   useEffect(() => {
     loadProjects();
   }, []);
+
+  // Auto-select initial project after projects load (for persistence restoration)
+  useEffect(() => {
+    if (!hasRestoredInitial && !loading && projects.length > 0 && initialProjectId) {
+      const projectToRestore = projects.find((p) => p.id === initialProjectId);
+      if (projectToRestore) {
+        onProjectChange(projectToRestore);
+      }
+      setHasRestoredInitial(true);
+    }
+  }, [projects, loading, initialProjectId, hasRestoredInitial, onProjectChange]);
 
   // Initialize persistence layer on mount - attempt silent restoration
   useEffect(() => {
