@@ -176,7 +176,7 @@ export function CodeRefExplorerWidget() {
   return (
     <div className="h-full flex overflow-hidden bg-ind-bg">
       {/* Page Sidebar - fixed 320px width with overflow clipping prevents width expansion from long file names */}
-      <div className="w-80 min-w-80 max-w-80 flex-shrink-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col">
+      <div className="w-80 min-w-80 max-w-80 basis-80 flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col">
         {/* Controls section */}
         <div className="flex-shrink-0 sticky top-0 z-10 bg-ind-panel">
           {/* Top controls area with padding */}
