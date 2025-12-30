@@ -2,6 +2,7 @@
 
 import { Sparkles, Bug, TrendingUp, Lightbulb, Wrench, Beaker } from 'lucide-react';
 import { StubObject } from '@/types/stubs';
+import { UnifiedCard } from '@/components/UnifiedCard';
 
 interface StubCardProps {
   stub: StubObject;
@@ -31,8 +32,13 @@ const statusBgColors: Record<string, string> = {
   completed: 'bg-ind-success/10 text-ind-success',
 };
 
+/**
+ * StubCard - Wrapper around UnifiedCard for stub-specific data
+ *
+ * Maintains the same external API while using UnifiedCard internally.
+ */
 export function StubCard({ stub, onClick }: StubCardProps) {
-  const CategoryIcon = categoryIcons[stub.category || ''];
+  const CategoryIcon = categoryIcons[stub.category || 'feature'];
   const priorityColor = priorityColors[stub.priority || ''] || 'text-ind-text';
   const statusBg = statusBgColors[stub.status || 'stub'] || 'bg-ind-bg text-ind-text';
 
@@ -44,46 +50,30 @@ export function StubCard({ stub, onClick }: StubCardProps) {
   });
 
   return (
-    <div
-      onClick={onClick}
-      className={`
-        p-3 sm:p-4 rounded-lg
-        bg-ind-panel border border-ind-border
-        transition-all duration-200
-        overflow-hidden
-        ${onClick ? 'cursor-pointer hover:bg-ind-bg hover:border-ind-accent/50' : ''}
-      `}
-    >
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3 min-w-0">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2 min-w-0">
-            {CategoryIcon && <CategoryIcon className="w-4 h-4 text-ind-accent shrink-0" />}
-            <h3 className="text-xs sm:text-sm font-semibold text-ind-text truncate min-w-0">
-              {stub.title || stub.feature_name || 'Untitled'}
-            </h3>
-          </div>
-          {stub.description && (
-            <p className="text-xs text-ind-text-muted line-clamp-2 break-words overflow-hidden">
-              {stub.description}
-            </p>
-          )}
-        </div>
-        {stub.priority && (
-          <span className={`text-xs sm:text-sm font-semibold shrink-0 whitespace-nowrap ${priorityColor}`}>
+    <UnifiedCard
+      icon={CategoryIcon}
+      iconColor="text-ind-accent"
+      title={stub.title || stub.feature_name || 'Untitled'}
+      description={stub.description}
+      headerRight={
+        stub.priority ? (
+          <span className={`text-xs sm:text-sm font-semibold whitespace-nowrap ${priorityColor}`}>
             {stub.priority.charAt(0).toUpperCase() + stub.priority.slice(1)}
           </span>
-        )}
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 border-t border-ind-border/50 min-w-0">
-        <span className={`text-xs px-2 py-1 rounded shrink-0 ${statusBg} whitespace-nowrap`}>
+        ) : undefined
+      }
+      footerLeft={
+        <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${statusBg}`}>
           {stub.status ? stub.status.replace(/_/g, ' ') : 'stub'}
         </span>
-        <span className="text-xs text-ind-text-muted shrink-0 whitespace-nowrap">
+      }
+      footerRight={
+        <span className="text-xs text-ind-text-muted whitespace-nowrap">
           {formattedDate}
         </span>
-      </div>
-    </div>
+      }
+      onClick={onClick}
+    />
   );
 }
 
