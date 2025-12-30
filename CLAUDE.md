@@ -1,10 +1,10 @@
 # CodeRef Dashboard - AI Context Documentation
 
 **Project:** coderef-dashboard
-**Version:** 0.3.0
+**Version:** 0.4.0
 **Status:** 🚧 Development
 **Created:** 2025-12-28
-**Last Updated:** 2025-12-29
+**Last Updated:** 2025-12-30
 
 ---
 
@@ -496,6 +496,16 @@ npm run package:win
 ---
 
 ## Recent Changes
+
+### v0.4.0 - Stats Card Enhancement (2025-12-30)
+- ✅ Reduced StatsCard size by ~25% (smaller padding, tighter spacing, reduced text sizes)
+- ✅ Enhanced stub stats with 8 breakdowns instead of 1 redundant line
+- ✅ Added status breakdown (stub, planned, in_progress, completed)
+- ✅ Added priority breakdown (low, medium, high, critical)
+- ✅ Improved dashboard information density without sacrificing readability
+- ✅ Maintained backward compatibility (StatsCard API unchanged)
+
+**Workorder:** WO-STATS-CARD-ENHANCEMENT-001
 
 ### v0.3.0 - Unified Card Component (2025-12-29)
 - ✅ Created UnifiedCard base component with flexible slot-based API

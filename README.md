@@ -2,9 +2,17 @@
 
 **A modular widget system with PWA and Electron support for tracking workorders and stubs across multiple projects**
 
-**Version:** 0.1.0
-**Date:** 2025-12-28
+**Version:** 0.4.0
+**Date:** 2025-12-30
 **Maintainer:** CodeRef Team
+
+## What's New in 0.4.0
+
+✨ **Stats Card Enhancement** - Smaller, denser cards with richer information
+- Reduced card size (~25% smaller) with tighter padding and spacing
+- Enhanced stub stats with 8 breakdowns: status (stub, planned, in_progress, completed) + priority (low, medium, high, critical)
+- Removed redundant "Total Stubs" line (now shown in card header)
+- Improved dashboard information density without sacrificing readability
 
 ---
 
