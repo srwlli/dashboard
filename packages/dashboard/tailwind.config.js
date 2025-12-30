@@ -19,6 +19,9 @@ module.exports = {
       '2xl': '1536px', // Large desktop
     },
     extend: {
+      zIndex: {
+        '60': '60',
+      },
       colors: {
         // Dark mode (default)
         'ind-bg': '#0c0c0e',
