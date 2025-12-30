@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import type { Project, TreeNode, AccessMode } from '@/lib/coderef/types';
+import type { FavoritesData } from '@/lib/coderef/favorites-types';
 import { loadProjectTree } from '@/lib/coderef/hybrid-router';
 import { FileTreeNode } from './FileTreeNode';
+import { FavoritesList } from './FavoritesList';
 import { Loader2, AlertCircle, FolderOpen, Zap, Cloud } from 'lucide-react';
 
 interface FileTreeProps {
@@ -26,13 +28,28 @@ interface FileTreeProps {
   filterPath?: string;
 
   /** Callback to toggle favorite status */
-  onToggleFavorite?: (path: string) => void;
+  onToggleFavorite?: (path: string, groupName?: string) => void;
 
   /** Function to check if a path is favorited */
   isFavorite?: (path: string) => boolean;
 
   /** Show only favorited items */
   showOnlyFavorites?: boolean;
+
+  /** Favorites data with groups */
+  favoritesData?: FavoritesData;
+
+  /** Callback to create a new group */
+  onCreateGroup?: (name: string, color?: string) => void;
+
+  /** Callback to delete a group */
+  onDeleteGroup?: (groupId: string) => void;
+
+  /** Callback to rename a group */
+  onRenameGroup?: (groupId: string, newName: string) => void;
+
+  /** Callback to assign a file to a group */
+  onAssignToGroup?: (path: string, groupName?: string) => void;
 
   /** Optional custom class name */
   className?: string;
@@ -48,6 +65,11 @@ export function FileTree({
   onToggleFavorite,
   isFavorite,
   showOnlyFavorites = false,
+  favoritesData,
+  onCreateGroup,
+  onDeleteGroup,
+  onRenameGroup,
+  onAssignToGroup,
   className = '',
 }: FileTreeProps) {
   const [tree, setTree] = useState<TreeNode[]>([]);
@@ -178,6 +200,22 @@ export function FileTree({
     );
   }
 
+  // Show FavoritesList when in favorites mode
+  if (showOnlyFavorites && favoritesData) {
+    return (
+      <div className={className}>
+        <FavoritesList
+          favoritesData={favoritesData}
+          selectedPath={selectedPath}
+          onFileClick={onFileClick}
+          onCreateGroup={onCreateGroup}
+          onDeleteGroup={onDeleteGroup}
+          onRenameGroup={onRenameGroup}
+        />
+      </div>
+    );
+  }
+
   if (displayTree.length === 0) {
     return (
       <div className={`p-4 text-center ${className}`}>
@@ -222,6 +260,8 @@ export function FileTree({
             onFileClick={onFileClick}
             onToggleFavorite={onToggleFavorite}
             isFavorite={isFavorite}
+            availableGroups={favoritesData?.groups || []}
+            onAssignToGroup={onAssignToGroup}
           />
         ))}
       </div>

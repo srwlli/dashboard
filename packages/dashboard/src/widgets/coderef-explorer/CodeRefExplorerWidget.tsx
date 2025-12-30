@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import type { Project, TreeNode } from '@/lib/coderef/types';
+import type { FavoritesData, FavoriteGroup } from '@/lib/coderef/favorites-types';
+import { createEmptyFavoritesData } from '@/lib/coderef/favorites-types';
 import { ViewModeToggle, type ViewMode } from '@/components/coderef/ViewModeToggle';
 import { ProjectSelector } from '@/components/coderef/ProjectSelector';
 // DORMANT: FileTypeFilter - will be used for multi-project aggregation in future
@@ -20,7 +22,7 @@ export function CodeRefExplorerWidget() {
   const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
 
   // Favorites state - persisted per project in localStorage
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favoritesData, setFavoritesData] = useState<FavoritesData>(createEmptyFavoritesData());
 
   // Load favorites from localStorage when project changes
   useEffect(() => {
@@ -29,17 +31,31 @@ export function CodeRefExplorerWidget() {
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         try {
-          const favArray = JSON.parse(stored) as string[];
-          setFavorites(new Set(favArray));
+          const data = JSON.parse(stored) as FavoritesData;
+          // Validate structure
+          if (data.groups && data.favorites) {
+            setFavoritesData(data);
+          } else {
+            // Migration: old format was array of paths
+            const oldFormat = JSON.parse(stored) as string[];
+            if (Array.isArray(oldFormat)) {
+              setFavoritesData({
+                groups: [],
+                favorites: oldFormat.map(path => ({ path })),
+              });
+            } else {
+              setFavoritesData(createEmptyFavoritesData());
+            }
+          }
         } catch (e) {
           console.error('Failed to parse favorites from localStorage:', e);
-          setFavorites(new Set());
+          setFavoritesData(createEmptyFavoritesData());
         }
       } else {
-        setFavorites(new Set());
+        setFavoritesData(createEmptyFavoritesData());
       }
     } else {
-      setFavorites(new Set());
+      setFavoritesData(createEmptyFavoritesData());
     }
   }, [selectedProject?.id]);
 
@@ -47,9 +63,9 @@ export function CodeRefExplorerWidget() {
   useEffect(() => {
     if (selectedProject) {
       const storageKey = `coderef-favorites-${selectedProject.id}`;
-      localStorage.setItem(storageKey, JSON.stringify(Array.from(favorites)));
+      localStorage.setItem(storageKey, JSON.stringify(favoritesData));
     }
-  }, [favorites, selectedProject?.id]);
+  }, [favoritesData, selectedProject?.id]);
 
   // DORMANT: Multi-project aggregation state and sorting (for future use)
   // const [sortBy, setSortBy] = useState<SortMode>('name');
@@ -75,20 +91,81 @@ export function CodeRefExplorerWidget() {
     setSelectedFile(null);
   };
 
-  const handleToggleFavorite = (path: string) => {
-    setFavorites((prev) => {
-      const next = new Set(prev);
-      if (next.has(path)) {
-        next.delete(path);
+  const handleToggleFavorite = (path: string, groupName?: string) => {
+    setFavoritesData((prev) => {
+      const existingIndex = prev.favorites.findIndex(f => f.path === path);
+
+      if (existingIndex >= 0) {
+        // Remove favorite
+        return {
+          ...prev,
+          favorites: prev.favorites.filter((_, i) => i !== existingIndex),
+        };
       } else {
-        next.add(path);
+        // Add favorite
+        return {
+          ...prev,
+          favorites: [...prev.favorites, { path, group: groupName }],
+        };
       }
-      return next;
     });
   };
 
   const isFavorite = (path: string): boolean => {
-    return favorites.has(path);
+    return favoritesData.favorites.some(f => f.path === path);
+  };
+
+  // Group management functions
+  const createGroup = (name: string, color?: string) => {
+    const newGroup: FavoriteGroup = {
+      id: Math.random().toString(36).substring(2, 11),
+      name,
+      color,
+    };
+    setFavoritesData((prev) => ({
+      ...prev,
+      groups: [...prev.groups, newGroup],
+    }));
+  };
+
+  const deleteGroup = (groupId: string) => {
+    setFavoritesData((prev) => ({
+      groups: prev.groups.filter(g => g.id !== groupId),
+      // Remove group assignment from favorites
+      favorites: prev.favorites.map(f =>
+        prev.groups.find(g => g.id === groupId)?.name === f.group
+          ? { ...f, group: undefined }
+          : f
+      ),
+    }));
+  };
+
+  const renameGroup = (groupId: string, newName: string) => {
+    setFavoritesData((prev) => {
+      const group = prev.groups.find(g => g.id === groupId);
+      if (!group) return prev;
+
+      const oldName = group.name;
+
+      return {
+        groups: prev.groups.map(g =>
+          g.id === groupId ? { ...g, name: newName } : g
+        ),
+        // Update group assignment in favorites
+        favorites: prev.favorites.map(f =>
+          f.group === oldName ? { ...f, group: newName } : f
+        ),
+      };
+    });
+  };
+
+  const assignToGroup = (path: string, groupName?: string) => {
+    setFavoritesData((prev) => ({
+      ...prev,
+      favorites: prev.favorites.map(f =>
+        f.path === path ? { ...f, group: groupName } : f
+      ),
+    }));
   };
 
   // DORMANT: Sorting logic (for future use with multi-project aggregation)
@@ -137,6 +214,11 @@ export function CodeRefExplorerWidget() {
           onToggleFavorite={handleToggleFavorite}
           isFavorite={isFavorite}
           showOnlyFavorites={viewMode === 'favorites'}
+          favoritesData={favoritesData}
+          onCreateGroup={createGroup}
+          onDeleteGroup={deleteGroup}
+          onRenameGroup={renameGroup}
+          onAssignToGroup={assignToGroup}
         />
       </div>
 

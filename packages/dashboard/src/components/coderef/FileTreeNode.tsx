@@ -37,10 +37,16 @@ interface FileTreeNodeProps {
   onFileClick: (node: TreeNode) => void;
 
   /** Callback to toggle favorite status */
-  onToggleFavorite?: (path: string) => void;
+  onToggleFavorite?: (path: string, groupName?: string) => void;
 
   /** Function to check if a path is favorited */
   isFavorite?: (path: string) => boolean;
+
+  /** Available groups for assignment */
+  availableGroups?: { id: string; name: string }[];
+
+  /** Callback to assign file to group */
+  onAssignToGroup?: (path: string, groupName?: string) => void;
 
   /** Optional custom class name */
   className?: string;
@@ -104,6 +110,8 @@ export function FileTreeNode({
   onFileClick,
   onToggleFavorite,
   isFavorite,
+  availableGroups = [],
+  onAssignToGroup,
   className = '',
 }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -242,6 +250,8 @@ export function FileTreeNode({
               onFileClick={onFileClick}
               onToggleFavorite={onToggleFavorite}
               isFavorite={isFavorite}
+              availableGroups={availableGroups}
+              onAssignToGroup={onAssignToGroup}
             />
           ))}
         </div>

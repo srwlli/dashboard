@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-STUB-SCHEMA-001",
+  "feature_name": "stub-schema-integration",
+  "status": "pending_plan",
+  "created": "2025-12-29T00:00:00Z",
+  "last_updated": "2025-12-29T00:00:00Z",
+  "handoff": {
+    "orchestrator_to_agent": "See handoff prompt below",
+    "status": "pending_plan",
+    "agent_instructions": [
+      "Review context.json for requirements and constraints",
+      "Run /create-plan to generate implementation plan",
+      "Update this file's status to 'plan_submitted'",
+      "Add entry to communication_log with plan summary",
+      "Wait for approval before implementing"
+    ]
+  },
+  "communication_log": [
+    {
+      "timestamp": "2025-12-29T00:00:00Z",
+      "source": "orchestrator",
+      "message": "Workorder created. Dashboard agent should integrate canonical stub-schema.json from orchestrator.",
+      "context": {
+        "schema_validated": true,
+        "stubs_backfilled": 23,
+        "total_stubs": 64,
+        "all_valid": true
+      }
+    }
+  ],
+  "agent_status": {
+    "current_phase": "planning",
+    "blocked": false,
+    "blockers": [],
+    "next_action": "Review context.json and run /create-plan"
+  },
+  "deliverables": {
+    "plan_created": false,
+    "implementation_complete": false,
+    "tests_passing": false,
+    "archived": false
+  }
+}
