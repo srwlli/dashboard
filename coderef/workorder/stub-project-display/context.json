@@ -1,0 +1,82 @@
+{
+  "workorder_id": "WO-STUB-PROJECT-DISPLAY-004",
+  "stub_id": null,
+  "feature_name": "stub-project-display",
+  "created": "2025-12-30",
+  "target_project": "coderef-dashboard",
+  "description": "Display target_project field on StubCard using the subtitle slot",
+  "goal": "Make target_project visible on stub cards so users can see which project each stub is targeted for",
+  "requirements": [
+    "Add stub.target_project to StubCard subtitle prop",
+    "Format target_project for display (e.g., 'coderef-dashboard' → 'CodeRef Dashboard')",
+    "Handle missing/undefined target_project gracefully (show 'No project' or hide subtitle)",
+    "Use existing UnifiedCard subtitle prop (no component changes needed)",
+    "Maintain visual consistency with industrial theme"
+  ],
+  "constraints": [
+    "Do NOT modify UnifiedCard component (already has subtitle support)",
+    "Only modify StubCard component (1 line change)",
+    "Do NOT change StubCard external API",
+    "Use existing Tailwind classes only"
+  ],
+  "technical_context": {
+    "current_code": {
+      "StubCard_location": "src/components/StubCard/index.tsx",
+      "current_subtitle": "undefined (not passed to UnifiedCard)",
+      "UnifiedCard_subtitle_prop": {
+        "available": true,
+        "type": "string (optional)",
+        "renders_at": "Line 64-68 of UnifiedCard",
+        "styling": "text-xs text-ind-text-muted truncate"
+      }
+    },
+    "data_availability": {
+      "stub_object": "StubObject type from @/types/stubs",
+      "target_project_field": "stub.target_project (string)",
+      "possible_values": [
+        "assistant",
+        "coderef-dashboard",
+        "coderef-docs",
+        "coderef-workflow",
+        "scriptboard",
+        "personas-mcp",
+        "unknown"
+      ]
+    },
+    "formatting_options": {
+      "option_1_simple": "subtitle={stub.target_project}",
+      "option_2_formatted": "subtitle={stub.target_project ? formatProjectName(stub.target_project) : undefined}",
+      "option_3_prefixed": "subtitle={stub.target_project ? `Project: ${stub.target_project}` : undefined}"
+    },
+    "recommended_approach": "Option 1 (simple) - Just pass stub.target_project directly. Clean and minimal."
+  },
+  "success_criteria": [
+    "StubCard shows target_project as subtitle below title",
+    "Subtitle truncates if project name is too long",
+    "Missing target_project handled gracefully (no subtitle shown)",
+    "Visual consistency maintained",
+    "No breaking changes to StubCard API"
+  ],
+  "implementation_plan": {
+    "phase_1": "Add subtitle={stub.target_project} to UnifiedCard props in StubCard",
+    "phase_2": "Test with various project names",
+    "phase_3": "Verify truncation works on mobile"
+  },
+  "example_code": {
+    "before": "return (\n  <UnifiedCard\n    icon={CategoryIcon}\n    iconColor=\"text-ind-accent\"\n    title={stub.title || stub.feature_name || 'Untitled'}\n    description={stub.description}",
+    "after": "return (\n  <UnifiedCard\n    icon={CategoryIcon}\n    iconColor=\"text-ind-accent\"\n    title={stub.title || stub.feature_name || 'Untitled'}\n    subtitle={stub.target_project}\n    description={stub.description}"
+  },
+  "edge_cases": [
+    "stub.target_project is undefined - UnifiedCard handles gracefully (line 64: {subtitle && ...})",
+    "stub.target_project is 'unknown' - Shows 'unknown' (user can filter these later)",
+    "Very long project name - CSS truncate handles this",
+    "Empty string target_project - Treated as falsy, no subtitle shown"
+  ],
+  "related_files": [
+    "src/components/StubCard/index.tsx (modify - add 1 line)",
+    "src/components/UnifiedCard/index.tsx (no changes - already supports subtitle)"
+  ],
+  "workorder_type": "delegated",
+  "priority": "high",
+  "estimated_effort": "5 minutes"
+}

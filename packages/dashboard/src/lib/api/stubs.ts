@@ -23,6 +23,7 @@ import { StubObject } from '@/types/stubs';
  * Optional fields:
  * - stub_id: Auto-generated stub ID (added in newer stubs)
  * - context: Conversation context from when stub was created
+ * - target_project: Project this stub is targeted for
  */
 interface RawStubData {
   stub_id?: string;
@@ -33,6 +34,7 @@ interface RawStubData {
   status: string;
   created: string;
   context?: string;
+  target_project?: string;
 }
 
 /**
@@ -124,6 +126,7 @@ export class StubReader {
             created: rawData.created,
             updated: rawData.created, // Use created date as updated (stub is immutable)
             path: stubFilePath,
+            target_project: rawData.target_project,
           };
 
           stubs.push(stub);
@@ -206,6 +209,7 @@ export class StubReader {
         created: rawData.created,
         updated: rawData.created, // Use created date as updated (stub is immutable)
         path: stubPath,
+        target_project: rawData.target_project,
       };
     } catch (error) {
       throw new Error(`Failed to read stub ${featureName}: ${(error as Error).message}`);
