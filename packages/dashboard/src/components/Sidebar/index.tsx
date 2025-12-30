@@ -30,7 +30,11 @@ export default function Sidebar({ className = '' }: SidebarProps) {
       className={`
         bg-ind-panel border-r border-ind-border flex flex-col
         transition-all duration-300
-        ${isHydrated && isCollapsed ? 'w-20' : 'w-64'}
+        ${isHydrated && isCollapsed
+          ? 'w-20 min-w-20 max-w-20 basis-20 flex-shrink-0 flex-grow-0'
+          : 'w-64 min-w-64 max-w-64 basis-64 flex-shrink-0 flex-grow-0'
+        }
+        overflow-hidden
         ${className}
       `}
     >
