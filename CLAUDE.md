@@ -10,13 +10,21 @@
 
 ## Quick Summary
 
-**CodeRef Dashboard** is a focused modular widget system that aggregates and visualizes workorders (active work) and stubs (backlog items) from multiple software projects into a unified, responsive dashboard with PWA and Electron support.
+**CodeRef Dashboard** is a centralized development resource UI that provides a unified interface for building projects using the CodeRef ecosystem. It's a modular widget and component system that integrates with CodeRef MCP Server, Papertrail, and the CodeRef workflow system to streamline software development.
 
-**Core Innovation:** Read-only file system-based architecture that scans project directories without requiring database infrastructure - deployable as both web PWA and native desktop app from a single Next.js codebase.
+**Core Purpose:** Centralize all development resources (workorders, stubs, documentation, project files, AI prompts) into a single responsive dashboard where developers can visualize, track, and manage multi-project development workflows.
 
-**Latest Update (v0.1.0):**
-- ✅ Phase 6 - Widget Integration complete with modular widget system
-- ✅ Responsive design (mobile, tablet, desktop) with overflow prevention
+**Core Innovation:** File system-based architecture that integrates with CodeRef tooling without requiring database infrastructure - deployable as both web PWA and native desktop app from a single Next.js codebase.
+
+**Ecosystem Integration:**
+- **CodeRef MCP Server** - Integration with Model Context Protocol for AI-assisted development
+- **Papertrail** - Workorder tracking and documentation trail
+- **CodeRef System** - Workflow management and project structure standards
+
+**Latest Update (v0.4.0):**
+- ✅ Stats card enhancement with improved information density
+- ✅ Unified card component system (eliminated 97 lines of duplication)
+- ✅ CodeRef view mode for multi-project file aggregation
 - ✅ Foundation documentation suite (ARCHITECTURE, API, COMPONENTS, SCHEMA)
 - ✅ Comprehensive TypeScript type system across monorepo
 
@@ -26,23 +34,46 @@
 
 ### The Problem
 
-Managing multiple software projects with active workorders (ongoing implementations) and backlog stubs (planned features) becomes chaotic without a unified view. Developers context-switch between project directories, manually opening JSON files and markdown documents to check status. No single dashboard exists for CodeRef workorder structure.
+Building software projects requires juggling multiple development resources across scattered locations:
+- **Workorders** buried in project directories
+- **Documentation** spread across CLAUDE.md, ARCHITECTURE.md, README files
+- **Stubs and backlogs** in separate tracking systems
+- **AI prompts and workflows** stored in various files
+- **Project metadata** hidden in JSON configuration files
 
-Traditional project management tools (Jira, Linear) require cloud hosting, database setup, and complex configuration. For developers using file system-based workflows (CodeRef methodology), these tools add unnecessary overhead.
+Developers using the CodeRef methodology lack a centralized UI to:
+- Visualize active work across multiple projects
+- Access development resources without terminal navigation
+- Integrate AI-assisted workflows (MCP servers) with project context
+- Track workorder progress and documentation trails (Papertrail)
+- Manage widget-based views for different development needs
+
+Traditional IDEs and project management tools don't understand CodeRef structure or integrate with MCP-based AI tooling.
 
 ### The Solution
 
-CodeRef Dashboard scans existing project directories and aggregates workorder metadata into a single responsive interface. Zero setup required beyond pointing to project folders. No database, no migrations, no server infrastructure. The dashboard is read-only - it visualizes existing data without modifying source files.
+**CodeRef Dashboard** provides a centralized UI that brings all development resources into a single responsive interface:
 
-Deployable as both web PWA (for teams) and Electron desktop app (for individual developers), the system adapts to different workflow preferences while maintaining a single codebase.
+- **Widget System:** Modular, extensible components for different views (workorders, stubs, documentation, prompts)
+- **CodeRef Integration:** Native understanding of CodeRef workflow, Papertrail tracking, and MCP server protocols
+- **File System Based:** Zero database setup - reads directly from project directories
+- **Multi-Project Support:** Aggregate resources across unlimited projects
+- **AI-Ready:** Built-in integration points for CodeRef MCP Server and AI-assisted workflows
+
+Deployable as both web PWA (for teams) and Electron desktop app (for individual developers), the dashboard adapts to different workflow preferences while maintaining a single codebase.
 
 ### How It Works
 
-1. **Configuration:** User defines project paths in `projects.config.json`
-2. **Scanning:** API routes use Node.js file system APIs to recursively scan `coderef/workorder/` directories
-3. **Aggregation:** Workorder metadata extracted from `communication.json` files and combined into unified dataset
-4. **Visualization:** React components render responsive cards with status, progress, and metadata
-5. **Interactivity:** Users filter, sort, and drill down into workorder details without leaving the dashboard
+1. **Configuration:** Define project paths in `projects.config.json` - points to all CodeRef-structured projects
+2. **Resource Scanning:** API routes scan multiple resource types:
+   - Workorders (`coderef/workorder/`)
+   - Stubs (centralized backlog directory)
+   - Documentation (CLAUDE.md, ARCHITECTURE.md, etc.)
+   - Project files (plan.json, DELIVERABLES.md, communication.json)
+3. **MCP Integration:** Connect to CodeRef MCP Server for AI-assisted development context
+4. **Widget Rendering:** Modular widgets display resources in customizable layouts
+5. **Papertrail Tracking:** Integrate with Papertrail for workorder documentation trails
+6. **Interactivity:** Filter, search, and navigate resources without leaving the dashboard
 
 ---
 
@@ -121,9 +152,32 @@ Benefits: Reduced initial bundle size, extensibility without code changes, faste
 
 ### Key Integration Points
 
-- **Depends on:** Next.js framework, Node.js file system APIs, Electron (for desktop)
-- **Used by:** Developers tracking multiple projects with CodeRef workorder structure
-- **Orchestrated via:** Browser (PWA) or Electron desktop app, configured via `projects.config.json`
+**Core Dependencies:**
+- Next.js 14 framework (App Router, API routes)
+- Node.js file system APIs (for project scanning)
+- Electron (for desktop distribution)
+- React 19 (UI components and state management)
+
+**CodeRef Ecosystem Integration:**
+- **CodeRef MCP Server** - Model Context Protocol server for AI-assisted development
+  - Provides: Code analysis, documentation generation, workorder planning
+  - Connection: MCP protocol over stdio/HTTP
+  - Used for: AI context augmentation, intelligent code suggestions
+
+- **Papertrail** - Documentation and workorder tracking system
+  - Provides: Audit trails, workorder history, documentation versioning
+  - Connection: File system integration via coderef/ directory structure
+  - Used for: Tracking implementation progress, documentation updates
+
+- **CodeRef Workflow System** - Project structure and workflow standards
+  - Provides: Workorder structure, plan.json schemas, DELIVERABLES.md format
+  - Connection: Native file system reading
+  - Used for: Understanding project organization, validating workorder structure
+
+**Deployment:**
+- Browser (PWA) or Electron desktop app
+- Configuration via `projects.config.json`
+- Used by developers building projects with CodeRef methodology
 
 ---
 
@@ -131,18 +185,21 @@ Benefits: Reduced initial bundle size, extensibility without code changes, faste
 
 | Feature | Purpose | Type |
 |---------|---------|------|
-| `Workorder Aggregation` | Scan and display all workorders from multiple projects | Core Feature |
-| `Stub Management` | Centralized backlog item tracking across projects | Core Feature |
+| `Resource Aggregation` | Scan and display workorders, stubs, docs from multiple projects | Core Feature |
+| `Widget System` | Modular, extensible components for different views | Core Architecture |
+| `CodeRef MCP Integration` | AI-assisted development via Model Context Protocol | Ecosystem |
+| `Papertrail Integration` | Workorder tracking and documentation audit trails | Ecosystem |
+| `Multi-Project Support` | Aggregate and visualize unlimited CodeRef projects | Core Feature |
+| `Documentation Explorer` | Browse CLAUDE.md, ARCHITECTURE.md, plan.json across projects | Core Feature |
 | `Responsive Design` | Mobile/tablet/desktop layouts with Tailwind breakpoints | UI/UX |
 | `Dark Mode` | Theme toggle with customizable accent colors | UI/UX |
 | `PWA Support` | Installable web app with offline capabilities | Deployment |
 | `Electron App` | Native desktop distribution (Windows/macOS/Linux) | Deployment |
 | `File System Access API` | Browser-based directory access for widget loading | Browser API |
-| `Widget System` | Modular components with dynamic loading | Architecture |
 | `Type Safety` | Full TypeScript coverage with shared type definitions | DX |
 | `Monorepo Workspaces` | Multi-package development with shared dependencies | Architecture |
 
-**Total:** 10 features across 4 categories (Core, UI/UX, Deployment, Architecture)
+**Total:** 13 features across 5 categories (Core, Ecosystem, UI/UX, Deployment, Architecture)
 
 ---
 
@@ -409,36 +466,40 @@ npm run package:win
 
 ## Use Cases
 
-### UC-1: Multi-Project Dashboard View
+### UC-1: Centralized Multi-Project Development Hub
 
-**Scenario:** Developer manages 5 active projects (3 client projects, 2 internal tools), each with 2-3 active workorders. Needs unified view to track progress across all projects without manually opening folders.
+**Scenario:** Developer uses CodeRef methodology to build 5 active projects (3 client projects, 2 internal tools). Needs a centralized UI to access all development resources across projects without terminal navigation or file hunting.
 
 **Steps:**
-1. Create `projects.config.json` with all 5 project paths:
+1. Configure CodeRef Dashboard with all 5 projects:
    ```json
    {
      "projects": [
        { "id": "client-alpha", "name": "Client Alpha", "path": "C:\\work\\client-alpha", "workorder_dir": "coderef/workorder" },
        { "id": "client-beta", "name": "Client Beta", "path": "C:\\work\\client-beta", "workorder_dir": "coderef/workorder" },
-       ...
+       { "id": "internal-api", "name": "Internal API", "path": "C:\\work\\api", "workorder_dir": "coderef/workorder" }
      ]
    }
    ```
-2. Update API route paths to reference config file location
-3. Start dashboard: `npm run dev`
-4. Open browser: `http://localhost:3000`
-5. Dashboard loads - API scans all 5 projects and finds 12 total workorders
-6. View aggregated grid showing:
-   - Workorder cards with project badges
-   - Status indicators (implementing/complete/pending_plan)
-   - Progress percentages from DELIVERABLES.md
-   - Assigned agents
-7. Filter by project using sidebar: "Show only Client Alpha"
-8. Filter by status: "Show only implementing"
-9. Click workorder card to navigate to detail view
-10. See full plan, deliverables checklist, and communication metadata
+2. Start dashboard: `npm run dev` (opens on port 3005)
+3. Dashboard home shows aggregated resources:
+   - **Stats Overview:** 12 active workorders, 42 stubs, 8 projects tracked
+   - **Workorder Grid:** Cards showing status, progress, project badges
+   - **Stub Grid:** Backlog items with priority and category
+4. Use CodeRef Explorer view to access documentation:
+   - Switch to "CodeRef" view mode
+   - Filter by file type: "CLAUDE.md" → see all project context docs
+   - Filter by "ARCHITECTURE.md" → review all architecture documents
+   - Filter by "plan.json" → access all implementation plans
+5. Navigate to Assistant page for AI-powered workflows:
+   - Access prompts library
+   - Use MCP integration for code analysis
+6. Track workorder progress with Papertrail integration:
+   - View documentation audit trails
+   - See workorder status history
+7. Filter resources by project, status, priority across all views
 
-**Result:** Developer gains instant visibility into all active work without context switching between project directories.
+**Result:** Developer has a centralized UI hub for all CodeRef development resources, eliminating terminal navigation and manual file hunting. All projects accessible from one interface.
 
 ### UC-2: Desktop App for Offline Work
 
@@ -469,29 +530,49 @@ npm run package:win
 
 **Result:** Native desktop experience with offline capabilities and better file system access than browser-based PWA.
 
-### UC-3: Widget System for Custom Views
+### UC-3: Building Projects with Widget System and MCP Integration
 
-**Scenario:** Developer wants to add custom widget for visualizing workorder timelines or burndown charts beyond default grid view.
+**Scenario:** Developer is building a new feature for a client project. Uses CodeRef Dashboard as their central UI to access resources, manage workorders, and leverage AI assistance via MCP server.
 
 **Steps:**
-1. Create new widget file: `packages/core/src/widgets/TimelineWidget.tsx`
-   ```typescript
-   export const TimelineWidget = () => {
-     // Custom timeline visualization logic
-     return <div>Timeline View</div>;
-   };
-   ```
-2. Register widget in widget registry (modular system)
-3. Widget dynamically imports via React lazy loading
-4. Use File System Access API to load widget from custom directory
-5. Widget accesses shared utilities from `@coderef-dashboard/core`:
-   - `useWorkorders()` hook for data fetching
-   - `WorkorderCard` component for consistency
-   - TypeScript types from core package
-6. Widget renders in dashboard alongside default views
-7. Toggle between grid view and timeline view via settings
+1. **Start New Workorder:**
+   - Open CodeRef Dashboard → Dashboard page
+   - View client project in workorder grid
+   - Create new workorder folder via terminal: `coderef/workorder/new-feature/`
+   - Refresh dashboard → new workorder appears
 
-**Result:** Extensible widget architecture allows custom visualizations without modifying core codebase. Developers can create domain-specific views (Gantt charts, dependency graphs, metrics dashboards) as separate modules.
+2. **Access Project Context:**
+   - Navigate to Assistant → CodeRef Explorer
+   - Filter by project: "Client Alpha"
+   - View CLAUDE.md for project context
+   - Review ARCHITECTURE.md for system design
+   - Read plan.json for implementation guidance
+
+3. **Use AI-Assisted Development:**
+   - Navigate to Prompts page
+   - Select "Code Review" prompt template
+   - Attach files from project
+   - MCP server provides code analysis and suggestions
+   - Export results to markdown
+
+4. **Track Progress with Widgets:**
+   - Dashboard shows workorder status in real-time
+   - Use timeline widget to visualize project schedule
+   - Custom burndown widget shows completion percentage
+   - Stats cards display aggregate metrics
+
+5. **Papertrail Integration:**
+   - All workorder updates tracked automatically
+   - Documentation changes logged in audit trail
+   - Status transitions recorded with timestamps
+
+6. **Custom Widget Development:**
+   - Create custom widget: `packages/core/src/widgets/DependencyGraph.tsx`
+   - Widget uses `@coderef-dashboard/core` components and hooks
+   - Register in widget registry → dynamically loads
+   - Widget visualizes project dependencies from plan.json
+
+**Result:** Developer uses CodeRef Dashboard as their primary UI for building projects - centralized access to resources, AI assistance, progress tracking, and custom visualizations. No terminal navigation required for daily development workflow.
 
 ---
 
@@ -547,23 +628,56 @@ npm run package:win
 
 ---
 
-## Next Steps
-
-- ⏳ Add workorder filtering (by project, status, assignee)
-- ⏳ Implement real-time workorder updates (WebSockets or polling)
-- ⏳ Add stub detail view with markdown preview
-- ⏳ Migrate to database layer (SQLite for Electron, PostgreSQL for web)
-- ⏳ Add authentication system (JWT-based)
-
----
-
 ## Resources
 
+**Documentation:**
 - **[README.md](README.md)** - User-facing installation and usage guide
 - **[ARCHITECTURE.md](coderef/foundation-docs/ARCHITECTURE.md)** - Detailed system architecture
 - **[API.md](coderef/foundation-docs/API.md)** - REST API endpoints and data models
 - **[COMPONENTS.md](coderef/foundation-docs/COMPONENTS.md)** - UI component library reference
 - **[SCHEMA.md](coderef/foundation-docs/SCHEMA.md)** - TypeScript interfaces and type definitions
+
+**Planning:**
+- **[improvements.md](coderef/working/improvements.md)** - Future enhancements and ideas
+
+---
+
+## Developer Workflow Integration
+
+### Primary Use: Building Projects
+
+CodeRef Dashboard is designed as the **primary UI for building software projects** using the CodeRef methodology:
+
+**Daily Workflow:**
+1. **Open Dashboard** → Launch Electron app or web browser (port 3005)
+2. **Check Status** → View all active workorders across projects
+3. **Access Context** → Navigate to CodeRef Explorer for documentation
+4. **Start Work** → Select workorder, review plan.json, check deliverables
+5. **Use AI Tools** → Navigate to Prompts/Assistant for MCP-assisted development
+6. **Track Progress** → Update workorder status, view Papertrail audit log
+7. **Monitor Metrics** → Check stats cards, custom widgets for project health
+
+**Development Resources Centralized:**
+- Workorders (active implementations)
+- Stubs (backlog planning)
+- Documentation (CLAUDE.md, ARCHITECTURE.md, README)
+- Implementation plans (plan.json)
+- Deliverables tracking (DELIVERABLES.md)
+- AI prompts and workflows
+- Project configuration and metadata
+
+**CodeRef Ecosystem Hub:**
+The dashboard serves as the central UI connecting:
+- **CodeRef MCP Server** → AI-assisted code analysis and generation
+- **Papertrail** → Automated documentation and audit trails
+- **CodeRef Workflow System** → Standardized project structure and processes
+
+**Widget & Component System:**
+Extend the dashboard with custom widgets for project-specific needs:
+- Timeline visualizations
+- Dependency graphs
+- Custom metrics dashboards
+- Integration with external tools
 
 ---
 
