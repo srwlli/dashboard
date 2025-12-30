@@ -1,0 +1,57 @@
+{
+  "workorder_id": "WO-STATS-CARD-003",
+  "feature_name": "stats-card-enhancement",
+  "status": "pending_plan",
+  "created": "2025-12-30T00:00:00Z",
+  "last_updated": "2025-12-30T00:00:00Z",
+  "handoff": {
+    "orchestrator_to_agent": "See handoff prompt below",
+    "status": "pending_plan",
+    "agent_instructions": [
+      "Review context.json for size reduction targets and enhancement requirements",
+      "Analyze current StatsCard component styling",
+      "Design stub stats breakdown logic (status + priority minimum)",
+      "Run /create-plan to generate implementation plan",
+      "Update this file's status to 'plan_submitted'",
+      "Add entry to communication_log with plan summary",
+      "Wait for approval before implementing"
+    ]
+  },
+  "communication_log": [
+    {
+      "timestamp": "2025-12-30T00:00:00Z",
+      "source": "orchestrator",
+      "message": "Workorder created. Dashboard agent should make stats cards smaller and enhance stub card with meaningful breakdowns.",
+      "context": {
+        "current_state": {
+          "StatsCard_padding": "p-3 sm:p-4",
+          "stub_stats": "Only shows total count (redundant)",
+          "workorder_stats": "Shows status breakdown (good model to follow)"
+        },
+        "target_state": {
+          "StatsCard_padding": "p-2 sm:p-3 (smaller)",
+          "stub_stats": "Shows status + priority breakdown",
+          "visual_density": "Higher density layout, more compact cards"
+        },
+        "user_benefit": [
+          "More compact dashboard layout (better space utilization)",
+          "Meaningful stub insights (status and priority breakdown)",
+          "Parity between workorder and stub card detail levels",
+          "Easier to scan and compare metrics at a glance"
+        ]
+      }
+    }
+  ],
+  "agent_status": {
+    "current_phase": "planning",
+    "blocked": false,
+    "blockers": [],
+    "next_action": "Review context.json, analyze StatsCard component, and run /create-plan"
+  },
+  "deliverables": {
+    "plan_created": false,
+    "implementation_complete": false,
+    "tests_passing": false,
+    "archived": false
+  }
+}

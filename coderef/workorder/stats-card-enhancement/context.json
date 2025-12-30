@@ -1,0 +1,105 @@
+{
+  "workorder_id": "WO-STATS-CARD-003",
+  "stub_id": null,
+  "feature_name": "stats-card-enhancement",
+  "created": "2025-12-30",
+  "target_project": "coderef-dashboard",
+  "description": "Make stats cards smaller and add status/priority/project breakdown to stub stats card",
+  "goal": "Improve dashboard layout density and provide meaningful stub insights matching workorder card detail level",
+  "requirements": [
+    "Reduce StatsCard size (smaller padding, tighter spacing, smaller text)",
+    "Enhance stub stats to show breakdown by status (planning, ready, blocked, promoted)",
+    "Add priority breakdown to stub stats (low, medium, high, critical)",
+    "Optional: Add project breakdown to stub stats (top 3-5 projects)",
+    "Maintain visual consistency with industrial theme",
+    "Ensure responsive design still works on mobile",
+    "Keep cards readable despite smaller size"
+  ],
+  "constraints": [
+    "Do NOT change StatsCard component API (maintain backward compatibility)",
+    "Keep cards in 2-column grid layout",
+    "Use existing industrial theme variables only",
+    "No external dependencies",
+    "Must remain readable on mobile devices"
+  ],
+  "technical_context": {
+    "existing_code": {
+      "StatsCard_component": {
+        "location": "src/components/StatsCard/index.tsx",
+        "current_size": "35 lines",
+        "current_padding": "p-3 sm:p-4",
+        "current_spacing": "space-y-2 (outer), space-y-1 (inner)",
+        "props": {
+          "title": "string",
+          "items": "StatsItem[] ({ label: string, count: number })",
+          "total": "number (optional)"
+        }
+      },
+      "dashboard_page": {
+        "location": "src/app/page.tsx",
+        "workorder_stats_logic": "Object.entries(byStatus).map()",
+        "stub_stats_logic": "Currently just [{ label: 'Total Stubs', count }] - needs enhancement"
+      },
+      "useStubs_hook": {
+        "provides": "stubs array with full stub objects",
+        "fields_available": "stub_id, feature_name, status, priority, category, target_project, created"
+      }
+    },
+    "size_reduction_targets": {
+      "padding": "p-2 sm:p-3 (reduce from p-3 sm:p-4)",
+      "outer_spacing": "space-y-1 (reduce from space-y-2)",
+      "inner_spacing": "space-y-0.5 (reduce from space-y-1)",
+      "text_sizes": "Reduce by one step (sm → xs, text-sm → text-xs)",
+      "title_size": "text-xs (reduce from text-xs sm:text-sm)"
+    },
+    "stub_breakdown_format": [
+      "By Status: planning (X), ready (Y), blocked (Z), promoted (W)",
+      "By Priority: low (X), medium (Y), high (Z), critical (W)",
+      "Optional: By Project (top 3): coderef-dashboard (X), assistant (Y), scriptboard (Z)"
+    ]
+  },
+  "success_criteria": [
+    "Stats cards visibly smaller (reduced padding and spacing)",
+    "Stub stats card shows status breakdown (at minimum)",
+    "Stub stats card shows priority breakdown (nice to have)",
+    "Cards remain readable on mobile",
+    "No breaking changes to StatsCard API",
+    "Visual consistency maintained",
+    "Grid layout unchanged (still 2 columns)"
+  ],
+  "implementation_plan": {
+    "phase_1": "Reduce StatsCard size (padding, spacing, text sizes)",
+    "phase_2": "Add status breakdown logic to dashboard page.tsx",
+    "phase_3": "Add priority breakdown logic to dashboard page.tsx",
+    "phase_4": "Test responsive design on mobile",
+    "phase_5": "Optional: Add project breakdown if space allows"
+  },
+  "example_output": {
+    "before": {
+      "stub_stats": "[{ label: 'Total Stubs', count: 64 }]"
+    },
+    "after": {
+      "stub_stats": [
+        "{ label: 'Planning', count: 45 }",
+        "{ label: 'Ready', count: 10 }",
+        "{ label: 'Blocked', count: 5 }",
+        "{ label: 'Promoted', count: 4 }",
+        "{ label: 'High Priority', count: 12 }",
+        "{ label: 'Critical Priority', count: 3 }"
+      ]
+    }
+  },
+  "edge_cases": [
+    "Empty stubs array - show 'No stubs' message",
+    "All stubs same status - still show breakdown",
+    "Very long project names - truncate with ellipsis",
+    "Mobile view - ensure smaller cards still readable"
+  ],
+  "related_files": [
+    "src/components/StatsCard/index.tsx (modify - reduce size)",
+    "src/app/page.tsx (modify - enhance stub stats logic)"
+  ],
+  "workorder_type": "delegated",
+  "priority": "low",
+  "estimated_effort": "30 minutes"
+}

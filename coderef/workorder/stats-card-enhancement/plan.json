@@ -1,0 +1,348 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "stats-card-enhancement",
+    "workorder_id": "WO-STATS-CARD-ENHANCEMENT-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "PlanningGenerator",
+    "has_context": true,
+    "has_analysis": false,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2025-12-30",
+      "ai_assistance": true,
+      "next_review": "2026-01-29"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "available": [
+          "ARCHITECTURE.md - Monorepo package architecture with core/dashboard/electron packages",
+          "COMPONENTS.md - UI component library including StatsCard component",
+          "CLAUDE.md - Project context with design decisions and patterns"
+        ],
+        "missing": []
+      },
+      "coding_standards": {
+        "available": [
+          "Tailwind CSS utility-first approach with ind-* custom design tokens",
+          "TypeScript with full type safety",
+          "React client components with 'use client' directive",
+          "Responsive design with mobile-first breakpoints (sm, md, lg)"
+        ],
+        "missing": []
+      },
+      "reference_components": {
+        "primary": "StatsCard component (packages/dashboard/src/components/StatsCard/index.tsx)",
+        "secondary": [
+          "UnifiedCard - Base component demonstrating consistent card styling",
+          "WorkorderCard - Shows detailed breakdown pattern"
+        ]
+      },
+      "key_patterns_identified": [
+        "Industrial theme with ind-* CSS variables (ind-bg-primary, ind-accent-color, ind-text)",
+        "Responsive text sizing pattern: text-xs sm:text-sm (reduce to text-[10px] sm:text-xs)",
+        "Responsive padding pattern: p-3 sm:p-4 (reduce to p-2 sm:p-3)",
+        "Status breakdown pattern: Object.entries(byStatus).map() for workorder stats",
+        "Grid layout: grid-cols-1 sm:grid-cols-2 for stats cards",
+        "Space reduction pattern: space-y-2 → space-y-1, space-y-1 → space-y-0.5"
+      ],
+      "technology_stack": {
+        "languages": ["TypeScript", "TSX"],
+        "frameworks": ["Next.js 14 App Router", "React"],
+        "key_libraries": ["Tailwind CSS"]
+      },
+      "gaps_and_risks": [
+        "No automated visual regression testing - manual review needed for size changes",
+        "Mobile responsiveness must be manually tested on actual devices or browser devtools"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Reduce stats card size to improve dashboard density and enhance stub stats card with meaningful breakdowns (status, priority, project) to match the detail level of workorder stats",
+      "value_proposition": "Users currently see redundant 'Total Stubs' info (already shown in card header), while workorder card shows rich status breakdown. This enhancement brings parity to stub stats and improves information density through smaller card sizes, making better use of dashboard real estate.",
+      "real_world_analogy": "Like upgrading from a basic car dashboard (just speedometer) to a full instrument cluster (speed, RPM, fuel, temp, oil) while making the gauges smaller and more compact to fit more information in the same space.",
+      "use_case": "User opens dashboard → Sees workorder stats breakdown (implementing: 5, complete: 3) → Sees stub stats breakdown (planning: 45, ready: 10, blocked: 5, high priority: 12) → Gets full project overview at a glance without clicking into detail views → Makes better decisions about what to work on next based on status and priority distribution.",
+      "output": "Modified StatsCard component (smaller size), enhanced page.tsx logic (status/priority breakdowns), responsive design validation on mobile/tablet/desktop"
+    },
+    "2_risk_assessment": {
+      "overall_risk": "low",
+      "complexity": "low (2 files modified, ~15 lines changed total)",
+      "scope": "Small - 2 files affected (StatsCard/index.tsx, app/page.tsx), 1 component, 1 page logic block",
+      "file_system_risk": "none (no file operations)",
+      "dependencies": [],
+      "performance_concerns": [
+        "Minimal - adding stub breakdown requires iterating stubs array once (already loaded)",
+        "No API changes, no network requests, pure client-side logic"
+      ],
+      "security_considerations": [
+        "None - no user input, no API calls, no data persistence"
+      ],
+      "breaking_changes": "none (StatsCard API unchanged, only internal styling modified)"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "packages/dashboard/src/components/StatsCard/index.tsx (modify - reduce padding/spacing/text sizes)",
+        "packages/dashboard/src/app/page.tsx (modify - enhance stubStats logic with status/priority breakdowns)"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "useStubs hook - provides stubs array with status, priority, target_project fields",
+          "useWorkorders hook - already demonstrates breakdown pattern with byStatus"
+        ],
+        "existing_external": [
+          "Tailwind CSS - for utility classes (p-2, space-y-1, text-xs)"
+        ],
+        "new_external": [],
+        "new_internal": []
+      },
+      "architecture_context": "UI layer - modifying presentation component (StatsCard) and page-level data aggregation logic (page.tsx). No changes to data fetching layer (hooks), API routes, or core package. Follows existing pattern: hooks provide data → page logic transforms → StatsCard renders."
+    },
+    "4_key_features": {
+      "primary_features": [
+        "Reduce StatsCard padding from p-3 sm:p-4 to p-2 sm:p-3",
+        "Reduce StatsCard spacing from space-y-2/space-y-1 to space-y-1/space-y-0.5",
+        "Reduce text sizes by one step (text-xs sm:text-sm → text-[10px] sm:text-xs)",
+        "Add status breakdown to stub stats (planning, ready, blocked, promoted)",
+        "Add priority breakdown to stub stats (low, medium, high, critical)"
+      ],
+      "secondary_features": [
+        "Optional: Add project breakdown to stub stats (top 3-5 projects by stub count)",
+        "Maintain visual consistency with industrial theme"
+      ],
+      "edge_case_handling": [
+        "Empty stubs array - stubStats remains empty array (StatsCard handles gracefully)",
+        "All stubs have same status - still show breakdown (e.g., 'Planning: 64, Ready: 0, Blocked: 0')",
+        "Very long status/priority labels - use existing text truncation pattern if needed",
+        "Mobile view - verify smaller cards remain readable on 320px viewport"
+      ],
+      "configuration_options": [
+        "None"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SIZE-001: Reduce StatsCard padding from p-3 sm:p-4 to p-2 sm:p-3",
+        "SIZE-002: Reduce StatsCard outer spacing from space-y-2 to space-y-1",
+        "SIZE-003: Reduce StatsCard inner spacing from space-y-1 to space-y-0.5",
+        "SIZE-004: Reduce StatsCard title text size from text-xs sm:text-sm to text-[10px] sm:text-xs",
+        "SIZE-005: Reduce StatsCard item text sizes by one step (text-xs sm:text-sm → text-[10px] sm:text-xs, text-xs → text-[10px])",
+        "STUB-001: Add status breakdown logic to page.tsx stubStats computation",
+        "STUB-002: Add priority breakdown logic to page.tsx stubStats computation",
+        "STUB-003: Remove redundant 'Total Stubs' line from stubStats (already shown as total prop)",
+        "TEST-001: Test responsive design on mobile (320px width)",
+        "TEST-002: Test responsive design on tablet (768px width)",
+        "TEST-003: Test responsive design on desktop (1920px width)",
+        "TEST-004: Verify cards remain readable with smaller text sizes",
+        "DOC-001: Update DELIVERABLES.md with completion status"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": "phase_1",
+          "name": "Reduce StatsCard Size",
+          "title": "Phase 1: Reduce StatsCard Size",
+          "purpose": "Make stats cards more compact by reducing padding, spacing, and text sizes",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "SIZE-001",
+            "SIZE-002",
+            "SIZE-003",
+            "SIZE-004",
+            "SIZE-005"
+          ],
+          "deliverables": [
+            "Modified StatsCard component with reduced padding (p-2 sm:p-3)",
+            "Reduced spacing (space-y-1, space-y-0.5)",
+            "Smaller text sizes (text-[10px] sm:text-xs)"
+          ],
+          "completion_criteria": "StatsCard renders visibly smaller with tighter padding and spacing, text remains readable"
+        },
+        {
+          "phase": "phase_2",
+          "name": "Enhance Stub Stats",
+          "title": "Phase 2: Enhance Stub Stats",
+          "purpose": "Add status and priority breakdowns to stub stats card",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "STUB-001",
+            "STUB-002",
+            "STUB-003"
+          ],
+          "deliverables": [
+            "Enhanced stubStats array with status breakdown (planning, ready, blocked, promoted)",
+            "Priority breakdown added to stubStats (low, medium, high, critical)",
+            "Removed redundant 'Total Stubs' line"
+          ],
+          "completion_criteria": "Stub stats card shows meaningful breakdowns instead of redundant total, matching workorder stats detail level"
+        },
+        {
+          "phase": "phase_3",
+          "name": "Responsive Testing",
+          "title": "Phase 3: Responsive Testing",
+          "purpose": "Verify smaller cards remain readable across all screen sizes",
+          "complexity": "low",
+          "effort_level": 1,
+          "tasks": [
+            "TEST-001",
+            "TEST-002",
+            "TEST-003",
+            "TEST-004"
+          ],
+          "deliverables": [
+            "Mobile (320px) validation",
+            "Tablet (768px) validation",
+            "Desktop (1920px) validation",
+            "Readability confirmation"
+          ],
+          "completion_criteria": "Cards display correctly on all screen sizes with readable text and proper spacing"
+        },
+        {
+          "phase": "phase_4",
+          "name": "Documentation",
+          "title": "Phase 4: Documentation",
+          "purpose": "Update documentation to reflect changes",
+          "complexity": "low",
+          "effort_level": 1,
+          "tasks": [
+            "DOC-001"
+          ],
+          "deliverables": [
+            "Updated DELIVERABLES.md"
+          ],
+          "completion_criteria": "All documentation reflects completed changes"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "Not applicable - visual changes only, no business logic to test"
+      ],
+      "integration_tests": [
+        "Not applicable - no API or hook changes"
+      ],
+      "end_to_end_tests": [
+        "Not applicable"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "Empty stubs array",
+          "setup": "Set stubs to empty array in useStubs hook mock",
+          "expected_behavior": "stubStats remains empty array, StatsCard shows only header with total=0",
+          "verification": "Visual inspection - stub stats card shows 'Stubs' header with no items",
+          "error_handling": "No error (graceful degradation)"
+        },
+        {
+          "scenario": "All stubs have same status (e.g., all 'planning')",
+          "setup": "Mock stubs array with all items having status='planning'",
+          "expected_behavior": "Status breakdown shows 'Planning: 64, Ready: 0, Blocked: 0, Promoted: 0'",
+          "verification": "Visual inspection - breakdown displays zeros for unused statuses",
+          "error_handling": "No error"
+        },
+        {
+          "scenario": "Mobile viewport (320px width)",
+          "setup": "Open dashboard in browser devtools, set viewport to 320px width",
+          "expected_behavior": "Cards display in single column with readable text despite smaller size",
+          "verification": "Visual inspection - text readable, no overflow, proper spacing",
+          "error_handling": "No error"
+        },
+        {
+          "scenario": "Very long status/priority labels",
+          "setup": "Mock data with long labels (unlikely but test boundary)",
+          "expected_behavior": "Text wraps or truncates gracefully within card bounds",
+          "verification": "Visual inspection - no horizontal overflow",
+          "error_handling": "No error (CSS handles overflow)"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "Stats cards are visibly smaller",
+          "metric": "Visual inspection",
+          "target": "Padding reduced from p-3 sm:p-4 to p-2 sm:p-3, spacing reduced from space-y-2 to space-y-1",
+          "validation": "Before/after screenshot comparison shows ~25% size reduction"
+        },
+        {
+          "requirement": "Stub stats show status breakdown",
+          "metric": "Count of stubStats items with status labels",
+          "target": "At least 4 items (planning, ready, blocked, promoted)",
+          "validation": "Inspect stubStats array in browser devtools"
+        },
+        {
+          "requirement": "Stub stats show priority breakdown",
+          "metric": "Count of stubStats items with priority labels",
+          "target": "At least 4 items (low, medium, high, critical)",
+          "validation": "Inspect stubStats array in browser devtools"
+        },
+        {
+          "requirement": "Cards remain readable on mobile",
+          "metric": "Manual readability test at 320px viewport",
+          "target": "All text readable without zoom",
+          "validation": "Manual testing in Chrome DevTools device mode"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "No breaking changes to StatsCard API",
+          "metric": "TypeScript compilation success",
+          "target": "No type errors after changes",
+          "validation": "Run npm run type-check"
+        },
+        {
+          "requirement": "Visual consistency maintained",
+          "metric": "Manual UI inspection",
+          "target": "Cards use existing ind-* theme variables only",
+          "validation": "Visual inspection - no new colors or styles"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "No performance regression",
+          "metric": "Browser performance profiler",
+          "target": "Render time unchanged or faster (due to smaller DOM)",
+          "validation": "Compare React DevTools profiler before/after"
+        }
+      ],
+      "security_requirements": []
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "☐ Review complete plan for gaps",
+        "☐ Verify StatsCard component structure in packages/dashboard/src/components/StatsCard/index.tsx",
+        "☐ Verify page.tsx stubStats logic in packages/dashboard/src/app/page.tsx"
+      ],
+      "phase_1": [
+        "☐ SIZE-001: Change p-3 sm:p-4 to p-2 sm:p-3 in StatsCard outer div",
+        "☐ SIZE-002: Change space-y-2 to space-y-1 in StatsCard outer container",
+        "☐ SIZE-003: Change space-y-1 to space-y-0.5 in StatsCard inner div",
+        "☐ SIZE-004: Change text-xs sm:text-sm to text-[10px] sm:text-xs in h3 title",
+        "☐ SIZE-005: Reduce all item text sizes by one step (text-xs sm:text-sm → text-[10px] sm:text-xs)"
+      ],
+      "phase_2": [
+        "☐ STUB-001: Add status breakdown logic - count stubs by status field",
+        "☐ STUB-002: Add priority breakdown logic - count stubs by priority field",
+        "☐ STUB-003: Remove [{ label: 'Total Stubs', count }] from stubStats (redundant)"
+      ],
+      "phase_3": [
+        "☐ TEST-001: Test mobile responsive (320px width in Chrome DevTools)",
+        "☐ TEST-002: Test tablet responsive (768px width in Chrome DevTools)",
+        "☐ TEST-003: Test desktop responsive (1920px width in Chrome DevTools)",
+        "☐ TEST-004: Verify text readability at all sizes"
+      ],
+      "phase_4": [
+        "☐ DOC-001: Update DELIVERABLES.md with completion status"
+      ],
+      "finalization": [
+        "☐ All tests passing",
+        "☐ Type check passes (npm run type-check)",
+        "☐ Visual inspection complete",
+        "☐ DELIVERABLES.md updated"
+      ]
+    }
+  }
+}
