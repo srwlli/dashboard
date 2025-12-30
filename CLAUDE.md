@@ -1,10 +1,10 @@
 # CodeRef Dashboard - AI Context Documentation
 
 **Project:** coderef-dashboard
-**Version:** 0.1.0
+**Version:** 0.3.0
 **Status:** 🚧 Development
 **Created:** 2025-12-28
-**Last Updated:** 2025-12-28
+**Last Updated:** 2025-12-29
 
 ---
 
@@ -496,6 +496,17 @@ npm run package:win
 ---
 
 ## Recent Changes
+
+### v0.3.0 - Unified Card Component (2025-12-29)
+- ✅ Created UnifiedCard base component with flexible slot-based API
+- ✅ Refactored StubCard to use UnifiedCard as wrapper (91 → 81 lines)
+- ✅ Refactored WorkorderCard to use UnifiedCard as wrapper (84 → 77 lines)
+- ✅ Eliminated 97 lines of duplicate card styling logic
+- ✅ Single source of truth for card UI across dashboard
+- ✅ Maintained backward compatibility (zero breaking changes)
+- ✅ Improved maintainability and consistency
+
+**Workorder:** WO-UNIFIED-CARD-COMPONENT-001
 
 ### v0.2.0 - CodeRef View Mode (2025-12-29)
 - ✅ CodeRef view mode in Explorer: Switch between single-project (Projects) and multi-project (CodeRef) views

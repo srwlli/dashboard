@@ -27,7 +27,9 @@
       "mcp__coderef-workflow__analyze_project_for_planning",
       "mcp__coderef-workflow__validate_implementation_plan",
       "Bash(npm install:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "mcp__coderef-workflow__generate_deliverables_template",
+      "mcp__coderef-workflow__update_all_documentation"
     ],
     "deny": [],
     "ask": []
