@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { CodeRefApi } from '@/lib/coderef/api-access';
 import type { Project } from '@/lib/coderef/types';
 import { showDirectoryPicker } from '@/lib/coderef/local-access';
-import { saveDirectoryHandle, deleteDirectoryHandle } from '@/lib/coderef/indexeddb';
-import { isFileSystemAccessSupported } from '@/lib/coderef/permissions';
-import { Folder, Plus, Trash2, AlertCircle } from 'lucide-react';
+import { saveDirectoryHandle, deleteDirectoryHandle, getDirectoryHandle } from '@/lib/coderef/indexeddb';
+import { isFileSystemAccessSupported, verifyHandleValid, ensurePermission } from '@/lib/coderef/permissions';
+import { Folder, Plus, Trash2, AlertCircle, RefreshCw } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
 
 interface ProjectSelectorProps {
@@ -30,11 +30,17 @@ export function ProjectSelector({
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [staleProjects, setStaleProjects] = useState<Set<string>>(new Set());
 
   // Load projects on mount
   useEffect(() => {
     loadProjects();
   }, []);
+
+  // Check for stale directory handles when projects load
+  useEffect(() => {
+    checkForStaleHandles();
+  }, [projects]);
 
   // Notify parent when selected project changes
   useEffect(() => {
@@ -143,6 +149,76 @@ export function ProjectSelector({
     onProjectChange(project || null);
   };
 
+  /**
+   * Check all projects for stale directory handles
+   */
+  const checkForStaleHandles = async () => {
+    if (!isFileSystemAccessSupported()) return;
+
+    const stale = new Set<string>();
+
+    for (const project of projects) {
+      // Only check projects using File System Access API
+      if (!project.path.startsWith('[Directory:')) continue;
+
+      try {
+        const dirHandle = await getDirectoryHandle(project.id);
+
+        if (!dirHandle) {
+          stale.add(project.id);
+          continue;
+        }
+
+        const isValid = await verifyHandleValid(dirHandle);
+        if (!isValid) {
+          stale.add(project.id);
+          continue;
+        }
+
+        const hasPermission = await ensurePermission(dirHandle, 'read');
+        if (!hasPermission) {
+          stale.add(project.id);
+        }
+      } catch {
+        stale.add(project.id);
+      }
+    }
+
+    setStaleProjects(stale);
+  };
+
+  /**
+   * Re-grant access to a project with stale directory handle
+   */
+  const handleRegrantAccess = async (projectId: string) => {
+    try {
+      setError(null);
+
+      // Show directory picker
+      const dirHandle = await showDirectoryPicker();
+
+      if (!dirHandle) {
+        // User cancelled
+        return;
+      }
+
+      // Save new directory handle
+      await saveDirectoryHandle(projectId, dirHandle);
+
+      // Remove from stale list
+      setStaleProjects((prev) => {
+        const next = new Set(prev);
+        next.delete(projectId);
+        return next;
+      });
+
+      // Trigger recheck
+      await checkForStaleHandles();
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     if (!selectedProjectId) return; // Only show context menu if a project is selected
     e.preventDefault();
@@ -204,6 +280,31 @@ export function ProjectSelector({
           <AlertCircle className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
           <div className="text-xs text-red-500">
             <strong>Error:</strong> {error}
+          </div>
+        </div>
+      )}
+
+      {/* Stale handle warning */}
+      {selectedProjectId && staleProjects.has(selectedProjectId) && (
+        <div className="flex items-start gap-2 p-2 rounded bg-yellow-500/10 border border-yellow-500/30">
+          <AlertCircle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="text-xs text-yellow-500 mb-1.5">
+              <strong>Access Required:</strong> Directory access lost. Re-grant permission to view files.
+            </div>
+            <button
+              onClick={() => handleRegrantAccess(selectedProjectId)}
+              className="
+                flex items-center gap-1.5 px-2 py-1 rounded text-xs
+                bg-yellow-500/20 hover:bg-yellow-500/30
+                text-yellow-500
+                border border-yellow-500/30
+                transition-colors duration-200
+              "
+            >
+              <RefreshCw className="w-3 h-3" />
+              Re-grant Access
+            </button>
           </div>
         </div>
       )}
