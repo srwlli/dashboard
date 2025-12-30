@@ -6,7 +6,8 @@ import type { Project } from '@/lib/coderef/types';
 import { showDirectoryPicker } from '@/lib/coderef/local-access';
 import { saveDirectoryHandle, deleteDirectoryHandle, getDirectoryHandle } from '@/lib/coderef/indexeddb';
 import { isFileSystemAccessSupported, verifyHandleValid, ensurePermission } from '@/lib/coderef/permissions';
-import { Folder, Plus, Trash2, AlertCircle, RefreshCw } from 'lucide-react';
+import { initializePersistence, saveDirectoryHandlePersistent } from '@/lib/coderef/persistence';
+import { Folder, Plus, Trash2, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
 
 interface ProjectSelectorProps {
