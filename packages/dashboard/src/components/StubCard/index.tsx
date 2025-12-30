@@ -38,7 +38,7 @@ const statusBgColors: Record<string, string> = {
  * Maintains the same external API while using UnifiedCard internally.
  */
 export function StubCard({ stub, onClick }: StubCardProps) {
-  const CategoryIcon = categoryIcons[stub.category || 'feature'];
+  const CategoryIcon = categoryIcons[stub.category || ''] || categoryIcons.feature;
   const priorityColor = priorityColors[stub.priority || ''] || 'text-ind-text';
   const statusBg = statusBgColors[stub.status || 'stub'] || 'bg-ind-bg text-ind-text';
 
