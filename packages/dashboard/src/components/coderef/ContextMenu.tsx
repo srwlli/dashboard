@@ -6,7 +6,8 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface ContextMenuItem {
@@ -14,8 +15,10 @@ export interface ContextMenuItem {
   label: string;
   /** Menu item icon */
   icon: LucideIcon;
-  /** Click handler */
-  onClick: () => void;
+  /** Click handler (ignored if submenu is provided) */
+  onClick?: () => void;
+  /** Optional submenu items */
+  submenu?: ContextMenuItem[];
   /** Optional icon class name (for styling like fill color) */
   iconClassName?: string;
   /** Optional text color class */
@@ -40,6 +43,7 @@ export function ContextMenu({
   onClose,
 }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Close menu on outside click or escape key
   useEffect(() => {
@@ -64,9 +68,11 @@ export function ContextMenu({
     };
   }, [onClose]);
 
-  const handleItemClick = (onClick: () => void) => {
-    onClick();
-    onClose();
+  const handleItemClick = (onClick?: () => void) => {
+    if (onClick) {
+      onClick();
+      onClose();
+    }
   };
 
   return (
@@ -77,17 +83,53 @@ export function ContextMenu({
     >
       {items.map((item, index) => {
         const Icon = item.icon;
+        const hasSubmenu = item.submenu && item.submenu.length > 0;
+
         return (
-          <button
+          <div
             key={index}
-            onClick={() => handleItemClick(item.onClick)}
-            className={`w-full px-3 py-2 text-left text-sm hover:bg-ind-bg flex items-center gap-2 ${
-              item.textClassName || 'text-ind-text'
-            }`}
+            className="relative"
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
           >
-            <Icon className={`w-4 h-4 ${item.iconClassName || ''}`} />
-            <span>{item.label}</span>
-          </button>
+            <button
+              onClick={() => !hasSubmenu && handleItemClick(item.onClick)}
+              className={`w-full px-3 py-2 text-left text-sm hover:bg-ind-bg flex items-center gap-2 justify-between ${
+                item.textClassName || 'text-ind-text'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Icon className={`w-4 h-4 ${item.iconClassName || ''}`} />
+                <span>{item.label}</span>
+              </div>
+              {hasSubmenu && (
+                <ChevronRight className="w-3.5 h-3.5 text-ind-text-muted" />
+              )}
+            </button>
+
+            {/* Submenu */}
+            {hasSubmenu && hoveredIndex === index && (
+              <div
+                className="absolute left-full top-0 ml-1 bg-ind-panel border border-ind-border rounded shadow-lg py-1 min-w-[180px]"
+              >
+                {item.submenu!.map((subItem, subIndex) => {
+                  const SubIcon = subItem.icon;
+                  return (
+                    <button
+                      key={subIndex}
+                      onClick={() => handleItemClick(subItem.onClick)}
+                      className={`w-full px-3 py-2 text-left text-sm hover:bg-ind-bg flex items-center gap-2 ${
+                        subItem.textClassName || 'text-ind-text'
+                      }`}
+                    >
+                      <SubIcon className={`w-4 h-4 ${subItem.iconClassName || ''}`} />
+                      <span>{subItem.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         );
       })}
     </div>

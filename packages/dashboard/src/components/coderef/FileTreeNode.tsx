@@ -137,9 +137,9 @@ export function FileTreeNode({
     setContextMenu({ x: e.clientX, y: e.clientY });
   };
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = (groupName?: string) => {
     if (onToggleFavorite) {
-      onToggleFavorite(node.path);
+      onToggleFavorite(node.path, groupName);
     }
   };
 
@@ -263,12 +263,41 @@ export function FileTreeNode({
           x={contextMenu.x}
           y={contextMenu.y}
           items={[
-            {
-              label: favorited ? 'Remove from Favorites' : 'Add to Favorites',
-              icon: Star,
-              onClick: handleToggleFavorite,
-              iconClassName: favorited ? 'fill-yellow-400 text-yellow-400' : '',
-            },
+            // If already favorited, show "Remove from Favorites"
+            ...(favorited
+              ? [
+                  {
+                    label: 'Remove from Favorites',
+                    icon: Star,
+                    onClick: () => handleToggleFavorite(),
+                    iconClassName: 'fill-yellow-400 text-yellow-400',
+                  },
+                ]
+              : // If not favorited, show "Add to Favorites" with group submenu
+                [
+                  {
+                    label: 'Add to Favorites',
+                    icon: Star,
+                    onClick: availableGroups.length === 0 ? () => handleToggleFavorite() : undefined,
+                    submenu:
+                      availableGroups.length > 0
+                        ? [
+                            {
+                              label: 'Ungrouped',
+                              icon: Star,
+                              onClick: () => handleToggleFavorite(),
+                              iconClassName: '',
+                            },
+                            ...availableGroups.map((group) => ({
+                              label: group.name,
+                              icon: Star,
+                              onClick: () => handleToggleFavorite(group.name),
+                              iconClassName: '',
+                            })),
+                          ]
+                        : undefined,
+                  },
+                ]),
             // Only show "Add to Prompt" for files (not directories)
             ...(node.type === 'file' && project
               ? [
