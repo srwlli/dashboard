@@ -2,6 +2,7 @@
 
 import { Clock, CheckCircle, RefreshCw, Zap, Sparkles, Lock } from 'lucide-react';
 import { WorkorderObject } from '@/types/workorders';
+import { UnifiedCard } from '@/components/UnifiedCard';
 
 interface WorkorderCardProps {
   workorder: WorkorderObject;
@@ -30,8 +31,13 @@ const statusColors: Record<string, string> = {
   closed: 'text-ind-text-muted',
 };
 
+/**
+ * WorkorderCard - Wrapper around UnifiedCard for workorder-specific data
+ *
+ * Maintains the same external API while using UnifiedCard internally.
+ */
 export function WorkorderCard({ workorder, onClick }: WorkorderCardProps) {
-  const StatusIcon = statusIcons[workorder.status];
+  const StatusIcon = statusIcons[workorder.status] || Clock;
   const statusColor = statusColors[workorder.status] || 'text-ind-text';
 
   const lastUpdated = new Date(workorder.updated || workorder.created);
@@ -42,41 +48,28 @@ export function WorkorderCard({ workorder, onClick }: WorkorderCardProps) {
   });
 
   return (
-    <div
-      onClick={onClick}
-      className={`
-        p-3 sm:p-4 rounded-lg
-        bg-ind-panel border border-ind-border
-        transition-all duration-200
-        ${onClick ? 'cursor-pointer hover:bg-ind-bg hover:border-ind-accent/50' : ''}
-      `}
-    >
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            {StatusIcon && <StatusIcon className={`w-4 sm:w-5 h-4 sm:h-5 ${statusColor}`} />}
-            <h3 className="text-xs sm:text-sm font-semibold text-ind-text truncate">
-              {workorder.feature_name}
-            </h3>
-          </div>
-          <p className="text-xs text-ind-text-muted truncate">
-            {workorder.project_name}
-          </p>
-        </div>
-        <span className="text-xs font-mono text-ind-text-muted shrink-0">
+    <UnifiedCard
+      icon={StatusIcon}
+      iconColor={statusColor}
+      title={workorder.feature_name}
+      subtitle={workorder.project_name}
+      headerRight={
+        <span className="text-xs font-mono text-ind-text-muted">
           {workorder.id}
         </span>
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 sm:pt-2 border-t border-ind-border/50 min-w-0">
-        <span className="text-xs text-ind-text-muted capitalize shrink-0 whitespace-nowrap">
+      }
+      footerLeft={
+        <span className="text-xs text-ind-text-muted capitalize whitespace-nowrap">
           {workorder.status.replace(/_/g, ' ')}
         </span>
-        <span className="text-xs text-ind-text-muted shrink-0">
+      }
+      footerRight={
+        <span className="text-xs text-ind-text-muted">
           {formattedDate}
         </span>
-      </div>
-    </div>
+      }
+      onClick={onClick}
+    />
   );
 }
 
