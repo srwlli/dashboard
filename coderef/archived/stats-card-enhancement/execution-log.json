@@ -1,0 +1,110 @@
+[
+  {
+    "timestamp": "2025-12-30T02:06:52.658700",
+    "workorder_id": "WO-STATS-CARD-ENHANCEMENT-001",
+    "feature_name": "stats-card-enhancement",
+    "task_count": 20,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: Review complete plan for gaps",
+        "activeForm": "PRE-IMPL-001: Reviewing complete plan for gaps",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-002: Verify StatsCard component structure in packages/dashboard/src/components/StatsCard/index.tsx",
+        "activeForm": "PRE-IMPL-002: Verifying StatsCard component structure in packages/dashboard/src/components/StatsCard/index.tsx",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-003: Verify page.tsx stubStats logic in packages/dashboard/src/app/page.tsx",
+        "activeForm": "PRE-IMPL-003: Verifying page.tsx stubStats logic in packages/dashboard/src/app/page.tsx",
+        "status": "pending"
+      },
+      {
+        "content": "SIZE-001: Change p-3 sm:p-4 to p-2 sm:p-3 in StatsCard outer div",
+        "activeForm": "SIZE-001: Changeing p-3 sm:p-4 to p-2 sm:p-3 in StatsCard outer div",
+        "status": "pending"
+      },
+      {
+        "content": "SIZE-002: Change space-y-2 to space-y-1 in StatsCard outer container",
+        "activeForm": "SIZE-002: Changeing space-y-2 to space-y-1 in StatsCard outer container",
+        "status": "pending"
+      },
+      {
+        "content": "SIZE-003: Change space-y-1 to space-y-0.5 in StatsCard inner div",
+        "activeForm": "SIZE-003: Changeing space-y-1 to space-y-0.5 in StatsCard inner div",
+        "status": "pending"
+      },
+      {
+        "content": "SIZE-004: Change text-xs sm:text-sm to text-[10px] sm:text-xs in h3 title",
+        "activeForm": "SIZE-004: Changeing text-xs sm:text-sm to text-[10px] sm:text-xs in h3 title",
+        "status": "pending"
+      },
+      {
+        "content": "SIZE-005: Reduce all item text sizes by one step (text-xs sm:text-sm \u2192 text-[10px] sm:text-xs)",
+        "activeForm": "SIZE-005: Reduceing all item text sizes by one step (text-xs sm:text-sm \u2192 text-[10px] sm:text-xs)",
+        "status": "pending"
+      },
+      {
+        "content": "STUB-001: Add status breakdown logic - count stubs by status field",
+        "activeForm": "STUB-001: Adding status breakdown logic - count stubs by status field",
+        "status": "pending"
+      },
+      {
+        "content": "STUB-002: Add priority breakdown logic - count stubs by priority field",
+        "activeForm": "STUB-002: Adding priority breakdown logic - count stubs by priority field",
+        "status": "pending"
+      },
+      {
+        "content": "STUB-003: Remove [{ label: 'Total Stubs', count }] from stubStats (redundant)",
+        "activeForm": "STUB-003: Removeing [{ label: 'Total Stubs', count }] from stubStats (redundant)",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-001: Test mobile responsive (320px width in Chrome DevTools)",
+        "activeForm": "TEST-001: Testing mobile responsive (320px width in Chrome DevTools)",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-002: Test tablet responsive (768px width in Chrome DevTools)",
+        "activeForm": "TEST-002: Testing tablet responsive (768px width in Chrome DevTools)",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-003: Test desktop responsive (1920px width in Chrome DevTools)",
+        "activeForm": "TEST-003: Testing desktop responsive (1920px width in Chrome DevTools)",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-004: Verify text readability at all sizes",
+        "activeForm": "TEST-004: Verifying text readability at all sizes",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Update DELIVERABLES.md with completion status",
+        "activeForm": "DOC-001: Updating DELIVERABLES.md with completion status",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-001: All tests passing",
+        "activeForm": "FINALIZA-001: Alling tests passing",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-002: Type check passes (npm run type-check)",
+        "activeForm": "FINALIZA-002: Typeing check passes (npm run type-check)",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-003: Visual inspection complete",
+        "activeForm": "FINALIZA-003: Visualing inspection complete",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-004: DELIVERABLES.md updated",
+        "activeForm": "FINALIZA-004: DELIVERABLES.mding updated",
+        "status": "pending"
+      }
+    ]
+  }
+]

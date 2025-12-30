@@ -1,0 +1,76 @@
+{
+  "workorder_id": "WO-FILTER-BAR-002",
+  "feature_name": "filter-bar-component",
+  "status": "pending_plan",
+  "created": "2025-12-29T00:00:00Z",
+  "last_updated": "2025-12-29T00:00:00Z",
+  "handoff": {
+    "orchestrator_to_agent": "See handoff prompt below",
+    "status": "pending_plan",
+    "agent_instructions": [
+      "Review context.json for comprehensive sort and filter requirements",
+      "Analyze existing FilterConfig type and StubList filtering logic",
+      "Design inline filter controls integrated with TabNavigation row",
+      "NO badges - filters and sort only",
+      "Run /create-plan to generate implementation plan",
+      "Update this file's status to 'plan_submitted'",
+      "Add entry to communication_log with plan summary",
+      "Wait for approval before implementing"
+    ]
+  },
+  "communication_log": [
+    {
+      "timestamp": "2025-12-30T00:00:00Z",
+      "source": "orchestrator",
+      "message": "Design updated: Changed to inline filter controls (integrated with TabNavigation row). Removed all badge requirements per user request.",
+      "changes": [
+        "Filter controls now inline with tabs (right side of Workorders | Stubs)",
+        "NO badges - filters and sort only",
+        "Updated requirements, success criteria, and implementation plan",
+        "Target: Clean tab row layout with collapsible filters for mobile"
+      ]
+    },
+    {
+      "timestamp": "2025-12-29T00:00:00Z",
+      "source": "orchestrator",
+      "message": "Workorder created. Dashboard agent should implement comprehensive sort and filter controls for stubs.",
+      "context": {
+        "current_state": {
+          "FilterBar_exists": false,
+          "FilterConfig_type_exists": true,
+          "StubList_supports_filtering": true,
+          "current_filters": ["search", "status", "priority", "category"],
+          "missing_filters": ["project", "timeRange"],
+          "sort_capability": false,
+          "stale_detection": false
+        },
+        "target_state": {
+          "inline_filter_controls": "Integrated with TabNavigation row (right side of tabs)",
+          "filters_supported": ["search", "project", "timeRange", "status", "priority", "category"],
+          "sort_options": ["newest", "oldest", "priority", "project"],
+          "responsive_design": true,
+          "filter_count_badge": true
+        },
+        "user_benefit": [
+          "Quickly find stubs by project (e.g., show only 'coderef-dashboard' stubs)",
+          "Filter by time range (e.g., 'Last 7 days' or 'Stale (90+ days)')",
+          "Multi-select filtering (e.g., show 'high' + 'critical' priority stubs)",
+          "Sort by newest/oldest/priority for different workflows",
+          "Clean inline interface keeps focus on content without separate filter bar"
+        ]
+      }
+    }
+  ],
+  "agent_status": {
+    "current_phase": "planning",
+    "blocked": false,
+    "blockers": [],
+    "next_action": "Review context.json, analyze existing code, and run /create-plan"
+  },
+  "deliverables": {
+    "plan_created": false,
+    "implementation_complete": false,
+    "tests_passing": false,
+    "archived": false
+  }
+}

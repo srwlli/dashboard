@@ -1,0 +1,148 @@
+{
+  "workorder_id": "WO-FILTER-BAR-002",
+  "stub_id": null,
+  "feature_name": "filter-bar-component",
+  "created": "2025-12-29",
+  "target_project": "coderef-dashboard",
+  "description": "Add inline sort and filter controls next to tabs (Workorders | Stubs) with comprehensive filtering (project, time range, status, priority, category)",
+  "goal": "Enable users to quickly find relevant stubs through multi-dimensional filtering and sorting, with controls integrated into the tab navigation area",
+  "requirements": [
+    "Add inline filter controls in the tab navigation row (right side of Workorders | Stubs tabs)",
+    "Add filtering controls: Project, Time Range, Status, Priority, Category",
+    "Add sorting controls: Newest/Oldest, Priority, Project Name",
+    "Add search input for text-based filtering",
+    "Add 'Clear Filters' button to reset all filters",
+    "Integrate controls into TabNavigation component or adjacent to it",
+    "Add project filter support to StubList filtering logic",
+    "Support multi-select for status, priority, and category filters",
+    "Persist filter state in URL query params (optional but recommended)",
+    "Show active filter count badge (e.g., '3 filters active')",
+    "Responsive design (mobile-friendly filter UI)"
+  ],
+  "constraints": [
+    "Do NOT modify StubList filtering logic more than necessary (it already supports filters)",
+    "Maintain existing FilterConfig type interface",
+    "Keep industrial theme consistency (ind-* variables)",
+    "No external dependencies - use existing React hooks only",
+    "Filter operations must be client-side (no API changes)",
+    "Backward compatible with existing StubList component"
+  ],
+  "technical_context": {
+    "existing_code": {
+      "FilterConfig_type": {
+        "location": "src/components/FilterBar/index.tsx (or types file)",
+        "current_fields": {
+          "search": "string (optional)",
+          "status": "string[] (optional)",
+          "priority": "string[] (optional)",
+          "category": "string[] (optional)"
+        },
+        "needs_addition": {
+          "project": "string[] (optional) - filter by target_project",
+          "timeRange": "string (optional) - '7d' | '30d' | '90d' | 'stale' | 'all'"
+        }
+      },
+      "StubList_component": {
+        "location": "src/components/StubList/index.tsx",
+        "supports_filtering": true,
+        "current_filters": ["search", "status", "priority", "category"],
+        "needs_addition": ["project", "timeRange"]
+      },
+      "stub_schema": {
+        "target_project": "string (e.g., 'coderef-dashboard', 'assistant', 'unknown')",
+        "created": "string (YYYY-MM-DD format)",
+        "status": "string (planning, ready, blocked, promoted, abandoned)",
+        "priority": "string (low, medium, high, critical)",
+        "category": "string (feature, enhancement, bugfix, etc.)"
+      }
+    },
+    "filter_options": {
+      "project": [
+        "All Projects",
+        "assistant",
+        "coderef-dashboard",
+        "coderef-docs",
+        "coderef-workflow",
+        "coderef-context",
+        "personas-mcp",
+        "scriptboard",
+        "multi-tenant",
+        "unknown"
+      ],
+      "timeRange": [
+        "All Time",
+        "Last 7 Days",
+        "Last 30 Days",
+        "Last 90 Days",
+        "Stale (90+ days)"
+      ],
+      "status": ["planning", "ready", "blocked", "promoted", "abandoned"],
+      "priority": ["low", "medium", "high", "critical"],
+      "category": ["feature", "enhancement", "bugfix", "infrastructure", "documentation", "refactor", "research"]
+    },
+    "sort_options": [
+      "Newest First",
+      "Oldest First",
+      "Priority (High to Low)",
+      "Project (A-Z)"
+    ]
+  },
+  "success_criteria": [
+    "Filter controls render inline with tabs (right side of Workorders | Stubs)",
+    "All filter controls functional (project, time, status, priority, category)",
+    "Sort dropdown works (newest/oldest/priority/project)",
+    "Search input filters by title and description",
+    "Clear Filters button resets all filters to default",
+    "Filter count badge shows number of active filters",
+    "Responsive design works on mobile (collapsible filters)",
+    "No breaking changes to existing StubList API",
+    "Visual consistency with industrial theme",
+    "Tab row layout remains clean and organized"
+  ],
+  "implementation_plan": {
+    "phase_1": "Design inline filter UI layout (integrate with TabNavigation row)",
+    "phase_2": "Create filter controls component with dropdowns, chips, and search",
+    "phase_3": "Add filter state management in AssistantPage (useState)",
+    "phase_4": "Extend StubList filtering logic to support project + time filters",
+    "phase_5": "Add sorting logic and integration",
+    "phase_6": "Polish (responsive design, animations, filter count badge)"
+  },
+  "example_api": {
+    "FilterBar_props": {
+      "filters": "FilterConfig",
+      "onFiltersChange": "(filters: FilterConfig) => void",
+      "sortBy": "SortOption",
+      "onSortChange": "(sort: SortOption) => void",
+      "totalCount": "number (total stubs before filtering)",
+      "filteredCount": "number (stubs after filtering)"
+    },
+    "FilterConfig_type": {
+      "search": "string (optional)",
+      "project": "string[] (optional)",
+      "timeRange": "'7d' | '30d' | '90d' | 'stale' | 'all' (optional)",
+      "status": "string[] (optional)",
+      "priority": "string[] (optional)",
+      "category": "string[] (optional)"
+    },
+    "SortOption_type": "'newest' | 'oldest' | 'priority' | 'project'",
+    "usage_example": "AssistantPage manages filter/sort state, passes to FilterBar and StubList"
+  },
+  "edge_cases": [
+    "No stubs match filters - show empty state with 'Clear Filters' suggestion",
+    "All filters cleared - reset to default view (all stubs, newest first)",
+    "Time filter + Project filter combo - apply both (AND logic)",
+    "Unknown project filter - should work (show all 'unknown' stubs)",
+    "Mobile view - filters collapse into expandable drawer/modal",
+    "Tab row with many filters - ensure clean layout without wrapping"
+  ],
+  "related_files": [
+    "src/components/TabNavigation/index.tsx (modify - add inline filter controls)",
+    "src/components/FilterControls/index.tsx (to be created - optional separate component)",
+    "src/components/StubList/index.tsx (modify - extend filtering logic)",
+    "src/app/assistant/page.tsx (modify - integrate filter state)",
+    "src/types/stubs.ts (extend FilterConfig type with project and timeRange)"
+  ],
+  "workorder_type": "delegated",
+  "priority": "medium",
+  "estimated_effort": "2-3 hours"
+}
