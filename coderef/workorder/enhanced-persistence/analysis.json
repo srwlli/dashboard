@@ -1,0 +1,168 @@
+{
+  "foundation_docs": {
+    "available": [
+      "README.md (root)",
+      "API.md (coderef/foundation-docs)",
+      "ARCHITECTURE.md (coderef/foundation-docs)",
+      "COMPONENTS.md (coderef/foundation-docs)",
+      "SCHEMA.md (coderef/foundation-docs)"
+    ],
+    "missing": [
+      "USER-GUIDE.md"
+    ]
+  },
+  "foundation_doc_content": {
+    "ARCHITECTURE.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# System Architecture\n\n**Date:** 2025-12-28\n**Version:** 0.1.0\n\n---\n\n## Overview\n\nThe CodeRef Dashboard is a modular widget system with PWA and Electron support, designed to aggregate and visualize workorder and stub data from multiple project directories. The system follows a monorepo architecture with three primary packages.\n\n**Core Purpose:** Provide a unified dashboard interface for tracking workorders (active work) and stubs (backlog items) across multiple software projects.\n\n---\n\n## System",
+      "headers": [
+        "System Architecture",
+        "Overview",
+        "System Topology",
+        "Package Structure",
+        "Monorepo Organization",
+        "Technology Stack",
+        "Frontend Layer",
+        "Backend Layer",
+        "Desktop Distribution",
+        "Build Tools"
+      ],
+      "size": 15515
+    },
+    "API.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# API Reference\n\n**Framework:** POWER\n**Date:** 2025-12-28\n**Version:** 0.1.0\n\n---\n\n## Overview\n\nThis document provides comprehensive API reference for the CodeRef Dashboard backend. The dashboard aggregates workorder and stub data from multiple projects using Next.js API Routes.\n\n**Key Architecture:**\n- Next.js 14 API Routes (App Router)\n- File-based API endpoints in `packages/dashboard/src/app/api/`\n- Reads data from multiple project directories via `projects.config.json`\n- RESTful JSON respon",
+      "headers": [
+        "API Reference",
+        "Overview",
+        "Base URL",
+        "Authentication",
+        "Endpoints",
+        "Workorders",
+        "Stubs",
+        "Data Models",
+        "WorkorderObject",
+        "StubObject"
+      ],
+      "size": 12130
+    },
+    "COMPONENTS.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# Component Library Reference\n\n**Framework:** React 19 + Next.js 14 (App Router)\n**Date:** 2025-12-28\n**Version:** 0.1.0\n\n---\n\n## Overview\n\nThis document catalogs all reusable UI components in the CodeRef Dashboard. The component library follows a modular architecture with shared core components and dashboard-specific implementations.\n\n**Key Characteristics:**\n- React 19 with TypeScript\n- Next.js 14 App Router (`'use client'` directive for client components)\n- Tailwind CSS with custom design tok",
+      "headers": [
+        "Component Library Reference",
+        "Overview",
+        "Component Architecture",
+        "Package Structure",
+        "Core Components",
+        "ErrorBoundary",
+        "Data Display Components",
+        "WorkorderCard",
+        "StubCard",
+        "StatsCard"
+      ],
+      "size": 18683
+    },
+    "SCHEMA.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# Schema & Data Model Reference\n\n**Framework:** POWER\n**Date:** 2025-12-28\n**Schema Version:** 0.1.0\n\n---\n\n## Overview\n\nThis document defines the data schemas, TypeScript interfaces, and data models used throughout the CodeRef Dashboard project. The dashboard uses a file-based data architecture reading from multiple project directories rather than a traditional database.\n\n**Key Characteristics:**\n- No persistent database - data read from file system on demand\n- Strong TypeScript typing throughou",
+      "headers": [
+        "Schema & Data Model Reference",
+        "Overview",
+        "Data Storage Architecture",
+        "File System as Database",
+        "No Persistent Database",
+        "Core Data Models",
+        "1. Workorder Schema",
+        "2. Stub Schema",
+        "3. API Response Schemas",
+        "4. Prompting Workflow Schema"
+      ],
+      "size": 12575
+    },
+    "README.md": {
+      "location": "root",
+      "preview": "# CodeRef Dashboard\n\n**A modular widget system with PWA and Electron support for tracking workorders and stubs across multiple projects**\n\n**Version:** 0.4.0\n**Date:** 2025-12-30\n**Maintainer:** CodeRef Team\n\n## What's New in 0.4.0\n\n\u2728 **Stats Card Enhancement** - Smaller, denser cards with richer information\n- Reduced card size (~25% smaller) with tighter padding and spacing\n- Enhanced stub stats with 8 breakdowns: status (stub, planned, in_progress, completed) + priority (low, medium, high, cri",
+      "headers": [
+        "CodeRef Dashboard",
+        "What's New in 0.4.0",
+        "Overview",
+        "Quick Start",
+        "Prerequisites",
+        "Installation",
+        "Clone the repository",
+        "Install dependencies",
+        "Run development server",
+        "Project Structure"
+      ],
+      "size": 9223
+    }
+  },
+  "inventory_data": {
+    "available": [],
+    "missing": [
+      "Run /quick-inventory to generate inventory data"
+    ]
+  },
+  "coding_standards": {
+    "available": [],
+    "missing": [
+      "BEHAVIOR-STANDARDS.md",
+      "COMPONENT-PATTERN.md",
+      "UI-STANDARDS.md",
+      "UX-PATTERNS.md",
+      "COMPONENT-INDEX.md"
+    ]
+  },
+  "reference_components": {
+    "primary": null,
+    "secondary": [],
+    "total_found": 0,
+    "note": "Using fallback - coderef tools unavailable"
+  },
+  "key_patterns_identified": [
+    "Error handling: try-catch blocks found in 35 files",
+    "File organization: barrel exports (export from) found in 9 files"
+  ],
+  "technology_stack": {
+    "language": "JavaScript/TypeScript",
+    "framework": "unknown",
+    "database": "unknown",
+    "testing": "unknown",
+    "build": "npm scripts"
+  },
+  "project_structure": {
+    "main_directories": [
+      "packages\\dashboard\\src\\lib\\coderef"
+    ],
+    "file_counts": {
+      "packages\\dashboard\\src\\lib\\coderef": 10,
+      "packages\\dashboard\\src\\components\\coderef": 9,
+      "packages\\dashboard\\src\\components\\PromptingWorkflow\\components": 8,
+      "packages\\dashboard": 7,
+      "packages\\dashboard\\src\\components": 6,
+      "packages\\dashboard\\src\\components\\PromptingWorkflow\\utils": 6,
+      "coderef\\working\\prompting-workflow-widget": 6,
+      "coderef\\workorder\\migrate-to-coderef-dashboard": 6,
+      "coderef\\foundation-docs": 5,
+      "coderef\\archived\\stats-card-enhancement": 5
+    },
+    "organization_pattern": "unknown"
+  },
+  "gaps_and_risks": [
+    "Missing foundation docs: USER-GUIDE.md",
+    "No coding standards directory found (coderef/standards/)",
+    "No test directory found (tests/, test/, or __tests__/)",
+    "No CI configuration found (.github/workflows/, .gitlab-ci.yml, etc.)"
+  ],
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Project Analysis",
+    "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+    "feature_id": "enhanced-persistence",
+    "last_updated": "2025-12-30",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-01-29"
+  }
+}

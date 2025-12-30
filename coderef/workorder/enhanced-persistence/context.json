@@ -1,0 +1,45 @@
+{
+  "feature_name": "enhanced-persistence",
+  "description": "Implement multi-layered persistence strategy for File System Access API directory handles to minimize re-authorization needs across browser sessions",
+  "goal": "Reduce user friction by auto-restoring directory permissions on app reload, requesting persistent storage, and providing batch re-authorization UX when silent restoration fails",
+  "requirements": [
+    "Request navigator.storage.persist() on startup to prevent IndexedDB eviction",
+    "Implement silent permission restoration on app load for all projects",
+    "Batch-check all project handles and attempt silent restore without prompts",
+    "Show single banner for stale projects instead of individual warnings",
+    "Integrate initializePersistence() into ProjectSelector on mount",
+    "Replace saveDirectoryHandle with saveDirectoryHandlePersistent when adding projects",
+    "Add batch restore UI component with 'Restore All' button",
+    "Log detailed persistence status to console for debugging",
+    "Ensure backward compatibility with existing projects",
+    "Handle edge cases: missing handles, permission denied, invalid handles"
+  ],
+  "out_of_scope": [],
+  "constraints": [
+    "Do NOT modify existing persistence.ts module (already created)",
+    "Do NOT break existing project add/remove functionality",
+    "Do NOT change Project or StubObject TypeScript interfaces",
+    "MUST maintain File System Access API browser compatibility (Chrome/Edge only)",
+    "MUST gracefully degrade if persistent storage permission denied",
+    "MUST preserve existing stale handle detection logic in checkForStaleHandles as fallback",
+    "UI changes must match industrial theme (ind-* classes)",
+    "MUST NOT block UI loading - run restoration in background"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+    "workorder_assigned_at": "2025-12-30T20:02:21.755260+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+    "feature_id": "enhanced-persistence",
+    "last_updated": "2025-12-30",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-01-29"
+  }
+}

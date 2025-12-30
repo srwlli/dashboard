@@ -1,0 +1,540 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "enhanced-persistence",
+    "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "PlanningGenerator",
+    "has_context": true,
+    "has_analysis": true,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2025-12-30",
+      "ai_assistance": true,
+      "next_review": "2026-01-29"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "discovery": {
+        "completed": true,
+        "files_analyzed": [
+          "PERSISTENCE_ANALYSIS.md",
+          "packages/dashboard/src/lib/coderef/persistence.ts",
+          "packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+          "packages/dashboard/src/lib/coderef/indexeddb.ts",
+          "packages/dashboard/src/lib/coderef/permissions.ts"
+        ],
+        "key_findings": [
+          "persistence.ts module already created with 3-layer strategy",
+          "ProjectSelector.tsx has imports but not integrated",
+          "Individual stale warnings exist (lines 289-311)",
+          "checkForStaleHandles() already detects stale projects"
+        ]
+      },
+      "foundation_docs": [
+        "ARCHITECTURE.md - Monorepo structure, Next.js App Router",
+        "COMPONENTS.md - React component patterns with Tailwind",
+        "SCHEMA.md - TypeScript interfaces (Project type)"
+      ],
+      "reference_components": [
+        "ProjectSelector.tsx - Main integration point",
+        "MobileNav.tsx - Recent example of controlled component pattern"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Implement multi-layered persistence strategy for File System Access API directory handles to eliminate repetitive re-authorization across browser sessions",
+      "value_proposition": "Transform user experience from '5 projects = 5 re-authorization clicks every session' to 'automatic silent restoration with batch UI fallback only when needed'",
+      "real_world_analogy": "Like 'Remember Me' checkbox on login forms - browser remembers your credentials so you don't re-enter them every time. For file access, we use Persistent Storage API + silent permission checks to avoid repetitive directory picker dialogs.",
+      "use_case": "Developer opens dashboard → app silently restores 4/5 project permissions → only 1 project needs manual re-auth → user clicks single 'Restore All' button → all projects ready to use (vs current: 5 individual re-auth dialogs)",
+      "output": [
+        "Integrated initializePersistence() in ProjectSelector",
+        "BatchRestoreUI component for stale projects",
+        "Updated ProjectSelector to use saveDirectoryHandlePersistent",
+        "Console logs for debugging persistence status"
+      ]
+    },
+    "2_risk_assessment": {
+      "overall_risk": "low",
+      "complexity": "low (3 files modified, 1 new component, ~150 LOC total)",
+      "scope": "Small - 3 files modified, 1 new component created",
+      "file_system_risk": "minimal - using existing persistence.ts module",
+      "dependencies": [
+        {
+          "name": "persistence.ts",
+          "status": "already created",
+          "risk": "none"
+        },
+        {
+          "name": "File System Access API",
+          "status": "browser API (Chrome/Edge only)",
+          "risk": "low - already used in codebase"
+        },
+        {
+          "name": "Persistent Storage API",
+          "status": "browser API (broader support than File System)",
+          "risk": "low - graceful degradation if denied"
+        }
+      ],
+      "performance_concerns": [
+        "initializePersistence runs on mount - will not delay UI render (runs in background after mount)",
+        "Mitigation: Run in background, don't block render",
+        "Batch permission checks run in parallel (Promise.all)"
+      ],
+      "security_considerations": [
+        "Persistent storage permission prompt (one-time)",
+        "No new security surface - using existing permission APIs"
+      ],
+      "breaking_changes": "none - backward compatible with existing projects"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        {
+          "path": "packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+          "changes": "Add initializePersistence call on mount, integrate BatchRestoreUI, replace saveDirectoryHandle",
+          "current_loc": 337,
+          "estimated_additions": 50
+        },
+        {
+          "path": "packages/dashboard/src/components/coderef/BatchRestoreUI.tsx",
+          "changes": "Create new component for batch restore banner",
+          "current_loc": 0,
+          "estimated_additions": 80
+        },
+        {
+          "path": "packages/dashboard/src/lib/coderef/persistence.ts",
+          "changes": "Already created - no modifications needed",
+          "current_loc": 172,
+          "estimated_additions": 0
+        }
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "@/lib/coderef/persistence (initializePersistence, saveDirectoryHandlePersistent)",
+          "@/lib/coderef/permissions (ensurePermission, verifyHandleValid)",
+          "@/lib/coderef/indexeddb (getDirectoryHandle)",
+          "@/lib/coderef/types (Project)"
+        ],
+        "existing_external": [
+          "react (useState, useEffect)",
+          "lucide-react (icons)"
+        ],
+        "new_external": [],
+        "new_internal": []
+      },
+      "architecture_context": "Component layer - integrating persistence utilities into ProjectSelector UI component. Follows existing pattern of useEffect hooks for side effects on mount. BatchRestoreUI follows UnifiedCard component pattern for consistent styling."
+    },
+    "4_key_features": {
+      "primary_features": [
+        {
+          "name": "Silent Permission Restoration",
+          "description": "On app startup, automatically check all project handles and silently restore permissions without user prompts",
+          "technical_approach": "Call initializePersistence(projects) in useEffect. This function calls batchRestorePermissions to query permissions for all projects in parallel"
+        },
+        {
+          "name": "Persistent Storage Request",
+          "description": "Request navigator.storage.persist() to prevent IndexedDB eviction across browser restarts",
+          "technical_approach": "requestPersistentStorage() called automatically by initializePersistence and saveDirectoryHandlePersistent"
+        },
+        {
+          "name": "Batch Restore UI",
+          "description": "Single banner for all stale projects with 'Restore All' button instead of individual warnings per project",
+          "technical_approach": "BatchRestoreUI component displays when staleProjects.size > 0, iterates through stale projects and calls showDirectoryPicker for each"
+        }
+      ],
+      "secondary_features": [
+        {
+          "name": "Console Logging",
+          "description": "Detailed persistence logs for debugging silent restoration process",
+          "technical_approach": "persistence.ts already includes console.log statements with [Persistence] prefix"
+        },
+        {
+          "name": "Backward Compatibility",
+          "description": "Existing checkForStaleHandles remains as fallback detection mechanism",
+          "technical_approach": "Keep existing reactive checking logic - new proactive restoration supplements it"
+        }
+      ],
+      "edge_case_handling": [
+        {
+          "case": "Persistent storage denied",
+          "handling": "Gracefully continue - silent restoration may fail more often but still works"
+        },
+        {
+          "case": "All handles stale",
+          "handling": "BatchRestoreUI shows for all projects, user restores one-by-one via batch flow"
+        },
+        {
+          "case": "Browser doesn't support File System Access API",
+          "handling": "Feature already checks isFileSystemAccessSupported() and skips initialization"
+        },
+        {
+          "case": "Directory moved/deleted",
+          "handling": "verifyHandleValid detects, marks as stale, batch restore UI prompts for new location"
+        }
+      ],
+      "configuration_options": [
+        "None - feature auto-activates for File System Access API projects"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        {
+          "task_id": "SETUP-001",
+          "title": "Integrate initializePersistence on ProjectSelector mount",
+          "description": "Add useEffect hook to call initializePersistence(projects) when component mounts and projects load",
+          "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+          "files": [
+            "packages/dashboard/src/components/coderef/ProjectSelector.tsx"
+          ],
+          "estimated_loc": 25,
+          "dependencies": [],
+          "acceptance_criteria": [
+            "initializePersistence called on mount after projects load",
+            "Stale project IDs stored in state",
+            "Console logs show restoration attempts",
+            "UI doesn't block during initialization"
+          ]
+        },
+        {
+          "task_id": "IMPL-001",
+          "title": "Create BatchRestoreUI component",
+          "description": "New component that displays single banner for all stale projects with project list and 'Restore All' button",
+          "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+          "files": [
+            "packages/dashboard/src/components/coderef/BatchRestoreUI.tsx"
+          ],
+          "estimated_loc": 80,
+          "dependencies": [
+            "SETUP-001"
+          ],
+          "acceptance_criteria": [
+            "Component renders when staleProjects.size > 0",
+            "Lists all stale project names",
+            "Restore All button triggers directory picker for each",
+            "Updates stale list as projects are restored",
+            "Matches industrial theme styling"
+          ]
+        },
+        {
+          "task_id": "IMPL-002",
+          "title": "Replace saveDirectoryHandle with saveDirectoryHandlePersistent",
+          "description": "Update handleAddProject to use persistent storage when saving new project handles",
+          "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+          "files": [
+            "packages/dashboard/src/components/coderef/ProjectSelector.tsx"
+          ],
+          "estimated_loc": 2,
+          "dependencies": [],
+          "acceptance_criteria": [
+            "Line 95: saveDirectoryHandlePersistent(projectId, dirHandle)",
+            "Persistent storage requested when adding new project",
+            "No breaking changes to add project flow"
+          ]
+        },
+        {
+          "task_id": "IMPL-003",
+          "title": "Integrate BatchRestoreUI into ProjectSelector",
+          "description": "Replace individual stale warning (lines 289-311) with BatchRestoreUI component",
+          "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+          "files": [
+            "packages/dashboard/src/components/coderef/ProjectSelector.tsx"
+          ],
+          "estimated_loc": 15,
+          "dependencies": [
+            "IMPL-001"
+          ],
+          "acceptance_criteria": [
+            "BatchRestoreUI rendered instead of individual warnings",
+            "Component receives staleProjects set and projects list",
+            "onRestore callback updates staleProjects state",
+            "Individual warning removed from JSX"
+          ]
+        },
+        {
+          "task_id": "TEST-001",
+          "title": "Test cross-session persistence",
+          "description": "Verify silent restoration works across browser restarts",
+          "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+          "files": [],
+          "estimated_loc": 0,
+          "dependencies": [
+            "SETUP-001",
+            "IMPL-002"
+          ],
+          "acceptance_criteria": [
+            "Add 3 projects via File System Access API",
+            "Close and reopen browser",
+            "Check console logs for silent restoration",
+            "Verify 0-3 projects need manual re-auth (depends on browser)"
+          ]
+        },
+        {
+          "task_id": "TEST-002",
+          "title": "Test batch restore UI workflow",
+          "description": "Verify BatchRestoreUI correctly handles multiple stale projects",
+          "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+          "files": [],
+          "estimated_loc": 0,
+          "dependencies": [
+            "IMPL-001",
+            "IMPL-003"
+          ],
+          "acceptance_criteria": [
+            "Manually invalidate 2+ project handles (move directories)",
+            "Reload app - BatchRestoreUI shows with project list",
+            "Click Restore All - directory picker appears for each",
+            "Restore 1 project - UI updates to show remaining",
+            "Restore all - banner disappears"
+          ]
+        },
+        {
+          "task_id": "DOC-001",
+          "title": "Update documentation",
+          "description": "Add implementation notes to PERSISTENCE_ANALYSIS.md and update README",
+          "workorder_id": "WO-ENHANCED-PERSISTENCE-001",
+          "files": [
+            "PERSISTENCE_ANALYSIS.md",
+            "README.md"
+          ],
+          "estimated_loc": 20,
+          "dependencies": [
+            "TEST-001",
+            "TEST-002"
+          ],
+          "acceptance_criteria": [
+            "PERSISTENCE_ANALYSIS.md updated with integration steps",
+            "README mentions enhanced persistence feature",
+            "Testing checklist marked complete"
+          ]
+        }
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": "phase_1",
+          "name": "Phase 1: Foundation Integration",
+          "purpose": "Wire up initializePersistence and replace save function",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "SETUP-001",
+            "IMPL-002"
+          ],
+          "deliverables": [
+            "initializePersistence integrated in ProjectSelector",
+            "saveDirectoryHandlePersistent used for new projects",
+            "Console logs showing persistence status"
+          ],
+          "completion_criteria": [
+            "initializePersistence runs on mount",
+            "Persistent storage requested when adding projects",
+            "Console logs show restoration attempts",
+            "No errors in browser console"
+          ],
+          "estimated_time": "30-60 minutes"
+        },
+        {
+          "phase": "phase_2",
+          "name": "Phase 2: Batch Restore UI",
+          "purpose": "Create and integrate BatchRestoreUI component",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "IMPL-001",
+            "IMPL-003"
+          ],
+          "deliverables": [
+            "BatchRestoreUI.tsx component file",
+            "BatchRestoreUI integrated into ProjectSelector",
+            "Individual stale warnings removed"
+          ],
+          "completion_criteria": [
+            "BatchRestoreUI component created",
+            "Component integrated into ProjectSelector",
+            "Individual warnings removed",
+            "Styling matches industrial theme"
+          ],
+          "estimated_time": "1-2 hours"
+        },
+        {
+          "phase": "phase_3",
+          "name": "Phase 3: Testing & Validation",
+          "purpose": "Verify functionality across browser sessions and edge cases",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "TEST-001",
+            "TEST-002"
+          ],
+          "deliverables": [
+            "Test results documented",
+            "Edge cases verified",
+            "No regression confirmed"
+          ],
+          "completion_criteria": [
+            "Cross-session persistence verified",
+            "Batch restore workflow tested",
+            "Edge cases handled (all stale, storage denied, etc)",
+            "No regression in existing functionality"
+          ],
+          "estimated_time": "1 hour"
+        },
+        {
+          "phase": "phase_4",
+          "name": "Phase 4: Documentation",
+          "purpose": "Update documentation with implementation details",
+          "complexity": "low",
+          "effort_level": 1,
+          "tasks": [
+            "DOC-001"
+          ],
+          "deliverables": [
+            "PERSISTENCE_ANALYSIS.md updated",
+            "README.md updated",
+            "Testing checklist completed"
+          ],
+          "completion_criteria": [
+            "PERSISTENCE_ANALYSIS.md updated",
+            "README updated with new feature",
+            "All documentation accurate"
+          ],
+          "estimated_time": "15-30 minutes"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "Not applicable - testing browser APIs (File System Access, Persistent Storage)"
+      ],
+      "integration_tests": [
+        "Manual: Add 3 projects → close browser → reopen → verify silent restoration",
+        "Manual: Move directory → reload → verify batch restore UI appears",
+        "Manual: Deny persistent storage → verify graceful degradation"
+      ],
+      "end_to_end_tests": [
+        "Full workflow: Fresh install → add 5 projects → restart browser → verify <5 manual re-auths needed"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "Persistent storage permission denied by user",
+          "setup": "Deny permission when browser prompts for persistent storage",
+          "expected_behavior": "Silent restoration still attempted but may fail more often",
+          "verification": "Check console logs - should show 'Persistent storage denied' warning",
+          "error_handling": "No error - graceful degradation"
+        },
+        {
+          "scenario": "All project handles stale",
+          "setup": "Move all project directories or clear IndexedDB manually",
+          "expected_behavior": "BatchRestoreUI shows all projects in list",
+          "verification": "Batch UI displays with full project count",
+          "error_handling": "User must re-authorize all via batch flow"
+        },
+        {
+          "scenario": "Browser doesn't support File System Access API",
+          "setup": "Open in Safari or Firefox",
+          "expected_behavior": "Feature skipped - projects use API fallback mode",
+          "verification": "No persistence logs, no errors",
+          "error_handling": "isFileSystemAccessSupported() returns false, initialization skipped"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "Silent permission restoration",
+          "metric": "Percentage of projects restored without user prompts",
+          "target": ">50% of projects restored silently on browser restart",
+          "validation": "Close/reopen browser with 3 projects, count how many restore automatically"
+        },
+        {
+          "requirement": "Batch restore UI",
+          "metric": "Single banner replaces individual warnings",
+          "target": "1 banner for N stale projects (vs N individual warnings)",
+          "validation": "Invalidate 3 handles, reload, count UI elements"
+        },
+        {
+          "requirement": "Persistent storage request",
+          "metric": "navigator.storage.persist() called",
+          "target": "Called on startup and when adding projects",
+          "validation": "Check console logs for 'Persistent storage granted/denied'"
+        },
+        {
+          "requirement": "Backward compatibility",
+          "metric": "Existing projects continue working",
+          "target": "Zero breaking changes to add/remove project flows",
+          "validation": "Test existing project management workflows"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "No UI blocking",
+          "metric": "Time to interactive",
+          "target": "Initialization doesn't delay initial render",
+          "validation": "Check React DevTools timeline - initializePersistence runs after mount"
+        },
+        {
+          "requirement": "Code quality",
+          "metric": "TypeScript type safety",
+          "target": "Zero TypeScript errors",
+          "validation": "npm run type-check"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "Fast batch checking",
+          "metric": "Time to check N project permissions",
+          "target": "<500ms for 10 projects (parallel Promise.all)",
+          "validation": "Console logs show total restoration time"
+        }
+      ],
+      "security_requirements": [
+        {
+          "requirement": "No new attack surface",
+          "metric": "Security audit",
+          "target": "Only using existing browser permission APIs",
+          "validation": "Code review - no new file system access patterns"
+        }
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "✅ Review complete plan for gaps",
+        "✅ persistence.ts module already created",
+        "☐ Get user approval to proceed"
+      ],
+      "phase_1": [
+        "☐ SETUP-001: Add initializePersistence call in ProjectSelector",
+        "☐ IMPL-002: Replace saveDirectoryHandle with persistent version",
+        "☐ Verify console logs show restoration attempts",
+        "☐ Test that UI doesn't block during initialization"
+      ],
+      "phase_2": [
+        "☐ IMPL-001: Create BatchRestoreUI component",
+        "☐ IMPL-003: Integrate BatchRestoreUI into ProjectSelector",
+        "☐ Remove individual stale warnings (lines 289-311)",
+        "☐ Verify styling matches industrial theme"
+      ],
+      "phase_3": [
+        "☐ TEST-001: Cross-session persistence test",
+        "☐ TEST-002: Batch restore UI workflow test",
+        "☐ Test edge case: persistent storage denied",
+        "☐ Test edge case: all handles stale",
+        "☐ Verify no regression in existing features"
+      ],
+      "phase_4": [
+        "☐ DOC-001: Update PERSISTENCE_ANALYSIS.md",
+        "☐ Update README.md with feature description",
+        "☐ Mark testing checklist complete"
+      ],
+      "finalization": [
+        "☐ All tests passing",
+        "☐ TypeScript type-check passing",
+        "☐ Code review completed",
+        "☐ Documentation updated",
+        "☐ Git commit with workorder ID"
+      ]
+    }
+  }
+}
