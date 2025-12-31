@@ -86,7 +86,7 @@ Deployable as both web PWA (for teams) and Electron desktop app (for individual 
 The system uses npm workspaces to organize three interdependent packages:
 
 - **`@coderef-dashboard/core`** - Shared library (hooks, utils, types) consumed by both web and electron packages
-- **`@coderef-dashboard/dashboard`** - Next.js 14 web application (App Router) with API routes and UI
+- **`@coderef-dashboard/dashboard`** - Next.js 16 web application (App Router) with API routes and UI
 - **`@coderef-dashboard/electron-app`** - Electron wrapper that bundles the Next.js app for desktop distribution
 
 Benefits: Type safety across packages, shared component library, independent deployment targets from single codebase.
@@ -153,7 +153,7 @@ Benefits: Reduced initial bundle size, extensibility without code changes, faste
 ### Key Integration Points
 
 **Core Dependencies:**
-- Next.js 14 framework (App Router, API routes)
+- Next.js 16 framework (App Router, API routes)
 - Node.js file system APIs (for project scanning)
 - Electron (for desktop distribution)
 - React 19 (UI components and state management)
@@ -345,7 +345,7 @@ coderef-dashboard/
 - Reason: Shared type definitions ensure consistency. Single `npm install` for all packages. Atomic commits across packages.
 
 **3. Next.js App Router for Both Web and Electron**
-- ✅ Chosen: Next.js 14 App Router as universal framework
+- ✅ Chosen: Next.js 16 App Router as universal framework
 - ❌ Rejected: Separate React app for Electron, SPA framework like Vite
 - Reason: Single codebase deploys to both targets. API routes work in both contexts. SSR benefits for web, fast local rendering for Electron.
 
@@ -360,7 +360,7 @@ coderef-dashboard/
 
 ### With Next.js Framework
 
-The dashboard package uses Next.js 14 App Router as its foundation:
+The dashboard package uses Next.js 16 App Router as its foundation:
 
 - **API Routes:** File-based routing in `src/app/api/` handles workorder/stub fetching
 - **Server Components:** Default rendering strategy for static content
@@ -621,7 +621,7 @@ npm run package:win
 - ✅ Electron desktop: Windows packaging with native OS integration
 
 ### v0.0.1-alpha - Internal Prototype
-- ✅ Basic Next.js 14 setup with App Router
+- ✅ Basic Next.js 16 setup with App Router
 - ✅ Single-project workorder scanning proof-of-concept
 - ✅ Tailwind CSS integration with dark mode base
 - ✅ API route structure for `/api/workorders`

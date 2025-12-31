@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { X, Home, BookOpen, Zap, Archive, Settings, FolderTree } from 'lucide-react';
+import { X, Home, BookOpen, Zap, Settings, FolderTree } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -9,7 +9,6 @@ const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
   { label: 'Prompts', href: '/prompts', icon: BookOpen },
   { label: 'Assistant', href: '/assistant', icon: Zap },
-  { label: 'Sources', href: '/sources', icon: Archive },
   { label: 'Explorer', href: '/coderef-explorer', icon: FolderTree },
 ];
 

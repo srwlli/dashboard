@@ -97,11 +97,37 @@ async function saveProjects(projects: CodeRefProject[]): Promise<void> {
 /**
  * GET /api/coderef/projects
  * Returns list of all registered CodeRef projects
+ *
+ * Query params:
+ * - id: (optional) Return single project by ID
  */
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const projectId = searchParams.get('id');
+
     const projects = await loadProjects();
 
+    // If ID provided, return single project
+    if (projectId) {
+      const project = projects.find((p) => p.id === projectId);
+
+      if (!project) {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'PROJECT_NOT_FOUND',
+            message: `Project with ID '${projectId}' not found`,
+          },
+          { projectId }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
+      }
+
+      const response = createSuccessResponse({ project });
+      return NextResponse.json(response, { status: HttpStatus.OK });
+    }
+
+    // Otherwise return all projects
     const response = createSuccessResponse({
       projects,
       total: projects.length,

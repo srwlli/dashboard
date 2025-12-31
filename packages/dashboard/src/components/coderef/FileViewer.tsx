@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Project, FileInfo, AccessMode } from '@/lib/coderef/types';
 import { loadFileContent } from '@/lib/coderef/hybrid-router';
-import { Loader2, AlertCircle, FileText, Copy, Check, Zap, Cloud, Share2, FolderTree } from 'lucide-react';
+import { Loader2, AlertCircle, FileText, Copy, Check, Zap, Cloud, Share2, FolderTree, Maximize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -21,6 +22,7 @@ interface FileViewerProps {
 }
 
 export function FileViewer({ project, filePath, className = '' }: FileViewerProps) {
+  const router = useRouter();
   const [fileData, setFileData] = useState<FileInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,6 +113,22 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
     } catch (err) {
       console.error('Failed to share:', err);
     }
+  };
+
+  const handleFullPage = () => {
+    if (!project || !filePath) return;
+
+    // Store project data in sessionStorage for full-page viewer to access
+    sessionStorage.setItem('fullPageViewerProject', JSON.stringify(project));
+
+    // Create URL with project ID and file path as query params
+    const params = new URLSearchParams({
+      projectId: project.id,
+      filePath: filePath,
+    });
+
+    // Navigate to full-page viewer in same window
+    router.push(`/viewer/full?${params.toString()}`);
   };
 
   if (!filePath) {
@@ -216,6 +234,23 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Full Page button - opens file in new tab */}
+          <button
+            onClick={handleFullPage}
+            className="
+              px-3 py-1.5 rounded text-xs
+              bg-ind-bg border border-ind-border
+              text-ind-text-muted hover:text-ind-text
+              hover:border-ind-accent/50
+              transition-colors duration-200
+              flex items-center gap-2
+            "
+            title="Open in full page view"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+            <span>Expand</span>
+          </button>
+
           {/* Copy Path button - copies file path from project folder to file */}
           <button
             onClick={handleCopyPath}
