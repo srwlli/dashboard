@@ -32,7 +32,7 @@ export async function requestPersistentStorage(): Promise<boolean> {
     if (granted) {
       console.log('[Persistence] Persistent storage granted');
     } else {
-      console.warn('[Persistence] Persistent storage denied - handles may not survive browser restart');
+      console.info('[Persistence] Persistent storage denied - handles may not survive browser restart');
     }
 
     return granted;

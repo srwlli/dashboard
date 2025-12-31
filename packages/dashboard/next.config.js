@@ -3,18 +3,12 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ['@coderef-dashboard/core'],
-    turbo: {
-      resolveAlias: {
-        // Exclude Electron and Node.js modules from browser bundles
-        // This prevents Turbopack from bundling these for client components
-        electron: false,
-        '@electron/remote': false,
-        // Also exclude the Electron adapter itself
-        '@coderef-dashboard/core/src/filesystem/electron': false,
-      },
-      resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
-    },
   },
+  // Turbopack configuration for Next.js 16+
+  // Note: Turbopack handles module resolution differently than webpack
+  // The electron-loader.ts uses Function() constructor to prevent static analysis
+  turbopack: {},
+  // Webpack config (for --webpack mode or production builds)
   webpack: (config, { isServer }) => {
     // Exclude Electron and Node.js built-ins from client bundles
     if (!isServer) {
