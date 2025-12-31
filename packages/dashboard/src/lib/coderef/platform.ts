@@ -33,8 +33,9 @@ function isElectron(): boolean {
   // Method 3: Check for window.electronAPI (our preload script)
   const hasElectronAPI = typeof (window as any).electronAPI !== 'undefined';
 
-  // Require at least one definitive Electron indicator
-  const result = hasElectronUA || hasRendererProcess || hasElectronAPI;
+  // STRICT CHECK: Must have Electron user agent AND at least one other indicator
+  // This prevents false positives from browser extensions or dev tools
+  const result = hasElectronUA && (hasRendererProcess || hasElectronAPI);
 
   console.log('🔍 [Platform] isElectron() check:', {
     userAgent: navigator.userAgent,

@@ -48,7 +48,7 @@ function createWindow() {
   });
 
   const startUrl = isDev
-    ? 'http://localhost:3005' // Next.js dev server port
+    ? 'http://localhost:3004' // Next.js dev server port
     : `http://localhost:${PORT}`;
 
   mainWindow.loadURL(startUrl);
