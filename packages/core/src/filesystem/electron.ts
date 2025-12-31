@@ -1,12 +1,16 @@
 /**
- * Electron Filesystem Adapter
+ * Electron Filesystem Adapter (IPC-based)
  *
- * Uses Node.js fs module for direct filesystem access.
- * No permission prompts, no handle invalidation, paths persist forever!
+ * Uses window.electronAPI.fs instead of direct Node.js fs access.
+ * All filesystem operations go through IPC to the main process.
+ *
+ * Benefits:
+ * - No permission prompts
+ * - Paths persist forever
+ * - Full native filesystem access
+ * - Secure (context isolation maintained)
  */
 
-import * as fs from 'fs/promises';
-import * as path from 'path';
 import type { FileSystemAdapter, ProjectPath } from './types';
 
 export class ElectronFileSystemAdapter implements FileSystemAdapter {
@@ -17,25 +21,19 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
    * Returns absolute path (e.g., "C:/Users/willh/projects/my-app")
    */
   async selectDirectory(): Promise<ProjectPath | null> {
+    if (!window.electronAPI?.fs) {
+      throw new Error('electronAPI.fs not available - not running in Electron');
+    }
+
     try {
-      // Use Electron's dialog API
-      const { dialog } = require('@electron/remote');
+      const absolutePath = await window.electronAPI.fs.selectDirectory();
 
-      const result = await dialog.showOpenDialog({
-        properties: ['openDirectory'],
-        title: 'Select Project Folder',
-        buttonLabel: 'Select Folder',
-      });
-
-      if (result.canceled || result.filePaths.length === 0) {
+      if (!absolutePath) {
         console.log('[Electron] User cancelled folder selection');
         return null;
       }
 
-      const absolutePath = result.filePaths[0];
       console.log('[Electron] Selected folder:', absolutePath);
-
-      // Return absolute path - this persists FOREVER in localStorage/projects.json!
       return absolutePath;
     } catch (error) {
       console.error('[Electron] Failed to show folder picker:', error);
@@ -48,10 +46,13 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
    * No permission checks needed - Electron has full access!
    */
   async isProjectValid(projectId: string, projectPath: string): Promise<boolean> {
+    if (!window.electronAPI?.fs) {
+      throw new Error('electronAPI.fs not available');
+    }
+
     try {
-      // Simply check if directory exists
-      const stats = await fs.stat(projectPath);
-      const isValid = stats.isDirectory();
+      const stats = await window.electronAPI.fs.stat(projectPath);
+      const isValid = stats.isDirectory;
 
       if (isValid) {
         console.log(`[Electron] Project ${projectId} is valid:`, projectPath);
@@ -70,8 +71,12 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
    * Read directory contents
    */
   async readDirectory(projectId: string, projectPath: string): Promise<string[]> {
+    if (!window.electronAPI?.fs) {
+      throw new Error('electronAPI.fs not available');
+    }
+
     try {
-      const entries = await fs.readdir(projectPath, { withFileTypes: true });
+      const entries = await window.electronAPI.fs.readdir(projectPath);
       const names = entries.map((entry) => entry.name);
 
       console.log(`[Electron] Read ${names.length} entries from:`, projectPath);
@@ -86,8 +91,12 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
    * Read file contents as UTF-8 text
    */
   async readFile(projectId: string, filePath: string): Promise<string> {
+    if (!window.electronAPI?.fs) {
+      throw new Error('electronAPI.fs not available');
+    }
+
     try {
-      const content = await fs.readFile(filePath, 'utf-8');
+      const content = await window.electronAPI.fs.readFile(filePath);
       console.log(`[Electron] Read file (${content.length} bytes):`, filePath);
       return content;
     } catch (error) {
@@ -98,66 +107,29 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
 
   /**
    * Resolve relative path to absolute path
+   * Simple path join implementation (Node.js path module not available in renderer)
    */
   async resolvePath(
     projectId: string,
     projectPath: string,
     relativePath: string
   ): Promise<string> {
-    const absolutePath = path.join(projectPath, relativePath);
+    // Normalize separators to forward slashes
+    const normalizedBase = projectPath.replace(/\\/g, '/');
+    const normalizedRelative = relativePath.replace(/\\/g, '/');
+
+    // Remove trailing slash from base if present
+    const base = normalizedBase.endsWith('/')
+      ? normalizedBase.slice(0, -1)
+      : normalizedBase;
+
+    // Remove leading slash from relative if present
+    const relative = normalizedRelative.startsWith('/')
+      ? normalizedRelative.slice(1)
+      : normalizedRelative;
+
+    const absolutePath = `${base}/${relative}`;
     console.log(`[Electron] Resolved path:`, relativePath, '→', absolutePath);
     return absolutePath;
-  }
-
-  /**
-   * Additional helper: Check if file exists
-   */
-  async fileExists(filePath: string): Promise<boolean> {
-    try {
-      await fs.access(filePath);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Additional helper: List files recursively
-   */
-  async readDirectoryRecursive(
-    projectId: string,
-    projectPath: string,
-    options?: { maxDepth?: number; exclude?: RegExp[] }
-  ): Promise<string[]> {
-    const maxDepth = options?.maxDepth ?? 10;
-    const exclude = options?.exclude ?? [/node_modules/, /\.git/, /dist/, /build/];
-
-    const files: string[] = [];
-
-    async function walk(dir: string, depth: number) {
-      if (depth > maxDepth) return;
-
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        const relativePath = path.relative(projectPath, fullPath);
-
-        // Skip excluded directories
-        if (exclude.some((pattern) => pattern.test(relativePath))) {
-          continue;
-        }
-
-        if (entry.isDirectory()) {
-          await walk(fullPath, depth + 1);
-        } else {
-          files.push(relativePath);
-        }
-      }
-    }
-
-    await walk(projectPath, 0);
-    console.log(`[Electron] Found ${files.length} files in:`, projectPath);
-    return files;
   }
 }

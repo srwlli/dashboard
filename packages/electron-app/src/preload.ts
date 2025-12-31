@@ -10,6 +10,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Backend health check
   checkBackendHealth: () => ipcRenderer.invoke('backend:health'),
 
+  // Filesystem operations
+  fs: {
+    selectDirectory: () => ipcRenderer.invoke('fs:selectDirectory'),
+    stat: (filePath: string) => ipcRenderer.invoke('fs:stat', filePath),
+    readdir: (dirPath: string) => ipcRenderer.invoke('fs:readdir', dirPath),
+    readFile: (filePath: string) => ipcRenderer.invoke('fs:readFile', filePath),
+  },
+
   // IPC communication
   send: (channel: string, ...args: any[]) => {
     if (['log'].includes(channel)) {
@@ -38,6 +46,12 @@ declare global {
       getVersion: () => Promise<string>;
       getPlatform: () => Promise<string>;
       checkBackendHealth: () => Promise<{ status: string }>;
+      fs: {
+        selectDirectory: () => Promise<string | null>;
+        stat: (filePath: string) => Promise<{ isDirectory: boolean; isFile: boolean }>;
+        readdir: (dirPath: string) => Promise<{ name: string; isDirectory: boolean }[]>;
+        readFile: (filePath: string) => Promise<string>;
+      };
       send: (channel: string, ...args: any[]) => void;
       receive: (channel: string, func: (...args: any[]) => void) => () => void;
     };

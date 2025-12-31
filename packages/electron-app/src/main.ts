@@ -1,7 +1,8 @@
-import { app, BrowserWindow, Menu, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
 import path from 'path';
 import createServer from 'next';
 import http from 'http';
+import * as fs from 'fs/promises';
 
 // Check if running in development mode
 const isDev = process.env.ELECTRON_DEV === 'true' || process.env.NODE_ENV === 'development';
@@ -108,6 +109,44 @@ ipcMain.handle('app:platform', () => process.platform);
 ipcMain.handle('backend:health', async () => {
   // TODO: Implement backend health check
   return { status: 'ok' };
+});
+
+// Filesystem IPC handlers
+ipcMain.handle('fs:selectDirectory', async () => {
+  if (!mainWindow) {
+    throw new Error('Main window not available');
+  }
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'],
+    title: 'Select Project Folder',
+  });
+
+  if (result.canceled) {
+    return null;
+  }
+
+  return result.filePaths[0];
+});
+
+ipcMain.handle('fs:stat', async (_event, filePath: string) => {
+  const stats = await fs.stat(filePath);
+  return {
+    isDirectory: stats.isDirectory(),
+    isFile: stats.isFile(),
+  };
+});
+
+ipcMain.handle('fs:readdir', async (_event, dirPath: string) => {
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+  return entries.map(entry => ({
+    name: entry.name,
+    isDirectory: entry.isDirectory(),
+  }));
+});
+
+ipcMain.handle('fs:readFile', async (_event, filePath: string) => {
+  return await fs.readFile(filePath, 'utf-8');
 });
 
 // Application menu
