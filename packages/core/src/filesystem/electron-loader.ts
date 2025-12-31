@@ -38,7 +38,7 @@ export async function loadElectronAdapter(): Promise<FileSystemAdapter> {
     // Use Function constructor instead of eval for better security
     // This prevents static analysis from detecting the import path
     const importElectron = new Function(
-      'return import("@coderef-dashboard/core/src/filesystem/electron")'
+      'return import("./electron")'
     );
 
     const module = await importElectron();
