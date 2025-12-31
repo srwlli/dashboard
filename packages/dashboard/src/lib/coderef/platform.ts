@@ -58,10 +58,23 @@ export const platform: 'electron' | 'web' = isElectron() ? 'electron' : 'web';
  */
 async function createFileSystemAdapter(): Promise<FileSystemAdapter> {
   if (platform === 'electron') {
-    console.log('🖥️ [Platform] Running in Electron - using Node.js fs adapter');
-    // Use dynamic loader to prevent build-time bundling of Electron modules
-    const { loadElectronAdapter } = await import('@coderef-dashboard/core/src/filesystem/electron-loader');
-    return await loadElectronAdapter();
+    console.log('🖥️ [Platform] Running in Electron - attempting to load Node.js fs adapter');
+    try {
+      // Use dynamic loader to prevent build-time bundling of Electron modules
+      const { loadElectronAdapter } = await import('@coderef-dashboard/core/src/filesystem/electron-loader');
+      return await loadElectronAdapter();
+    } catch (error) {
+      console.warn('⚠️ [Platform] Failed to load Electron adapter, falling back to Web adapter:', error);
+      console.log('🌐 [Platform] Using File System Access API as fallback in Electron');
+      // Fall back to web adapter
+      return createWebFileSystemAdapter({
+        showDirectoryPicker,
+        saveDirectoryHandle,
+        getDirectoryHandle,
+        verifyHandleValid,
+        ensurePermission,
+      });
+    }
   } else {
     console.log('🌐 [Platform] Running in Web - using File System Access API adapter');
     return createWebFileSystemAdapter({
