@@ -5,6 +5,8 @@
  * Simply checks if window.electronAPI.fs is available and returns the adapter.
  */
 
+/// <reference path="./electron-types.d.ts" />
+
 import type { FileSystemAdapter } from './types';
 import { ElectronFileSystemAdapter } from './electron';
 

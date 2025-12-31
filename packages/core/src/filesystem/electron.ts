@@ -11,6 +11,8 @@
  * - Secure (context isolation maintained)
  */
 
+/// <reference path="./electron-types.d.ts" />
+
 import type { FileSystemAdapter, ProjectPath } from './types';
 
 export class ElectronFileSystemAdapter implements FileSystemAdapter {
@@ -45,7 +47,7 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
    * Check if directory still exists on filesystem
    * No permission checks needed - Electron has full access!
    */
-  async isProjectValid(projectId: string, projectPath: string): Promise<boolean> {
+  async isProjectValid(_projectId: string, projectPath: string): Promise<boolean> {
     if (!window.electronAPI?.fs) {
       throw new Error('electronAPI.fs not available');
     }
@@ -55,14 +57,14 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
       const isValid = stats.isDirectory;
 
       if (isValid) {
-        console.log(`[Electron] Project ${projectId} is valid:`, projectPath);
+        console.log(`[Electron] Project is valid:`, projectPath);
       } else {
         console.warn(`[Electron] Path exists but is not a directory:`, projectPath);
       }
 
       return isValid;
     } catch (error) {
-      console.warn(`[Electron] Project ${projectId} not accessible:`, projectPath);
+      console.warn(`[Electron] Project not accessible:`, projectPath);
       return false;
     }
   }
@@ -70,7 +72,7 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
   /**
    * Read directory contents
    */
-  async readDirectory(projectId: string, projectPath: string): Promise<string[]> {
+  async readDirectory(_projectId: string, projectPath: string): Promise<string[]> {
     if (!window.electronAPI?.fs) {
       throw new Error('electronAPI.fs not available');
     }
@@ -90,7 +92,7 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
   /**
    * Read file contents as UTF-8 text
    */
-  async readFile(projectId: string, filePath: string): Promise<string> {
+  async readFile(_projectId: string, filePath: string): Promise<string> {
     if (!window.electronAPI?.fs) {
       throw new Error('electronAPI.fs not available');
     }
@@ -110,7 +112,7 @@ export class ElectronFileSystemAdapter implements FileSystemAdapter {
    * Simple path join implementation (Node.js path module not available in renderer)
    */
   async resolvePath(
-    projectId: string,
+    _projectId: string,
     projectPath: string,
     relativePath: string
   ): Promise<string> {

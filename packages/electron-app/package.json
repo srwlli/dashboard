@@ -41,11 +41,7 @@
       "allowToChangeInstallationDirectory": true
     },
     "win": {
-      "certificateFile": null,
-      "certificatePassword": null,
-      "signingHashAlgorithms": [
-        "sha256"
-      ],
+      "signAndEditExecutable": false,
       "target": [
         {
           "target": "nsis",
