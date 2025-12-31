@@ -1,0 +1,81 @@
+{
+  "known_issues": [
+    {
+      "issue_id": "ELECTRON-ADAPTER-001",
+      "title": "Electron Filesystem Adapter Dynamic Import Failure",
+      "severity": "medium",
+      "status": "mitigated",
+      "discovered": "2025-12-31",
+      "description": "The Electron filesystem adapter fails to load due to dynamic import bundling issues. When running in Electron, the dynamic import('./electron') statement is processed by Next.js/Turbopack bundler, which tries to serve it as an HTTP chunk from localhost:3004/_next/static/chunks/electron, resulting in a 404 error.",
+      "error_message": "Failed to fetch dynamically imported module: http://localhost:3004/_next/static/chunks/electron",
+      "root_cause": "Dynamic imports in Electron renderer process are still analyzed by the bundler even when using new Function() to hide the import path. The bundler converts the relative import to a URL-based chunk, which cannot be loaded in the Electron context.",
+      "affected_components": [
+        "packages/core/src/filesystem/electron-loader.ts",
+        "packages/dashboard/src/lib/coderef/platform.ts",
+        "Electron renderer process"
+      ],
+      "workaround": {
+        "implemented": true,
+        "description": "Added try-catch fallback in platform.ts to gracefully fall back to Web adapter (File System Access API) when Electron adapter fails to load. App remains functional using browser-style file pickers.",
+        "commits": [
+          "1091437 - fix(electron): Fix Electron filesystem adapter import path",
+          "99f8439 - fix(electron): Add graceful fallback when Electron adapter fails to load"
+        ]
+      },
+      "permanent_solution": {
+        "status": "planned",
+        "approach": "Implement proper IPC-based filesystem operations through Electron preload script and main process. Expose filesystem methods via contextBridge instead of trying to load Node.js modules in renderer.",
+        "steps": [
+          "Add IPC handlers in main.ts for filesystem operations (selectDirectory, readTree, readFile, etc.)",
+          "Expose filesystem API via preload.ts using contextBridge",
+          "Create Electron filesystem adapter that uses window.electronAPI instead of Node.js fs module",
+          "Remove dynamic import approach entirely"
+        ]
+      },
+      "impact": "Medium - Users can still use the app with File System Access API, but lose native filesystem benefits like absolute paths and persistent access without permissions.",
+      "related_issues": ["PERMISSIONS-001"]
+    },
+    {
+      "issue_id": "PERMISSIONS-001",
+      "title": "File System Access API Handle Verification Failures in Electron",
+      "severity": "low",
+      "status": "known",
+      "discovered": "2025-12-31",
+      "description": "When using File System Access API fallback in Electron, handle verification fails with 'The request is not allowed by the user agent or the platform in the current context' error.",
+      "error_message": "Handle verification failed: DOMException: The request is not allowed by the user agent or the platform in the current context.",
+      "root_cause": "Electron's implementation of File System Access API may have restrictions or incompatibilities with persistent handle verification. This is expected when using browser APIs in Electron context.",
+      "affected_components": [
+        "packages/dashboard/src/lib/coderef/permissions.ts",
+        "File System Access API in Electron renderer"
+      ],
+      "workaround": {
+        "implemented": false,
+        "description": "Error is logged but doesn't crash the app. Users may need to re-select directories more frequently than in browser."
+      },
+      "permanent_solution": {
+        "status": "planned",
+        "approach": "Will be resolved by implementing native IPC-based filesystem (same solution as ELECTRON-ADAPTER-001)",
+        "blocked_by": ["ELECTRON-ADAPTER-001"]
+      },
+      "impact": "Low - Cosmetic error in console, may require occasional re-authorization of directory access.",
+      "related_issues": ["ELECTRON-ADAPTER-001"]
+    }
+  ],
+  "metadata": {
+    "last_updated": "2025-12-31",
+    "format_version": "1.0",
+    "total_issues": 2,
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 1
+    },
+    "by_status": {
+      "known": 1,
+      "mitigated": 1,
+      "resolved": 0,
+      "wontfix": 0
+    }
+  }
+}
