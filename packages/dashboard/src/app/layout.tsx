@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import RootClientWrapper from '@/components/RootClientWrapper';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AccentColorProvider } from '@/contexts/AccentColorContext';
 import { SidebarProvider } from '@/contexts/SidebarContext';
@@ -61,15 +62,17 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-ind-bg text-ind-text font-display">
-        <ThemeProvider>
-          <AccentColorProvider>
-            <SidebarProvider>
-              <RootClientWrapper>
-                {children}
-              </RootClientWrapper>
-            </SidebarProvider>
-          </AccentColorProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            <AccentColorProvider>
+              <SidebarProvider>
+                <RootClientWrapper>
+                  {children}
+                </RootClientWrapper>
+              </SidebarProvider>
+            </AccentColorProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
