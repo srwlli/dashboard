@@ -54,7 +54,7 @@ export class WebFileSystemAdapter implements FileSystemAdapter {
    * Check if IndexedDB handle is valid and has permission
    * Returns false if handle is stale or permission was revoked
    */
-  async isProjectValid(projectId: string, projectPath: string): Promise<boolean> {
+  async isProjectValid(projectId: string, _projectPath: string): Promise<boolean> {
     try {
       // Get handle from IndexedDB
       const dirHandle = await this.getDirectoryHandle(projectId);

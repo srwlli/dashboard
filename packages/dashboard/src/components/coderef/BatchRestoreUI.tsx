@@ -35,6 +35,9 @@ export function BatchRestoreUI({
   // Get stale project details
   const staleProjectList = projects.filter((p) => staleProjects.has(p.id));
 
+  // Don't render if no stale projects actually exist after filtering
+  if (staleProjectList.length === 0) return null;
+
   const handleRestoreAll = async () => {
     setRestoring(true);
 

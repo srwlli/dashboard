@@ -52,9 +52,9 @@ export const platform: 'electron' | 'web' = isElectron() ? 'electron' : 'web';
 async function createFileSystemAdapter(): Promise<FileSystemAdapter> {
   if (platform === 'electron') {
     console.log('🖥️ [Platform] Running in Electron - using Node.js fs adapter');
-    // Dynamic import to avoid bundling Electron code in web builds
-    const { ElectronFileSystemAdapter } = await import('@coderef-dashboard/core/src/filesystem/electron');
-    return new ElectronFileSystemAdapter();
+    // Use dynamic loader to prevent build-time bundling of Electron modules
+    const { loadElectronAdapter } = await import('@coderef-dashboard/core/src/filesystem/electron-loader');
+    return await loadElectronAdapter();
   } else {
     console.log('🌐 [Platform] Running in Web - using File System Access API adapter');
     return createWebFileSystemAdapter({
@@ -100,17 +100,17 @@ export const fileSystem = {
     const fs = await getFileSystem();
     return fs.isProjectValid(projectId, projectPath);
   },
-  async restoreProject(projectId: string, projectPath: string) {
+  async readFile(projectId: string, filePath: string) {
     const fs = await getFileSystem();
-    return fs.restoreProject(projectId, projectPath);
+    return fs.readFile(projectId, filePath);
   },
-  async readFile(projectId: string, projectPath: string, filePath: string) {
+  async readDirectory(projectId: string, projectPath: string) {
     const fs = await getFileSystem();
-    return fs.readFile(projectId, projectPath, filePath);
+    return fs.readDirectory(projectId, projectPath);
   },
-  async readDirectory(projectId: string, projectPath: string, dirPath: string) {
+  async resolvePath(projectId: string, projectPath: string, relativePath: string) {
     const fs = await getFileSystem();
-    return fs.readDirectory(projectId, projectPath, dirPath);
+    return fs.resolvePath(projectId, projectPath, relativePath);
   },
 } as FileSystemAdapter;
 
@@ -152,6 +152,7 @@ export function logPlatformInfo(): void {
 }
 
 // Log on module load (only in development)
-if (process.env.NODE_ENV === 'development') {
+// Safe check for NODE_ENV in case process.env is undefined (e.g., during Jest module reset)
+if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
   logPlatformInfo();
 }

@@ -35,6 +35,7 @@ export function ProjectSelector({
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [staleProjects, setStaleProjects] = useState<Set<string>>(new Set());
   const [hasRestoredInitial, setHasRestoredInitial] = useState(false);
+  const [showRemovalMenu, setShowRemovalMenu] = useState(false);
 
   // Load projects on mount
   useEffect(() => {
@@ -182,24 +183,26 @@ export function ProjectSelector({
     }
   };
 
-  const handleRemoveProject = async () => {
-    if (!selectedProjectId) return;
+  const handleRemoveProject = async (projectId?: string) => {
+    const idToRemove = projectId || selectedProjectId;
+    if (!idToRemove) return;
 
-    const confirmed = confirm('Are you sure you want to remove this project?');
+    const projectName = projects.find((p) => p.id === idToRemove)?.name || 'this project';
+    const confirmed = confirm(`Are you sure you want to remove "${projectName}"?`);
     if (!confirmed) return;
 
     try {
-      console.log(`[${platform}] Removing project:`, selectedProjectId);
+      console.log(`[${platform}] Removing project:`, idToRemove);
 
       // Remove from API
-      await CodeRefApi.projects.remove(selectedProjectId);
+      await CodeRefApi.projects.remove(idToRemove);
 
       // Platform-specific cleanup
       if (platform === 'web') {
         // Remove from IndexedDB (if it exists)
         try {
           const { deleteDirectoryHandle } = await import('@/lib/coderef/indexeddb');
-          await deleteDirectoryHandle(selectedProjectId);
+          await deleteDirectoryHandle(idToRemove);
           console.log('[Web] Removed from IndexedDB');
         } catch (err) {
           // IndexedDB handle might not exist, that's okay
@@ -209,10 +212,59 @@ export function ProjectSelector({
         console.log('[Electron] Path reference removed (no cleanup needed)');
       }
 
+      // Clear stale projects set for this project
+      setStaleProjects((prev) => {
+        const next = new Set(prev);
+        next.delete(idToRemove);
+        return next;
+      });
+
+      await loadProjects();
+
+      // If we removed the currently selected project, clear selection
+      if (idToRemove === selectedProjectId) {
+        onProjectChange(null);
+      }
+    } catch (err) {
+      console.error(`[${platform}] Failed to remove project:`, err);
+      setError((err as Error).message);
+    }
+  };
+
+  const handleRemoveAllProjects = async () => {
+    if (projects.length === 0) return;
+
+    const confirmed = confirm(
+      `Are you sure you want to remove ALL ${projects.length} project(s)?\n\nThis action cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    try {
+      console.log(`[${platform}] Removing all ${projects.length} projects...`);
+
+      // Remove all projects sequentially
+      for (const project of projects) {
+        await CodeRefApi.projects.remove(project.id);
+
+        // Platform-specific cleanup
+        if (platform === 'web') {
+          try {
+            const { deleteDirectoryHandle } = await import('@/lib/coderef/indexeddb');
+            await deleteDirectoryHandle(project.id);
+          } catch (err) {
+            console.log('[Web] No IndexedDB handle to remove for:', project.name);
+          }
+        }
+      }
+
+      console.log(`[${platform}] All projects removed successfully`);
+
+      // Clear all state
+      setStaleProjects(new Set());
       await loadProjects();
       onProjectChange(null);
     } catch (err) {
-      console.error(`[${platform}] Failed to remove project:`, err);
+      console.error(`[${platform}] Failed to remove all projects:`, err);
       setError((err as Error).message);
     }
   };
@@ -320,6 +372,90 @@ export function ProjectSelector({
         >
           <Plus className="w-3.5 h-3.5" />
         </button>
+
+        {/* Removal menu button */}
+        <div className="relative">
+          <button
+            onClick={() => setShowRemovalMenu(!showRemovalMenu)}
+            disabled={loading || projects.length === 0}
+            className="
+              p-1.5 rounded flex-shrink-0
+              bg-red-500/10 text-red-500 border border-red-500/30
+              hover:bg-red-500/20
+              disabled:opacity-50 disabled:cursor-not-allowed
+              transition-colors duration-200
+              flex items-center justify-center
+            "
+            title="Remove projects"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Removal dropdown menu */}
+          {showRemovalMenu && (
+            <>
+              {/* Backdrop to close menu */}
+              <div
+                className="fixed inset-0 z-10"
+                onClick={() => setShowRemovalMenu(false)}
+              />
+
+              {/* Dropdown menu */}
+              <div className="absolute right-0 mt-1 w-56 rounded-md shadow-lg bg-ind-panel border border-ind-border z-20">
+                <div className="py-1">
+                  {/* Individual project removal options */}
+                  {projects.length > 0 && (
+                    <div className="px-2 py-1.5 text-xs font-semibold text-ind-text-muted uppercase tracking-wider">
+                      Remove Individual
+                    </div>
+                  )}
+                  <div className="max-h-64 overflow-y-auto">
+                    {projects.map((project) => (
+                      <button
+                        key={project.id}
+                        onClick={() => {
+                          handleRemoveProject(project.id);
+                          setShowRemovalMenu(false);
+                        }}
+                        className="
+                          w-full px-3 py-2 text-left text-sm
+                          text-ind-text hover:bg-ind-bg
+                          transition-colors duration-150
+                          flex items-center gap-2
+                        "
+                      >
+                        <Folder className="w-3.5 h-3.5 text-ind-text-muted flex-shrink-0" />
+                        <span className="truncate">{project.name}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Remove All option */}
+                  {projects.length > 1 && (
+                    <>
+                      <div className="border-t border-ind-border my-1" />
+                      <button
+                        onClick={() => {
+                          handleRemoveAllProjects();
+                          setShowRemovalMenu(false);
+                        }}
+                        className="
+                          w-full px-3 py-2 text-left text-sm
+                          text-red-500 hover:bg-red-500/10
+                          transition-colors duration-150
+                          flex items-center gap-2 font-medium
+                        "
+                      >
+                        <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>Remove All ({projects.length})</span>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {error && (
