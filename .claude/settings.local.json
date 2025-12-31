@@ -33,7 +33,13 @@
       "mcp__coderef-workflow__log_workorder",
       "mcp__coderef-workflow__archive_feature",
       "Bash(if exist .next rmdir /s /q .next)",
-      "mcp__coderef-context__coderef_scan"
+      "mcp__coderef-context__coderef_scan",
+      "Bash(test:*)",
+      "Bash(if exist packagesdashboard.next rmdir /s /q packagesdashboard.next)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(npm test:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
