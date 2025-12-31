@@ -12,11 +12,12 @@
  * Total: 10 tests
  */
 
+import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BatchRestoreUI } from '../BatchRestoreUI';
 import type { Project } from '@/lib/coderef/types';
-import { mockShowDirectoryPicker, createMockDirectoryHandle } from '@/__tests__/mocks/file-system-access';
+import { createMockDirectoryHandle } from '@/__tests__/mocks/file-system-access';
 
 // Mock the modules
 jest.mock('@/lib/coderef/local-access', () => ({
@@ -241,7 +242,7 @@ describe('BatchRestoreUI - Current UX Issues', () => {
         </div>
       );
 
-      const { container } = render(<ImprovedBatchRestoreUI />);
+      render(<ImprovedBatchRestoreUI />);
 
       // User can see each project with its own button
       expect(screen.getByTestId('restore-btn-1')).toBeInTheDocument();
@@ -260,7 +261,7 @@ describe('BatchRestoreUI - Current UX Issues', () => {
         </div>
       );
 
-      const { container } = render(<ImprovedProjectItem />);
+      render(<ImprovedProjectItem />);
 
       // User can see the original folder name as a hint
       expect(screen.getByText(/Original: my-app/)).toBeInTheDocument();
@@ -273,7 +274,7 @@ describe('BatchRestoreUI - Current UX Issues', () => {
       // User can choose which ones to restore
 
       const ImprovedUI = () => {
-        const [restored, setRestored] = React.useState<Set<string>>(new Set());
+        const [restored, setRestored] = useState<Set<string>>(new Set());
 
         return (
           <div>
@@ -295,7 +296,7 @@ describe('BatchRestoreUI - Current UX Issues', () => {
         );
       };
 
-      const { container } = render(<ImprovedUI />);
+      render(<ImprovedUI />);
 
       // User can restore just project-1, skip project-2
       await user.click(screen.getByTestId('restore-project-1'));

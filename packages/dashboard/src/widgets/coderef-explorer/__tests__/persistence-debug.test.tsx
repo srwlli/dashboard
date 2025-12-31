@@ -21,7 +21,7 @@ import { CodeRefExplorerWidget } from '../CodeRefExplorerWidget';
 
 // Mock child components to isolate the bug
 jest.mock('@/components/coderef/ProjectSelector', () => ({
-  ProjectSelector: ({ initialProjectId, onProjectChange }: any) => {
+  ProjectSelector: ({ initialProjectId }: any) => {
     // Capture what initialProjectId was passed
     return (
       <div data-testid="project-selector">

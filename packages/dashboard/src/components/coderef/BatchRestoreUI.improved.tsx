@@ -25,7 +25,7 @@ interface BatchRestoreUIProps {
  * Input:  "[Directory: my-app]"
  * Output: "my-app"
  */
-function extractFolderName(path: string): string {
+function extractFolderName(path: string): string | null {
   const match = path.match(/\[Directory: (.+)\]/);
   return match ? match[1] : null;
 }

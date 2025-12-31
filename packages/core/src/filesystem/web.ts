@@ -91,7 +91,7 @@ export class WebFileSystemAdapter implements FileSystemAdapter {
   /**
    * Read directory contents using FileSystemDirectoryHandle
    */
-  async readDirectory(projectId: string, projectPath: string): Promise<string[]> {
+  async readDirectory(projectId: string, _projectPath: string): Promise<string[]> {
     try {
       const dirHandle = await this.getDirectoryHandle(projectId);
 
@@ -107,7 +107,7 @@ export class WebFileSystemAdapter implements FileSystemAdapter {
 
       // Iterate directory entries
       const entries: string[] = [];
-      for await (const [name, handle] of dirHandle.entries()) {
+      for await (const [name, _handle] of dirHandle.entries()) {
         entries.push(name);
       }
 
@@ -153,8 +153,8 @@ export class WebFileSystemAdapter implements FileSystemAdapter {
    * Resolve relative path (Web just returns the relative path as-is)
    */
   async resolvePath(
-    projectId: string,
-    projectPath: string,
+    _projectId: string,
+    _projectPath: string,
     relativePath: string
   ): Promise<string> {
     // For Web, we don't have absolute paths

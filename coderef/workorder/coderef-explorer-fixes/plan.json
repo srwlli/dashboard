@@ -1,0 +1,461 @@
+{
+  "metadata": {
+    "workorder_id": "WO-EXPLORER-FIXES-001",
+    "feature_name": "coderef-explorer-fixes",
+    "title": "CodeRefExplorerWidget State Management & Error Handling Fixes",
+    "created_at": "2025-12-31T00:00:00Z",
+    "updated_at": "2025-12-31T00:00:00Z",
+    "status": "pending_plan",
+    "priority": "high",
+    "estimated_hours": 4,
+    "assigned_agent": null,
+    "tags": ["bugfix", "error-handling", "state-management", "testing"]
+  },
+
+  "executive_summary": {
+    "problem": "CodeRefExplorerWidget has three critical state management issues: (1) wasteful localStorage writes during component restoration, (2) unhandled QuotaExceededError crashes when localStorage is full, and (3) no cross-tab synchronization. Comprehensive test suites (48 tests) identified these bugs with evidence.",
+    "solution": "Implement try-catch error handling around all localStorage.setItem calls, add isRestoringProject flag check to favorites save effect, and optionally add storage event listener for cross-tab sync. All fixes validated against codebase standards extracted from 75 components.",
+    "impact": "Prevents component crashes (Fix #2), eliminates wasteful writes on every page refresh (Fix #1), and optionally improves multi-tab UX (Fix #3). Increases test coverage from 75% to 95%+.",
+    "success_criteria": [
+      "All 48 comprehensive tests pass (currently 36/48)",
+      "All 21 focused issue tests pass (currently 14/21)",
+      "Zero localStorage crashes under quota exceeded conditions",
+      "Zero wasteful writes during component mount/restoration",
+      "Component gracefully degrades when localStorage unavailable"
+    ]
+  },
+
+  "risk_assessment": {
+    "overall_risk": "LOW",
+    "risk_factors": [
+      {
+        "category": "technical",
+        "risk": "Breaking existing localStorage persistence behavior",
+        "likelihood": "low",
+        "impact": "medium",
+        "mitigation": "Fixes only add error handling and flag checks - no behavioral changes to happy path. Comprehensive test coverage validates no regressions."
+      },
+      {
+        "category": "testing",
+        "risk": "Test timing issues with async localStorage operations",
+        "likelihood": "low",
+        "impact": "low",
+        "mitigation": "Use waitFor() with proper async handling. Existing tests already handle this correctly."
+      },
+      {
+        "category": "performance",
+        "risk": "Storage event listener adds overhead",
+        "likelihood": "low",
+        "impact": "negligible",
+        "mitigation": "Event only fires on cross-tab changes (rare). Listener is lightweight. Optional feature - can be disabled."
+      }
+    ],
+    "dependencies": [
+      {
+        "name": "Existing test infrastructure",
+        "type": "internal",
+        "status": "available",
+        "notes": "48 tests already exist and provide comprehensive coverage"
+      },
+      {
+        "name": "Standards documentation",
+        "type": "internal",
+        "status": "available",
+        "notes": "BEHAVIOR-STANDARDS.md validates try-catch pattern usage"
+      }
+    ],
+    "rollback_plan": "Git revert to previous commit. No database migrations or API changes involved. Pure client-side logic changes."
+  },
+
+  "current_state_analysis": {
+    "existing_code": {
+      "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "total_lines": 269,
+      "key_sections": [
+        {
+          "name": "Favorites save effect",
+          "lines": "76-82",
+          "issue": "No isRestoringProject flag check, no error handling"
+        },
+        {
+          "name": "Project save effect",
+          "lines": "84-90",
+          "issue": "No error handling around localStorage.setItem"
+        },
+        {
+          "name": "Restoration flag management",
+          "lines": "23, 30-39, 98-109",
+          "issue": "Flag exists but not used in all save locations"
+        }
+      ]
+    },
+    "test_coverage": {
+      "state_management_suite": {
+        "file": "CodeRefExplorerWidget.state.test.tsx",
+        "total_tests": 32,
+        "passing": 25,
+        "failing": 7,
+        "coverage_percent": 78
+      },
+      "refresh_reload_suite": {
+        "file": "CodeRefExplorerWidget.refresh.test.tsx",
+        "total_tests": 16,
+        "passing": 11,
+        "failing": 5,
+        "coverage_percent": 69
+      },
+      "issue_focused_suites": {
+        "restoration_flag": {
+          "file": "issue-1-restoration-flag.test.tsx",
+          "total_tests": 5,
+          "passing": 4,
+          "failing": 1
+        },
+        "quota_exceeded": {
+          "file": "issue-2-quota-exceeded.test.tsx",
+          "total_tests": 7,
+          "passing": 5,
+          "failing": 2
+        },
+        "cross_tab_sync": {
+          "file": "issue-3-cross-tab-sync.test.tsx",
+          "total_tests": 9,
+          "passing": 7,
+          "failing": 2
+        }
+      }
+    },
+    "standards_validation": {
+      "error_handling": "try-catch pattern used in 75 components (BEHAVIOR-STANDARDS.md)",
+      "loading_states": "isLoading flag pattern widely used across codebase",
+      "ui_patterns": "ind-* color tokens for consistent theming"
+    }
+  },
+
+  "implementation_phases": [
+    {
+      "phase_id": "PHASE-1",
+      "phase_name": "Fix #2 - QuotaExceededError Handling (CRITICAL)",
+      "priority": "critical",
+      "estimated_hours": 1,
+      "tasks": [
+        {
+          "task_id": "FIX2-001",
+          "description": "Add try-catch to favorites save effect (line 76-82)",
+          "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+          "changes": [
+            "Wrap localStorage.setItem in try block",
+            "Catch QuotaExceededError specifically",
+            "Log warning with projectId context",
+            "Catch generic errors and log to console.error"
+          ],
+          "estimated_minutes": 15,
+          "dependencies": []
+        },
+        {
+          "task_id": "FIX2-002",
+          "description": "Add try-catch to project save effect (line 84-90)",
+          "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+          "changes": [
+            "Wrap localStorage.setItem in try block",
+            "Catch QuotaExceededError with degraded mode message",
+            "Catch generic errors and log to console.error"
+          ],
+          "estimated_minutes": 15,
+          "dependencies": ["FIX2-001"]
+        },
+        {
+          "task_id": "FIX2-003",
+          "description": "Verify quota exceeded tests pass",
+          "command": "npm test -- issue-2-quota-exceeded.test",
+          "success_criteria": "7/7 tests pass (currently 5/7)",
+          "estimated_minutes": 10,
+          "dependencies": ["FIX2-001", "FIX2-002"]
+        }
+      ]
+    },
+    {
+      "phase_id": "PHASE-2",
+      "phase_name": "Fix #1 - Restoration Flag (HIGH PRIORITY)",
+      "priority": "high",
+      "estimated_hours": 1,
+      "tasks": [
+        {
+          "task_id": "FIX1-001",
+          "description": "Add isRestoringProject check to favorites save effect",
+          "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+          "changes": [
+            "Add condition: if (selectedProject && !isRestoringProject)",
+            "Add isRestoringProject to dependency array",
+            "Prevents save during restoration phase"
+          ],
+          "estimated_minutes": 10,
+          "dependencies": ["FIX2-001"]
+        },
+        {
+          "task_id": "FIX1-002",
+          "description": "Verify restoration flag tests pass",
+          "command": "npm test -- issue-1-restoration-flag.test",
+          "success_criteria": "5/5 tests pass (currently 4/5)",
+          "estimated_minutes": 10,
+          "dependencies": ["FIX1-001"]
+        },
+        {
+          "task_id": "FIX1-003",
+          "description": "Verify no wasteful writes in comprehensive tests",
+          "command": "npm test -- CodeRefExplorerWidget.state.test",
+          "success_criteria": "Restoration tests pass: should NOT save during restoration",
+          "estimated_minutes": 10,
+          "dependencies": ["FIX1-002"]
+        }
+      ]
+    },
+    {
+      "phase_id": "PHASE-3",
+      "phase_name": "Fix #3 - Cross-Tab Sync (OPTIONAL)",
+      "priority": "medium",
+      "estimated_hours": 1.5,
+      "tasks": [
+        {
+          "task_id": "FIX3-001",
+          "description": "Add storage event listener useEffect",
+          "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+          "changes": [
+            "Create handleStorageChange function",
+            "Listen for 'coderef-explorer-selected-project' key changes",
+            "Listen for 'coderef-favorites-*' key changes",
+            "Log changes to console (conservative approach)",
+            "Add/remove event listener in useEffect cleanup"
+          ],
+          "estimated_minutes": 30,
+          "dependencies": []
+        },
+        {
+          "task_id": "FIX3-002",
+          "description": "Add comments explaining sync strategy options",
+          "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+          "changes": [
+            "Document conservative approach (log only)",
+            "Document aggressive approach (auto-sync) - commented out",
+            "Document toast notification option",
+            "Explain why conservative chosen"
+          ],
+          "estimated_minutes": 15,
+          "dependencies": ["FIX3-001"]
+        },
+        {
+          "task_id": "FIX3-003",
+          "description": "Verify cross-tab sync tests pass",
+          "command": "npm test -- issue-3-cross-tab-sync.test",
+          "success_criteria": "9/9 tests pass (currently 7/9)",
+          "estimated_minutes": 15,
+          "dependencies": ["FIX3-001", "FIX3-002"]
+        },
+        {
+          "task_id": "FIX3-004",
+          "description": "Update tests to verify event listener behavior",
+          "file": "packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+          "changes": [
+            "Fix multiple render test issue (use getAllByTestId)",
+            "Verify listener is registered",
+            "Verify listener logs changes"
+          ],
+          "estimated_minutes": 20,
+          "dependencies": ["FIX3-003"]
+        }
+      ]
+    },
+    {
+      "phase_id": "PHASE-4",
+      "phase_name": "Comprehensive Testing & Validation",
+      "priority": "high",
+      "estimated_hours": 0.5,
+      "tasks": [
+        {
+          "task_id": "TEST-001",
+          "description": "Run all comprehensive test suites",
+          "command": "npm test -- CodeRefExplorerWidget",
+          "success_criteria": "48/48 tests pass (state + refresh suites)",
+          "estimated_minutes": 10,
+          "dependencies": ["FIX1-003", "FIX2-003"]
+        },
+        {
+          "task_id": "TEST-002",
+          "description": "Run all focused issue test suites",
+          "command": "npm test -- issue-",
+          "success_criteria": "21/21 tests pass (all 3 issue suites)",
+          "estimated_minutes": 10,
+          "dependencies": ["TEST-001"]
+        },
+        {
+          "task_id": "TEST-003",
+          "description": "Manual testing - localStorage quota exceeded",
+          "steps": [
+            "Fill localStorage to ~5MB with dummy data",
+            "Select project in CodeRefExplorer",
+            "Verify no crash, warning logged",
+            "Verify component still functional"
+          ],
+          "estimated_minutes": 10,
+          "dependencies": ["TEST-002"]
+        }
+      ]
+    }
+  ],
+
+  "testing_strategy": {
+    "unit_tests": {
+      "existing_coverage": "48 tests across 3 suites",
+      "new_tests_needed": 0,
+      "approach": "Existing tests comprehensively cover all scenarios. Fixes should make failing tests pass."
+    },
+    "integration_tests": {
+      "scenarios": [
+        "Component mounts with saved project → restores without extra writes",
+        "localStorage quota exceeded → component continues working",
+        "Multiple tabs open → changes logged (if Fix #3 implemented)"
+      ]
+    },
+    "manual_testing": {
+      "scenarios": [
+        {
+          "name": "Quota exceeded simulation",
+          "steps": [
+            "Fill localStorage with 5MB dummy data",
+            "Use CodeRefExplorer normally",
+            "Verify graceful degradation"
+          ]
+        },
+        {
+          "name": "Refresh behavior",
+          "steps": [
+            "Select project",
+            "Check browser DevTools → Network → Disable cache",
+            "Hard refresh (Ctrl+Shift+R)",
+            "Verify project restored, only 1 localStorage write"
+          ]
+        },
+        {
+          "name": "Cross-tab sync (if Fix #3)",
+          "steps": [
+            "Open dashboard in 2 tabs",
+            "Change project in Tab 1",
+            "Check Tab 2 console for log message"
+          ]
+        }
+      ]
+    }
+  },
+
+  "success_criteria": {
+    "must_have": [
+      {
+        "criterion": "All quota exceeded tests pass (7/7)",
+        "validation": "npm test -- issue-2-quota-exceeded.test shows 7 passing"
+      },
+      {
+        "criterion": "All restoration flag tests pass (5/5)",
+        "validation": "npm test -- issue-1-restoration-flag.test shows 5 passing"
+      },
+      {
+        "criterion": "No localStorage crashes",
+        "validation": "Manual test with full localStorage completes without errors"
+      },
+      {
+        "criterion": "Zero wasteful writes on mount",
+        "validation": "Console logs show 0 setItem calls during restoration phase"
+      },
+      {
+        "criterion": "All comprehensive tests pass (48/48)",
+        "validation": "npm test -- CodeRefExplorerWidget shows all passing"
+      }
+    ],
+    "nice_to_have": [
+      {
+        "criterion": "Cross-tab sync logging works",
+        "validation": "Console shows storage change events from other tabs"
+      },
+      {
+        "criterion": "95%+ test coverage maintained",
+        "validation": "Coverage report shows no regression"
+      }
+    ],
+    "performance_targets": [
+      {
+        "metric": "Component mount time",
+        "target": "No regression (< 100ms)",
+        "measurement": "React DevTools Profiler"
+      },
+      {
+        "metric": "localStorage write frequency",
+        "target": "Reduced by 1 write per mount (from 2 to 1)",
+        "measurement": "Console log count during tests"
+      }
+    ]
+  },
+
+  "deliverables": {
+    "code_changes": [
+      {
+        "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "description": "Add try-catch error handling and restoration flag checks",
+        "lines_changed": "~20 lines modified, ~30 lines added (if Fix #3 included)"
+      }
+    ],
+    "test_updates": [
+      {
+        "file": "packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+        "description": "Fix multiple render test issues (use getAllByTestId)",
+        "lines_changed": "~5 lines modified"
+      }
+    ],
+    "documentation": [
+      {
+        "file": "DELIVERABLES.md",
+        "description": "Track implementation progress and test results",
+        "required": true
+      }
+    ]
+  },
+
+  "references": {
+    "standards": [
+      "coderef/standards/BEHAVIOR-STANDARDS.md - Error handling patterns",
+      "coderef/standards/UI-STANDARDS.md - Color tokens for notifications"
+    ],
+    "test_files": [
+      "packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.state.test.tsx",
+      "packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.refresh.test.tsx",
+      "packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-1-restoration-flag.test.tsx",
+      "packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+      "packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx"
+    ],
+    "related_components": [
+      "packages/dashboard/src/components/coderef/ProjectSelector.tsx - Handles project restoration",
+      "packages/dashboard/src/components/coderef/FileTree.tsx - Receives project prop"
+    ]
+  },
+
+  "notes": {
+    "architectural_decisions": [
+      {
+        "decision": "Use try-catch instead of global error boundary",
+        "rationale": "localStorage errors are expected edge cases, not exceptional failures. Component should handle gracefully and continue operating."
+      },
+      {
+        "decision": "Conservative cross-tab sync (log only)",
+        "rationale": "Auto-syncing could interrupt user's work if they intentionally want different projects in different tabs. Logging provides visibility without disruption."
+      },
+      {
+        "decision": "Preserve existing isRestoringProject flag logic",
+        "rationale": "Flag already exists and works correctly for project save effect. Just extend usage to favorites save effect."
+      }
+    ],
+    "implementation_tips": [
+      "Run tests after each phase to catch regressions early",
+      "Check console logs during manual testing to verify error handling",
+      "Use browser DevTools → Application → Storage to simulate quota exceeded",
+      "Test in multiple browsers (Chrome, Firefox, Safari) for localStorage behavior differences"
+    ]
+  }
+}

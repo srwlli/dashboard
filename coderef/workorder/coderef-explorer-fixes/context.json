@@ -1,0 +1,183 @@
+{
+  "feature_name": "coderef-explorer-fixes",
+  "description": "Fix critical state management and error handling issues in CodeRefExplorerWidget component. Three main fixes: (1) Add QuotaExceededError handling to prevent crashes when localStorage is full, (2) Fix restoration flag to prevent wasteful localStorage writes during component mount, (3) Optionally add cross-tab storage synchronization for better multi-tab UX.",
+  "goal": "Improve CodeRefExplorerWidget reliability and performance by eliminating crashes, reducing unnecessary I/O, and optionally adding cross-tab sync. Increase test coverage from 75% to 100%.",
+  "requirements": [
+    "Add try-catch error handling around all localStorage.setItem calls (2 locations)",
+    "Add isRestoringProject flag check to favorites save effect",
+    "Component must gracefully degrade when localStorage quota exceeded",
+    "Zero localStorage writes during component restoration phase",
+    "All 48 comprehensive tests must pass (currently 36/48)",
+    "All 21 focused issue tests must pass (currently 14/21)",
+    "No regressions in existing functionality",
+    "Follow BEHAVIOR-STANDARDS.md try-catch pattern (validated across 75 components)"
+  ],
+  "constraints": [
+    "Cannot break existing localStorage persistence behavior",
+    "Must maintain backward compatibility with existing saved data",
+    "No changes to component API or props",
+    "Performance: Component mount time must stay <100ms",
+    "Code changes limited to CodeRefExplorerWidget.tsx (no architectural changes)",
+    "Optional Fix #3 (cross-tab sync) must not interrupt user's work"
+  ],
+  "success_criteria": {
+    "testing": {
+      "unit_tests": "48/48 comprehensive tests passing (100%)",
+      "focused_tests": "21/21 issue-specific tests passing (100%)",
+      "manual_testing": "Quota exceeded, refresh, and cross-tab scenarios validated"
+    },
+    "performance": {
+      "mount_time": "No regression (<100ms)",
+      "localStorage_writes": "50% reduction on mount (from 2 writes to 1)",
+      "crash_rate": "Zero crashes on quota exceeded"
+    },
+    "code_quality": {
+      "standards_compliance": "Matches BEHAVIOR-STANDARDS.md error handling pattern",
+      "test_coverage": "95%+ coverage maintained",
+      "code_review": "All changes reviewed and approved"
+    }
+  },
+  "decisions": {
+    "error_handling_strategy": {
+      "decision": "Use try-catch blocks instead of global error boundary",
+      "rationale": "localStorage quota errors are expected edge cases that should be handled locally. Component should continue operating in degraded mode.",
+      "alternatives_considered": [
+        "Global error boundary - rejected (too coarse-grained)",
+        "Custom hooks wrapper - rejected (unnecessary abstraction)",
+        "Ignore errors - rejected (causes crashes)"
+      ]
+    },
+    "cross_tab_sync_strategy": {
+      "decision": "Conservative approach - log changes only, don't auto-sync",
+      "rationale": "Users may intentionally want different projects in different tabs. Auto-syncing could interrupt their workflow. Logging provides visibility without disruption.",
+      "alternatives_considered": [
+        "Auto-sync aggressively - rejected (interrupts user work)",
+        "Show toast notification - deferred (no toast system yet)",
+        "No sync at all - rejected (users requested awareness)"
+      ]
+    },
+    "restoration_flag_approach": {
+      "decision": "Extend existing isRestoringProject flag to favorites save effect",
+      "rationale": "Flag already exists and works correctly for project save. Just needs broader application. Simpler than refactoring.",
+      "alternatives_considered": [
+        "Refactor to single save effect - rejected (more complex, higher risk)",
+        "Use separate flag for favorites - rejected (unnecessary duplication)"
+      ]
+    }
+  },
+  "out_of_scope": [
+    "Refactoring component architecture",
+    "Adding IndexedDB as localStorage alternative",
+    "Implementing aggressive cross-tab auto-sync",
+    "Adding toast notification system",
+    "Migrating to external state management (Redux, Zustand)",
+    "Debouncing localStorage writes (Fix #5 - deferred to future workorder)"
+  ],
+  "context": {
+    "problem_discovery": {
+      "method": "Comprehensive test suite creation and execution",
+      "test_suites_created": [
+        "CodeRefExplorerWidget.state.test.tsx (32 tests)",
+        "CodeRefExplorerWidget.refresh.test.tsx (16 tests)",
+        "issue-1-restoration-flag.test.tsx (5 tests)",
+        "issue-2-quota-exceeded.test.tsx (7 tests)",
+        "issue-3-cross-tab-sync.test.tsx (9 tests)"
+      ],
+      "total_tests": 69,
+      "initial_passing": "47/69 (68%)",
+      "target_passing": "69/69 (100%)"
+    },
+    "standards_validation": {
+      "method": "Generated standards documentation from .coderef/ data",
+      "script": "enhance-standards.py",
+      "components_analyzed": 75,
+      "findings": [
+        "Error handling: try-catch pattern used across 75 components",
+        "Loading states: isLoading flag pattern widely adopted",
+        "UI patterns: ind-* color tokens for consistent theming"
+      ],
+      "validation": "Planned fixes match established codebase patterns"
+    },
+    "current_issues": {
+      "issue_1": {
+        "name": "Restoration Flag",
+        "severity": "HIGH",
+        "description": "Component saves to localStorage during initial restoration, causing wasteful writes",
+        "evidence": "Console log shows 'setItem calls during restoration: 1'",
+        "impact": "Performance degradation on every page refresh, can persist invalid project IDs"
+      },
+      "issue_2": {
+        "name": "QuotaExceededError",
+        "severity": "CRITICAL",
+        "description": "Unhandled exception crashes component when localStorage is full",
+        "evidence": "Test shows uncaught DOMException: QuotaExceededError",
+        "impact": "Complete component failure for users with full localStorage (5-10MB limit)"
+      },
+      "issue_3": {
+        "name": "Cross-Tab Sync",
+        "severity": "MEDIUM",
+        "description": "No storage event listener means tabs don't sync",
+        "evidence": "Tests show Tab 2 does not update when Tab 1 changes project",
+        "impact": "User confusion when working in multiple tabs, documented limitation"
+      }
+    },
+    "affected_files": {
+      "primary": [
+        {
+          "file": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+          "lines": 269,
+          "changes_needed": [
+            "Line 76-82: Add try-catch + isRestoringProject check to favorites save",
+            "Line 84-90: Add try-catch to project save",
+            "After line 90: Add storage event listener (optional)"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "file": "packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+          "changes_needed": "Fix multiple render test issues (use getAllByTestId)"
+        }
+      ]
+    },
+    "dependencies": {
+      "internal": [
+        {
+          "name": "Test infrastructure",
+          "status": "Available",
+          "description": "48 comprehensive tests + 21 focused tests already exist"
+        },
+        {
+          "name": "Standards documentation",
+          "status": "Available",
+          "description": "BEHAVIOR-STANDARDS.md validates error handling approach"
+        }
+      ],
+      "external": [],
+      "blocking": []
+    }
+  },
+  "user_feedback": {
+    "requests": [
+      "Fix state management issues causing build errors on coderef/explorer route",
+      "Create comprehensive tests for state persistence on refresh/reload",
+      "Test identified issues further (3 main bugs)",
+      "Explain how to fix the issues with specific code solutions",
+      "Create plan.json for implementing the fixes"
+    ],
+    "pain_points": [
+      "Component crashes when localStorage is full",
+      "Multiple tabs show different projects (no sync)",
+      "Wasteful writes slow down page refreshes",
+      "Build errors prevent deployment"
+    ]
+  },
+  "metadata": {
+    "created_at": "2025-12-31T00:00:00Z",
+    "updated_at": "2025-12-31T00:00:00Z",
+    "workorder_id": "WO-EXPLORER-FIXES-001",
+    "priority": "high",
+    "estimated_hours": 4,
+    "tags": ["bugfix", "error-handling", "state-management", "testing", "performance"]
+  }
+}

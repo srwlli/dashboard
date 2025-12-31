@@ -67,11 +67,11 @@ export function createMockDirectoryHandle(
     name,
 
     // Permission APIs
-    queryPermission: jest.fn((descriptor?: { mode?: 'read' | 'readwrite' }) =>
+    queryPermission: jest.fn((_descriptor?: { mode?: 'read' | 'readwrite' }) =>
       Promise.resolve(currentPermission as PermissionState)
     ),
 
-    requestPermission: jest.fn((descriptor?: { mode?: 'read' | 'readwrite' }) => {
+    requestPermission: jest.fn((_descriptor?: { mode?: 'read' | 'readwrite' }) => {
       if (shouldRequestSucceed && currentPermission === 'prompt') {
         currentPermission = 'granted';
       }
@@ -121,16 +121,20 @@ export function mockPersistentStorage(
 ): void {
   const { persist = true, persisted = true } = options;
 
-  global.navigator.storage = {
-    persist: jest.fn(() => Promise.resolve(persist)),
-    persisted: jest.fn(() => Promise.resolve(persisted)),
-    estimate: jest.fn(() =>
-      Promise.resolve({
-        usage: 1024 * 1024, // 1 MB
-        quota: 1024 * 1024 * 1024, // 1 GB
-      })
-    ),
-  };
+  Object.defineProperty(global.navigator, 'storage', {
+    value: {
+      persist: jest.fn(() => Promise.resolve(persist)),
+      persisted: jest.fn(() => Promise.resolve(persisted)),
+      estimate: jest.fn(() =>
+        Promise.resolve({
+          usage: 1024 * 1024, // 1 MB
+          quota: 1024 * 1024 * 1024, // 1 GB
+        })
+      ),
+    },
+    writable: true,
+    configurable: true,
+  });
 }
 
 /**
