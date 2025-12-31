@@ -5,7 +5,6 @@
  * and provides the appropriate filesystem adapter.
  */
 
-import { ElectronFileSystemAdapter } from '@coderef-dashboard/core/src/filesystem/electron';
 import { createWebFileSystemAdapter } from '@coderef-dashboard/core/src/filesystem/web';
 import type { FileSystemAdapter } from '@coderef-dashboard/core/src/filesystem/types';
 
@@ -50,9 +49,11 @@ export const platform: 'electron' | 'web' = isElectron() ? 'electron' : 'web';
 /**
  * Create appropriate filesystem adapter based on platform
  */
-function createFileSystemAdapter(): FileSystemAdapter {
+async function createFileSystemAdapter(): Promise<FileSystemAdapter> {
   if (platform === 'electron') {
     console.log('🖥️ [Platform] Running in Electron - using Node.js fs adapter');
+    // Dynamic import to avoid bundling Electron code in web builds
+    const { ElectronFileSystemAdapter } = await import('@coderef-dashboard/core/src/filesystem/electron');
     return new ElectronFileSystemAdapter();
   } else {
     console.log('🌐 [Platform] Running in Web - using File System Access API adapter');
@@ -67,10 +68,51 @@ function createFileSystemAdapter(): FileSystemAdapter {
 }
 
 /**
- * Singleton filesystem adapter instance
- * Use this throughout the application
+ * Singleton filesystem adapter instance promise
+ * Use await fileSystem throughout the application
  */
-export const fileSystem: FileSystemAdapter = createFileSystemAdapter();
+let _fileSystemInstance: FileSystemAdapter | null = null;
+
+/**
+ * Get the filesystem adapter (lazy-initialized singleton)
+ * Returns a promise that resolves to the adapter instance
+ */
+export async function getFileSystem(): Promise<FileSystemAdapter> {
+  if (!_fileSystemInstance) {
+    _fileSystemInstance = await createFileSystemAdapter();
+  }
+  return _fileSystemInstance;
+}
+
+/**
+ * Synchronous access to fileSystem (for compatibility)
+ * Note: Only works after getFileSystem() has been called at least once
+ */
+export const fileSystem = {
+  get platform() {
+    return platform;
+  },
+  async selectDirectory() {
+    const fs = await getFileSystem();
+    return fs.selectDirectory();
+  },
+  async isProjectValid(projectId: string, projectPath: string) {
+    const fs = await getFileSystem();
+    return fs.isProjectValid(projectId, projectPath);
+  },
+  async restoreProject(projectId: string, projectPath: string) {
+    const fs = await getFileSystem();
+    return fs.restoreProject(projectId, projectPath);
+  },
+  async readFile(projectId: string, projectPath: string, filePath: string) {
+    const fs = await getFileSystem();
+    return fs.readFile(projectId, projectPath, filePath);
+  },
+  async readDirectory(projectId: string, projectPath: string, dirPath: string) {
+    const fs = await getFileSystem();
+    return fs.readDirectory(projectId, projectPath, dirPath);
+  },
+} as FileSystemAdapter;
 
 /**
  * Platform-specific feature flags

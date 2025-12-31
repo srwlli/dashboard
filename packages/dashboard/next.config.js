@@ -3,6 +3,14 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ['@coderef-dashboard/core'],
+    turbo: {
+      resolveAlias: {
+        // Exclude Electron and Node.js modules from browser bundles
+        electron: false,
+        '@electron/remote': false,
+      },
+      resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+    },
   },
   headers: async () => {
     return [
