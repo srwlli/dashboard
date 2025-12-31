@@ -75,19 +75,78 @@ export function CodeRefExplorerWidget() {
 
   // Save favorites to localStorage whenever they change
   useEffect(() => {
-    if (selectedProject) {
+    if (selectedProject && !isRestoringProject) {
       const storageKey = `coderef-favorites-${selectedProject.id}`;
-      localStorage.setItem(storageKey, JSON.stringify(favoritesData));
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(favoritesData));
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+          console.warn('[CodeRefExplorer] localStorage quota exceeded when saving favorites', {
+            projectId: selectedProject.id,
+          });
+        } else {
+          console.error('[CodeRefExplorer] Failed to save favorites:', error);
+        }
+      }
     }
-  }, [favoritesData, selectedProject?.id]);
+  }, [favoritesData, selectedProject?.id, isRestoringProject]);
 
   // Save selected project ID to localStorage
   useEffect(() => {
     if (selectedProject && !isRestoringProject) {
       console.log('[CodeRefExplorer] Saving project ID to localStorage:', selectedProject.id);
-      localStorage.setItem('coderef-explorer-selected-project', selectedProject.id);
+      try {
+        localStorage.setItem('coderef-explorer-selected-project', selectedProject.id);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+          console.warn('[CodeRefExplorer] localStorage quota exceeded when saving project', {
+            projectId: selectedProject.id,
+            action: 'continuing_in_degraded_mode',
+          });
+          // Component continues to work, just can't persist selection
+        } else {
+          console.error('[CodeRefExplorer] Failed to save project ID:', error);
+        }
+      }
     }
   }, [selectedProject?.id, isRestoringProject]);
+
+  // Listen for storage changes from other tabs (cross-tab synchronization)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // Only respond to project selection changes from other tabs
+      if (e.key === 'coderef-explorer-selected-project' && e.newValue) {
+        console.log('[CodeRefExplorer] Another tab changed project to:', e.newValue);
+
+        // Conservative approach: Only log changes, don't auto-sync
+        // This avoids interrupting user's work if they intentionally want different projects in different tabs
+        // User can manually refresh if they want to sync
+
+        // Aggressive approach (commented out - uncomment if auto-sync desired):
+        // if (e.newValue !== selectedProject?.id) {
+        //   // Would need access to all projects list to find and set the new project
+        //   // const newProject = allProjects.find(p => p.id === e.newValue);
+        //   // if (newProject) setSelectedProject(newProject);
+        // }
+      }
+
+      // Also listen for favorites changes
+      if (e.key?.startsWith('coderef-favorites-') && selectedProject) {
+        const projectId = e.key.replace('coderef-favorites-', '');
+        if (projectId === selectedProject.id && e.newValue) {
+          console.log('[CodeRefExplorer] Favorites updated in another tab for current project');
+          // Could reload favorites here, but might interrupt user's work
+          // Conservative approach: just log the change
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [selectedProject?.id]);
 
   // DORMANT: Multi-project aggregation state and sorting (for future use)
   // const [sortBy, setSortBy] = useState<SortMode>('name');
