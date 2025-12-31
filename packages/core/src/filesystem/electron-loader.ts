@@ -21,6 +21,19 @@ export async function loadElectronAdapter(): Promise<FileSystemAdapter> {
   // Debug logging
   console.log('🔍 [Electron Loader] Attempting to load Electron adapter...');
 
+  // First check if we're actually in Electron
+  if (typeof window !== 'undefined') {
+    // Browser environment - check for actual Electron environment
+    const userAgent = navigator.userAgent.toLowerCase();
+    const hasElectronUA = userAgent.includes('electron');
+    const hasNodeRequire = typeof (window as any).require === 'function';
+
+    if (!hasElectronUA && !hasNodeRequire) {
+      console.error('❌ [Electron Loader] Not in Electron environment (browser detected)');
+      throw new Error('Cannot load Electron adapter in browser environment');
+    }
+  }
+
   try {
     // Use Function constructor instead of eval for better security
     // This prevents static analysis from detecting the import path

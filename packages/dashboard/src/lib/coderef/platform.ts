@@ -17,28 +17,34 @@ import { verifyHandleValid, ensurePermission } from './permissions';
  * Detect if running in Electron environment
  */
 function isElectron(): boolean {
-  // Check for Electron-specific globals
+  // Must be in browser environment
   if (typeof window === 'undefined') {
     return false;
   }
 
-  // Method 1: Check for electron in user agent
+  // Method 1: Check for electron in user agent (most reliable)
   const userAgent = navigator.userAgent.toLowerCase();
-  if (userAgent.includes('electron')) {
-    return true;
-  }
+  const hasElectronUA = userAgent.includes('electron');
 
   // Method 2: Check for process.type (Electron sets this)
-  if (typeof (window as any).process === 'object' && (window as any).process.type === 'renderer') {
-    return true;
-  }
+  const hasRendererProcess = typeof (window as any).process === 'object' &&
+    (window as any).process.type === 'renderer';
 
-  // Method 3: Check for require (Electron exposes Node.js require)
-  if (typeof (window as any).require === 'function') {
-    return true;
-  }
+  // Method 3: Check for window.electronAPI (our preload script)
+  const hasElectronAPI = typeof (window as any).electronAPI !== 'undefined';
 
-  return false;
+  // Require at least one definitive Electron indicator
+  const result = hasElectronUA || hasRendererProcess || hasElectronAPI;
+
+  console.log('🔍 [Platform] isElectron() check:', {
+    userAgent: navigator.userAgent,
+    hasElectronUA,
+    hasRendererProcess,
+    hasElectronAPI,
+    result
+  });
+
+  return result;
 }
 
 /**
