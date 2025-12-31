@@ -39,7 +39,8 @@
       "Bash(cp:*)",
       "Bash(rm:*)",
       "Bash(npm test:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []
