@@ -2,6 +2,10 @@ import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import path from 'path';
 import createServer from 'next';
 import http from 'http';
+import remote from '@electron/remote/main';
+
+// Initialize @electron/remote for filesystem access
+remote.initialize();
 
 // Check if running in development mode
 const isDev = process.env.ELECTRON_DEV === 'true' || process.env.NODE_ENV === 'development';
@@ -39,13 +43,16 @@ function createWindow() {
     minWidth: 800,
     minHeight: 600,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
+      nodeIntegration: true,  // Required for @electron/remote
+      contextIsolation: false, // Required for @electron/remote
       preload: path.join(__dirname, 'preload.js'),
       navigateOnDragDrop: false,
     },
     icon: path.join(__dirname, '../assets/icon.png'),
   });
+
+  // Enable @electron/remote for this window
+  remote.enable(mainWindow.webContents);
 
   const startUrl = isDev
     ? 'http://localhost:3000'

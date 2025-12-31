@@ -3,10 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CodeRefApi } from '@/lib/coderef/api-access';
 import type { Project } from '@/lib/coderef/types';
-import { showDirectoryPicker } from '@/lib/coderef/local-access';
-import { deleteDirectoryHandle, getDirectoryHandle } from '@/lib/coderef/indexeddb';
-import { isFileSystemAccessSupported, verifyHandleValid, ensurePermission } from '@/lib/coderef/permissions';
-import { initializePersistence, saveDirectoryHandlePersistent } from '@/lib/coderef/persistence';
+import { fileSystem, platform } from '@/lib/coderef/platform';
 import { Folder, Plus, Trash2, AlertCircle } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
 import { BatchRestoreUI } from './BatchRestoreUI';
@@ -61,19 +58,27 @@ export function ProjectSelector({
 
   // Initialize persistence layer on mount - attempt silent restoration
   useEffect(() => {
-    if (!isFileSystemAccessSupported()) return;
     if (projects.length === 0) return;
 
     const initPersistence = async () => {
       try {
-        const needsReauth = await initializePersistence(projects);
+        console.log(`[${platform}] Initializing persistence for ${projects.length} projects...`);
 
-        // Update stale projects with those that need re-authorization
-        if (needsReauth.length > 0) {
-          setStaleProjects(new Set(needsReauth));
+        // Platform-specific persistence initialization
+        if (platform === 'web') {
+          const { initializePersistence } = await import('@/lib/coderef/persistence');
+          const needsReauth = await initializePersistence(projects);
+
+          // Update stale projects with those that need re-authorization
+          if (needsReauth.length > 0) {
+            console.log(`[Web] ${needsReauth.length} projects need re-authorization`);
+            setStaleProjects(new Set(needsReauth));
+          }
+        } else {
+          console.log('[Electron] No persistence initialization needed (direct fs access)');
         }
       } catch (error) {
-        console.error('[ProjectSelector] Persistence initialization failed:', error);
+        console.error(`[${platform}] Persistence initialization failed:`, error);
       }
     };
 
@@ -109,39 +114,54 @@ export function ProjectSelector({
   };
 
   const handleAddProject = async () => {
-    // Check if File System Access API is supported
-    if (!isFileSystemAccessSupported()) {
-      setError('File System Access API is not supported in this browser. Please use Chrome or Edge.');
-      return;
-    }
-
     try {
       setAdding(true);
       setError(null);
 
-      // Step 1: Show directory picker
-      const dirHandle = await showDirectoryPicker();
+      console.log(`[${platform}] Adding new project...`);
 
-      if (!dirHandle) {
+      // Step 1: Show platform-appropriate directory picker
+      const projectPath = await fileSystem.selectDirectory();
+
+      if (!projectPath) {
         // User cancelled
+        console.log(`[${platform}] User cancelled project selection`);
         setAdding(false);
         return;
       }
 
-      // Step 2: Generate project ID and create project object
+      // Step 2: Generate project ID and extract name
       const projectId = `project-${Date.now()}`;
-      const projectName = dirHandle.name;
-      const projectPath = `[Directory: ${dirHandle.name}]`;
+      const projectName = extractProjectName(projectPath);
 
-      // Step 3: Store directory handle in IndexedDB with persistent storage
-      await saveDirectoryHandlePersistent(projectId, dirHandle);
+      console.log(`[${platform}] Selected project:`, { projectId, projectName, projectPath });
 
-      // Step 4: Register project with API
+      // Step 3: Register project with API
+      // ProjectPath format depends on platform:
+      //   Web:      "[Directory: folder-name]"
+      //   Electron: "C:/absolute/path/to/folder"
       await CodeRefApi.projects.create({
         id: projectId,
         name: projectName,
-        path: projectPath,
+        path: projectPath, // Works for both platforms!
       });
+
+      console.log(`[${platform}] Project registered successfully`);
+
+      // Step 4: For Web, save the directory handle
+      if (platform === 'web') {
+        // Re-open picker to get handle (workaround for abstraction layer)
+        const { showDirectoryPicker } = await import('@/lib/coderef/local-access');
+        const { saveDirectoryHandlePersistent } = await import('@/lib/coderef/persistence');
+
+        const dirHandle = await showDirectoryPicker();
+        if (dirHandle) {
+          await saveDirectoryHandlePersistent(projectId, dirHandle);
+          console.log('[Web] Directory handle saved to IndexedDB');
+        }
+      } else {
+        console.log('[Electron] Path stored permanently:', projectPath);
+      }
 
       // Step 5: Select the new project immediately
       const newProject: Project = {
@@ -155,6 +175,7 @@ export function ProjectSelector({
       // Step 6: Reload projects list to refresh UI
       await loadProjects();
     } catch (err) {
+      console.error(`[${platform}] Failed to add project:`, err);
       setError((err as Error).message);
     } finally {
       setAdding(false);
@@ -168,20 +189,30 @@ export function ProjectSelector({
     if (!confirmed) return;
 
     try {
+      console.log(`[${platform}] Removing project:`, selectedProjectId);
+
       // Remove from API
       await CodeRefApi.projects.remove(selectedProjectId);
 
-      // Remove from IndexedDB (if it exists)
-      try {
-        await deleteDirectoryHandle(selectedProjectId);
-      } catch (err) {
-        // IndexedDB handle might not exist, that's okay
-        console.log('No IndexedDB handle to remove:', err);
+      // Platform-specific cleanup
+      if (platform === 'web') {
+        // Remove from IndexedDB (if it exists)
+        try {
+          const { deleteDirectoryHandle } = await import('@/lib/coderef/indexeddb');
+          await deleteDirectoryHandle(selectedProjectId);
+          console.log('[Web] Removed from IndexedDB');
+        } catch (err) {
+          // IndexedDB handle might not exist, that's okay
+          console.log('[Web] No IndexedDB handle to remove:', err);
+        }
+      } else {
+        console.log('[Electron] Path reference removed (no cleanup needed)');
       }
 
       await loadProjects();
       onProjectChange(null);
     } catch (err) {
+      console.error(`[${platform}] Failed to remove project:`, err);
       setError((err as Error).message);
     }
   };
@@ -196,37 +227,28 @@ export function ProjectSelector({
    * Check all projects for stale directory handles
    */
   const checkForStaleHandles = async () => {
-    if (!isFileSystemAccessSupported()) return;
-
     const stale = new Set<string>();
 
+    console.log(`[${platform}] Checking ${projects.length} projects for validity...`);
+
     for (const project of projects) {
-      // Only check projects using File System Access API
-      if (!project.path.startsWith('[Directory:')) continue;
-
       try {
-        const dirHandle = await getDirectoryHandle(project.id);
+        // Use platform abstraction to check validity
+        const isValid = await fileSystem.isProjectValid(project.id, project.path);
 
-        if (!dirHandle) {
-          stale.add(project.id);
-          continue;
-        }
-
-        const isValid = await verifyHandleValid(dirHandle);
         if (!isValid) {
+          console.log(`[${platform}] Project invalid:`, project.name);
           stale.add(project.id);
-          continue;
+        } else {
+          console.log(`[${platform}] Project valid:`, project.name);
         }
-
-        const hasPermission = await ensurePermission(dirHandle, 'read');
-        if (!hasPermission) {
-          stale.add(project.id);
-        }
-      } catch {
+      } catch (error) {
+        console.error(`[${platform}] Error checking project ${project.name}:`, error);
         stale.add(project.id);
       }
     }
 
+    console.log(`[${platform}] Found ${stale.size} stale projects`);
     setStaleProjects(stale);
   };
 
@@ -337,6 +359,23 @@ export function ProjectSelector({
       )}
     </div>
   );
+}
+
+/**
+ * Extract project name from path
+ * Web:      "[Directory: my-app]" → "my-app"
+ * Electron: "C:/projects/my-app" → "my-app"
+ */
+function extractProjectName(projectPath: string): string {
+  if (projectPath.startsWith('[Directory:')) {
+    // Web format
+    const match = projectPath.match(/\[Directory: (.+)\]/);
+    return match ? match[1] : 'Unnamed Project';
+  } else {
+    // Electron format - get last path segment
+    const parts = projectPath.replace(/\\/g, '/').split('/');
+    return parts[parts.length - 1] || 'Unnamed Project';
+  }
 }
 
 export default ProjectSelector;
