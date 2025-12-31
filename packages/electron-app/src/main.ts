@@ -17,7 +17,7 @@ const PORT = 9000;
 // Start Next.js server for both dev and production
 async function startNextServer() {
   const nextApp = createServer({
-    dev: false,
+    dev: isDev,
     dir: path.join(__dirname, '../../dashboard'),
   });
 
@@ -55,7 +55,7 @@ function createWindow() {
   remote.enable(mainWindow.webContents);
 
   const startUrl = isDev
-    ? 'http://localhost:3000'
+    ? 'http://localhost:3005' // Next.js dev server port
     : `http://localhost:${PORT}`;
 
   mainWindow.loadURL(startUrl);
