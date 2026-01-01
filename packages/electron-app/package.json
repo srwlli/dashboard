@@ -30,7 +30,7 @@
     "files": [
       "dist/**/*",
       "node_modules/**/*",
-      "../dashboard/out/**/*"
+      "../dashboard/.next/**/*"
     ],
     "directories": {
       "buildResources": "assets",

@@ -1,3 +1,5 @@
+WO-ELECTRON-PATH-PERSISTENCE-001 | coderef-dashboard | Eliminate Electron permission dialogs via path ... | 2026-01-01T08:11:01.857654+00:00
+WO-PROMPTING-WORKFLOW-TAGS-001 | coderef-dashboard | Add interactive tag selection to CODE_REVIEW pr... | 2026-01-01T07:50:11.381324+00:00
 WO-STATS-CARD-ENHANCEMENT-001 | coderef-dashboard | Archived feature: Stats Card Enhancement | 2025-12-30T07:31:41.966411+00:00
 WO-STATS-CARD-ENHANCEMENT-001 | coderef-dashboard | Stats card size reduction and stub breakdown en... | 2025-12-30T07:03:27.933181+00:00
 WO-UNIFIED-CARD-COMPONENT-001 | coderef-dashboard | Archived feature: Unified Card Component | 2025-12-30T03:05:38.565013+00:00

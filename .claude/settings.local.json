@@ -40,7 +40,10 @@
       "Bash(rm:*)",
       "Bash(npm test:*)",
       "Bash(curl:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(nul)",
+      "Bash(powershell -ExecutionPolicy Bypass -File create-shortcut.ps1)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

@@ -80,63 +80,56 @@
     "type": "function",
     "name": "loadElectronAdapter",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
-    "line": 20,
+    "line": 19,
     "exported": true
   },
   {
     "type": "function",
     "name": "canLoadElectronAdapter",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
-    "line": 62,
+    "line": 43,
     "exported": true
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
-    "line": 25,
+    "line": 23,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
-    "line": 31,
-    "exported": false
-  },
-  {
-    "type": "method",
-    "name": "catch",
-    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
-    "line": 48,
+    "line": 29,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
-    "line": 64,
-    "exported": false
-  },
-  {
-    "type": "method",
-    "name": "walk",
-    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 137,
+    "line": 44,
     "exported": false
   },
   {
     "type": "class",
     "name": "ElectronFileSystemAdapter",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 12,
+    "line": 18,
     "exported": true
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 30,
+    "line": 26,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+    "line": 33,
     "exported": false
   },
   {
@@ -150,35 +143,49 @@
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 56,
+    "line": 51,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+    "line": 59,
     "exported": false
   },
   {
     "type": "method",
     "name": "catch",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 63,
+    "line": 66,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+    "line": 76,
     "exported": false
   },
   {
     "type": "method",
     "name": "catch",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 79,
+    "line": 86,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+    "line": 96,
     "exported": false
   },
   {
     "type": "method",
     "name": "catch",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 93,
-    "exported": false
-  },
-  {
-    "type": "method",
-    "name": "for",
-    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
-    "line": 142,
+    "line": 104,
     "exported": false
   },
   {
@@ -1067,21 +1074,21 @@
     "type": "component",
     "name": "ImprovedBatchRestoreUI",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/__tests__/BatchRestoreUI.test.tsx",
-    "line": 231,
+    "line": 232,
     "exported": false
   },
   {
     "type": "component",
     "name": "ImprovedProjectItem",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/__tests__/BatchRestoreUI.test.tsx",
-    "line": 256,
+    "line": 257,
     "exported": false
   },
   {
     "type": "component",
     "name": "ImprovedUI",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/__tests__/BatchRestoreUI.test.tsx",
-    "line": 275,
+    "line": 276,
     "exported": false
   },
   {
@@ -3486,6 +3493,55 @@
     "exported": false
   },
   {
+    "type": "function",
+    "name": "mockElectronEnvironment",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+    "line": 12,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "mockBrowserEnvironment",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+    "line": 26,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "cleanupEnvironment",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+    "line": 37,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+    "line": 108,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+    "line": 140,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+    "line": 182,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+    "line": 268,
+    "exported": false
+  },
+  {
     "type": "method",
     "name": "catch",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.test.ts",
@@ -4294,14 +4350,14 @@
     "type": "function",
     "name": "getFileSystem",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 87,
+    "line": 100,
     "exported": true
   },
   {
     "type": "function",
     "name": "logPlatformInfo",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 152,
+    "line": 165,
     "exported": true
   },
   {
@@ -4320,58 +4376,65 @@
   },
   {
     "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+    "line": 66,
+    "exported": false
+  },
+  {
+    "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 88,
+    "line": 101,
     "exported": false
   },
   {
     "type": "method",
     "name": "platform",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 99,
+    "line": 112,
     "exported": false
   },
   {
     "type": "method",
     "name": "selectDirectory",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 102,
+    "line": 115,
     "exported": false
   },
   {
     "type": "method",
     "name": "isProjectValid",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 106,
+    "line": 119,
     "exported": false
   },
   {
     "type": "method",
     "name": "readFile",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 110,
+    "line": 123,
     "exported": false
   },
   {
     "type": "method",
     "name": "readDirectory",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 114,
+    "line": 127,
     "exported": false
   },
   {
     "type": "method",
     "name": "resolvePath",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 118,
+    "line": 131,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
-    "line": 163,
+    "line": 176,
     "exported": false
   },
   {
@@ -4445,6 +4508,188 @@
     "exported": true
   },
   {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.refresh.test.tsx",
+    "line": 377,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.state.test.tsx",
+    "line": 344,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.state.test.tsx",
+    "line": 362,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-1-restoration-flag.test.tsx",
+    "line": 36,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-1-restoration-flag.test.tsx",
+    "line": 38,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "for",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-1-restoration-flag.test.tsx",
+    "line": 180,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "fillLocalStorage",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 196,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "exampleSaveFunction",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 230,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "autoRecoverySave",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 298,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 128,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "for",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 198,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 202,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 233,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 234,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 301,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 302,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "for",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 307,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 315,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 323,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+    "line": 333,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "exampleStorageListener",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+    "line": 193,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "handleStorageChange",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+    "line": 195,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "handleFavoritesSync",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+    "line": 289,
+    "exported": false
+  },
+  {
+    "type": "function",
+    "name": "listener",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+    "line": 317,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+    "line": 196,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "for",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+    "line": 324,
+    "exported": false
+  },
+  {
     "type": "constant",
     "name": "EXPECTED_KEY",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/persistence-debug.test.tsx",
@@ -4460,58 +4705,65 @@
   },
   {
     "type": "function",
+    "name": "handleStorageChange",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+    "line": 116,
+    "exported": false
+  },
+  {
+    "type": "function",
     "name": "handleProjectChange",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 98,
+    "line": 157,
     "exported": false
   },
   {
     "type": "function",
     "name": "handleFileClick",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 111,
+    "line": 170,
     "exported": false
   },
   {
     "type": "function",
     "name": "handleViewModeChange",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 117,
+    "line": 176,
     "exported": false
   },
   {
     "type": "function",
     "name": "handleToggleFavorite",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 123,
+    "line": 182,
     "exported": false
   },
   {
     "type": "function",
     "name": "createGroup",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 148,
+    "line": 207,
     "exported": false
   },
   {
     "type": "function",
     "name": "deleteGroup",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 160,
+    "line": 219,
     "exported": false
   },
   {
     "type": "function",
     "name": "renameGroup",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 172,
+    "line": 231,
     "exported": false
   },
   {
     "type": "function",
     "name": "assignToGroup",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 191,
+    "line": 250,
     "exported": false
   },
   {
@@ -4558,30 +4810,72 @@
   },
   {
     "type": "method",
-    "name": "if",
+    "name": "catch",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 86,
+    "line": 82,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 105,
+    "line": 83,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 112,
+    "line": 96,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "catch",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+    "line": 100,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-    "line": 127,
+    "line": 101,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+    "line": 118,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+    "line": 136,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+    "line": 164,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+    "line": 171,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+    "line": 186,
     "exported": false
   },
   {
@@ -4609,56 +4903,56 @@
     "type": "function",
     "name": "mockUnsupportedBrowser",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 139,
+    "line": 143,
     "exported": true
   },
   {
     "type": "function",
     "name": "restoreBrowserSupport",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 147,
+    "line": 151,
     "exported": true
   },
   {
     "type": "function",
     "name": "createStaleHandle",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 154,
+    "line": 158,
     "exported": true
   },
   {
     "type": "function",
     "name": "createHandleNeedingPermission",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 164,
+    "line": 168,
     "exported": true
   },
   {
     "type": "function",
     "name": "createHandleWithDeniedPermission",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 176,
+    "line": 180,
     "exported": true
   },
   {
     "type": "function",
     "name": "createPermissionFlowHandle",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 193,
+    "line": 197,
     "exported": true
   },
   {
     "type": "function",
     "name": "assertPermissionRequested",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 216,
+    "line": 220,
     "exported": true
   },
   {
     "type": "function",
     "name": "assertPermissionNotRequested",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 225,
+    "line": 229,
     "exported": true
   },
   {
@@ -4700,7 +4994,7 @@
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
-    "line": 204,
+    "line": 208,
     "exported": false
   },
   {
@@ -4805,70 +5099,84 @@
     "type": "method",
     "name": "startNextServer",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 14,
+    "line": 15,
     "exported": false
   },
   {
     "type": "method",
     "name": "createWindow",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 35,
+    "line": 36,
     "exported": false
   },
   {
     "type": "constant",
     "name": "PORT",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 11,
+    "line": 12,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 63,
+    "line": 64,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 68,
+    "line": 69,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 81,
+    "line": 82,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 89,
+    "line": 90,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 92,
+    "line": 93,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 98,
+    "line": 99,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
-    "line": 146,
+    "line": 116,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+    "line": 125,
+    "exported": false
+  },
+  {
+    "type": "method",
+    "name": "if",
+    "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+    "line": 185,
     "exported": false
   }
 ]

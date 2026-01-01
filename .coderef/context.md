@@ -1,10 +1,10 @@
 ✅ Generated: coderef-context\context.json
 
 📈 Summary:
-   Files: 309
-   Elements: 48386
-   Entry Points: 338
+   Files: 311
+   Elements: 48460
+   Entry Points: 342
    Critical Functions: 20
-   Execution Time: 11.95s
+   Execution Time: 14.18s
 
 ⚠️  Warning: Execution time exceeded 5s target

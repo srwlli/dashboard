@@ -1,10 +1,10 @@
 # CodeRef Dashboard - AI Context Documentation
 
 **Project:** coderef-dashboard
-**Version:** 0.4.0
+**Version:** 0.5.0
 **Status:** 🚧 Development
 **Created:** 2025-12-28
-**Last Updated:** 2025-12-30
+**Last Updated:** 2025-12-31
 
 ---
 
@@ -21,12 +21,12 @@
 - **Papertrail** - Workorder tracking and documentation trail
 - **CodeRef System** - Workflow management and project structure standards
 
-**Latest Update (v0.4.0):**
-- ✅ Stats card enhancement with improved information density
-- ✅ Unified card component system (eliminated 97 lines of duplication)
-- ✅ CodeRef view mode for multi-project file aggregation
-- ✅ Foundation documentation suite (ARCHITECTURE, API, COMPONENTS, SCHEMA)
-- ✅ Comprehensive TypeScript type system across monorepo
+**Latest Update (v0.5.0):**
+- ✅ Dual executable builds: Full installer (1.9 MB) + Portable version
+- ✅ IPC-based native filesystem (no permission dialogs)
+- ✅ Both executables in `packages/electron-app/dist/`
+- ✅ Code signing configuration prepared
+- ✅ TypeScript type definitions for IPC channels
 
 ---
 
@@ -577,6 +577,27 @@ npm run package:win
 ---
 
 ## Recent Changes
+
+### v0.5.0 - Dual Executable Builds (2025-12-31)
+- ✅ Built TWO Windows executables with different distribution strategies:
+  1. **CodeRef Dashboard Setup 0.1.0.exe** (1.9 MB) - Full installer
+     - Setup wizard with installation flow
+     - Installs to Program Files
+     - Creates Start Menu shortcuts
+     - Supports clean uninstall via Windows Settings
+  2. **CodeRef Dashboard 0.1.0.exe** (Portable) - Standalone executable
+     - No installation required
+     - Run directly from any folder
+     - Perfect for USB drives and portable usage
+     - Same functionality as installed version
+- ✅ IPC-based native filesystem integration (no permission dialogs)
+- ✅ Absolute paths that persist across sessions
+- ✅ Full Node.js filesystem access without browser limitations
+- ✅ TypeScript type definitions for IPC channels
+- ✅ Code signing configuration prepared (awaiting certificate)
+
+**Location:** `packages/electron-app/dist/`
+**Workorder:** WO-ELECTRON-BUILDS-001
 
 ### v0.4.0 - Stats Card Enhancement (2025-12-30)
 - ✅ Reduced StatsCard size by ~25% (smaller padding, tighter spacing, reduced text sizes)
