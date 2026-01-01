@@ -18,18 +18,16 @@ export const SidebarContext = createContext<SidebarContextType | undefined>(
  * Initializes state from localStorage to prevent flash on reload
  */
 export function SidebarProvider({ children }: { children: ReactNode }) {
-  // Initialize from localStorage to prevent hydration mismatch
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('coderef-dashboard-sidebar-collapsed');
-      return saved === 'true';
-    }
-    return false;
-  });
+  // Start with false to match SSR, then sync from localStorage on mount
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Mark as hydrated after mount to prevent hydration mismatch
+  // Sync from localStorage and mark as hydrated after mount
   useEffect(() => {
+    const saved = localStorage.getItem('coderef-dashboard-sidebar-collapsed');
+    if (saved !== null) {
+      setIsCollapsed(saved === 'true');
+    }
     setIsHydrated(true);
   }, []);
 
