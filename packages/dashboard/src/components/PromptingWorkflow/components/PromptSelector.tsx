@@ -1,7 +1,20 @@
 import React from 'react';
+import { Zap, Lock, Sparkles, Building2, FlaskConical, Accessibility, AlertTriangle, Palette, LucideIcon } from 'lucide-react';
 import { PreloadedPrompt } from '../types';
 import { formatTokenCount } from '../utils/tokenEstimator';
 import { getAllTags } from '../constants/tags';
+
+// Icon map for tag icons
+const ICON_MAP: Record<string, LucideIcon> = {
+  'Zap': Zap,
+  'Lock': Lock,
+  'Sparkles': Sparkles,
+  'Building2': Building2,
+  'FlaskConical': FlaskConical,
+  'Accessibility': Accessibility,
+  'AlertTriangle': AlertTriangle,
+  'Palette': Palette,
+};
 
 interface PromptSelectorProps {
   prompts: PreloadedPrompt[];
@@ -31,15 +44,22 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {prompts.map((prompt) => (
-          <button
+          <div
             key={prompt.key}
+            role="button"
+            tabIndex={0}
             className={`p-4 border-2 transition-all cursor-pointer text-left ${
               selectedPromptKey === prompt.key
                 ? 'border-ind-accent bg-ind-panel shadow-lg shadow-ind-accent/20'
                 : 'border-ind-border bg-ind-panel hover:border-ind-accent'
             }`}
             onClick={() => onSelectPrompt(prompt)}
-            type="button"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectPrompt(prompt);
+              }
+            }}
           >
             <div className="flex items-start justify-between gap-2 mb-2">
               <h4 className="text-sm font-bold text-ind-text">{prompt.label}</h4>
@@ -58,6 +78,7 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
                 <div className="flex flex-wrap gap-2 overflow-x-auto">
                   {allTags.map((tag) => {
                     const isActive = selectedTags.includes(tag.id);
+                    const IconComponent = ICON_MAP[tag.icon];
                     return (
                       <button
                         key={tag.id}
@@ -67,7 +88,7 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
                           onToggleTag(tag.id);
                         }}
                         className={`
-                          px-2 py-1 text-xs font-medium rounded transition-all whitespace-nowrap
+                          px-2 py-1 text-xs font-medium rounded transition-all whitespace-nowrap flex items-center gap-1
                           ${isActive
                             ? 'border-2 border-ind-accent bg-ind-accent/10 text-ind-text'
                             : 'border border-ind-border bg-ind-bg text-ind-text-muted hover:border-ind-accent'
@@ -75,7 +96,8 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
                         `}
                         title={tag.description}
                       >
-                        {tag.icon} {tag.label}
+                        {IconComponent && <IconComponent className="w-3 h-3" />}
+                        {tag.label}
                       </button>
                     );
                   })}
@@ -87,7 +109,7 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
               <span>Prompt {prompt.key}</span>
               <span className="text-ind-accent font-bold">~{prompt.estimatedTokens.toLocaleString()} tokens</span>
             </div>
-          </button>
+          </div>
         ))}
       </div>
 

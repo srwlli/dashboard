@@ -21,49 +21,49 @@ export const IMPROVEMENT_TAGS: Record<string, ImprovementTag> = {
   'performance': {
     id: 'performance',
     label: 'Performance',
-    icon: '⚡',
+    icon: 'Zap',
     description: 'Speed, efficiency, optimization'
   },
   'security': {
     id: 'security',
     label: 'Security',
-    icon: '🔒',
+    icon: 'Lock',
     description: 'Vulnerabilities, auth, data protection'
   },
   'code-quality': {
     id: 'code-quality',
     label: 'Code Quality',
-    icon: '✨',
+    icon: 'Sparkles',
     description: 'Readability, maintainability, patterns'
   },
   'architecture': {
     id: 'architecture',
     label: 'Architecture',
-    icon: '🏗️',
+    icon: 'Building2',
     description: 'Structure, design, scalability'
   },
   'testing': {
     id: 'testing',
     label: 'Testing',
-    icon: '🧪',
+    icon: 'FlaskConical',
     description: 'Coverage, test quality, edge cases'
   },
   'accessibility': {
     id: 'accessibility',
     label: 'Accessibility',
-    icon: '♿',
+    icon: 'Accessibility',
     description: 'A11y, screen readers, WCAG'
   },
   'error-handling': {
     id: 'error-handling',
     label: 'Error Handling',
-    icon: '🚨',
+    icon: 'AlertTriangle',
     description: 'Edge cases, validation, recovery'
   },
   'ux-ui': {
     id: 'ux-ui',
     label: 'UX/UI',
-    icon: '🎨',
+    icon: 'Palette',
     description: 'User experience, design, usability'
   }
 };
