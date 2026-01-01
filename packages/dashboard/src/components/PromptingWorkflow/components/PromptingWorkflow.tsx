@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useCallback } from 'react';
 import { PromptSelector } from './PromptSelector';
 import { AttachmentManager } from './AttachmentManager';
