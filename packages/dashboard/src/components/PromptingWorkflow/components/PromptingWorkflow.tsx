@@ -19,6 +19,7 @@ export const PromptingWorkflow: React.FC = () => {
   const {
     workflow,
     setSelectedPrompt,
+    toggleTag,
     addAttachments,
     removeAttachment,
     clearAttachments,
@@ -145,7 +146,9 @@ export const PromptingWorkflow: React.FC = () => {
           <PromptSelector
             prompts={prompts}
             selectedPromptKey={workflow.selectedPrompt?.key}
+            selectedTags={workflow.selectedTags}
             onSelectPrompt={setSelectedPrompt}
+            onToggleTag={toggleTag}
           />
 
           {/* Attachment Management */}

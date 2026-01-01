@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     stat: (filePath: string) => ipcRenderer.invoke('fs:stat', filePath),
     readdir: (dirPath: string) => ipcRenderer.invoke('fs:readdir', dirPath),
     readFile: (filePath: string) => ipcRenderer.invoke('fs:readFile', filePath),
+    validatePath: (pathToValidate: string) => ipcRenderer.invoke('fs:validatePath', pathToValidate),
   },
 
   // IPC communication
@@ -51,6 +52,7 @@ declare global {
         stat: (filePath: string) => Promise<{ isDirectory: boolean; isFile: boolean }>;
         readdir: (dirPath: string) => Promise<{ name: string; isDirectory: boolean }[]>;
         readFile: (filePath: string) => Promise<string>;
+        validatePath: (pathToValidate: string) => Promise<{ valid: boolean; reason?: string }>;
       };
       send: (channel: string, ...args: any[]) => void;
       receive: (channel: string, func: (...args: any[]) => void) => () => void;

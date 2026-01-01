@@ -10,6 +10,9 @@ interface BatchRestoreUIProps {
   /** Set of project IDs that need re-authorization */
   staleProjects: Set<string>;
 
+  /** Map of project IDs to validation failure reasons */
+  staleReasons?: Map<string, string>;
+
   /** Full list of all projects */
   projects: Project[];
 
@@ -22,6 +25,7 @@ interface BatchRestoreUIProps {
 
 export function BatchRestoreUI({
   staleProjects,
+  staleReasons,
   projects,
   onRestore,
   className = '',
@@ -80,19 +84,27 @@ export function BatchRestoreUI({
 
           {/* Project list */}
           <div className="mb-3 space-y-1">
-            {staleProjectList.map((project) => (
-              <div
-                key={project.id}
-                className="flex items-center gap-2 text-xs text-yellow-500/80"
-              >
-                {currentProject === project.id ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                ) : (
-                  <div className="w-3 h-3 rounded-full border border-yellow-500/50" />
-                )}
-                <span className="truncate">{project.name}</span>
-              </div>
-            ))}
+            {staleProjectList.map((project) => {
+              const reason = staleReasons?.get(project.id);
+              return (
+                <div
+                  key={project.id}
+                  className="flex items-center gap-2 text-xs"
+                >
+                  {currentProject === project.id ? (
+                    <Loader2 className="w-3 h-3 animate-spin text-yellow-500" />
+                  ) : (
+                    <div className="w-3 h-3 rounded-full border border-yellow-500/50 flex-shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <span className="truncate text-yellow-500/90">{project.name}</span>
+                    {reason && (
+                      <span className="ml-2 text-yellow-500/60">({reason})</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Restore All button */}

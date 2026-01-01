@@ -34,6 +34,7 @@ export interface PreloadedPrompt {
 export interface Workflow {
   id: string;                          // UUID
   selectedPrompt?: PreloadedPrompt;
+  selectedTags?: string[];             // Selected improvement tag IDs for CODE_REVIEW prompt
   attachments: Attachment[];
   finalResult?: string;                // LLM output pasted back by user
   createdAt: Date;
@@ -82,6 +83,7 @@ export interface WorkflowExport {
     estimated_tokens_per_file: Record<string, number>;
     file_count: number;
     attachment_types: string[];
+    selected_tags?: string[];
     created_at: string;
     user_instructions: string;
   }

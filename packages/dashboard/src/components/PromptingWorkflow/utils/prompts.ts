@@ -1,4 +1,5 @@
 import { PreloadedPrompt } from '../types';
+import { getTagsByIds, getAllTags } from '../constants/tags';
 
 /**
  * 3 Preloaded prompts with agent identification headers
@@ -18,15 +19,24 @@ Start your response with a metadata header identifying yourself:
 **Task:** CODE_REVIEW
 ---
 
-## PART 1: EXISTING FEATURES
-1. Create an ORDERED LIST of existing features found in the code, ranked by Rating (1-10) from highest to lowest.
-2. Follow the list with a TABLE summarizing these features with columns: Name, Description, Value (Benefit), Rating (1-10), Risk (1-10).
-3. Include ALL existing features identified in the list in this table.
+## PART 1: TOP 3 FEATURES
+List the **top 3 most valuable features** found in the code:
 
-## PART 2: SUGGESTIONS FOR IMPROVEMENT
-4. Create an ORDERED LIST of suggested improvements/enhancements, ranked by Rating (1-10) from highest to lowest.
-5. Follow the list with a TABLE summarizing these suggestions with columns: Name, Description, Value (Benefit), Rating (1-10), Risk (1-10).
-6. Include ALL suggestions identified in the list in this table.`;
+| Feature Name | Description | Value (1-10) |
+|--------------|-------------|--------------|
+| ...          | ...         | ...          |
+
+## PART 2: IMPROVEMENT SUGGESTIONS
+{{TAG_SECTION}}
+
+For each category, provide suggestions with this format:
+
+### {{CATEGORY_NAME}}
+**Improvement:** [What to change]
+**Reasoning:** [Why this matters]
+**Impact Rating:** [1-10 expected value]
+
+Provide 2-5 suggestions per category, focusing on the highest-impact improvements.`;
 
 const SYNTHESIZE_PROMPT = `SYNTHESIS TASK
 I have conducted multiple Code Reviews using different LLMs. Below are the Code Review responses.
@@ -147,4 +157,60 @@ export function getPrompt(key: string): PreloadedPrompt | undefined {
  */
 export function getAllPrompts(): PreloadedPrompt[] {
   return Object.values(PRELOADED_PROMPTS);
+}
+
+/**
+ * Get CODE_REVIEW prompt with tag interpolation
+ * Replaces {{TAG_SECTION}} and {{CATEGORY_NAME}} placeholders based on selected tags
+ *
+ * @param selectedTagIds - Array of selected tag IDs (e.g., ['performance', 'security'])
+ * @returns Prompt text with tags interpolated
+ *
+ * Behavior:
+ * - If no tags selected (empty array): Shows all 8 categories
+ * - If tags selected: Shows only selected categories
+ * - If all 8 tags selected: Treats same as no tags (shows all)
+ */
+export function getPromptWithTags(selectedTagIds: string[] = []): string {
+  const prompt = PRELOADED_PROMPTS['0001'].text;
+
+  // Determine which tags to show
+  const allTags = getAllTags();
+  const isAllSelected = selectedTagIds.length === 0 || selectedTagIds.length === allTags.length;
+  const tagsToShow = isAllSelected ? allTags : getTagsByIds(selectedTagIds);
+
+  // Build tag section text
+  let tagSection = '';
+  if (isAllSelected) {
+    tagSection = 'Provide improvement suggestions in ALL categories:\n';
+    tagSection += allTags.map(tag => `- ${tag.icon} **${tag.label}**: ${tag.description}`).join('\n');
+  } else {
+    tagSection = `User has requested feedback on: **${tagsToShow.map(t => t.label).join(', ')}**\n\n`;
+    tagSection += 'Focus your suggestions on these categories:\n';
+    tagSection += tagsToShow.map(tag => `- ${tag.icon} **${tag.label}**: ${tag.description}`).join('\n');
+  }
+
+  // Replace {{TAG_SECTION}} placeholder
+  let interpolatedPrompt = prompt.replace('{{TAG_SECTION}}', tagSection);
+
+  // Replace {{CATEGORY_NAME}} with actual category names (used in template)
+  // Since we have multiple categories, we'll duplicate the template section for each tag
+  const categoryTemplate = `### {{CATEGORY_NAME}}
+**Improvement:** [What to change]
+**Reasoning:** [Why this matters]
+**Impact Rating:** [1-10 expected value]
+
+Provide 2-5 suggestions per category, focusing on the highest-impact improvements.`;
+
+  const categorySections = tagsToShow.map(tag =>
+    `### ${tag.icon} ${tag.label}
+**Improvement:** [What to change]
+**Reasoning:** [Why this matters]
+**Impact Rating:** [1-10 expected value]`
+  ).join('\n\n');
+
+  // Replace the template section with actual category sections
+  interpolatedPrompt = interpolatedPrompt.replace(categoryTemplate, categorySections);
+
+  return interpolatedPrompt;
 }
