@@ -997,7 +997,7 @@
     "type": "component",
     "name": "FullPageViewer",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
-    "line": 95,
+    "line": 96,
     "exported": true
   },
   {
@@ -1032,21 +1032,21 @@
     "type": "method",
     "name": "catch",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
-    "line": 49,
+    "line": 50,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
-    "line": 59,
+    "line": 60,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
-    "line": 70,
+    "line": 71,
     "exported": false
   },
   {
@@ -2873,14 +2873,14 @@
     "type": "hook",
     "name": "useSidebar",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
-    "line": 61,
+    "line": 59,
     "exported": true
   },
   {
     "type": "function",
     "name": "toggleSidebar",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
-    "line": 37,
+    "line": 35,
     "exported": false
   },
   {
@@ -2894,21 +2894,21 @@
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
-    "line": 23,
+    "line": 28,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
-    "line": 40,
+    "line": 38,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
-    "line": 63,
+    "line": 61,
     "exported": false
   },
   {
@@ -2992,21 +2992,21 @@
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
-    "line": 28,
+    "line": 37,
     "exported": false
   },
   {
     "type": "method",
     "name": "if",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
-    "line": 31,
+    "line": 40,
     "exported": false
   },
   {
     "type": "method",
     "name": "catch",
     "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
-    "line": 44,
+    "line": 53,
     "exported": false
   },
   {
