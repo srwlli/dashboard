@@ -1,0 +1,106 @@
+{
+  "feature_name": "electron-path-persistence",
+  "description": "Fix Electron file access persistence so users don't need to grant directory access on every app launch. Implement IPC-based native filesystem with absolute path storage and validation.",
+  "goal": "Eliminate repeated file permission dialogs in Electron app by persisting project paths in projects.config.json and validating them on launch. Achieve true 'no permission dialogs' as advertised in v0.5.0.",
+  "requirements": [
+    "Store absolute project paths in projects.config.json",
+    "Add settings section to persist last selected project",
+    "Implement fs:validatePath IPC handler for path validation without dialogs",
+    "Update ProjectSelector to validate saved paths before access",
+    "Show directory selection dialog only for new projects or invalid paths",
+    "Persist user selections across app launches",
+    "Gracefully handle moved/deleted project directories"
+  ],
+  "constraints": [
+    "Must maintain backward compatibility with existing projects.config.json format",
+    "Must not break existing Electron IPC handlers",
+    "Must handle Windows path formats (backslashes)",
+    "Must work in both dev and production Electron builds",
+    "Must maintain security (no arbitrary filesystem access)",
+    "Must preserve existing fs:selectDirectory for initial setup"
+  ],
+  "decisions": {
+    "storage_mechanism": "projects.config.json with absolute paths",
+    "validation_approach": "IPC handler (fs:validatePath) checks path existence without prompting",
+    "fallback_strategy": "Re-prompt with dialog only if saved path doesn't exist",
+    "persistence_location": "projects.config.json in project root"
+  },
+  "out_of_scope": [
+    "Migrating existing project configurations automatically",
+    "Supporting relative paths (only absolute paths)",
+    "Cross-platform path conversion (focus on Windows first)",
+    "Permission management beyond directory selection"
+  ],
+  "success_criteria": {
+    "functional": [
+      "User selects directory once per project",
+      "No dialogs on subsequent launches if path exists",
+      "Automatic validation on app startup",
+      "Graceful re-prompt if path no longer exists"
+    ],
+    "performance": [
+      "Path validation completes in <100ms",
+      "No blocking operations during startup"
+    ],
+    "user_experience": [
+      "Zero friction after initial setup",
+      "Clear feedback when path is invalid",
+      "Seamless restoration of last selected project"
+    ]
+  },
+  "implementation_plan": {
+    "step_1": {
+      "title": "Add Path Persistence to projects.config.json",
+      "goal": "Store absolute paths so they persist across app launches",
+      "actions": [
+        "Update projects.config.json schema to include absolute paths",
+        "Add settings section for last selected project"
+      ],
+      "files": [
+        "projects.config.json"
+      ],
+      "expected_outcome": "Configuration file stores absolute paths for reuse"
+    },
+    "step_2": {
+      "title": "Add Direct Path Access IPC Handler",
+      "goal": "Allow filesystem access without dialog prompts for saved paths",
+      "actions": [
+        "Add fs:validatePath handler to check if saved paths still exist",
+        "Modify fs:selectDirectory to be used only for new project setup",
+        "Update preload.ts to expose validatePath API"
+      ],
+      "files": [
+        "packages/electron-app/src/main.ts",
+        "packages/electron-app/src/preload.ts"
+      ],
+      "expected_outcome": "Electron can validate and access saved paths without dialogs"
+    },
+    "step_3": {
+      "title": "Update Frontend to Use Saved Paths",
+      "goal": "Load projects from saved paths, prompt only when needed",
+      "actions": [
+        "Update ProjectSelector to load from config file",
+        "Validate paths before access",
+        "Show dialog only if path doesn't exist",
+        "Implement path update mechanism for invalid paths"
+      ],
+      "files": [
+        "packages/dashboard/src/components/coderef/ProjectSelector.tsx"
+      ],
+      "expected_outcome": "First launch: One dialog per project (setup). Subsequent launches: No dialogs (uses saved paths). Only re-prompt if path no longer exists."
+    }
+  },
+  "technical_details": {
+    "current_issue": "fs:selectDirectory uses dialog.showOpenDialog() which always prompts user. Paths are not persisted, causing repeated permission requests.",
+    "root_cause": "No path persistence mechanism. Dialog is triggered on every project access instead of only initial setup.",
+    "solution_approach": "Three-tier system: (1) Store paths in config, (2) Validate paths via IPC without prompts, (3) Frontend uses saved paths with validation fallback."
+  },
+  "references": [
+    "packages/electron-app/dist/main.js:133-145 - Current fs:selectDirectory implementation",
+    "packages/electron-app/dist/preload.js:14 - Current IPC API exposure",
+    "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx:31 - Current localStorage usage for project ID (not path)"
+  ],
+  "gathered_at": "2026-01-01T02:30:00Z",
+  "gathered_by": "Claude (Agent 1)",
+  "workorder_id": "WO-ELECTRON-PATH-FIX-001"
+}

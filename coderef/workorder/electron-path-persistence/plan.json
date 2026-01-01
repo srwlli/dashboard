@@ -1,0 +1,420 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "electron-path-persistence",
+    "workorder_id": "WO-ELECTRON-PATH-PERSISTENCE-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "Claude Code v2.0.0",
+    "has_context": true,
+    "has_analysis": true,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-01-01",
+      "ai_assistance": true,
+      "next_review": "2026-01-31"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "available": [
+          "CLAUDE.md - Project context and architecture overview",
+          "coderef/foundation-docs/ARCHITECTURE.md - System design patterns",
+          "coderef/foundation-docs/API.md - REST API documentation",
+          "coderef/foundation-docs/COMPONENTS.md - UI component library"
+        ],
+        "missing": []
+      },
+      "coding_standards": {
+        "available": [
+          "TypeScript strict mode with full type coverage",
+          "IPC pattern: ipcMain.handle() for async operations with Promise returns",
+          "Preload script pattern: contextBridge.exposeInMainWorld() for secure IPC exposure",
+          "Error handling: try-catch with descriptive error messages",
+          "Path handling: Node.js fs/promises for async filesystem operations"
+        ],
+        "missing": []
+      },
+      "reference_components": {
+        "primary": "packages/electron-app/dist/main.js (IPC handlers: fs:selectDirectory, fs:stat, fs:readdir, fs:readFile)",
+        "secondary": [
+          "packages/electron-app/dist/preload.js (IPC exposure pattern via contextBridge)",
+          "packages/dashboard/src/components/coderef/ProjectSelector.tsx (path validation logic)",
+          "packages/dashboard/src/app/api/coderef/projects/route.ts (projects.json storage structure)"
+        ]
+      },
+      "key_patterns_identified": [
+        "IPC Handler Pattern: ipcMain.handle('channel:action', async (event, ...args) => { ... })",
+        "Preload Exposure: electronAPI.fs.methodName() wrapped with ipcRenderer.invoke()",
+        "Path Validation: Check existence with fs.access(), return boolean instead of throwing",
+        "Storage Format: ~/.coderef-dashboard/projects.json with { projects: [], updatedAt: string }",
+        "Platform Detection: platform variable used to conditionally execute Electron vs Web code"
+      ],
+      "technology_stack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Electron", "Next.js 16", "React 19"],
+        "key_libraries": ["fs/promises", "path", "os"]
+      },
+      "gaps_and_risks": [
+        "No existing path validation IPC handler - need to create fs:validatePath",
+        "ProjectSelector currently checks validity via fileSystem.isProjectValid() - need to ensure this works with new IPC",
+        "Projects stored at ~/.coderef-dashboard/projects.json - ensure path references are absolute",
+        "Need to handle case where path exists but coderef/ directory is missing (partial validation)"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Eliminate repeated file permission dialogs in Electron by implementing persistent absolute path validation through IPC handlers",
+      "value_proposition": "Users will only need to select a project folder once. After initial selection, the absolute path persists across sessions and the Electron app can access it directly without re-prompting for permissions, eliminating the frustrating permission dialog loop.",
+      "real_world_analogy": "Like adding a bookmark to your browser - you visit a website once, bookmark it, and from then on you can return directly without typing the URL again. Similarly, once you select a project folder, Electron remembers the absolute path and accesses it directly on subsequent launches.",
+      "use_case": "User adds a new CodeRef project → Electron stores absolute path (e.g., C:/projects/my-app) → User closes app → User reopens app → Dashboard loads immediately, no permission dialogs → User can browse project files instantly",
+      "output": [
+        "fs:validatePath IPC handler in main.js (validates path existence without throwing errors)",
+        "validatePath() method in preload.js (exposes validation to renderer process)",
+        "Path validation logic in ProjectSelector.tsx (checks paths on load, flags stale projects)",
+        "Updated projects.json schema documentation (confirms absolute path storage)",
+        "Test suite covering valid paths, invalid paths, missing coderef/ directories, and permission edge cases"
+      ]
+    },
+    "2_risk_assessment": {
+      "overall_risk": "low",
+      "complexity": "low (4 files, ~60 lines of new code, 20 lines modified)",
+      "scope": "Small - 4 files modified (main.js, preload.js, ProjectSelector.tsx, CLAUDE.md), 1 new IPC handler, minimal changes to existing logic",
+      "file_system_risk": "low - read-only operations (fs.access, fs.stat), no writes or deletions",
+      "dependencies": [
+        "fs/promises (Node.js built-in)",
+        "Existing IPC infrastructure (ipcMain, ipcRenderer, contextBridge)",
+        "Existing ProjectSelector component state management"
+      ],
+      "performance_concerns": [
+        "Path validation runs on component mount - batching 5+ projects will add 100-200ms delay maximum",
+        "Mitigation: Validation runs in parallel for all projects, async/await prevents blocking UI"
+      ],
+      "security_considerations": [
+        "Path validation uses fs.access() that respects OS-level permissions",
+        "No arbitrary file reads - only validates existence of user-selected paths",
+        "contextBridge ensures IPC calls are sandboxed (no direct Node.js access from renderer)"
+      ],
+      "breaking_changes": "none - additive changes only, backward compatible with existing projects.json format"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "packages/electron-app/dist/main.js - Add fs:validatePath IPC handler (~15 lines)",
+        "packages/electron-app/dist/preload.js - Add validatePath to electronAPI.fs (~2 lines)",
+        "packages/dashboard/src/components/coderef/ProjectSelector.tsx - Update checkForStaleHandles() to use validatePath IPC (~10 lines modified)",
+        "CLAUDE.md - Document new IPC handler and path persistence behavior (~20 lines)"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "fileSystem.isProjectValid() abstraction (platform.ts)",
+          "CodeRefApi.projects.list() (loads projects from storage)",
+          "Project interface (types.ts)"
+        ],
+        "existing_external": [
+          "fs/promises (Node.js)",
+          "path (Node.js)",
+          "electron (ipcMain, ipcRenderer, contextBridge)"
+        ],
+        "new_external": [],
+        "new_internal": [
+          "validatePath() method in electronAPI.fs namespace"
+        ]
+      },
+      "architecture_context": "This feature enhances the IPC layer between Electron main process and Next.js renderer process. It extends the existing fs:* handler pattern (fs:selectDirectory, fs:stat, fs:readdir, fs:readFile) with a new fs:validatePath handler. The handler provides lightweight path validation for ProjectSelector's stale project detection logic, replacing permission-heavy operations with simple existence checks."
+    },
+    "4_key_features": {
+      "primary_features": [
+        "fs:validatePath IPC handler - Validates absolute path existence without throwing errors, returns { valid: boolean, reason: string | undefined }",
+        "Preload API exposure - validatePath() added to electronAPI.fs namespace for renderer process access",
+        "Stale path detection - ProjectSelector checks all registered project paths on mount, flags invalid paths",
+        "Silent validation - Path checks happen in background without blocking UI or showing permission dialogs",
+        "Absolute path storage - Confirm projects.json stores full absolute paths (already implemented, just documented)"
+      ],
+      "secondary_features": [
+        "Batch validation - All projects validated in parallel on dashboard load",
+        "Graceful degradation - Invalid paths flagged visually, user can remove or re-add projects",
+        "Error reason reporting - Validation returns specific reason (not found, permission denied, not a directory)"
+      ],
+      "edge_case_handling": [
+        "Path exists but coderef/ directory missing - Mark as valid (user may not have CodeRef structure yet)",
+        "Path permission denied - Return { valid: false, reason: 'Permission denied' }",
+        "Path is a file, not directory - Return { valid: false, reason: 'Not a directory' }",
+        "Network drive disconnected - Return { valid: false, reason: 'Path not accessible' }"
+      ],
+      "configuration_options": [
+        "None - behavior is automatic and non-configurable"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "CONFIG-001: Update projects.json schema documentation (confirm absolute path storage)",
+        "IPC-001: Add fs:validatePath handler to main.js",
+        "IPC-002: Expose validatePath in preload.js electronAPI.fs namespace",
+        "UI-001: Add path validation logic to ProjectSelector checkForStaleHandles()",
+        "UI-002: Update stale project UI to show validation errors",
+        "TEST-001: Test valid absolute path validation",
+        "TEST-002: Test invalid path (non-existent directory)",
+        "TEST-003: Test path is file, not directory",
+        "TEST-004: Test permission denied scenario",
+        "DOC-001: Update CLAUDE.md with fs:validatePath handler documentation"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Foundation - Configuration & Documentation",
+          "purpose": "Document current projects.json schema and validate absolute path storage",
+          "complexity": "low",
+          "effort_level": 1,
+          "deliverables": [
+            "Updated API.md or schema documentation confirming absolute path format",
+            "Example projects.json showing absolute paths: C:/projects/my-app"
+          ],
+          "tasks": [
+            "CONFIG-001"
+          ],
+          "completion_criteria": "Documentation clearly states projects.json stores absolute paths, examples provided"
+        },
+        {
+          "phase": 2,
+          "name": "Core Implementation - IPC Handlers",
+          "purpose": "Implement fs:validatePath IPC handler and preload exposure",
+          "complexity": "low",
+          "effort_level": 2,
+          "deliverables": [
+            "fs:validatePath handler in main.js returning { valid: boolean, reason: string | undefined }",
+            "validatePath() method in preload.js electronAPI.fs namespace",
+            "TypeScript type definitions for validation response"
+          ],
+          "tasks": [
+            "IPC-001",
+            "IPC-002"
+          ],
+          "completion_criteria": "Handler successfully validates paths, returns correct responses for valid/invalid paths, exposed in renderer process"
+        },
+        {
+          "phase": 3,
+          "name": "UI Integration",
+          "purpose": "Integrate path validation into ProjectSelector component",
+          "complexity": "medium",
+          "effort_level": 3,
+          "deliverables": [
+            "Updated checkForStaleHandles() using validatePath IPC",
+            "Visual indicators for invalid paths in project list",
+            "Error messages showing validation failure reasons"
+          ],
+          "tasks": [
+            "UI-001",
+            "UI-002"
+          ],
+          "completion_criteria": "ProjectSelector detects stale paths on load, displays validation errors, allows user to remove invalid projects"
+        },
+        {
+          "phase": 4,
+          "name": "Testing & Edge Cases",
+          "purpose": "Comprehensive testing of validation logic and edge cases",
+          "complexity": "medium",
+          "effort_level": 3,
+          "deliverables": [
+            "Test suite with 4 scenarios (valid, invalid, file-not-dir, permission denied)",
+            "Edge case handling verified (network drives, symlinks, missing coderef/)",
+            "All tests passing with 100% coverage of validation logic"
+          ],
+          "tasks": [
+            "TEST-001",
+            "TEST-002",
+            "TEST-003",
+            "TEST-004"
+          ],
+          "completion_criteria": "All 4 test scenarios pass, edge cases handled gracefully, no unhandled errors"
+        },
+        {
+          "phase": 5,
+          "name": "Documentation & Finalization",
+          "purpose": "Complete user-facing and developer documentation",
+          "complexity": "low",
+          "effort_level": 1,
+          "deliverables": [
+            "CLAUDE.md updated with fs:validatePath handler details",
+            "Architecture docs explaining path persistence flow",
+            "User guide section on project path management"
+          ],
+          "tasks": [
+            "DOC-001"
+          ],
+          "completion_criteria": "Documentation complete, clear explanation of how path persistence works, troubleshooting guide for invalid paths"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "fs:validatePath returns { valid: true } for existing directory with absolute path",
+        "fs:validatePath returns { valid: false, reason: 'Path not found' } for non-existent path",
+        "fs:validatePath returns { valid: false, reason: 'Not a directory' } when path points to file",
+        "validatePath() in preload.js correctly invokes IPC and returns response"
+      ],
+      "integration_tests": [
+        "ProjectSelector loads projects from storage and validates all paths on mount",
+        "Stale projects appear with warning icon and error message in UI",
+        "User can remove invalid project from list without errors",
+        "Adding new project stores absolute path and immediately validates successfully"
+      ],
+      "end_to_end_tests": [
+        "User adds project → closes Electron app → reopens app → project loads without permission dialog",
+        "User adds project to external drive → disconnects drive → reopens app → project flagged as invalid"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "Path exists but coderef/ directory is missing",
+          "setup": "Create test directory without coderef/ subdirectory, register as project",
+          "expected_behavior": "Validation returns { valid: true } - directory exists, coderef/ is optional",
+          "verification": "Check ProjectSelector does not flag project as stale",
+          "error_handling": "No error - valid path, user may not have CodeRef structure"
+        },
+        {
+          "scenario": "Path points to file instead of directory",
+          "setup": "Register path pointing to test.txt file instead of directory",
+          "expected_behavior": "Validation returns { valid: false, reason: 'Not a directory' }",
+          "verification": "Project flagged as stale with appropriate error message",
+          "error_handling": "Error displayed in UI: 'Path is not a directory'"
+        },
+        {
+          "scenario": "Permission denied on directory access",
+          "setup": "Create directory with restricted permissions (chmod 000 on Linux/macOS)",
+          "expected_behavior": "Validation returns { valid: false, reason: 'Permission denied' }",
+          "verification": "fs.access() throws EACCES error, caught and converted to validation response",
+          "error_handling": "Error displayed in UI: 'Permission denied - check folder permissions'"
+        },
+        {
+          "scenario": "Network drive disconnected",
+          "setup": "Register project on network path (\\\\server\\share), disconnect network",
+          "expected_behavior": "Validation returns { valid: false, reason: 'Path not accessible' }",
+          "verification": "Project flagged as stale, user sees 'Path not accessible' message",
+          "error_handling": "Error displayed in UI: 'Network path unavailable'"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "fs:validatePath IPC handler validates absolute paths without permission dialogs",
+          "metric": "Validation response time and success rate",
+          "target": "100% of valid paths return { valid: true } within 50ms, invalid paths return { valid: false } with reason",
+          "validation": "Run validation against 10 test paths (5 valid, 5 invalid), measure response times and accuracy"
+        },
+        {
+          "requirement": "ProjectSelector detects and flags stale projects on mount",
+          "metric": "Stale project detection rate",
+          "target": "100% of invalid paths flagged as stale within 500ms of component mount",
+          "validation": "Load 5 projects (3 valid, 2 invalid), verify staleProjects Set contains exactly 2 IDs"
+        },
+        {
+          "requirement": "Path validation works across app restarts without re-prompting permissions",
+          "metric": "Permission dialog count after restart",
+          "target": "0 permission dialogs after initial project selection",
+          "validation": "Add project → close app → reopen → verify no dialogs shown, project loads immediately"
+        },
+        {
+          "requirement": "Invalid paths display descriptive error messages",
+          "metric": "Error message clarity and specificity",
+          "target": "All invalid paths show specific reason (not found, not a directory, permission denied)",
+          "validation": "Create 3 invalid path scenarios, verify UI displays correct error for each"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "Code coverage for validation logic",
+          "metric": "Line coverage percentage",
+          "target": ">90% coverage for fs:validatePath handler and checkForStaleHandles()",
+          "validation": "Run jest --coverage, verify validation code paths covered"
+        },
+        {
+          "requirement": "TypeScript type safety",
+          "metric": "Type errors",
+          "target": "0 TypeScript errors, full type coverage for IPC responses",
+          "validation": "Run tsc --noEmit, verify no errors in main.js, preload.js, ProjectSelector.tsx"
+        },
+        {
+          "requirement": "No performance regression",
+          "metric": "Dashboard load time with 10 projects",
+          "target": "Load time <1 second, validation adds <200ms overhead",
+          "validation": "Benchmark dashboard load before/after implementation with 10 registered projects"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "Path validation response time",
+          "metric": "fs:validatePath IPC roundtrip latency",
+          "target": "<50ms per validation call",
+          "validation": "Measure time from ipcRenderer.invoke() to response for 10 paths, verify p95 <50ms"
+        },
+        {
+          "requirement": "Batch validation performance",
+          "metric": "Time to validate 10 projects in parallel",
+          "target": "<500ms total for 10 projects",
+          "validation": "Load 10 projects, measure time for checkForStaleHandles() to complete"
+        }
+      ],
+      "security_requirements": [
+        {
+          "requirement": "Sandboxed IPC access",
+          "metric": "contextBridge isolation",
+          "target": "No direct Node.js access from renderer process, all fs operations via IPC",
+          "validation": "Verify preload.js uses contextBridge.exposeInMainWorld(), renderer cannot import fs directly"
+        },
+        {
+          "requirement": "Path traversal protection",
+          "metric": "Validation rejects malicious paths",
+          "target": "Paths with ../ or %00 rejected with validation error",
+          "validation": "Test fs:validatePath with paths containing '../../../etc/passwd', verify rejected"
+        }
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "☐ Review complete plan for gaps",
+        "☐ Confirm projects.json uses absolute paths (check ~/.coderef-dashboard/projects.json)",
+        "☐ Verify existing IPC handler patterns (fs:stat, fs:readdir) for consistency"
+      ],
+      "phase_1": [
+        "☐ CONFIG-001: Document projects.json schema with absolute path examples in API.md or SCHEMA.md"
+      ],
+      "phase_2": [
+        "☐ IPC-001: Implement fs:validatePath handler in main.js with fs.access() and fs.stat() checks",
+        "☐ IPC-001: Return { valid: boolean, reason: string | undefined } response format",
+        "☐ IPC-001: Handle errors (ENOENT, EACCES, ENOTDIR) and convert to validation reasons",
+        "☐ IPC-002: Add validatePath: (path: string) => Promise<ValidationResult> to preload.js electronAPI.fs",
+        "☐ IPC-002: Create TypeScript interface for ValidationResult { valid: boolean; reason: string | undefined }"
+      ],
+      "phase_3": [
+        "☐ UI-001: Update checkForStaleHandles() to call window.electronAPI.fs.validatePath(project.path) with optional chaining",
+        "☐ UI-001: Replace fileSystem.isProjectValid() with direct validatePath IPC call",
+        "☐ UI-001: Add projects to staleProjects Set if validation.valid === false",
+        "☐ UI-002: Update BatchRestoreUI to display validation.reason in error message",
+        "☐ UI-002: Add tooltip or error text showing specific failure reason (not found, permission denied, etc.)"
+      ],
+      "phase_4": [
+        "☐ TEST-001: Create test with valid absolute path (C:/test/valid-project), verify { valid: true }",
+        "☐ TEST-002: Create test with non-existent path, verify { valid: false, reason: 'Path not found' }",
+        "☐ TEST-003: Create test with file path (not directory), verify { valid: false, reason: 'Not a directory' }",
+        "☐ TEST-004: Create test with permission-denied path, verify { valid: false, reason: 'Permission denied' }",
+        "☐ Run all tests and verify 100% pass rate"
+      ],
+      "phase_5": [
+        "☐ DOC-001: Add fs:validatePath to IPC handlers section in CLAUDE.md",
+        "☐ DOC-001: Document validation flow: ProjectSelector → validatePath IPC → fs.access() check",
+        "☐ DOC-001: Add troubleshooting guide for invalid path scenarios",
+        "☐ DOC-001: Update Recent Changes section with v0.6.0 path persistence feature"
+      ],
+      "finalization": [
+        "☐ All tests passing (unit + integration + edge cases)",
+        "☐ Code review completed (verify IPC handler follows existing patterns)",
+        "☐ Documentation updated (CLAUDE.md, API.md, inline comments)",
+        "☐ Changelog entry created (v0.6.0 - Electron path persistence)",
+        "☐ Manual testing: Add project → restart app → verify no permission dialogs",
+        "☐ Manual testing: Delete project directory → verify flagged as stale"
+      ]
+    }
+  }
+}
