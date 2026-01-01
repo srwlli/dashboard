@@ -34,6 +34,7 @@ export function ProjectSelector({
   const [adding, setAdding] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [staleProjects, setStaleProjects] = useState<Set<string>>(new Set());
+  const [staleReasons, setStaleReasons] = useState<Map<string, string>>(new Map());
   const [hasRestoredInitial, setHasRestoredInitial] = useState(false);
   const [showRemovalMenu, setShowRemovalMenu] = useState(false);
 
@@ -280,28 +281,50 @@ export function ProjectSelector({
    */
   const checkForStaleHandles = async () => {
     const stale = new Set<string>();
+    const reasons = new Map<string, string>();
 
     console.log(`[${platform}] Checking ${projects.length} projects for validity...`);
 
     for (const project of projects) {
       try {
-        // Use platform abstraction to check validity
-        const isValid = await fileSystem.isProjectValid(project.id, project.path);
+        let isValid = false;
+        let reason: string | undefined;
+
+        // Platform-specific validation
+        if (platform === 'electron' && window.electronAPI?.fs?.validatePath) {
+          // Use direct IPC validation for Electron (no permission dialogs)
+          const validation = await window.electronAPI.fs.validatePath(project.path);
+          isValid = validation.valid;
+          reason = validation.reason;
+
+          if (!isValid && reason) {
+            console.log(`[Electron] Project invalid: ${project.name} (${reason})`);
+          }
+        } else {
+          // Use platform abstraction for Web
+          isValid = await fileSystem.isProjectValid(project.id, project.path);
+          reason = 'Re-authorization required';
+        }
 
         if (!isValid) {
           console.log(`[${platform}] Project invalid:`, project.name);
           stale.add(project.id);
+          if (reason) {
+            reasons.set(project.id, reason);
+          }
         } else {
           console.log(`[${platform}] Project valid:`, project.name);
         }
       } catch (error) {
         console.error(`[${platform}] Error checking project ${project.name}:`, error);
         stale.add(project.id);
+        reasons.set(project.id, 'Validation error');
       }
     }
 
     console.log(`[${platform}] Found ${stale.size} stale projects`);
     setStaleProjects(stale);
+    setStaleReasons(reasons);
   };
 
   /**
@@ -470,6 +493,7 @@ export function ProjectSelector({
       {/* Batch restore UI for stale projects */}
       <BatchRestoreUI
         staleProjects={staleProjects}
+        staleReasons={staleReasons}
         projects={projects}
         onRestore={handleProjectRestore}
       />

@@ -1,5 +1,6 @@
 import { Workflow, WorkflowExport } from '../types';
 import { estimateTokens } from './tokenEstimator';
+import { getTagsByIds } from '../constants/tags';
 
 /**
  * Generate structured JSON export for workflow
@@ -43,6 +44,7 @@ export function generateJSON(workflow: Workflow): string {
       estimated_tokens_per_file: attachmentTokensPerFile,
       file_count: workflow.attachments.length,
       attachment_types: Array.from(new Set(workflow.attachments.map((a) => a.type))),
+      selected_tags: workflow.selectedTags,
       created_at: new Date().toISOString(),
       user_instructions: 'Add your analysis and suggestions below this prompt and attachments',
     },
@@ -96,7 +98,15 @@ export function generateMarkdown(workflow: Workflow): string {
   markdown += `- **Files:** ${workflow.attachments.length}\n`;
   markdown += `- **Total Tokens:** ~${totalTokens.toLocaleString()}\n`;
   markdown += `- **Created:** ${new Date().toLocaleString()}\n`;
-  markdown += `- **Languages:** ${Array.from(new Set(workflow.attachments.map((a) => a.language).filter(Boolean))).join(', ') || 'N/A'}\n\n`;
+  markdown += `- **Languages:** ${Array.from(new Set(workflow.attachments.map((a) => a.language).filter(Boolean))).join(', ') || 'N/A'}\n`;
+
+  // Add selected tags if present
+  if (workflow.selectedTags && workflow.selectedTags.length > 0) {
+    const tags = getTagsByIds(workflow.selectedTags);
+    markdown += `- **Focus Areas:** ${tags.map(t => `${t.icon} ${t.label}`).join(', ')}\n`;
+  }
+
+  markdown += `\n`;
 
   // Instructions
   markdown += `## Instructions for LLM\n\n`;

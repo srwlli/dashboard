@@ -266,6 +266,170 @@ curl http://localhost:3000/api/stubs
 
 ---
 
+### CodeRef Projects
+
+#### GET /api/coderef/projects
+
+Fetch all registered CodeRef projects. Projects are stored in `~/.coderef-dashboard/projects.json` with absolute file system paths for persistent access across sessions.
+
+**Implementation:** `packages/dashboard/src/app/api/coderef/projects/route.ts:104`
+
+**Request:**
+```bash
+curl http://localhost:3000/api/coderef/projects
+```
+
+**Response:** `200 OK`
+```json
+{
+  "success": true,
+  "data": {
+    "projects": [
+      {
+        "id": "coderef-dashboard",
+        "name": "CodeRef Dashboard",
+        "path": "C:\\Users\\username\\projects\\coderef-dashboard",
+        "addedAt": "2025-12-31T08:00:00.000Z"
+      },
+      {
+        "id": "my-app",
+        "name": "My Application",
+        "path": "C:\\projects\\my-app",
+        "addedAt": "2025-12-30T14:30:00.000Z"
+      }
+    ],
+    "total": 2
+  },
+  "timestamp": "2025-12-31T10:00:00.000Z"
+}
+```
+
+**Query Parameters:**
+- `id` (optional): Return single project by ID
+
+**Example - Get single project:**
+```bash
+curl http://localhost:3000/api/coderef/projects?id=my-app
+```
+
+**Response:** `200 OK`
+```json
+{
+  "success": true,
+  "data": {
+    "project": {
+      "id": "my-app",
+      "name": "My Application",
+      "path": "C:\\projects\\my-app",
+      "addedAt": "2025-12-30T14:30:00.000Z"
+    }
+  },
+  "timestamp": "2025-12-31T10:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+`404 Not Found` - Project not found
+```json
+{
+  "success": false,
+  "error": {
+    "code": "PROJECT_NOT_FOUND",
+    "message": "Project with ID 'invalid-id' not found",
+    "details": {
+      "projectId": "invalid-id"
+    }
+  },
+  "timestamp": "2025-12-31T10:00:00.000Z"
+}
+```
+
+---
+
+#### POST /api/coderef/projects
+
+Register a new CodeRef project or update an existing one. Stores the **absolute file system path** for persistent access without permission dialogs.
+
+**Implementation:** `packages/dashboard/src/app/api/coderef/projects/route.ts:151`
+
+**Request:**
+```bash
+curl -X POST http://localhost:3000/api/coderef/projects \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "my-app",
+    "name": "My Application",
+    "path": "C:\\projects\\my-app"
+  }'
+```
+
+**Request Body:**
+```typescript
+{
+  id: string;      // Unique project identifier
+  name: string;    // Human-readable project name
+  path: string;    // Absolute file system path to project root
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "success": true,
+  "data": {
+    "project": {
+      "id": "my-app",
+      "name": "My Application",
+      "path": "C:\\projects\\my-app",
+      "addedAt": "2025-12-31T10:00:00.000Z"
+    },
+    "updated": false
+  },
+  "timestamp": "2025-12-31T10:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+`400 Bad Request` - Missing required fields
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Missing required fields: id, name, path",
+    "details": {
+      "received": { "id": "my-app" }
+    }
+  },
+  "timestamp": "2025-12-31T10:00:00.000Z"
+}
+```
+
+`404 Not Found` - Path does not exist
+```json
+{
+  "success": false,
+  "error": {
+    "code": "FOLDER_NOT_FOUND",
+    "message": "Folder not found",
+    "details": {
+      "path": "C:\\invalid\\path"
+    }
+  },
+  "timestamp": "2025-12-31T10:00:00.000Z"
+}
+```
+
+**Important Notes:**
+- **Absolute Paths Required:** The `path` field must be an absolute file system path (e.g., `C:\\projects\\my-app` on Windows, `/home/user/projects/my-app` on Linux)
+- **Persistent Storage:** Projects are stored in `~/.coderef-dashboard/projects.json` and persist across app restarts
+- **No Permission Dialogs:** Once registered, the absolute path can be accessed directly without showing file selection dialogs
+- **Update Behavior:** If a project with the same `id` exists, it will be updated with the new `name` and `path`
+
+---
+
 ## Data Models
 
 ### WorkorderObject

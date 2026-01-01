@@ -149,6 +149,56 @@ ipcMain.handle('fs:readFile', async (_event, filePath: string) => {
   return await fs.readFile(filePath, 'utf-8');
 });
 
+// Filesystem validation - no permission dialogs
+ipcMain.handle('fs:validatePath', async (_event, pathToValidate: string) => {
+  try {
+    // Check if path exists
+    await fs.access(pathToValidate);
+
+    // Check if it's a directory
+    const stats = await fs.stat(pathToValidate);
+    if (!stats.isDirectory()) {
+      return {
+        valid: false,
+        reason: 'Not a directory'
+      };
+    }
+
+    // Path is valid
+    return {
+      valid: true
+    };
+  } catch (error: any) {
+    // Handle specific error codes
+    if (error.code === 'ENOENT') {
+      return {
+        valid: false,
+        reason: 'Path not found'
+      };
+    }
+
+    if (error.code === 'EACCES') {
+      return {
+        valid: false,
+        reason: 'Permission denied'
+      };
+    }
+
+    if (error.code === 'ENOTDIR') {
+      return {
+        valid: false,
+        reason: 'Not a directory'
+      };
+    }
+
+    // Unknown error
+    return {
+      valid: false,
+      reason: 'Path not accessible'
+    };
+  }
+});
+
 // Application menu
 const template: any[] = [
   {

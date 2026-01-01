@@ -6,6 +6,8 @@ import { Attachment, PreloadedPrompt, Workflow } from '@/components/PromptingWor
 interface WorkflowContextValue {
   workflow: Workflow;
   setSelectedPrompt: (prompt: PreloadedPrompt) => void;
+  setSelectedTags: (tags: string[]) => void;
+  toggleTag: (tagId: string) => void;
   addAttachments: (attachments: Attachment[]) => void;
   removeAttachment: (attachmentId: string) => void;
   clearAttachments: () => void;
@@ -71,8 +73,33 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
     setWorkflow((prev) => ({
       ...prev,
       selectedPrompt: prompt,
+      // Clear tags when switching prompts (tags only apply to CODE_REVIEW)
+      selectedTags: prompt.key === '0001' ? prev.selectedTags : undefined,
       updatedAt: new Date(),
     }));
+  }, []);
+
+  const setSelectedTags = useCallback((tags: string[]) => {
+    setWorkflow((prev) => ({
+      ...prev,
+      selectedTags: tags,
+      updatedAt: new Date(),
+    }));
+  }, []);
+
+  const toggleTag = useCallback((tagId: string) => {
+    setWorkflow((prev) => {
+      const currentTags = prev.selectedTags || [];
+      const isSelected = currentTags.includes(tagId);
+
+      return {
+        ...prev,
+        selectedTags: isSelected
+          ? currentTags.filter(id => id !== tagId)
+          : [...currentTags, tagId],
+        updatedAt: new Date(),
+      };
+    });
   }, []);
 
   const addAttachments = useCallback((attachments: Attachment[]) => {
@@ -130,6 +157,8 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
       value={{
         workflow,
         setSelectedPrompt,
+        setSelectedTags,
+        toggleTag,
         addAttachments,
         removeAttachment,
         clearAttachments,
