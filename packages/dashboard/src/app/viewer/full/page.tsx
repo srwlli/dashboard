@@ -45,7 +45,8 @@ function ViewerContent() {
         }
 
         const data = await response.json();
-        setProject(data.project);
+        // API returns { success: true, data: { project: {...} } }
+        setProject(data.data.project);
       } catch (err) {
         setError((err as Error).message);
       } finally {
