@@ -23,15 +23,24 @@ const STORAGE_KEY = 'coderef-workflow-state';
  * Persists workflow state to localStorage for cross-page navigation
  */
 export function WorkflowProvider({ children }: { children: ReactNode }) {
-  const [workflow, setWorkflow] = useState<Workflow>(() => {
-    // Initialize from localStorage if available
+  // Start with default state to match SSR, then sync from localStorage on mount
+  const [workflow, setWorkflow] = useState<Workflow>({
+    id: Math.random().toString(36).substring(2, 11),
+    selectedPrompt: undefined,
+    attachments: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  // Load from localStorage on mount (client-side only)
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
           // Convert date strings back to Date objects
-          return {
+          setWorkflow({
             ...parsed,
             createdAt: new Date(parsed.createdAt),
             updatedAt: new Date(parsed.updatedAt),
@@ -39,22 +48,13 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
               ...att,
               createdAt: new Date(att.createdAt),
             })),
-          };
+          });
         }
       } catch (error) {
         console.error('Failed to load workflow from localStorage:', error);
       }
     }
-
-    // Default initial state
-    return {
-      id: Math.random().toString(36).substring(2, 11),
-      selectedPrompt: undefined,
-      attachments: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-  });
+  }, []); // Run once on mount
 
   // Persist workflow to localStorage whenever it changes
   useEffect(() => {
