@@ -43,7 +43,10 @@
       "Bash(python:*)",
       "Bash(nul)",
       "Bash(powershell -ExecutionPolicy Bypass -File create-shortcut.ps1)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "mcp__coderef-workflow__update_task_status",
+      "Bash(del nul 2)",
+      "Bash(taskkill //F //PID 7720)"
     ],
     "deny": [],
     "ask": []
