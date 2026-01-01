@@ -1,0 +1,400 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "prompting-workflow-tags",
+    "workorder_id": "WO-PROMPTING-WORKFLOW-TAGS-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "Claude Code",
+    "has_context": true,
+    "has_analysis": false,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-01-01",
+      "ai_assistance": true,
+      "next_review": "2026-01-31"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "available": [
+          "CLAUDE.md - Project overview and architecture",
+          "coderef/foundation-docs/ARCHITECTURE.md - System architecture",
+          "coderef/foundation-docs/COMPONENTS.md - Component library"
+        ],
+        "missing": []
+      },
+      "coding_standards": {
+        "available": [
+          "TypeScript with strict mode",
+          "React functional components with hooks",
+          "Tailwind CSS with custom ind-* design tokens",
+          "ESLint + Prettier formatting"
+        ],
+        "missing": []
+      },
+      "reference_components": {
+        "primary": "PromptSelector component (packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx)",
+        "secondary": [
+          "WorkflowContext for state management",
+          "UnifiedCard for consistent card styling",
+          "StatsCard for tag badge patterns"
+        ]
+      },
+      "key_patterns_identified": [
+        "Click-to-toggle interaction pattern for multi-select",
+        "Accent color (ind-accent) for active states",
+        "LocalStorage persistence for workflow state",
+        "Template interpolation for dynamic prompt generation"
+      ],
+      "technology_stack": {
+        "languages": ["TypeScript", "TSX"],
+        "frameworks": ["Next.js 16 App Router", "React 19"],
+        "key_libraries": ["Tailwind CSS", "Lucide Icons"]
+      },
+      "gaps_and_risks": [
+        "No existing tag system - building from scratch",
+        "Prompt template interpolation needs careful string handling",
+        "Mobile responsiveness requires horizontal scroll for tags"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Add interactive tag selection to CODE_REVIEW prompt card, allowing users to specify which improvement categories they want feedback on",
+      "value_proposition": "Users can focus code review feedback on specific areas (Performance, Security, Code Quality, etc.) instead of receiving generic catch-all suggestions. This saves time and produces more actionable, targeted improvements.",
+      "real_world_analogy": "Like a restaurant menu with dietary filters (Vegetarian, Gluten-Free, Vegan) - you click the tags for your preferences, and the menu only shows relevant items. Here, you click improvement tags, and the LLM only provides feedback in those categories.",
+      "use_case": "Developer reviewing authentication code wants security-focused feedback. They click [🔒 Security] and [🚨 Error Handling] tags on the CODE_REVIEW card. The exported prompt instructs the LLM to organize suggestions by those two categories only, skipping performance/UX/architecture suggestions.",
+      "output": [
+        "Modified PromptSelector component with embedded tag chips",
+        "Updated CODE_REVIEW prompt template with tag interpolation",
+        "Enhanced WorkflowContext with tag state management",
+        "Updated export formatters (JSON/Markdown) with tag metadata",
+        "8 predefined improvement tags with icons and descriptions"
+      ]
+    },
+    "2_risk_assessment": {
+      "overall_risk": "low",
+      "complexity": "medium (6 files modified, ~300 lines added)",
+      "scope": "Small - 6 files affected, isolated to PromptingWorkflow feature",
+      "file_system_risk": "none",
+      "dependencies": [],
+      "performance_concerns": [
+        "LocalStorage writes on every tag toggle (mitigated by useCallback debouncing if needed)",
+        "Prompt string interpolation adds ~50ms processing time (negligible)"
+      ],
+      "security_considerations": [
+        "Tag IDs sanitized to prevent XSS (alphanumeric only)",
+        "No user-generated tag content - predefined list only"
+      ],
+      "breaking_changes": "none"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "packages/dashboard/src/components/PromptingWorkflow/types.ts (ADD selectedTags field to Workflow interface)",
+        "packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts (UPDATE CODE_REVIEW_PROMPT template)",
+        "packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx (ADD tag chips UI)",
+        "packages/dashboard/src/contexts/WorkflowContext.tsx (ADD setSelectedTags, toggleTag methods)",
+        "packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts (UPDATE JSON/MD exports with tags)",
+        "packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts (CREATE new file for tag definitions)"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "WorkflowContext for state management",
+          "Workflow interface in types.ts",
+          "exportFormatter for JSON/Markdown generation"
+        ],
+        "existing_external": [
+          "React hooks (useState, useCallback)",
+          "Tailwind CSS utilities"
+        ],
+        "new_external": [],
+        "new_internal": [
+          "IMPROVEMENT_TAGS constant (tag definitions)",
+          "getPromptWithTags() helper function"
+        ]
+      },
+      "architecture_context": "PromptingWorkflow is a standalone widget within the Dashboard package. Changes are isolated to the PromptingWorkflow component tree and do not affect other dashboard features (Assistant, CodeRef Explorer). State management via WorkflowContext with LocalStorage persistence."
+    },
+    "4_key_features": {
+      "primary_features": [
+        "8 predefined improvement tags (Performance, Security, Code Quality, Architecture, Testing, Accessibility, Error Handling, UX/UI) displayed as clickable chips on CODE_REVIEW card",
+        "Click-to-toggle multi-select behavior with visual feedback (active tags highlighted with ind-accent border/background)",
+        "Dynamic prompt template interpolation - selected tags modify CODE_REVIEW prompt to request organized output by category",
+        "Export formatters (JSON/Markdown) include selectedTags metadata for reproducibility",
+        "LocalStorage persistence - selected tags survive page refreshes"
+      ],
+      "secondary_features": [
+        "Tag chips display icon + label (⚡ Performance, 🔒 Security, etc.)",
+        "Horizontal scrollable tag row for mobile responsiveness",
+        "Default behavior: if no tags selected, prompt requests all categories (backward compatible)"
+      ],
+      "edge_case_handling": [
+        "If user selects all 8 tags, prompt behaves same as selecting none (all categories)",
+        "If CODE_REVIEW not selected, tags hidden (only relevant for review workflow)",
+        "If tags selected then prompt changed to SYNTHESIZE, tags cleared automatically"
+      ],
+      "configuration_options": [
+        "Tags are predefined - no user customization in v1.0"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "WO-PROMPTING-WORKFLOW-TAGS-001:TYPES-001: Add selectedTags?: string[] to Workflow interface",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:TAGS-001: Create constants/tags.ts with IMPROVEMENT_TAGS definitions",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-001: Update CODE_REVIEW_PROMPT to remove redundancy (Part 1: Top 3 features, Part 2: Suggestions with Reasoning + Impact)",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-002: Add tag interpolation logic to CODE_REVIEW_PROMPT template",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-001: Add setSelectedTags(tags: string[]) to WorkflowContext",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-002: Add toggleTag(tagId: string) to WorkflowContext",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:UI-001: Add tag chips UI to PromptSelector component",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:UI-002: Add click handlers for tag toggle with visual feedback",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:UI-003: Add horizontal scroll container for mobile responsiveness",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-001: Update generateJSON() to include selectedTags in metadata",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-002: Update generateMarkdown() to include selectedTags in metadata",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-001: Test tag toggle interaction (select/deselect)",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-002: Test prompt interpolation with 0, 1, 3, 8 tags selected",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-003: Test LocalStorage persistence across page refreshes",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-004: Test mobile responsive tag scrolling",
+        "WO-PROMPTING-WORKFLOW-TAGS-001:DOC-001: Update CLAUDE.md with tag feature documentation"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": "phase_1",
+          "name": "Foundation - Data Models & Constants",
+          "purpose": "Set up type definitions and tag constants",
+          "complexity": "low",
+          "effort_level": 1,
+          "tasks": [
+            "WO-PROMPTING-WORKFLOW-TAGS-001:TYPES-001",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:TAGS-001"
+          ],
+          "deliverables": [
+            "Updated Workflow interface with selectedTags field",
+            "IMPROVEMENT_TAGS constant with 8 tag definitions"
+          ],
+          "completion_criteria": "TypeScript compiles without errors, tags exported from constants/tags.ts"
+        },
+        {
+          "phase": "phase_2",
+          "name": "Prompt Template Updates",
+          "purpose": "Modify CODE_REVIEW prompt for tag-based output",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-001",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-002"
+          ],
+          "deliverables": [
+            "Refactored CODE_REVIEW_PROMPT with Top 3 features + Reasoning/Impact",
+            "getPromptWithTags() helper function for template interpolation"
+          ],
+          "completion_criteria": "Prompt correctly inserts selected tags, handles 0 tags (default all), 1-8 tags"
+        },
+        {
+          "phase": "phase_3",
+          "name": "State Management",
+          "purpose": "Add tag state to WorkflowContext",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-001",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-002"
+          ],
+          "deliverables": [
+            "setSelectedTags() method in WorkflowContext",
+            "toggleTag() method in WorkflowContext",
+            "LocalStorage persistence for selectedTags"
+          ],
+          "completion_criteria": "Tags persist across page refreshes, toggle logic works correctly"
+        },
+        {
+          "phase": "phase_4",
+          "name": "UI Implementation",
+          "purpose": "Build tag chips interface on PromptSelector",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "WO-PROMPTING-WORKFLOW-TAGS-001:UI-001",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:UI-002",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:UI-003"
+          ],
+          "deliverables": [
+            "Tag chips rendered on CODE_REVIEW card only",
+            "Click handlers with visual active/inactive states",
+            "Horizontal scroll container for mobile"
+          ],
+          "completion_criteria": "Tags clickable, visual feedback works, mobile responsive without overflow"
+        },
+        {
+          "phase": "phase_5",
+          "name": "Export Integration",
+          "purpose": "Include tags in JSON/Markdown exports",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-001",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-002"
+          ],
+          "deliverables": [
+            "Updated JSON export with selectedTags metadata",
+            "Updated Markdown export with tag list in metadata section"
+          ],
+          "completion_criteria": "Exported files show selected tags, LLM receives tag instructions"
+        },
+        {
+          "phase": "phase_6",
+          "name": "Testing & Documentation",
+          "purpose": "Comprehensive testing and docs update",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-001",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-002",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-003",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-004",
+            "WO-PROMPTING-WORKFLOW-TAGS-001:DOC-001"
+          ],
+          "deliverables": [
+            "All manual tests passing (toggle, interpolation, persistence, mobile)",
+            "Updated CLAUDE.md with tag feature section"
+          ],
+          "completion_criteria": "All edge cases tested, documentation complete"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "getPromptWithTags([]) returns prompt with 'all categories' instruction",
+        "getPromptWithTags(['performance']) returns prompt with 'Performance' section only",
+        "getPromptWithTags(['performance', 'security', 'code-quality']) returns prompt with 3 sections",
+        "toggleTag('performance') adds tag if not selected, removes if selected",
+        "WorkflowContext persists selectedTags to LocalStorage on change"
+      ],
+      "integration_tests": [
+        "Select tags → export JSON → verify selectedTags in metadata",
+        "Select tags → export Markdown → verify tags listed in metadata section",
+        "Select tags → refresh page → tags still selected (LocalStorage)",
+        "Change prompt from CODE_REVIEW to SYNTHESIZE → tags cleared automatically"
+      ],
+      "end_to_end_tests": [
+        "Full workflow: Select CODE_REVIEW → Click 2 tags → Add attachment → Export JSON → Paste into LLM → Verify LLM organizes output by selected categories"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "User selects all 8 tags",
+          "setup": "Click all tag chips on CODE_REVIEW card",
+          "expected_behavior": "Prompt treats as 'all categories' (same as selecting none)",
+          "verification": "Exported prompt includes all 8 category sections",
+          "error_handling": "No error - valid workflow"
+        },
+        {
+          "scenario": "User selects tags then switches to SYNTHESIZE prompt",
+          "setup": "Select 3 tags on CODE_REVIEW → Change prompt dropdown to SYNTHESIZE",
+          "expected_behavior": "Tags cleared automatically (tags not relevant for SYNTHESIZE)",
+          "verification": "selectedTags array empty after prompt change",
+          "error_handling": "No error - automatic cleanup"
+        },
+        {
+          "scenario": "Mobile user with narrow screen",
+          "setup": "Open on 375px viewport (iPhone SE)",
+          "expected_behavior": "Tags overflow horizontally with scroll, no vertical expansion",
+          "verification": "Tag row scrollable, no layout shift",
+          "error_handling": "No error - responsive design"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "Tags embedded on CODE_REVIEW card only",
+          "metric": "Tag chips visible when CODE_REVIEW selected",
+          "target": "Tags hidden for SYNTHESIZE/CONSOLIDATE prompts",
+          "validation": "Visual inspection + prompt dropdown test"
+        },
+        {
+          "requirement": "Click-to-toggle multi-select",
+          "metric": "Tag active state toggles on click",
+          "target": "100% of clicks register correctly",
+          "validation": "Manual click testing on all 8 tags"
+        },
+        {
+          "requirement": "Prompt interpolation accuracy",
+          "metric": "Selected tags appear in exported prompt",
+          "target": "100% match between selected tags and prompt sections",
+          "validation": "Export JSON/MD with 0, 1, 3, 8 tags selected"
+        },
+        {
+          "requirement": "LocalStorage persistence",
+          "metric": "Selected tags survive page refresh",
+          "target": "100% persistence across refreshes",
+          "validation": "Select tags → refresh → verify tags still selected"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "Mobile responsiveness",
+          "metric": "No horizontal overflow on 375px viewport",
+          "target": "Tags scroll horizontally without breaking layout",
+          "validation": "Test on iPhone SE, Pixel 5 simulators"
+        },
+        {
+          "requirement": "Visual feedback clarity",
+          "metric": "Active vs inactive tags visually distinct",
+          "target": "Accent border + background on active tags",
+          "validation": "Visual inspection in light/dark mode"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "Tag toggle responsiveness",
+          "metric": "Time from click to visual update",
+          "target": "<50ms",
+          "validation": "Browser DevTools Performance tab"
+        }
+      ],
+      "security_requirements": []
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "☐ Review complete plan for gaps",
+        "☐ Verify context.json UX flow matches plan",
+        "☐ Confirm tag list (8 categories) with stakeholder"
+      ],
+      "phase_1": [
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:TYPES-001: Add selectedTags to Workflow interface",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:TAGS-001: Create constants/tags.ts with IMPROVEMENT_TAGS"
+      ],
+      "phase_2": [
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-001: Refactor CODE_REVIEW_PROMPT (Top 3 features, Reasoning/Impact)",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-002: Add getPromptWithTags() helper"
+      ],
+      "phase_3": [
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-001: Add setSelectedTags() to WorkflowContext",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-002: Add toggleTag() to WorkflowContext"
+      ],
+      "phase_4": [
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:UI-001: Add tag chips to PromptSelector",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:UI-002: Add click handlers + visual feedback",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:UI-003: Add horizontal scroll for mobile"
+      ],
+      "phase_5": [
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-001: Update generateJSON() with tags",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-002: Update generateMarkdown() with tags"
+      ],
+      "phase_6": [
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:TEST-001: Test tag toggle",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:TEST-002: Test prompt interpolation",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:TEST-003: Test LocalStorage persistence",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:TEST-004: Test mobile responsive scrolling",
+        "☐ WO-PROMPTING-WORKFLOW-TAGS-001:DOC-001: Update CLAUDE.md"
+      ],
+      "finalization": [
+        "☐ All tests passing",
+        "☐ Code review completed",
+        "☐ Documentation updated (CLAUDE.md)",
+        "☐ Changelog entry created"
+      ]
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "feature_name": "prompting-workflow-tags",
+  "workorder_id": "WO-PROMPT-TAGS-001",
+  "created_at": "2026-01-01",
+  "description": "Add interactive tag selection to CODE_REVIEW prompt card for categorized improvement suggestions",
+  "goal": "Allow users to select improvement categories directly on the prompt card by clicking tags, which modifies the prompt to request organized output by selected categories",
+
+  "ux_flow": {
+    "step_1": "User navigates to Prompts page (/prompts)",
+    "step_2": "PromptSelector displays CODE_REVIEW card with embedded tags",
+    "step_3": "User clicks tags on the card to activate/deactivate them (toggle behavior)",
+    "step_4": "Active tags visually highlight (accent color border/background)",
+    "step_5": "Selected tags modify the prompt template dynamically",
+    "step_6": "User adds attachments as normal",
+    "step_7": "Export includes modified prompt with tag-specific instructions",
+    "step_8": "LLM output organized by selected tag categories"
+  },
+
+  "requirements": [
+    "Tags embedded directly on CODE_REVIEW prompt card (not separate component)",
+    "Click to toggle tag activation (multi-select)",
+    "Visual feedback: active tags use accent color (ind-accent)",
+    "Tags only appear for CODE_REVIEW prompt (not SYNTHESIZE/CONSOLIDATE)",
+    "Prompt dynamically updates based on selected tags",
+    "If no tags selected, show all categories (default behavior)",
+    "Selected tags persist in WorkflowContext and LocalStorage",
+    "Export (JSON/Markdown) includes selected tags in metadata"
+  ],
+
+  "improvement_tags": [
+    {
+      "id": "performance",
+      "label": "Performance",
+      "icon": "⚡",
+      "description": "Speed, efficiency, optimization"
+    },
+    {
+      "id": "security",
+      "label": "Security",
+      "icon": "🔒",
+      "description": "Vulnerabilities, auth, data protection"
+    },
+    {
+      "id": "code-quality",
+      "label": "Code Quality",
+      "icon": "✨",
+      "description": "Readability, maintainability, patterns"
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture",
+      "icon": "🏗️",
+      "description": "Structure, design, scalability"
+    },
+    {
+      "id": "testing",
+      "label": "Testing",
+      "icon": "🧪",
+      "description": "Coverage, test quality, edge cases"
+    },
+    {
+      "id": "accessibility",
+      "label": "Accessibility",
+      "icon": "♿",
+      "description": "A11y, screen readers, WCAG"
+    },
+    {
+      "id": "error-handling",
+      "label": "Error Handling",
+      "icon": "🚨",
+      "description": "Edge cases, validation, recovery"
+    },
+    {
+      "id": "ux-ui",
+      "label": "UX/UI",
+      "icon": "🎨",
+      "description": "User experience, design, usability"
+    }
+  ],
+
+  "updated_code_review_prompt": {
+    "part_1": "TOP 3 FEATURES - List the top 3 most valuable features with Name, Description, Value (1-10)",
+    "part_2": "IMPROVEMENT SUGGESTIONS - Organized by selected categories. For each: Improvement, Reasoning, Impact Rating (1-10)",
+    "tag_injection": "If tags selected: 'User has requested feedback on: [Performance, Security, ...]'. If no tags: show all categories",
+    "output_format": "One markdown section per selected tag category"
+  },
+
+  "data_model_changes": {
+    "PreloadedPrompt": {
+      "new_field": "availableTags?: string[]",
+      "example": "availableTags: ['performance', 'security', 'code-quality', ...]"
+    },
+    "Workflow": {
+      "new_field": "selectedTags?: string[]",
+      "example": "selectedTags: ['performance', 'security']"
+    },
+    "WorkflowContext": {
+      "new_methods": [
+        "setSelectedTags(tags: string[]): void",
+        "toggleTag(tagId: string): void"
+      ]
+    }
+  },
+
+  "ui_component_changes": {
+    "PromptSelector": {
+      "modification": "Embed tags directly on CODE_REVIEW card",
+      "tag_display": "Horizontal scrollable row of clickable chips below prompt description",
+      "active_state": "Border: border-2 border-ind-accent, Background: bg-ind-accent/10",
+      "inactive_state": "Border: border border-ind-border, Background: bg-ind-bg"
+    }
+  },
+
+  "constraints": [
+    "Maintain existing prompt format (markdown tables, ordered lists)",
+    "No breaking changes to current workflow state",
+    "Tags optional - prompt works without them",
+    "Mobile responsive - tags scroll horizontally on small screens"
+  ],
+
+  "success_criteria": {
+    "functional": [
+      "User can click tags on CODE_REVIEW card to activate/deactivate",
+      "Active tags visually distinct with accent color",
+      "Prompt dynamically includes selected tag categories",
+      "Export (JSON/MD) contains selectedTags metadata",
+      "Tags persist across page refreshes (LocalStorage)"
+    ],
+    "ux": [
+      "Tags feel integrated into prompt card (not bolted on)",
+      "Clear visual feedback on tag activation",
+      "Intuitive multi-select behavior",
+      "Works on mobile (touch-friendly, scrollable)"
+    ]
+  }
+}
