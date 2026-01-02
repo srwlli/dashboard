@@ -1,0 +1,212 @@
+{
+  "workorder_id": "WO-CODEREF-EXPLORER-IMPROVEMENTS-001",
+  "feature_name": "coderef-explorer-improvements",
+  "description": "Address 10 critical, high, and medium priority improvements identified in CodeRef Explorer widget after initial migration from standalone app to dashboard integration.",
+  "goal": "Fix blocking issues preventing .coderef/ directory visibility, improve UX for error handling, optimize performance for large projects, and clean up technical debt.",
+  "requirements": [
+    "Fix .coderef/ visibility in tree route (CRITICAL - blocks core functionality)",
+    "Update filterPath in widget to include .coderef/ directory (CRITICAL)",
+    "Add user notification for localStorage quota exceeded (HIGH)",
+    "Increase file size limit or add streaming for large files (HIGH)",
+    "Remove dormant/commented code (HIGH)",
+    "Add ETag caching to tree endpoint (MEDIUM)",
+    "Make maxDepth configurable via query param (MEDIUM)",
+    "Add syntax language hints to file response (MEDIUM)",
+    "Use crypto.randomUUID() for group IDs (LOW)",
+    "Add line number limits for large text files (LOW)"
+  ],
+  "constraints": [
+    "Must not break existing functionality in CodeRef Explorer widget",
+    "Must maintain backward compatibility with current API consumers",
+    "Performance optimizations should not increase complexity significantly",
+    "All changes must pass existing tests and validation"
+  ],
+  "technical_context": {
+    "affected_files": [
+      "packages/dashboard/src/app/api/coderef/tree/route.ts",
+      "packages/dashboard/src/app/api/coderef/file/route.ts",
+      "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx"
+    ],
+    "dependencies": [
+      "coderef-context outputs (18 output types from DOC-001)",
+      "File System API for local access",
+      "Next.js API routes for server mode",
+      "Syntax highlighting library"
+    ]
+  },
+  "detailed_improvements": {
+    "critical": [
+      {
+        "id": "IMP-001",
+        "priority": "critical",
+        "title": "Fix .coderef/ visibility in tree route",
+        "file": "/api/coderef/tree/route.ts:77-78",
+        "issue": "Hidden directories are skipped, including .coderef/",
+        "impact": "Users cannot browse any coderef-context outputs (18 output types from DOC-001)",
+        "fix": "const ALLOWED_HIDDEN = new Set(['.env', '.coderef', '.mcp-servers']);\nif (entry.name.startsWith('.') && !ALLOWED_HIDDEN.has(entry.name)) {\n  continue;\n}",
+        "must_fix_before": "Production release"
+      },
+      {
+        "id": "IMP-002",
+        "priority": "critical",
+        "title": "Update filterPath in widget to include .coderef/",
+        "file": "CodeRefExplorerWidget.tsx:302",
+        "issue": "coderef mode only shows coderef/ directory, not .coderef/",
+        "impact": "Even if API is fixed, widget won't display .coderef/ directory",
+        "fix": "filterPath={viewMode === 'coderef' ? ['coderef', '.coderef'] : undefined}",
+        "must_fix_before": "Production release"
+      }
+    ],
+    "high": [
+      {
+        "id": "IMP-003",
+        "priority": "high",
+        "title": "Add user notification for localStorage quota exceeded",
+        "file": "CodeRefExplorerWidget.tsx:83-110",
+        "issue": "Silent degradation - only console warnings when favorites can't be saved",
+        "impact": "User doesn't know their favorites weren't saved",
+        "fix": "Show toast notification when quota exceeded",
+        "must_fix_before": "Next release"
+      },
+      {
+        "id": "IMP-004",
+        "priority": "high",
+        "title": "Increase file size limit or add streaming",
+        "file": "/api/coderef/file/route.ts:174",
+        "issue": "10MB limit blocks large .coderef/graph.json files (can be 2-10MB)",
+        "impact": "Cannot view legitimate large files",
+        "fix": "Increase to 50MB or implement chunked streaming for files >10MB",
+        "must_fix_before": "Next release"
+      },
+      {
+        "id": "IMP-005",
+        "priority": "high",
+        "title": "Remove dormant/commented code",
+        "file": "CodeRefExplorerWidget.tsx (lines 9, 13-14, 151-155, 259-262, 279-289)",
+        "issue": "Multiple sections of commented-out code for future features",
+        "impact": "Code bloat, harder to maintain",
+        "fix": "Delete commented code or move to feature branch (use git history for recovery)",
+        "must_fix_before": "Next release"
+      }
+    ],
+    "medium": [
+      {
+        "id": "IMP-006",
+        "priority": "medium",
+        "title": "Add ETag caching to tree endpoint",
+        "file": "/api/coderef/tree/route.ts",
+        "issue": "No caching - rescans full directory tree on every request",
+        "impact": "Large projects (10k+ files) take 500ms-1s per request",
+        "fix": "Implement ETag headers with last-modified-based cache validation",
+        "must_fix_before": "Performance optimization pass"
+      },
+      {
+        "id": "IMP-007",
+        "priority": "medium",
+        "title": "Make maxDepth configurable via query param",
+        "file": "/api/coderef/tree/route.ts:64",
+        "issue": "Hardcoded to 10 levels, not exposed as API parameter",
+        "impact": "Deep projects (>10 levels) silently truncate",
+        "fix": "Accept ?maxDepth=15 with default 10, max 20",
+        "must_fix_before": "Performance optimization pass"
+      },
+      {
+        "id": "IMP-008",
+        "priority": "medium",
+        "title": "Add syntax language hints to file response",
+        "file": "/api/coderef/file/route.ts",
+        "issue": "Returns raw content without language metadata for syntax highlighting",
+        "impact": "Frontend must re-detect language from extension",
+        "fix": "Add language: \"typescript\" field based on extension mapping",
+        "must_fix_before": "Performance optimization pass"
+      }
+    ],
+    "low": [
+      {
+        "id": "IMP-009",
+        "priority": "low",
+        "title": "Use crypto.randomUUID() for group IDs",
+        "file": "CodeRefExplorerWidget.tsx:210",
+        "issue": "Math.random() based IDs aren't collision-resistant",
+        "impact": "Potential duplicate group IDs in large datasets",
+        "fix": "id: crypto.randomUUID()"
+      },
+      {
+        "id": "IMP-010",
+        "priority": "low",
+        "title": "Add line number limits for large text files",
+        "file": "/api/coderef/file/route.ts",
+        "issue": "No pagination for extremely long files (minified JS, logs)",
+        "impact": "Could cause rendering issues with 100k+ line files",
+        "fix": "Support ?lines=1000&offset=0 query params for pagination"
+      }
+    ]
+  },
+  "success_criteria": [
+    ".coderef/ directory is visible and browsable in both coderef and all modes",
+    "Users receive clear notifications when localStorage quota is exceeded",
+    "Files up to 50MB can be viewed without errors",
+    "No commented-out code remains in production files",
+    "Tree endpoint uses ETag caching for improved performance",
+    "Deep directory structures (>10 levels) can be fully explored via maxDepth param",
+    "File responses include language metadata for syntax highlighting"
+  ],
+  "priority_summary": {
+    "critical": {
+      "count": 2,
+      "must_fix_before": "Production release",
+      "ids": ["IMP-001", "IMP-002"]
+    },
+    "high": {
+      "count": 3,
+      "must_fix_before": "Next release",
+      "ids": ["IMP-003", "IMP-004", "IMP-005"]
+    },
+    "medium": {
+      "count": 3,
+      "must_fix_before": "Performance optimization pass",
+      "ids": ["IMP-006", "IMP-007", "IMP-008"]
+    },
+    "low": {
+      "count": 2,
+      "must_fix_before": "As time permits",
+      "ids": ["IMP-009", "IMP-010"]
+    }
+  },
+  "recommended_phases": [
+    {
+      "phase": 1,
+      "name": "Critical Fixes",
+      "tasks": ["IMP-001", "IMP-002"],
+      "duration_estimate": "2-3 hours",
+      "blocking": true
+    },
+    {
+      "phase": 2,
+      "name": "High Priority UX Improvements",
+      "tasks": ["IMP-003", "IMP-004", "IMP-005"],
+      "duration_estimate": "4-6 hours",
+      "blocking": false
+    },
+    {
+      "phase": 3,
+      "name": "Performance Optimizations",
+      "tasks": ["IMP-006", "IMP-007", "IMP-008"],
+      "duration_estimate": "6-8 hours",
+      "blocking": false
+    },
+    {
+      "phase": 4,
+      "name": "Code Quality Improvements",
+      "tasks": ["IMP-009", "IMP-010"],
+      "duration_estimate": "2-3 hours",
+      "blocking": false
+    }
+  ],
+  "related_documents": [
+    "DOC-001: coderef-context 18 output types specification",
+    "web/coderef/workorder/migrate-to-coderef-dashboard/plan.json (original migration plan)",
+    "web/coderef/workorder/migrate-to-coderef-dashboard/communication.json (current status)"
+  ],
+  "notes": "These improvements were identified after completing the initial CodeRef Explorer migration (WO-MIGRATION-001). The critical issues (IMP-001, IMP-002) block the primary use case of browsing coderef-context outputs. All other improvements enhance UX, performance, and code quality but are not blocking."
+}
