@@ -1,3 +1,5 @@
+WO-DASHBOARD-SCANNER-UI-001 | coderef-dashboard | Archived feature: Scanner Ui Integration | 2026-01-02T02:21:32.622499+00:00
+WO-DASHBOARD-SCANNER-UI-001 | coderef-dashboard | Scanner UI integration - mock interface for Cod... | 2026-01-02T01:40:02.297084+00:00
 WO-SIDEBAR-NO-FLASH-001 | coderef-dashboard | sidebar-no-flash implementation plan | 2026-01-01T22:23:01.594322+00:00
 WO-ELECTRON-PATH-PERSISTENCE-001 | coderef-dashboard | Eliminate Electron permission dialogs via path ... | 2026-01-01T08:11:01.857654+00:00
 WO-PROMPTING-WORKFLOW-TAGS-001 | coderef-dashboard | Add interactive tag selection to CODE_REVIEW pr... | 2026-01-01T07:50:11.381324+00:00
