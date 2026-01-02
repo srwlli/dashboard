@@ -1,10 +1,10 @@
 # CodeRef Dashboard - AI Context Documentation
 
 **Project:** coderef-dashboard
-**Version:** 0.5.0
+**Version:** 0.6.0
 **Status:** 🚧 Development
 **Created:** 2025-12-28
-**Last Updated:** 2025-12-31
+**Last Updated:** 2026-01-02
 
 ---
 
@@ -21,12 +21,14 @@
 - **Papertrail** - Workorder tracking and documentation trail
 - **CodeRef System** - Workflow management and project structure standards
 
-**Latest Update (v0.5.0):**
-- ✅ Dual executable builds: Full installer (1.9 MB) + Portable version
-- ✅ IPC-based native filesystem (no permission dialogs)
-- ✅ Both executables in `packages/electron-app/dist/`
-- ✅ Code signing configuration prepared
-- ✅ TypeScript type definitions for IPC channels
+**Latest Update (v0.6.0):**
+- ✅ Scanner UI mockup interface at `/scanner` route
+- ✅ ProjectListCard component with empty states
+- ✅ ConsoleTabs component with Console/History/Config tabs
+- ✅ ActionBar component with Scan/Clear buttons
+- ✅ Responsive 12-column grid layout (8-4 desktop split)
+- ✅ Sidebar navigation integration with Radar icon
+- ✅ UI-only mockup (no backend integration)
 
 ---
 
@@ -577,6 +579,31 @@ npm run package:win
 ---
 
 ## Recent Changes
+
+### v0.6.0 - Scanner UI Integration (2026-01-02)
+- ✅ Created `/scanner` route with responsive 12-column grid layout
+- ✅ Implemented ProjectListCard component:
+  - Empty state UI with folder icon and "Add Path" button
+  - Project list with checkboxes (UI mockup)
+  - Footer tip section
+  - Responsive design (stacks on mobile, 8 columns on desktop)
+- ✅ Implemented ConsoleTabs component:
+  - Three tabs: Console, History, Config
+  - Terminal-style console with green/blue text
+  - Empty states for all tabs
+  - Status footer (Idle, version)
+  - 4 columns on desktop, full width on mobile
+- ✅ Implemented ActionBar component:
+  - Scan Projects button (disabled when no selection)
+  - Clear button
+  - Selection counter
+  - Full-width responsive layout
+- ✅ Added Scanner navigation item to sidebar with Radar icon
+- ✅ UI-only mockup - no backend integration or live scanning functionality
+- ✅ Inherits global dashboard theme (no page-level dark mode toggle)
+- ✅ All components follow existing Tailwind design system
+
+**Workorder:** WO-DASHBOARD-SCANNER-UI-001
 
 ### v0.5.0 - Dual Executable Builds (2025-12-31)
 - ✅ Built TWO Windows executables with different distribution strategies:
