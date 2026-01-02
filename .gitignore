@@ -46,3 +46,10 @@ yarn-error.log*
 
 # Windows
 Thumbs.db
+
+# MCP and local data
+.coderef/
+.claude/settings.local.json
+
+# Additional build outputs
+dist-new/
