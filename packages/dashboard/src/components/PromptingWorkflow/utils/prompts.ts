@@ -1,5 +1,6 @@
 import { PreloadedPrompt } from '../types';
 import { getTagsByIds, getAllTags } from '../constants/tags';
+import { getEcosystemTagsByIds, getAllEcosystemTags } from '../constants/ecosystem-tags';
 
 /**
  * 3 Preloaded prompts with agent identification headers
@@ -115,6 +116,39 @@ Start your response with a metadata header identifying yourself:
    - Identifies patterns and consensus across all synthesis runs
    - Provides actionable next steps for implementation`;
 
+const CODEREF_ECOSYSTEM_REVIEW_PROMPT = `CODEREF ECOSYSTEM REVIEW TASK
+Review the attached coderef ecosystem component(s) for comprehensive analysis.
+Output standard Markdown (.md) inside a SINGLE code block.
+
+**AGENT IDENTIFICATION REQUIRED**
+Start your response with a metadata header identifying yourself:
+
+---
+**Agent:** [Your model name and version]
+**Date:** [Current date]
+**Task:** CODEREF_ECOSYSTEM_REVIEW
+---
+
+## PART 1: COMPONENT OVERVIEW
+Provide a brief overview of what this component does and its key features:
+
+| Component | Purpose | Key Features |
+|-----------|---------|--------------|
+| ...       | ...     | ...          |
+
+## PART 2: ECOSYSTEM ANALYSIS
+{{TAG_SECTION}}
+
+For each category, provide structured analysis with this format:
+
+### {{CATEGORY_NAME}}
+**How Used:** [How this component/document is used in the ecosystem]
+**Strengths:** [What works well]
+**Weaknesses:** [What's missing or unclear]
+**Add/Remove:** [Specific suggestions with ADD/REMOVE/REFACTOR prefixes]
+
+Provide 2-5 suggestions per category, focusing on the highest-impact improvements.`;
+
 /**
  * Preloaded prompts available in the widget
  */
@@ -142,6 +176,14 @@ export const PRELOADED_PROMPTS: Record<string, PreloadedPrompt> = {
     text: CONSOLIDATE_PROMPT,
     estimatedTokens: 1300,
     description: 'Creates final master review from multiple syntheses',
+  },
+  '0004': {
+    key: '0004',
+    name: 'CODEREF_ECOSYSTEM_REVIEW',
+    label: 'CodeRef Ecosystem Review',
+    text: CODEREF_ECOSYSTEM_REVIEW_PROMPT,
+    estimatedTokens: 1100,
+    description: 'Review coderef ecosystem components with focused feedback',
   },
 };
 
@@ -207,6 +249,63 @@ Provide 2-5 suggestions per category, focusing on the highest-impact improvement
 **Improvement:** [What to change]
 **Reasoning:** [Why this matters]
 **Impact Rating:** [1-10 expected value]`
+  ).join('\n\n');
+
+  // Replace the template section with actual category sections
+  interpolatedPrompt = interpolatedPrompt.replace(categoryTemplate, categorySections);
+
+  return interpolatedPrompt;
+}
+
+/**
+ * Get CODEREF_ECOSYSTEM_REVIEW prompt with tag interpolation
+ * Replaces {{TAG_SECTION}} and {{CATEGORY_NAME}} placeholders based on selected ecosystem tags
+ *
+ * @param selectedTagIds - Array of selected ecosystem tag IDs (e.g., ['documentation', 'workflows'])
+ * @returns Prompt text with tags interpolated
+ *
+ * Behavior:
+ * - If no tags selected (empty array): Shows all 10 categories
+ * - If tags selected: Shows only selected categories
+ * - If all 10 tags selected: Treats same as no tags (shows all)
+ */
+export function getEcosystemPromptWithTags(selectedTagIds: string[] = []): string {
+  const prompt = PRELOADED_PROMPTS['0004'].text;
+
+  // Determine which tags to show
+  const allTags = getAllEcosystemTags();
+  const isAllSelected = selectedTagIds.length === 0 || selectedTagIds.length === allTags.length;
+  const tagsToShow = isAllSelected ? allTags : getEcosystemTagsByIds(selectedTagIds);
+
+  // Build tag section text
+  let tagSection = '';
+  if (isAllSelected) {
+    tagSection = 'Provide ecosystem analysis in ALL categories:\n';
+    tagSection += allTags.map(tag => `- **${tag.label}**: ${tag.description}`).join('\n');
+  } else {
+    tagSection = `User has requested feedback on: **${tagsToShow.map(t => t.label).join(', ')}**\n\n`;
+    tagSection += 'Focus your analysis on these categories:\n';
+    tagSection += tagsToShow.map(tag => `- **${tag.label}**: ${tag.description}`).join('\n');
+  }
+
+  // Replace {{TAG_SECTION}} placeholder
+  let interpolatedPrompt = prompt.replace('{{TAG_SECTION}}', tagSection);
+
+  // Replace {{CATEGORY_NAME}} with actual category names
+  const categoryTemplate = `### {{CATEGORY_NAME}}
+**How Used:** [How this component/document is used in the ecosystem]
+**Strengths:** [What works well]
+**Weaknesses:** [What's missing or unclear]
+**Add/Remove:** [Specific suggestions with ADD/REMOVE/REFACTOR prefixes]
+
+Provide 2-5 suggestions per category, focusing on the highest-impact improvements.`;
+
+  const categorySections = tagsToShow.map(tag =>
+    `### ${tag.label}
+**How Used:** [How this component/document is used in the ecosystem]
+**Strengths:** [What works well]
+**Weaknesses:** [What's missing or unclear]
+**Add/Remove:** [Specific suggestions with ADD/REMOVE/REFACTOR prefixes]`
   ).join('\n\n');
 
   // Replace the template section with actual category sections

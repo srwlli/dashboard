@@ -1,11 +1,13 @@
 import React from 'react';
-import { Zap, Lock, Sparkles, Building2, FlaskConical, Accessibility, AlertTriangle, Palette, LucideIcon } from 'lucide-react';
+import { Zap, Lock, Sparkles, Building2, FlaskConical, Accessibility, AlertTriangle, Palette, FileText, Code2, GitBranch, Plug, Ruler, Users, Database, FileOutput, LucideIcon } from 'lucide-react';
 import { PreloadedPrompt } from '../types';
 import { formatTokenCount } from '../utils/tokenEstimator';
 import { getAllTags } from '../constants/tags';
+import { getAllEcosystemTags } from '../constants/ecosystem-tags';
 
-// Icon map for tag icons
+// Icon map for tag icons (CODE_REVIEW + CODEREF_ECOSYSTEM_REVIEW)
 const ICON_MAP: Record<string, LucideIcon> = {
+  // CODE_REVIEW tags
   'Zap': Zap,
   'Lock': Lock,
   'Sparkles': Sparkles,
@@ -14,6 +16,15 @@ const ICON_MAP: Record<string, LucideIcon> = {
   'Accessibility': Accessibility,
   'AlertTriangle': AlertTriangle,
   'Palette': Palette,
+  // CODEREF_ECOSYSTEM_REVIEW tags
+  'FileText': FileText,
+  'Code2': Code2,
+  'GitBranch': GitBranch,
+  'Plug': Plug,
+  'Ruler': Ruler,
+  'Users': Users,
+  'Database': Database,
+  'FileOutput': FileOutput,
 };
 
 interface PromptSelectorProps {
@@ -32,6 +43,7 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
   onToggleTag,
 }) => {
   const allTags = getAllTags();
+  const allEcosystemTags = getAllEcosystemTags();
 
   return (
     <div className="w-full">
@@ -77,6 +89,42 @@ export const PromptSelector: React.FC<PromptSelectorProps> = ({
                 </p>
                 <div className="flex flex-wrap gap-2 overflow-x-auto">
                   {allTags.map((tag) => {
+                    const isActive = selectedTags.includes(tag.id);
+                    const IconComponent = ICON_MAP[tag.icon];
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleTag(tag.id);
+                        }}
+                        className={`
+                          px-2 py-1 text-xs font-medium rounded transition-all whitespace-nowrap flex items-center gap-1
+                          ${isActive
+                            ? 'border-2 border-ind-accent bg-ind-accent/10 text-ind-text'
+                            : 'border border-ind-border bg-ind-bg text-ind-text-muted hover:border-ind-accent'
+                          }
+                        `}
+                        title={tag.description}
+                      >
+                        {IconComponent && <IconComponent className="w-3 h-3" />}
+                        {tag.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Ecosystem tag chips - Only show for CODEREF_ECOSYSTEM_REVIEW prompt */}
+            {prompt.key === '0004' && onToggleTag && (
+              <div className="mt-3 mb-3 border-t border-ind-border pt-3">
+                <p className="text-xs text-ind-text-muted mb-2 font-mono">
+                  Ecosystem Focus Areas (click to select):
+                </p>
+                <div className="flex flex-wrap gap-2 overflow-x-auto">
+                  {allEcosystemTags.map((tag) => {
                     const isActive = selectedTags.includes(tag.id);
                     const IconComponent = ICON_MAP[tag.icon];
                     return (
