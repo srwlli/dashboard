@@ -13,22 +13,24 @@
     "reference_components": {
       "ProjectSelector": "packages/dashboard/src/components/coderef/ProjectSelector.tsx",
       "CodeRefExplorerWidget": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "FileTree": "packages/dashboard/src/components/coderef/FileTree.tsx",
       "CodeRefApi": "packages/dashboard/src/lib/coderef/api-access.ts"
     },
     "patterns": {
       "context_providers": "React Context API for global state management",
       "loading_states": "Skeleton loading with Tailwind animate-pulse",
-      "optimistic_ui": "Immediate UI updates with rollback on error"
+      "optimistic_ui": "Immediate UI updates with rollback on error",
+      "state_persistence": "localStorage with restoration flag pattern to prevent write loops"
     }
   },
   "1_executive_summary": {
-    "what": "Optimize project loading performance by implementing React Context for shared state, loading skeletons for better UX, and optimistic UI updates for instant feedback",
-    "why": "Currently, ProjectSelector fetches projects from API on every mount (redundant calls), lacks visual loading feedback, and feels sluggish when adding/removing projects",
-    "success": "Sub-100ms perceived project selection changes, zero redundant API calls across navigation, professional loading states",
+    "what": "Optimize project loading performance and explorer state persistence by implementing React Context for shared state, loading skeletons for better UX, optimistic UI updates for instant feedback, and full explorer state restoration across navigation",
+    "why": "Currently, ProjectSelector fetches projects from API on every mount (redundant calls), lacks visual loading feedback, feels sluggish when adding/removing projects, AND explorer loses all state (view mode, selected file, expanded folders) when navigating away",
+    "success": "Sub-100ms perceived project selection changes, zero redundant API calls across navigation, professional loading states, AND complete explorer state restoration (view mode, selected file, expanded folders) across navigation and page reloads",
     "impact": {
-      "users": "Faster, smoother project selection experience with immediate visual feedback",
-      "codebase": "Centralized project state reduces API overhead by ~80%, improves code reusability",
-      "performance": "Eliminates N redundant API calls (where N = navigation count), reduces time-to-interactive by ~200ms"
+      "users": "Faster, smoother project selection experience with immediate visual feedback + persistent explorer state that remembers where you were",
+      "codebase": "Centralized project AND explorer state reduces API overhead by ~80%, improves code reusability, eliminates state loss bugs",
+      "performance": "Eliminates N redundant API calls (where N = navigation count), reduces time-to-interactive by ~200ms, instant state restoration on mount"
     }
   },
   "2_risk_assessment": {
@@ -49,6 +51,11 @@
         "risk": "Context re-renders could affect unrelated components",
         "impact": "Performance degradation if context updates trigger unnecessary re-renders",
         "mitigation": "Split context into ProjectsContext (list) and ProjectSelectionContext (selected), use React.memo on consumers"
+      },
+      {
+        "risk": "FileTree refactor to controlled pattern breaks existing usage",
+        "impact": "FileTree used in multiple places, changing to controlled pattern could introduce bugs",
+        "mitigation": "Make expandedFolders prop optional, maintain backward compatibility with internal state fallback"
       }
     ],
     "low_risk": [
@@ -75,13 +82,19 @@
         "description": "Adding project blocks until API responds",
         "location": "packages/dashboard/src/components/coderef/ProjectSelector.tsx:118-185",
         "issue": "User waits ~500ms for API round-trip"
+      },
+      "explorer_state_loss": {
+        "description": "CodeRefExplorerWidget loses view mode, selected file, and expanded folders when user navigates away",
+        "location": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx:101-183",
+        "issue": "Only selected project persists to localStorage, all other state lost on unmount"
       }
     },
     "dependencies": {
       "direct": [
         "React 19 (Context API, useContext)",
         "CodeRefApi.projects",
-        "localStorage"
+        "localStorage",
+        "FileTree component (needs refactor to controlled pattern)"
       ]
     }
   },
@@ -115,6 +128,19 @@
         "Error handling: Rollback UI change and show error toast if API fails",
         "Loading state: Show 'adding...' spinner on project card during API call"
       ]
+    },
+    "feature_4_explorer_state_persistence": {
+      "description": "Preserve complete explorer state (view mode, selected file, expanded folders) across navigation and page reloads using ExplorerContext and localStorage",
+      "user_story": "As a user, I want the file explorer to remember my view mode, selected file, and expanded folders when I navigate away and come back",
+      "acceptance_criteria": [
+        "View mode (Projects/CodeRef/Favorites) persists to localStorage",
+        "Selected file path persists to localStorage with restoration flag pattern",
+        "Expanded folders state (Set<string> of paths) persists to localStorage",
+        "FileTree component refactored to controlled pattern (accepts expandedFolders prop)",
+        "CodeRefExplorerWidget uses ExplorerContext instead of local state",
+        "All state restored on navigation back to explorer (not on every mount, only when coming back)",
+        "State restoration works across page reloads (browser refresh)"
+      ]
     }
   },
   "5_task_id_system": {
@@ -125,6 +151,7 @@
       "SKELETON": "Loading skeleton UI implementation",
       "OPTIMISTIC": "Optimistic UI updates",
       "INTEGRATION": "Integrate context into existing components",
+      "EXPLORER": "Explorer state persistence implementation",
       "TEST": "Testing and validation",
       "DOCS": "Documentation updates"
     }
@@ -238,9 +265,64 @@
         }
       ]
     },
-    "phase_5_testing": {
-      "name": "Testing & Validation",
+    "phase_5_explorer_state": {
+      "name": "Explorer State Persistence",
       "order": 5,
+      "estimated_effort": "3 hours",
+      "tasks": [
+        {
+          "id": "PROJ-CTX-EXPLORER-001",
+          "title": "Add ExplorerContext for view mode and selection state",
+          "description": "Create packages/dashboard/src/contexts/ExplorerContext.tsx with state for viewMode, selectedFile, expandedFolders, scrollPosition",
+          "dependencies": ["PROJ-CTX-INTEGRATION-002"],
+          "estimated_time": "45 min",
+          "files_to_create": ["packages/dashboard/src/contexts/ExplorerContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-EXPLORER-002",
+          "title": "Implement localStorage persistence for view mode",
+          "description": "Save/restore viewMode (Projects/CodeRef/Favorites) to localStorage key 'coderef-explorer-view-mode'",
+          "dependencies": ["PROJ-CTX-EXPLORER-001"],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ExplorerContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-EXPLORER-003",
+          "title": "Implement localStorage persistence for selected file",
+          "description": "Save/restore selectedFilePath to localStorage key 'coderef-explorer-selected-file' with restoration flag pattern",
+          "dependencies": ["PROJ-CTX-EXPLORER-001"],
+          "estimated_time": "25 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ExplorerContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-EXPLORER-004",
+          "title": "Refactor FileTree to expose expanded folders state",
+          "description": "Add expandedFolders prop to FileTree, convert internal state to controlled component pattern",
+          "dependencies": ["PROJ-CTX-EXPLORER-001"],
+          "estimated_time": "50 min",
+          "files_to_modify": ["packages/dashboard/src/components/coderef/FileTree.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-EXPLORER-005",
+          "title": "Implement localStorage persistence for expanded folders",
+          "description": "Save/restore Set<string> of expanded folder paths to localStorage key 'coderef-explorer-expanded-folders'",
+          "dependencies": ["PROJ-CTX-EXPLORER-004"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ExplorerContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-EXPLORER-006",
+          "title": "Update CodeRefExplorerWidget to use ExplorerContext",
+          "description": "Replace local state with useExplorer hook, remove redundant localStorage logic",
+          "dependencies": ["PROJ-CTX-EXPLORER-005"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx"]
+        }
+      ]
+    },
+    "phase_6_testing": {
+      "name": "Testing & Validation",
+      "order": 6,
       "estimated_effort": "1.5 hours",
       "tasks": [
         {
@@ -256,12 +338,26 @@
           "description": "Count API calls before/after optimization during navigation sequence",
           "dependencies": ["PROJ-CTX-INTEGRATION-001"],
           "estimated_time": "25 min"
+        },
+        {
+          "id": "PROJ-CTX-TEST-003",
+          "title": "Test explorer state persistence across navigation",
+          "description": "Navigate away from explorer and back, verify view mode, selected file, expanded folders restored",
+          "dependencies": ["PROJ-CTX-EXPLORER-006"],
+          "estimated_time": "20 min"
+        },
+        {
+          "id": "PROJ-CTX-TEST-004",
+          "title": "Test explorer state persistence across page reloads",
+          "description": "Set explorer state, reload page (F5), verify localStorage restoration works correctly",
+          "dependencies": ["PROJ-CTX-EXPLORER-006"],
+          "estimated_time": "15 min"
         }
       ]
     },
-    "phase_6_docs": {
+    "phase_7_docs": {
       "name": "Documentation & Cleanup",
-      "order": 6,
+      "order": 7,
       "estimated_effort": "1 hour",
       "tasks": [
         {
@@ -275,10 +371,18 @@
         {
           "id": "PROJ-CTX-DOCS-002",
           "title": "Update ARCHITECTURE.md with context pattern",
-          "description": "Add ProjectsContext to State Management section",
+          "description": "Add ProjectsContext and ExplorerContext to State Management section",
           "dependencies": ["PROJ-CTX-INTEGRATION-001"],
           "estimated_time": "25 min",
           "files_to_modify": ["coderef/foundation-docs/ARCHITECTURE.md"]
+        },
+        {
+          "id": "PROJ-CTX-DOCS-003",
+          "title": "Add JSDoc to ExplorerContext",
+          "description": "Add comprehensive JSDoc comments with usage examples following same pattern as ProjectsContext",
+          "dependencies": ["PROJ-CTX-EXPLORER-006"],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ExplorerContext.tsx"]
         }
       ]
     }
@@ -286,12 +390,20 @@
   "7_testing_strategy": {
     "unit_tests": [
       "Test ProjectsContext provider initialization",
+      "Test ExplorerContext provider initialization",
       "Test optimistic add/remove operations",
-      "Test rollback logic on API errors"
+      "Test rollback logic on API errors",
+      "Test localStorage persistence for view mode",
+      "Test localStorage persistence for selected file",
+      "Test localStorage persistence for expanded folders"
     ],
     "integration_tests": [
       "Test ProjectSelector with ProjectsContext integration",
-      "Test cross-component state sharing"
+      "Test CodeRefExplorerWidget with ExplorerContext integration",
+      "Test FileTree controlled component with expanded folders prop",
+      "Test cross-component state sharing",
+      "Test explorer state restoration after navigation",
+      "Test explorer state restoration after page reload"
     ],
     "performance_tests": [
       {
@@ -301,6 +413,10 @@
       {
         "metric": "Perceived add latency",
         "target": "< 100ms from click to UI update"
+      },
+      {
+        "metric": "Explorer state restoration time",
+        "target": "< 50ms to load from localStorage"
       }
     ]
   },
@@ -309,16 +425,23 @@
       "ProjectsContext loads projects once on app mount",
       "Loading skeleton shows during initial load with no layout shift",
       "Adding project shows immediate UI update",
-      "Error toast shows on optimistic update failure"
+      "Error toast shows on optimistic update failure",
+      "ExplorerContext persists view mode across navigation",
+      "Selected file path restored when returning to explorer",
+      "Expanded folders state preserved across page reloads",
+      "FileTree controlled component pattern works correctly"
     ],
     "performance": [
       "Zero redundant API calls during navigation",
       "< 100ms perceived latency for add/remove operations",
-      "200ms improvement in time-to-interactive"
+      "200ms improvement in time-to-interactive",
+      "< 50ms to restore explorer state from localStorage"
     ],
     "code_quality": [
       "ProjectsContext has comprehensive JSDoc documentation",
+      "ExplorerContext follows same JSDoc standards as ProjectsContext",
       "All optimistic operations have error handling and rollback",
+      "FileTree refactor maintains backward compatibility",
       "TypeScript strict mode passes with no errors"
     ]
   },
@@ -334,8 +457,9 @@
       "Complete Phase 2: Loading skeleton UI",
       "Complete Phase 3: Optimistic UI updates",
       "Complete Phase 4: Integrate context into components",
-      "Complete Phase 5: Testing & validation",
-      "Complete Phase 6: Documentation & cleanup"
+      "Complete Phase 5: Explorer state persistence",
+      "Complete Phase 6: Testing & validation",
+      "Complete Phase 7: Documentation & cleanup"
     ],
     "before_commit": [
       "All tasks completed and tested",
