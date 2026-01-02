@@ -125,11 +125,13 @@ export interface EcosystemTag {
 - **Description:** "Find patterns and inconsistencies across files"
 
 **4. CODEREF_ECOSYSTEM_REVIEW (key: '0004')**
-- **Purpose:** Review CodeRef ecosystem components with focused feedback
-- **Tokens:** ~1100
+- **Purpose:** Review CodeRef ecosystem components → structured JSON analysis
+- **Tokens:** ~1200
 - **Tags:** Supports 10 ecosystem-specific tags
-- **Description:** "Review coderef ecosystem components with focused feedback"
-- **Output:** Structured analysis with how_used, strengths, weaknesses, add_remove fields per tag
+- **Description:** "Review coderef ecosystem components → structured JSON analysis"
+- **Output:** Valid JSON object (not markdown) with agent_metadata, component_overview, ecosystem_analysis
+- **Workflow:** Multi-agent coordination - agents save to `coderef/reviews/{review-title}/responses/{agent-id}.json`
+- **Review Title:** User prompted for title before export (e.g., "Q1-2026-Documentation-Review")
 
 ### Prompt Selection UI
 
@@ -370,6 +372,115 @@ const handleAddToPrompt = async () => {
 
 ---
 
+## Review Title Workflow (CODEREF_ECOSYSTEM_REVIEW)
+
+**Component:** `ReviewTitleModal.tsx`
+
+### Modal Trigger
+
+When user exports **CODEREF_ECOSYSTEM_REVIEW** prompt (key '0004'), a modal appears before export to collect review title:
+
+**Triggered by:**
+- Copy JSON to Clipboard
+- Export JSON File
+- Export Markdown File
+
+**Modal Fields:**
+- **Review Title** (required) - Alphanumeric, hyphens, underscores only
+- **Validation:** `/^[a-zA-Z0-9_-]+$/`
+- **Examples:** Q1-2026-Documentation-Review, Workflow-Audit-January-2026
+
+**Modal Display:**
+```
+┌─────────────────────────────────────────────────────────┐
+│ Enter Review Title                                      │
+│ This title organizes multi-agent reviews in:            │
+│ coderef/reviews/[title]/                                │
+├─────────────────────────────────────────────────────────┤
+│ Review Title *                                          │
+│ [Q1-2026-Documentation-Review                    ]      │
+├─────────────────────────────────────────────────────────┤
+│ 📁 Folder Structure                                     │
+│ coderef/reviews/[your-title]/                           │
+│   ├── prompt.json           (Original prompt + meta)    │
+│   └── responses/                                        │
+│       ├── agent-1.json      (Agent 1's analysis)        │
+│       ├── agent-2.json      (Agent 2's analysis)        │
+│       └── agent-3.json      (Agent 3's analysis)        │
+├─────────────────────────────────────────────────────────┤
+│ [Continue with Export]  [Cancel]                        │
+└─────────────────────────────────────────────────────────┘
+```
+
+### JSON Output Structure
+
+```json
+{
+  "agent_metadata": {
+    "agent_id": "coderef-context",
+    "model": "Claude Sonnet 4.5",
+    "date": "2026-01-02T00:00:00Z",
+    "review_title": "Q1-2026-Documentation-Review"
+  },
+  "component_overview": {
+    "component_name": "CodeRef Context System",
+    "purpose": "Manages project context and metadata",
+    "key_features": [
+      "Project analysis",
+      "Dependency tracking",
+      "Code relationship mapping"
+    ]
+  },
+  "ecosystem_analysis": {
+    "documentation": {
+      "how_used": "Foundation docs provide project context for agents during planning",
+      "strengths": [
+        "Clear structure",
+        "Comprehensive coverage",
+        "Version tracking"
+      ],
+      "weaknesses": [
+        "No automated staleness detection",
+        "Manual updates required"
+      ],
+      "add_remove": [
+        "ADD: Timestamp metadata for freshness tracking",
+        "REFACTOR: Split large CLAUDE.md into focused modules",
+        "REMOVE: Redundant quick-start sections"
+      ]
+    },
+    "workflows": {
+      "how_used": "Standardizes implementation planning across agents",
+      "strengths": ["Consistent structure", "Clear task breakdown"],
+      "weaknesses": ["Complex for small features"],
+      "add_remove": [
+        "ADD: Lightweight workflow option for bug fixes",
+        "REFACTOR: Simplify task ID naming scheme"
+      ]
+    }
+  }
+}
+```
+
+### Agent Coordination
+
+**Save Location:** `coderef/reviews/{review-title}/responses/{agent-id}.json`
+
+**Agent ID:** Derived from working directory name
+- Examples: `coderef-context`, `coderef-docs`, `coderef-workflow`
+
+**Workflow:**
+1. User creates review with title: `Q1-2026-Documentation-Review`
+2. User exports prompt (includes review title in metadata)
+3. Agent receives prompt with `{{REVIEW_TITLE}}` interpolated
+4. Agent analyzes components
+5. Agent outputs JSON with structured analysis
+6. Agent saves to: `coderef/reviews/Q1-2026-Documentation-Review/responses/coderef-context.json`
+7. Other agents save their analyses to same folder
+8. Coordinator aggregates all JSON files for synthesis
+
+---
+
 ## Export Functionality
 
 **Component:** `ExportMenu.tsx`
@@ -589,11 +700,13 @@ const handleAddToPrompt = async () => {
 ### Core Implementation
 
 - **`packages/dashboard/src/app/prompts/page.tsx`** - Prompts page route
-- **`packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx`** - Main workflow orchestrator
+- **`packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx`** - Main workflow orchestrator with export handlers
 - **`packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx`** - Prompt cards with tag chips (CODE_REVIEW: lines 85-118, CODEREF_ECOSYSTEM_REVIEW: lines 120-154)
+- **`packages/dashboard/src/components/PromptingWorkflow/components/ReviewTitleModal.tsx`** - Review title input modal for CODEREF_ECOSYSTEM_REVIEW
 - **`packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts`** - CODE_REVIEW tag definitions (8 tags)
 - **`packages/dashboard/src/components/PromptingWorkflow/constants/ecosystem-tags.ts`** - CODEREF_ECOSYSTEM_REVIEW tag definitions (10 tags)
-- **`packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts`** - Prompt templates (CODE_REVIEW, SYNTHESIZE, CONSOLIDATE, CODEREF_ECOSYSTEM_REVIEW)
+- **`packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts`** - Prompt templates (CODE_REVIEW, SYNTHESIZE, CONSOLIDATE, CODEREF_ECOSYSTEM_REVIEW) + getEcosystemPromptWithTags()
+- **`packages/dashboard/src/components/PromptingWorkflow/types.ts`** - Workflow interface with reviewTitle field
 - **`packages/dashboard/src/contexts/WorkflowContext.tsx`** - State management with localStorage
 
 ### Integration Files
@@ -610,6 +723,16 @@ const handleAddToPrompt = async () => {
 
 ## Recent Updates
 
+**2026-01-02 (Commit 702e78d)** - BREAKING: CODEREF_ECOSYSTEM_REVIEW JSON output + review title workflow
+- ✅ Changed output format from Markdown to JSON
+- ✅ Created ReviewTitleModal component for user input before export
+- ✅ Updated getEcosystemPromptWithTags() to accept reviewTitle parameter
+- ✅ Added reviewTitle field to Workflow interface
+- ✅ All export handlers show modal for key '0004' prompt
+- ✅ Added agent coordination instructions (save to coderef/reviews/{title}/responses/)
+- ✅ JSON structure: agent_metadata, component_overview, ecosystem_analysis
+- ✅ Increased estimated tokens: 1100 → 1200
+
 **2026-01-02 (Commit e2e376e)** - CODEREF_ECOSYSTEM_REVIEW prompt added
 - ✅ Created `constants/ecosystem-tags.ts` with 10 ecosystem categories
 - ✅ Added CODEREF_ECOSYSTEM_REVIEW prompt (key: '0004') with ~1100 tokens
@@ -617,7 +740,6 @@ const handleAddToPrompt = async () => {
 - ✅ Updated `PromptSelector.tsx` with ecosystem tag chip rendering (lines 120-154)
 - ✅ Added 8 new Lucide icons (FileText, Code2, GitBranch, Plug, Ruler, Users, Database, FileOutput)
 - ✅ Ecosystem tags use same visual styling as CODE_REVIEW tags
-- ✅ Structured output format: how_used, strengths, weaknesses, add_remove fields
 
 **2026-01-01 (Merge c4cb099)** - Tags implementation merged to main
 - ✅ Created `constants/tags.ts` with 8 improvement categories
