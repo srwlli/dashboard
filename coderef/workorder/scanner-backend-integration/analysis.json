@@ -1,0 +1,5468 @@
+{
+  "foundation_docs": {
+    "available": [
+      "README.md (root)",
+      "API.md (coderef/foundation-docs)",
+      "ARCHITECTURE.md (coderef/foundation-docs)",
+      "COMPONENTS.md (coderef/foundation-docs)",
+      "SCHEMA.md (coderef/foundation-docs)"
+    ],
+    "missing": [
+      "USER-GUIDE.md"
+    ]
+  },
+  "foundation_doc_content": {
+    "ARCHITECTURE.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# System Architecture\n\n**Date:** 2025-12-28\n**Version:** 0.1.0\n\n---\n\n## Overview\n\nThe CodeRef Dashboard is a modular widget system with PWA and Electron support, designed to aggregate and visualize workorder and stub data from multiple project directories. The system follows a monorepo architecture with three primary packages.\n\n**Core Purpose:** Provide a unified dashboard interface for tracking workorders (active work) and stubs (backlog items) across multiple software projects.\n\n---\n\n## System",
+      "headers": [
+        "System Architecture",
+        "Overview",
+        "System Topology",
+        "Package Structure",
+        "Monorepo Organization",
+        "Technology Stack",
+        "Frontend Layer",
+        "Backend Layer",
+        "Desktop Distribution",
+        "Build Tools"
+      ],
+      "size": 15515
+    },
+    "API.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# API Reference\n\n**Framework:** POWER\n**Date:** 2025-12-28\n**Version:** 0.1.0\n\n---\n\n## Overview\n\nThis document provides comprehensive API reference for the CodeRef Dashboard backend. The dashboard aggregates workorder and stub data from multiple projects using Next.js API Routes.\n\n**Key Architecture:**\n- Next.js 14 API Routes (App Router)\n- File-based API endpoints in `packages/dashboard/src/app/api/`\n- Reads data from multiple project directories via `projects.config.json`\n- RESTful JSON respon",
+      "headers": [
+        "API Reference",
+        "Overview",
+        "Base URL",
+        "Authentication",
+        "Endpoints",
+        "Workorders",
+        "Stubs",
+        "CodeRef Projects",
+        "Data Models",
+        "WorkorderObject"
+      ],
+      "size": 15906
+    },
+    "COMPONENTS.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# Component Library Reference\n\n**Framework:** React 19 + Next.js 14 (App Router)\n**Date:** 2025-12-28\n**Version:** 0.1.0\n\n---\n\n## Overview\n\nThis document catalogs all reusable UI components in the CodeRef Dashboard. The component library follows a modular architecture with shared core components and dashboard-specific implementations.\n\n**Key Characteristics:**\n- React 19 with TypeScript\n- Next.js 14 App Router (`'use client'` directive for client components)\n- Tailwind CSS with custom design tok",
+      "headers": [
+        "Component Library Reference",
+        "Overview",
+        "Component Architecture",
+        "Package Structure",
+        "Core Components",
+        "ErrorBoundary",
+        "Data Display Components",
+        "WorkorderCard",
+        "StubCard",
+        "StatsCard"
+      ],
+      "size": 18683
+    },
+    "SCHEMA.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# Schema & Data Model Reference\n\n**Framework:** POWER\n**Date:** 2025-12-28\n**Schema Version:** 0.1.0\n\n---\n\n## Overview\n\nThis document defines the data schemas, TypeScript interfaces, and data models used throughout the CodeRef Dashboard project. The dashboard uses a file-based data architecture reading from multiple project directories rather than a traditional database.\n\n**Key Characteristics:**\n- No persistent database - data read from file system on demand\n- Strong TypeScript typing throughou",
+      "headers": [
+        "Schema & Data Model Reference",
+        "Overview",
+        "Data Storage Architecture",
+        "File System as Database",
+        "No Persistent Database",
+        "Core Data Models",
+        "1. Workorder Schema",
+        "2. Stub Schema",
+        "3. API Response Schemas",
+        "4. Prompting Workflow Schema"
+      ],
+      "size": 12575
+    },
+    "README.md": {
+      "location": "root",
+      "preview": "# CodeRef Dashboard\n\n**A modular widget system with PWA and Electron support for tracking workorders and stubs across multiple projects**\n\n**Version:** 0.4.0\n**Date:** 2025-12-30\n**Maintainer:** CodeRef Team\n\n## What's New in 0.4.0\n\n\u2728 **Stats Card Enhancement** - Smaller, denser cards with richer information\n- Reduced card size (~25% smaller) with tighter padding and spacing\n- Enhanced stub stats with 8 breakdowns: status (stub, planned, in_progress, completed) + priority (low, medium, high, cri",
+      "headers": [
+        "CodeRef Dashboard",
+        "What's New in 0.4.0",
+        "Overview",
+        "Quick Start",
+        "Prerequisites",
+        "Installation",
+        "Clone the repository",
+        "Install dependencies",
+        "Run development server",
+        "Project Structure"
+      ],
+      "size": 9223
+    }
+  },
+  "inventory_data": {
+    "index_data": [
+      {
+        "type": "component",
+        "name": "SourcesPage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/coderef/archive/sources-page.tsx",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "apiCall",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/api/client.ts",
+        "line": 18,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "BASE_URL",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/api/client.ts",
+        "line": 16,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/api/client.ts",
+        "line": 31,
+        "exported": false
+      },
+      {
+        "type": "class",
+        "name": "ErrorBoundary",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/components/ErrorBoundary.tsx",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "constructor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/components/ErrorBoundary.tsx",
+        "line": 22,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "componentDidCatch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/components/ErrorBoundary.tsx",
+        "line": 31,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/components/ErrorBoundary.tsx",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "render",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/components/ErrorBoundary.tsx",
+        "line": 47,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/components/ErrorBoundary.tsx",
+        "line": 48,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/components/ErrorBoundary.tsx",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadElectronAdapter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
+        "line": 19,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "canLoadElectronAdapter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
+        "line": 43,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
+        "line": 23,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
+        "line": 29,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron-loader.ts",
+        "line": 44,
+        "exported": false
+      },
+      {
+        "type": "class",
+        "name": "ElectronFileSystemAdapter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 18,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 26,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 51,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 59,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 66,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 76,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 86,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 96,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/electron.ts",
+        "line": 104,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "createWebFileSystemAdapter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 203,
+        "exported": true
+      },
+      {
+        "type": "class",
+        "name": "WebFileSystemAdapter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 37,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 47,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 62,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 70,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 78,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 85,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 98,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 104,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 116,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 129,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 135,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 146,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 175,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/filesystem/web.ts",
+        "line": 179,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useSession",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/hooks/useSession.ts",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/hooks/useSession.ts",
+        "line": 22,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/hooks/useSession.ts",
+        "line": 24,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useSessionRefresh",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/hooks/useSessionRefresh.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handler",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/hooks/useSessionRefresh.ts",
+        "line": 10,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/hooks/useSessionRefresh.ts",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "isScriptboardWidget",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/types/widget.ts",
+        "line": 44,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/clipboard.ts",
+        "line": 15,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/clipboard.ts",
+        "line": 16,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/clipboard.ts",
+        "line": 32,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/clipboard.ts",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/fileHandlers.ts",
+        "line": 22,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/fileHandlers.ts",
+        "line": 24,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/fileHandlers.ts",
+        "line": 30,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/fileHandlers.ts",
+        "line": 39,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/fileHandlers.ts",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/utils/fileHandlers.ts",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/core/src/index.ts",
+        "line": 48,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getMimeType",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 87,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "isTextFile",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 115,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "GET",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 123,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "TEXT_EXTENSIONS",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "MAX_FILE_SIZE",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 174,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 128,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 153,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 154,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 164,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 175,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 195,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 203,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 204,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/file/route.ts",
+        "line": 227,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getStoragePath",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 34,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 43,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "saveProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "DELETE",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 84,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 51,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 91,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 108,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/[id]/route.ts",
+        "line": 131,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getStoragePath",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 43,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "ensureStorageDir",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 52,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 66,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "saveProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 85,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "GET",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 104,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "POST",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 151,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 73,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 74,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 112,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 115,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 137,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 157,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 170,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 194,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/projects/route.ts",
+        "line": 211,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "buildTree",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "GET",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 136,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "countNodes",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 202,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "SKIP_DIRS",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 42,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 67,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 116,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 123,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 124,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 141,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 165,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 166,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 172,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 191,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 204,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "line": 205,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "GET",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/stubs/route.ts",
+        "line": 18,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/stubs/route.ts",
+        "line": 26,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/stubs/route.ts",
+        "line": 37,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/stubs/route.ts",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/stubs/route.ts",
+        "line": 68,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "GET",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/[workorderId]/route.ts",
+        "line": 18,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/[workorderId]/route.ts",
+        "line": 25,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/[workorderId]/route.ts",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/[workorderId]/route.ts",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/[workorderId]/route.ts",
+        "line": 59,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/[workorderId]/route.ts",
+        "line": 101,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "GET",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/route.ts",
+        "line": 18,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/route.ts",
+        "line": 26,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/route.ts",
+        "line": 37,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/route.ts",
+        "line": 47,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/route.ts",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/workorders/route.ts",
+        "line": 87,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "AssistantPage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant/page.tsx",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant/page.tsx",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant/page.tsx",
+        "line": 54,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "CodeRefExplorerLayout",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/coderef-explorer/layout.tsx",
+        "line": 17,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "CodeRefExplorerPage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/coderef-explorer/page.tsx",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "PromptsPage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/prompts/page.tsx",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "SettingsPage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/settings/page.tsx",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "UserSettingsPage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/user-settings/page.tsx",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "ViewerContent",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 9,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "loadProject",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 19,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "FullPageViewer",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 96,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 20,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 29,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 32,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 43,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 60,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/viewer/full/page.tsx",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "RootLayout",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/layout.tsx",
+        "line": 22,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/layout.tsx",
+        "line": 39,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "Home",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/page.tsx",
+        "line": 12,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "ImprovedBatchRestoreUI",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/__tests__/BatchRestoreUI.test.tsx",
+        "line": 232,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ImprovedProjectItem",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/__tests__/BatchRestoreUI.test.tsx",
+        "line": 257,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ImprovedUI",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/__tests__/BatchRestoreUI.test.tsx",
+        "line": 276,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "extractFolderName",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.improved.tsx",
+        "line": 28,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "BatchRestoreUI",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.improved.tsx",
+        "line": 33,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleRestoreSingle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.improved.tsx",
+        "line": 52,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.improved.tsx",
+        "line": 64,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.improved.tsx",
+        "line": 80,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "BatchRestoreUI",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.tsx",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleRestoreAll",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.tsx",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.tsx",
+        "line": 48,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.tsx",
+        "line": 55,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/BatchRestoreUI.tsx",
+        "line": 65,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ContextMenu",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 39,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleClickOutside",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleEscape",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 56,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleItemClick",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "Icon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 85,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "SubIcon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 116,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 57,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "line": 72,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "FavoritesList",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 30,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "toggleGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 55,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleCreateGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 67,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleRenameGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleFileClick",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 83,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleContextMenu",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 94,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleRemoveFavorite",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 100,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleReassignToGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 106,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 101,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 107,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 112,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 144,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FavoritesList.tsx",
+        "line": 202,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "FileTree",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 58,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "loadTree",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 100,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 82,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 91,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 93,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 107,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 118,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 119,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 124,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 138,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 143,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 158,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 163,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 167,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 180,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 189,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 204,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+        "line": 222,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getFileIcon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 58,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getLanguageFromExtension",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 85,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "FileTreeNode",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 105,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleClick",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 126,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleContextMenu",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 134,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleToggleFavorite",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 140,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleAddToPrompt",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 146,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "switch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 127,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 141,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "line": 178,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "FileTypeFilter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTypeFilter.tsx",
+        "line": 43,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "Icon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTypeFilter.tsx",
+        "line": 51,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "FileViewer",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 24,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "formatFileSize",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 411,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadFile",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleCopyContent",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleCopyPath",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 73,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleShare",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 94,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleFullPage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 118,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 52,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 68,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 89,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 99,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 113,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 134,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 143,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 152,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 166,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 198,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "code",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileViewer.tsx",
+        "line": 352,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ProjectSelector",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 25,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "extractProjectName",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 529,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "initPersistence",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 65,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 105,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleAddProject",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 118,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleRemoveProject",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 187,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleRemoveAllProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 235,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleSelectChange",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 273,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "checkForStaleHandles",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 282,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleProjectRestore",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 333,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleContextMenu",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 344,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 48,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 51,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 70,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 82,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 97,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 111,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 128,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 154,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 160,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 179,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 202,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 208,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 226,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 229,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 247,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 251,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 255,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 267,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 288,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 294,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 300,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 309,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 312,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "line": 318,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ViewModeToggle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ViewModeToggle.tsx",
+        "line": 28,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "FilterBar",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/FilterBar/index.tsx",
+        "line": 22,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleSearchChange",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/FilterBar/index.tsx",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "toggleStatus",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/FilterBar/index.tsx",
+        "line": 47,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "togglePriority",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/FilterBar/index.tsx",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "toggleProject",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/FilterBar/index.tsx",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "toggleCategory",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/FilterBar/index.tsx",
+        "line": 89,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "clearFilters",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/FilterBar/index.tsx",
+        "line": 103,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "Header",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Header/index.tsx",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "MobileNav",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
+        "line": 35,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleEscape",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "Icon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
+        "line": 90,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "Icon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
+        "line": 117,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
+        "line": 41,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
+        "line": 46,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getStateStyles",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/AttachmentDropZone.tsx",
+        "line": 94,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/AttachmentDropZone.tsx",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/AttachmentDropZone.tsx",
+        "line": 53,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/AttachmentDropZone.tsx",
+        "line": 76,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "switch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/AttachmentDropZone.tsx",
+        "line": 96,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/AttachmentManager.tsx",
+        "line": 51,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "handleClickOutside",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/ExportMenu.tsx",
+        "line": 23,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleCopyJSON",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/ExportMenu.tsx",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleExportJSON",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/ExportMenu.tsx",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleExportMarkdown",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/ExportMenu.tsx",
+        "line": 65,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/ExportMenu.tsx",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/ExportMenu.tsx",
+        "line": 56,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/ExportMenu.tsx",
+        "line": 72,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PasteFinalResultModal.tsx",
+        "line": 22,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PasteFinalResultModal.tsx",
+        "line": 25,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PasteTextModal.tsx",
+        "line": 26,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PasteTextModal.tsx",
+        "line": 29,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx",
+        "line": 51,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx",
+        "line": 79,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx",
+        "line": 114,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx",
+        "line": 116,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "IconComponent",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx",
+        "line": 81,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx",
+        "line": 58,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getAllTags",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts",
+        "line": 74,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getTag",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts",
+        "line": 81,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getTagsByIds",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts",
+        "line": 88,
+        "exported": true
+      },
+      {
+        "type": "hook",
+        "name": "useClipboard",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 29,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 56,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 78,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useClipboard.ts",
+        "line": 85,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useFileHandlers",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useFileHandlers.ts",
+        "line": 13,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useFileHandlers.ts",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useFileHandlers.ts",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useFileHandlers.ts",
+        "line": 69,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useFileHandlers.ts",
+        "line": 74,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useFileHandlers.ts",
+        "line": 80,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useWorkflow",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/hooks/useWorkflow.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "generateJSON",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "generateMarkdown",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts",
+        "line": 60,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts",
+        "line": 11,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts",
+        "line": 80,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts",
+        "line": 82,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/exportFormatter.ts",
+        "line": 104,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "readFileContent",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getFileExtension",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 47,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "isTextFile",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 58,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "isImage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getMimeType",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 79,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 18,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 22,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/fileContentExtractor.ts",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "generateClipboardFilename",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "generateUniqueFilename",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 30,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getNextClipboardNumber",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 57,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 11,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 13,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 42,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 63,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/filenameGenerator.ts",
+        "line": 65,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getLanguage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/languageMap.ts",
+        "line": 72,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getPrompt",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts",
+        "line": 151,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getAllPrompts",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts",
+        "line": 158,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getPromptWithTags",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts",
+        "line": 174,
+        "exported": true
+      },
+      {
+        "type": "constant",
+        "name": "CODE_REVIEW_PROMPT",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts",
+        "line": 9,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "SYNTHESIZE_PROMPT",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts",
+        "line": 41,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "CONSOLIDATE_PROMPT",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts",
+        "line": 77,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts",
+        "line": 184,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "estimateTokens",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "estimatePromptTokens",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "calculateTotalTokens",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "formatTokenCount",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 29,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "shouldWarnTokens",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 42,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getTokenWarning",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 49,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 30,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 32,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PromptingWorkflow/utils/tokenEstimator.ts",
+        "line": 53,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "Sidebar",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "Icon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
+        "line": 62,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "Icon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
+        "line": 80,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "NavItem",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/NavItem.tsx",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "StatsCard",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StatsCard/index.tsx",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "StubCard",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubCard/index.tsx",
+        "line": 40,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "CategoryIcon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubCard/index.tsx",
+        "line": 41,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "StubList",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 24,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 43,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 60,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubList/index.tsx",
+        "line": 76,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "TabNavigation",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/TabNavigation/index.tsx",
+        "line": 24,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "UnifiedCard",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/UnifiedCard/index.tsx",
+        "line": 33,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "UserAvatar",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/UserAvatar/index.tsx",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "WorkorderCard",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+        "line": 39,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "StatusIcon",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "WorkorderList",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderList/index.tsx",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderList/index.tsx",
+        "line": 24,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderList/index.tsx",
+        "line": 34,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderList/index.tsx",
+        "line": 39,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderList/index.tsx",
+        "line": 46,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderList/index.tsx",
+        "line": 56,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderList/index.tsx",
+        "line": 72,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "AccentColorPicker",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/AccentColorPicker.tsx",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "type": "class",
+        "name": "ErrorBoundary",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ErrorBoundary.tsx",
+        "line": 20,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "constructor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ErrorBoundary.tsx",
+        "line": 21,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "componentDidCatch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ErrorBoundary.tsx",
+        "line": 30,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "render",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ErrorBoundary.tsx",
+        "line": 34,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ErrorBoundary.tsx",
+        "line": 35,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ErrorBoundary.tsx",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "PageLayout",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PageLayout.tsx",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "PWAInitializer",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/PWAInitializer.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "RootClientWrapper",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/RootClientWrapper.tsx",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/RootClientWrapper.tsx",
+        "line": 31,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ThemePanel",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ThemePanel.tsx",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "ThemeToggle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ThemeToggle.tsx",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleToggle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/ThemeToggle.tsx",
+        "line": 14,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "AccentColorProvider",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/AccentColorContext.tsx",
+        "line": 37,
+        "exported": true
+      },
+      {
+        "type": "hook",
+        "name": "useAccentColor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/AccentColorContext.tsx",
+        "line": 82,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "setAccentColor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/AccentColorContext.tsx",
+        "line": 56,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "applyAccentColor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/AccentColorContext.tsx",
+        "line": 62,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "AccentColorContext",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/AccentColorContext.tsx",
+        "line": 26,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/AccentColorContext.tsx",
+        "line": 84,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "SidebarProvider",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
+        "line": 20,
+        "exported": true
+      },
+      {
+        "type": "hook",
+        "name": "useSidebar",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
+        "line": 59,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "toggleSidebar",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
+        "line": 35,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "SidebarContext",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
+        "line": 28,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SidebarContext.tsx",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ThemeProvider",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/ThemeContext.tsx",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "type": "hook",
+        "name": "useTheme",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/ThemeContext.tsx",
+        "line": 73,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "setTheme",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/ThemeContext.tsx",
+        "line": 43,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "applyTheme",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/ThemeContext.tsx",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "ThemeContext",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/ThemeContext.tsx",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/ThemeContext.tsx",
+        "line": 53,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/ThemeContext.tsx",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "WorkflowProvider",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "type": "hook",
+        "name": "useWorkflow",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 178,
+        "exported": true
+      },
+      {
+        "type": "constant",
+        "name": "STORAGE_KEY",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 21,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "WorkflowContext",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 19,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 39,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 42,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 55,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 63,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 66,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/WorkflowContext.tsx",
+        "line": 180,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useServiceWorker",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useServiceWorker.ts",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useServiceWorker.ts",
+        "line": 10,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useServiceWorker.ts",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useStubs",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useStubs.ts",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "fetchStubs",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useStubs.ts",
+        "line": 29,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleRefetch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useStubs.ts",
+        "line": 60,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useStubs.ts",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useStubs.ts",
+        "line": 42,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useStubs.ts",
+        "line": 48,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useWorkorderDetail",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorderDetail.ts",
+        "line": 25,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "fetchWorkorder",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorderDetail.ts",
+        "line": 35,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorderDetail.ts",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorderDetail.ts",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorderDetail.ts",
+        "line": 51,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorderDetail.ts",
+        "line": 59,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorderDetail.ts",
+        "line": 67,
+        "exported": false
+      },
+      {
+        "type": "hook",
+        "name": "useWorkorders",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorders.ts",
+        "line": 25,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "fetchWorkorders",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorders.ts",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleRefetch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorders.ts",
+        "line": 66,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorders.ts",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorders.ts",
+        "line": 46,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useWorkorders.ts",
+        "line": 54,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "createProjectsConfig",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 182,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "loadProjectsConfig",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 191,
+        "exported": true
+      },
+      {
+        "type": "class",
+        "name": "ProjectsConfig",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 52,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "constructor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 60,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 74,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 86,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 97,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 108,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
+        "line": 120,
+        "exported": false
+      },
+      {
+        "type": "class",
+        "name": "StubReader",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 43,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "constructor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 90,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 108,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 133,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 148,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 156,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 179,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 194,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 214,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 227,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 237,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 255,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 259,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/stubs.ts",
+        "line": 263,
+        "exported": false
+      },
+      {
+        "type": "class",
+        "name": "WorkorderReader",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 55,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 78,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 106,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 151,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 164,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 176,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 193,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 201,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 213,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 217,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 232,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/workorders.ts",
+        "line": 245,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/indexeddb.test.ts",
+        "line": 31,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/indexeddb.test.ts",
+        "line": 32,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/indexeddb.test.ts",
+        "line": 280,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/indexeddb.test.ts",
+        "line": 299,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "mockElectronEnvironment",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "mockBrowserEnvironment",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+        "line": 26,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "cleanupEnvironment",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+        "line": 37,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+        "line": 108,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+        "line": 140,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+        "line": 182,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.electron.test.ts",
+        "line": 268,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/__tests__/platform.test.ts",
+        "line": 44,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "aggregateCodeRefTrees",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "findCodeRefFolder",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "prefixPaths",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 90,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "filterTreeByPattern",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 105,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "matchesPattern",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 132,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "flattenTree",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 156,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "traverse",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 159,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 23,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 28,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 35,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 59,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 72,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 73,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 78,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 108,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 109,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 114,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 117,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 134,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 160,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 161,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/aggregateCodeRefTrees.ts",
+        "line": 165,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "apiFetch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 44,
+        "exported": false
+      },
+      {
+        "type": "class",
+        "name": "ApiError",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 29,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "ProjectsApi",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 76,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "TreeApi",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 111,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "FileApi",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 128,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "CodeRefApi",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 152,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "constructor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 56,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 65,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 66,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/api-access.ts",
+        "line": 141,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getUserFriendlyError",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/errors.ts",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "formatError",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/errors.ts",
+        "line": 92,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/errors.ts",
+        "line": 29,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/errors.ts",
+        "line": 96,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadProjectTree",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 18,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "loadFileContent",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 38,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "tryLocalTreeLoad",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 59,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "tryLocalFileLoad",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 99,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadTreeViaAPI",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 143,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "loadFileViaAPI",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 162,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getProjectAccessMode",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 185,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 24,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 64,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 78,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 89,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 107,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 113,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 118,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 124,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 134,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 151,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 170,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 196,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
+        "line": 201,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "openDB",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "saveDirectoryHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 35,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getDirectoryHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 63,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "deleteDirectoryHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 86,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "listStoredProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 104,
+        "exported": true
+      },
+      {
+        "type": "constant",
+        "name": "DB_NAME",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 7,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "DB_VERSION",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 8,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "STORE_NAME",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/indexeddb.ts",
+        "line": 9,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "showDirectoryPicker",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 32,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "buildTreeFromHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 50,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "loadFileFromHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 117,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "getFileHandleByPath",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 197,
+        "exported": true
+      },
+      {
+        "type": "constant",
+        "name": "SKIP_DIRS",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "MAX_SIZE",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 123,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 39,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 69,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 93,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 100,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 124,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 172,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 206,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 210,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 220,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/local-access.ts",
+        "line": 232,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "isFileSystemAccessSupported",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 12,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "checkPermission",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 19,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "requestPermission",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 42,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "ensurePermission",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 59,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "verifyHandleValid",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 83,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 30,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 66,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 71,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/permissions.ts",
+        "line": 91,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "requestPersistentStorage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "isStoragePersistent",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 48,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "attemptSilentRestore",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 64,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "batchRestorePermissions",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 102,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "initializePersistence",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 132,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "saveDirectoryHandlePersistent",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 160,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 25,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 32,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 39,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 68,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 84,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 92,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/persistence.ts",
+        "line": 148,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "isElectron",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 19,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "createFileSystemAdapter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 59,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "getFileSystem",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 100,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "logPlatformInfo",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 165,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 21,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 60,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 66,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 101,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "platform",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 112,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "selectDirectory",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 115,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "isProjectValid",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 119,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "readFile",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 123,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "readDirectory",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 127,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "resolvePath",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 131,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/platform.ts",
+        "line": 176,
+        "exported": false
+      },
+      {
+        "type": "class",
+        "name": "WidgetRegistry",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/WidgetRegistry.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "constructor",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/WidgetRegistry.ts",
+        "line": 10,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/WidgetRegistry.ts",
+        "line": 11,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/WidgetRegistry.ts",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/WidgetRegistry.ts",
+        "line": 61,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/WidgetRegistry.ts",
+        "line": 72,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "createErrorResponse",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/types/api.ts",
+        "line": 83,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createSuccessResponse",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/types/api.ts",
+        "line": 101,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "ErrorCodes",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/types/api.ts",
+        "line": 38,
+        "exported": true
+      },
+      {
+        "type": "component",
+        "name": "HttpStatus",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/types/api.ts",
+        "line": 72,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.refresh.test.tsx",
+        "line": 377,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.state.test.tsx",
+        "line": 344,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.state.test.tsx",
+        "line": 362,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-1-restoration-flag.test.tsx",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-1-restoration-flag.test.tsx",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-1-restoration-flag.test.tsx",
+        "line": 180,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "fillLocalStorage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 196,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "exampleSaveFunction",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 230,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "autoRecoverySave",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 298,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 128,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 198,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 202,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 233,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 234,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 301,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 302,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 307,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 315,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 323,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-2-quota-exceeded.test.tsx",
+        "line": 333,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "exampleStorageListener",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+        "line": 193,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleStorageChange",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+        "line": 195,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleFavoritesSync",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+        "line": 289,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "listener",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+        "line": 317,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+        "line": 196,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/issue-3-cross-tab-sync.test.tsx",
+        "line": 324,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "EXPECTED_KEY",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/persistence-debug.test.tsx",
+        "line": 147,
+        "exported": false
+      },
+      {
+        "type": "component",
+        "name": "CodeRefExplorerWidget",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 19,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "handleStorageChange",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 116,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleProjectChange",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 157,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleFileClick",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 170,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleViewModeChange",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 176,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "handleToggleFavorite",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 182,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "createGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 207,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "deleteGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 219,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "renameGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 231,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "assignToGroup",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 250,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 43,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 46,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 64,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 78,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 82,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 83,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 96,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 100,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 101,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 118,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 136,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 164,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 171,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+        "line": 186,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "mockShowDirectoryPicker",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 17,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createMockDirectoryHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 49,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "mockPersistentStorage",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 116,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "mockUnsupportedBrowser",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 143,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "restoreBrowserSupport",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 151,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createStaleHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 158,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createHandleNeedingPermission",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 168,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createHandleWithDeniedPermission",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 180,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createPermissionFlowHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 197,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "assertPermissionRequested",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 220,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "assertPermissionNotRequested",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 229,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 27,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 31,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 75,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 83,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "function",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 89,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/file-system-access.ts",
+        "line": 208,
+        "exported": false
+      },
+      {
+        "type": "function",
+        "name": "clearIndexedDB",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 13,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "verifyDatabaseStructure",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 25,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createMockDirectoryHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 39,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "saveMockHandle",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 86,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "assertHandleStored",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 105,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "assertHandleNotStored",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 120,
+        "exported": true
+      },
+      {
+        "type": "function",
+        "name": "createMultipleMockProjects",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 128,
+        "exported": true
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 15,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 16,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 59,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "function",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 64,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 95,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 112,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "for",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/__tests__/mocks/indexeddb-helpers.ts",
+        "line": 131,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "startNextServer",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 15,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "createWindow",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "type": "constant",
+        "name": "PORT",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 64,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 69,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 82,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 90,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 93,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 99,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 116,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 125,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "catch",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 171,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 173,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 180,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 187,
+        "exported": false
+      },
+      {
+        "type": "method",
+        "name": "if",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/electron-app/src/main.ts",
+        "line": 235,
+        "exported": false
+      }
+    ],
+    "source": "coderef_index",
+    "total_elements": 755,
+    "by_type": {
+      "component": 76,
+      "function": 179,
+      "constant": 15,
+      "method": 463,
+      "class": 9,
+      "hook": 13
+    },
+    "files": 111,
+    "utilization": ".coderef/index.json (preprocessed)"
+  },
+  "coding_standards": {
+    "available": [
+      "BEHAVIOR-STANDARDS.md",
+      "UI-STANDARDS.md",
+      "UX-PATTERNS.md",
+      "COMPONENT-INDEX.md"
+    ],
+    "missing": [
+      "COMPONENT-PATTERN.md"
+    ]
+  },
+  "reference_components": {
+    "primary": null,
+    "secondary": [],
+    "total_found": 0,
+    "note": "Using fallback - coderef tools unavailable"
+  },
+  "key_patterns_identified": [
+    "Error handling: try-catch blocks found in 49 files",
+    "File organization: barrel exports (export from) found in 9 files"
+  ],
+  "technology_stack": {
+    "language": "JavaScript/TypeScript",
+    "framework": "unknown",
+    "database": "unknown",
+    "testing": "unknown",
+    "build": "npm scripts"
+  },
+  "project_structure": {
+    "main_directories": [
+      "packages\\dashboard",
+      "packages\\electron-app\\dist-new\\win-unpacked",
+      "packages\\electron-app\\dist-new\\win-unpacked\\locales",
+      "packages\\dashboard\\src\\components\\coderef",
+      "packages\\dashboard\\src\\lib\\coderef"
+    ],
+    "file_counts": {
+      "packages\\electron-app\\dist-new\\win-unpacked\\locales": 55,
+      "packages\\electron-app\\dist-new\\win-unpacked": 18,
+      "packages\\dashboard": 11,
+      "packages\\dashboard\\src\\components\\coderef": 11,
+      "packages\\dashboard\\src\\lib\\coderef": 11,
+      "packages\\dashboard\\src\\components\\PromptingWorkflow\\components": 9,
+      "packages\\dashboard\\public": 7,
+      "packages\\dashboard\\src\\components": 7,
+      "coderef\\workorder\\coderef-ecosystem-review-prompt": 7,
+      "coderef\\foundation-docs": 6
+    },
+    "organization_pattern": "unknown"
+  },
+  "gaps_and_risks": [
+    "Missing foundation docs: USER-GUIDE.md",
+    "Missing coding standards: COMPONENT-PATTERN.md",
+    "No test directory found (tests/, test/, or __tests__/)",
+    "No CI configuration found (.github/workflows/, .gitlab-ci.yml, etc.)"
+  ],
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Project Analysis",
+    "workorder_id": "WO-SCANNER-BACKEND-INTEGRATION-001",
+    "feature_id": "scanner-backend-integration",
+    "last_updated": "2026-01-02",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-01"
+  }
+}

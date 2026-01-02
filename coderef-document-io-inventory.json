@@ -1,0 +1,188 @@
+{
+  "agent_id": "coderef-dashboard",
+  "workorder_id": "WO-DOC-IO-INVENTORY-001",
+  "inputs": [
+    {
+      "file": "CLAUDE.md",
+      "type": "foundation_doc",
+      "frequency": "often",
+      "purpose": "Project context for AI agents"
+    },
+    {
+      "file": "coderef/foundation-docs/ARCHITECTURE.md",
+      "type": "foundation_doc",
+      "frequency": "often",
+      "purpose": "System architecture visualization"
+    },
+    {
+      "file": "coderef/foundation-docs/API.md",
+      "type": "foundation_doc",
+      "frequency": "often",
+      "purpose": "API endpoint documentation"
+    },
+    {
+      "file": "coderef/foundation-docs/COMPONENTS.md",
+      "type": "foundation_doc",
+      "frequency": "often",
+      "purpose": "Component hierarchy display"
+    },
+    {
+      "file": "coderef/foundation-docs/SCHEMA.md",
+      "type": "foundation_doc",
+      "frequency": "often",
+      "purpose": "Type definitions reference"
+    },
+    {
+      "file": "coderef/workorder/{feature-name}/plan.json",
+      "type": "workflow_doc",
+      "frequency": "always",
+      "purpose": "Implementation plan structure"
+    },
+    {
+      "file": "coderef/workorder/{feature-name}/communication.json",
+      "type": "workflow_doc",
+      "frequency": "always",
+      "purpose": "Multi-agent coordination"
+    },
+    {
+      "file": "coderef/workorder/{feature-name}/DELIVERABLES.md",
+      "type": "workflow_doc",
+      "frequency": "always",
+      "purpose": "Progress tracking checklists"
+    },
+    {
+      "file": "coderef/workorder/{feature-name}/context.json",
+      "type": "workflow_doc",
+      "frequency": "always",
+      "purpose": "Feature requirements"
+    },
+    {
+      "file": "coderef/archived/{feature-name}/plan.json",
+      "type": "workflow_doc",
+      "frequency": "sometimes",
+      "purpose": "Archived workorder plans"
+    },
+    {
+      "file": "coderef/archived/{feature-name}/DELIVERABLES.md",
+      "type": "workflow_doc",
+      "frequency": "sometimes",
+      "purpose": "Archived deliverables"
+    },
+    {
+      "file": ".coderef/index.json",
+      "type": "coderef_output",
+      "frequency": "often",
+      "purpose": "Project statistics display"
+    },
+    {
+      "file": ".coderef/context.md",
+      "type": "coderef_output",
+      "frequency": "often",
+      "purpose": "Project overview summary"
+    },
+    {
+      "file": ".coderef/reports/patterns.json",
+      "type": "coderef_output",
+      "frequency": "rarely",
+      "purpose": "Code pattern analysis"
+    },
+    {
+      "file": ".coderef/reports/coverage.json",
+      "type": "coderef_output",
+      "frequency": "rarely",
+      "purpose": "Test coverage metrics"
+    },
+    {
+      "file": ".coderef/reports/complexity.json",
+      "type": "coderef_output",
+      "frequency": "rarely",
+      "purpose": "Code complexity analysis"
+    },
+    {
+      "file": ".coderef/diagrams/dependencies.mmd",
+      "type": "coderef_output",
+      "frequency": "rarely",
+      "purpose": "Dependency graph visualization"
+    },
+    {
+      "file": ".coderef/diagrams/dependencies.dot",
+      "type": "coderef_output",
+      "frequency": "rarely",
+      "purpose": "Graphviz dependency graph"
+    },
+    {
+      "file": ".coderef/exports/graph.json",
+      "type": "coderef_output",
+      "frequency": "rarely",
+      "purpose": "Exported graph data"
+    },
+    {
+      "file": "projects.config.json",
+      "type": "config",
+      "frequency": "always",
+      "purpose": "Project paths configuration"
+    },
+    {
+      "file": "package.json",
+      "type": "config",
+      "frequency": "sometimes",
+      "purpose": "Workspace dependencies"
+    },
+    {
+      "file": "packages/dashboard/package.json",
+      "type": "config",
+      "frequency": "sometimes",
+      "purpose": "Dashboard package config"
+    },
+    {
+      "file": "packages/electron-app/package.json",
+      "type": "config",
+      "frequency": "sometimes",
+      "purpose": "Electron package config"
+    },
+    {
+      "file": "packages/core/package.json",
+      "type": "config",
+      "frequency": "sometimes",
+      "purpose": "Core library config"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "coderef/workorder/{feature-name}/plan.json",
+      "type": "workflow_doc",
+      "frequency": "sometimes",
+      "purpose": "Generated implementation plans"
+    },
+    {
+      "file": "coderef/workorder/{feature-name}/DELIVERABLES.md",
+      "type": "workflow_doc",
+      "frequency": "sometimes",
+      "purpose": "Generated deliverables template"
+    },
+    {
+      "file": "coderef-document-audit-reply.md",
+      "type": "other",
+      "frequency": "rarely",
+      "purpose": "Document audit responses"
+    },
+    {
+      "file": ".next/cache/*",
+      "type": "other",
+      "frequency": "always",
+      "purpose": "Next.js build cache"
+    },
+    {
+      "file": "packages/electron-app/dist/*",
+      "type": "other",
+      "frequency": "sometimes",
+      "purpose": "Electron build artifacts"
+    },
+    {
+      "file": "packages/dashboard/.next/*",
+      "type": "other",
+      "frequency": "always",
+      "purpose": "Dashboard production build"
+    }
+  ]
+}

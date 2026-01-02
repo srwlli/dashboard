@@ -1,0 +1,413 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://coderef-dashboard.com/schemas/explorer-sidebar.json",
+  "title": "Explorer Sidebar Schema",
+  "description": "Type definitions and validation schemas for CodeRef Explorer Sidebar components",
+  "version": "0.6.0",
+  "definitions": {
+    "TreeNode": {
+      "type": "object",
+      "description": "Represents a file or directory node in the tree",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "File or directory name (without path)"
+        },
+        "path": {
+          "type": "string",
+          "description": "Relative path from project root"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["file", "directory"],
+          "description": "Node type"
+        },
+        "extension": {
+          "type": "string",
+          "description": "File extension (e.g., '.ts', '.md')",
+          "pattern": "^\\..+"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TreeNode"
+          },
+          "description": "Child nodes (for directories only)"
+        }
+      },
+      "required": ["name", "path", "type"],
+      "additionalProperties": false
+    },
+    "FavoriteItem": {
+      "type": "object",
+      "description": "A favorited file or directory path",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Relative path from project root"
+        },
+        "group": {
+          "type": "string",
+          "description": "Optional group name assignment"
+        }
+      },
+      "required": ["path"],
+      "additionalProperties": false
+    },
+    "FavoriteGroup": {
+      "type": "object",
+      "description": "Custom group for organizing favorites",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique group identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "color": {
+          "type": "string",
+          "description": "Optional hex color code",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        }
+      },
+      "required": ["id", "name"],
+      "additionalProperties": false
+    },
+    "FavoritesData": {
+      "type": "object",
+      "description": "Complete favorites data structure for a project",
+      "properties": {
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FavoriteGroup"
+          },
+          "description": "Custom groups"
+        },
+        "favorites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FavoriteItem"
+          },
+          "description": "Favorited paths"
+        }
+      },
+      "required": ["groups", "favorites"],
+      "additionalProperties": false
+    },
+    "ViewMode": {
+      "type": "string",
+      "enum": ["projects", "coderef", "favorites"],
+      "description": "Current view mode (Projects view | CodeRef subfolder view | Favorites view)"
+    },
+    "AccessMode": {
+      "type": "string",
+      "enum": ["local", "api"],
+      "description": "Data access mode (Local filesystem | API requests)"
+    },
+    "ContextMenuItem": {
+      "type": "object",
+      "description": "Context menu item definition",
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "Menu item display text"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Lucide icon name"
+        },
+        "onClick": {
+          "type": "string",
+          "description": "Click handler function name"
+        },
+        "submenu": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContextMenuItem"
+          },
+          "description": "Nested submenu items"
+        },
+        "iconClassName": {
+          "type": "string",
+          "description": "Optional icon styling (e.g., 'fill-yellow-400')"
+        },
+        "textClassName": {
+          "type": "string",
+          "description": "Optional text color (e.g., 'text-red-500')"
+        }
+      },
+      "required": ["label", "icon"],
+      "additionalProperties": false
+    },
+    "FileTreeProps": {
+      "type": "object",
+      "description": "FileTree component props",
+      "properties": {
+        "project": {
+          "type": ["object", "null"],
+          "description": "Project to load tree from"
+        },
+        "customTree": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TreeNode"
+          },
+          "description": "Optional custom tree (bypasses project loading)"
+        },
+        "selectedPath": {
+          "type": "string",
+          "description": "Currently selected file path"
+        },
+        "onFileClick": {
+          "type": "string",
+          "description": "Callback when file is clicked"
+        },
+        "loading": {
+          "type": "boolean",
+          "description": "Optional external loading state"
+        },
+        "filterPath": {
+          "type": "string",
+          "description": "Filter to specific subfolder (e.g., 'coderef')"
+        },
+        "onToggleFavorite": {
+          "type": "string",
+          "description": "Callback to toggle favorite status"
+        },
+        "isFavorite": {
+          "type": "string",
+          "description": "Function to check if path is favorited"
+        },
+        "showOnlyFavorites": {
+          "type": "boolean",
+          "description": "Show only favorited items",
+          "default": false
+        },
+        "favoritesData": {
+          "$ref": "#/definitions/FavoritesData",
+          "description": "Favorites data with groups"
+        },
+        "onCreateGroup": {
+          "type": "string",
+          "description": "Callback to create new group"
+        },
+        "onDeleteGroup": {
+          "type": "string",
+          "description": "Callback to delete group"
+        },
+        "onRenameGroup": {
+          "type": "string",
+          "description": "Callback to rename group"
+        },
+        "onAssignToGroup": {
+          "type": "string",
+          "description": "Callback to assign file to group"
+        },
+        "className": {
+          "type": "string",
+          "description": "Optional custom class name"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FileTreeNodeProps": {
+      "type": "object",
+      "description": "FileTreeNode component props",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/TreeNode",
+          "description": "Tree node data"
+        },
+        "project": {
+          "type": ["object", "null"],
+          "description": "Project containing this file"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "Current depth level (for indentation)",
+          "minimum": 0
+        },
+        "selectedPath": {
+          "type": "string",
+          "description": "Currently selected file path"
+        },
+        "onFileClick": {
+          "type": "string",
+          "description": "Callback when file is clicked"
+        },
+        "onToggleFavorite": {
+          "type": "string",
+          "description": "Callback to toggle favorite status"
+        },
+        "isFavorite": {
+          "type": "string",
+          "description": "Function to check if path is favorited"
+        },
+        "availableGroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "name": {"type": "string"}
+            },
+            "required": ["id", "name"]
+          },
+          "description": "Available groups for assignment"
+        },
+        "onAssignToGroup": {
+          "type": "string",
+          "description": "Callback to assign file to group"
+        },
+        "className": {
+          "type": "string",
+          "description": "Optional custom class name"
+        }
+      },
+      "required": ["node", "depth", "onFileClick"],
+      "additionalProperties": false
+    },
+    "ContextMenuProps": {
+      "type": "object",
+      "description": "ContextMenu component props",
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "X coordinate for menu position",
+          "minimum": 0
+        },
+        "y": {
+          "type": "number",
+          "description": "Y coordinate for menu position",
+          "minimum": 0
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContextMenuItem"
+          },
+          "description": "Menu items to display",
+          "minItems": 1
+        },
+        "onClose": {
+          "type": "string",
+          "description": "Callback when menu should close"
+        }
+      },
+      "required": ["x", "y", "items", "onClose"],
+      "additionalProperties": false
+    },
+    "LocalStorageKeys": {
+      "type": "object",
+      "description": "LocalStorage keys used by Explorer Sidebar",
+      "properties": {
+        "selectedProject": {
+          "type": "string",
+          "const": "coderef-explorer-selected-project",
+          "description": "Stores selected project ID (global)"
+        },
+        "favorites": {
+          "type": "string",
+          "pattern": "^coderef-favorites-.+$",
+          "description": "Stores favorites per project (coderef-favorites-{projectId})"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DimensionalAttributes": {
+      "type": "object",
+      "description": "Fixed dimensional attributes for the sidebar",
+      "properties": {
+        "width": {
+          "type": "string",
+          "const": "320px",
+          "description": "Fixed sidebar width (w-80 = 20rem = 320px)"
+        },
+        "minWidth": {
+          "type": "string",
+          "const": "320px",
+          "description": "Minimum width (prevents shrinking)"
+        },
+        "maxWidth": {
+          "type": "string",
+          "const": "320px",
+          "description": "Maximum width (prevents expansion)"
+        },
+        "basis": {
+          "type": "string",
+          "const": "320px",
+          "description": "Flexbox initial size"
+        },
+        "flexShrink": {
+          "type": "integer",
+          "const": 0,
+          "description": "Never shrinks below 320px"
+        },
+        "flexGrow": {
+          "type": "integer",
+          "const": 0,
+          "description": "Never expands beyond 320px"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "examples": [
+    {
+      "description": "Favorites data with groups",
+      "value": {
+        "groups": [
+          {
+            "id": "abc123",
+            "name": "Work Files",
+            "color": "#4f46e5"
+          },
+          {
+            "id": "def456",
+            "name": "Personal Notes"
+          }
+        ],
+        "favorites": [
+          {
+            "path": "src/components/FileTree.tsx",
+            "group": "Work Files"
+          },
+          {
+            "path": "docs/ARCHITECTURE.md",
+            "group": "Personal Notes"
+          },
+          {
+            "path": "README.md"
+          }
+        ]
+      }
+    },
+    {
+      "description": "TreeNode structure",
+      "value": {
+        "name": "src",
+        "path": "src",
+        "type": "directory",
+        "children": [
+          {
+            "name": "index.ts",
+            "path": "src/index.ts",
+            "type": "file",
+            "extension": ".ts"
+          },
+          {
+            "name": "components",
+            "path": "src/components",
+            "type": "directory",
+            "children": []
+          }
+        ]
+      }
+    }
+  ]
+}

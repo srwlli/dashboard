@@ -1,0 +1,38 @@
+{
+  "feature_name": "scanner-backend-integration",
+  "description": "Wire the Scanner page UI mockup to a working backend that manages projects and executes scan-all.py scans. UI already exists at /scanner route with ProjectListCard, ConsoleTabs, and ActionBar components - need to add API routes, subprocess execution, and real-time output streaming to match the functionality of the Python Tkinter Scanner GUI.",
+  "goal": "Enable users to add/remove projects, select multiple projects, click \"Scan Projects\" button, and see real-time scan output in the console tab - replacing the current UI-only mockup with fully functional scanner that calls scan-all.py via Node.js child_process.",
+  "requirements": [
+    "Add POST/GET/DELETE endpoints at /api/scanner/projects for managing saved projects",
+    "Store projects in ~/.coderef-scanner-projects.json matching Python GUI behavior",
+    "Add POST endpoint at /api/scanner/scan to trigger batch scanning",
+    "Execute scan-all.py via Node.js child_process.spawn for each selected project",
+    "Stream real-time output using Server-Sent Events (SSE) endpoint",
+    "Update ProjectListCard to fetch and display real projects (replace mockup)",
+    "Wire 'Add Path' button to Electron IPC fs:selectDirectory dialog",
+    "Update ConsoleTabs to consume SSE stream and display real-time output",
+    "Wire ActionBar 'Scan Projects' button to trigger POST /api/scanner/scan",
+    "Track scan status (idle, scanning, complete) and update UI accordingly",
+    "Support cancelling running scans",
+    "Handle errors gracefully (path not found, Python missing, scan failures)"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-SCANNER-BACKEND-INTEGRATION-001",
+    "workorder_assigned_at": "2026-01-02T08:03:35.938869+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-SCANNER-BACKEND-INTEGRATION-001",
+    "feature_id": "scanner-backend-integration",
+    "last_updated": "2026-01-02",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-01"
+  }
+}

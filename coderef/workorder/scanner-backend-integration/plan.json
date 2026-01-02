@@ -1,0 +1,525 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "scanner-backend-integration",
+    "workorder_id": "WO-SCANNER-BACKEND-INTEGRATION-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "CodeRef Assistant",
+    "has_context": true,
+    "has_analysis": false,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-01-02",
+      "ai_assistance": true,
+      "next_review": "2026-02-01"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "available": [
+          "CLAUDE.md - Project architecture and design system",
+          "packages/dashboard/src/app/api/coderef/projects/route.ts - Project registry pattern",
+          "packages/dashboard/src/types/api.ts - API response patterns",
+          "packages/electron-app/src/main.ts - Electron IPC handlers"
+        ],
+        "missing": []
+      },
+      "coding_standards": {
+        "available": [
+          "TypeScript strict mode enabled",
+          "Next.js API route conventions (route.ts exports GET/POST)",
+          "Error response format: createErrorResponse() from @/types/api",
+          "Success response format: createSuccessResponse() from @/types/api"
+        ],
+        "missing": []
+      },
+      "reference_components": {
+        "primary": "Python Scanner GUI (scanner-gui/src/main.py) - working reference implementation",
+        "secondary": [
+          "packages/dashboard/src/components/Scanner/ProjectListCard.tsx (UI mockup)",
+          "packages/dashboard/src/components/Scanner/ConsoleTabs.tsx (UI mockup)",
+          "packages/dashboard/src/components/Scanner/ActionBar.tsx (UI mockup)"
+        ]
+      },
+      "key_patterns_identified": [
+        "Project storage: ~/.coderef-dashboard/projects.json pattern from /api/coderef/projects",
+        "File system access: fs/promises with path.join() for cross-platform compatibility",
+        "Electron IPC: fs:selectDirectory for native folder dialogs (already implemented)",
+        "API error handling: createErrorResponse with ErrorCodes constants",
+        "Subprocess execution: Python GUI uses subprocess.Popen - replicate with child_process.spawn()"
+      ],
+      "technology_stack": {
+        "languages": ["TypeScript", "Python (external script)"],
+        "frameworks": ["Next.js 16 (App Router)", "React 19", "Electron"],
+        "key_libraries": ["Node.js child_process", "fs/promises", "path", "crypto (randomUUID)"]
+      },
+      "gaps_and_risks": [
+        "No existing subprocess execution code - creating new pattern",
+        "No existing SSE implementation - creating new pattern",
+        "Python script path must be configurable via env variable",
+        "Concurrent scan management complexity (multiple scans simultaneously)"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Wire the Scanner page UI mockup to a working backend that manages projects and executes scan-all.py scans",
+      "value_proposition": "Transform UI-only mockup into fully functional scanner matching Python Tkinter GUI capabilities - add projects, select projects, scan with real-time output",
+      "real_world_analogy": "Like connecting a car dashboard (UI) to the engine (backend) - all the gauges and buttons exist, just need to wire them to actual functionality",
+      "use_case": "User opens /scanner → clicks 'Add Path' → selects project folder → project appears in list → selects 2 projects → clicks 'Scan Projects' → console shows real-time scan output → scan completes successfully",
+      "output": "Fully functional scanner with project management, batch scanning, real-time output streaming, and scan control (start/cancel)"
+    },
+    "2_risk_assessment": {
+      "overall_risk": "medium",
+      "complexity": "medium (estimated 8 files created, 3 files modified, ~1200 lines total)",
+      "scope": "12 requirements affecting backend (API routes), frontend (Scanner components), and IPC integration",
+      "file_system_risk": "low (read project paths, write to ~/.coderef-scanner-projects.json)",
+      "dependencies": [
+        "Python executable must be in PATH or SCAN_SCRIPT_PATH configured",
+        "scan-all.py must exist at known location (C:\\Users\\willh\\Desktop\\projects\\coderef-system\\scripts\\scan-all.py)",
+        "Electron IPC fs:selectDirectory already implemented (no dependency)",
+        "Server-Sent Events supported by Next.js (built-in)"
+      ],
+      "performance_concerns": [
+        "Multiple concurrent scans: Limit to 1 active scan per user to prevent resource exhaustion",
+        "SSE connection management: Close stale connections after 5 minutes idle",
+        "Large output buffering: Limit stored output to last 10,000 lines per scan"
+      ],
+      "security_considerations": [
+        "Path validation: Prevent directory traversal attacks (validate selected paths)",
+        "Subprocess injection: Use array args in spawn() not string concatenation",
+        "SSE DoS: Rate limit scan start requests (max 1 per 10 seconds per user)"
+      ],
+      "breaking_changes": "none (new feature, no existing scanner backend to break)"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "packages/dashboard/src/components/Scanner/ProjectListCard.tsx (MODIFY - add API calls)",
+        "packages/dashboard/src/components/Scanner/ConsoleTabs.tsx (MODIFY - add SSE consumption)",
+        "packages/dashboard/src/components/Scanner/ActionBar.tsx (MODIFY - wire scan button)",
+        "packages/dashboard/src/app/api/scanner/projects/route.ts (CREATE)",
+        "packages/dashboard/src/app/api/scanner/projects/[id]/route.ts (CREATE)",
+        "packages/dashboard/src/app/api/scanner/scan/route.ts (CREATE)",
+        "packages/dashboard/src/app/api/scanner/scan/[scanId]/status/route.ts (CREATE)",
+        "packages/dashboard/src/app/api/scanner/scan/[scanId]/output/route.ts (CREATE)",
+        "packages/dashboard/src/app/api/scanner/scan/[scanId]/cancel/route.ts (CREATE)",
+        "packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts (CREATE)",
+        "packages/dashboard/src/app/api/scanner/types.ts (CREATE)"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "@/types/api (createErrorResponse, createSuccessResponse, ErrorCodes)",
+          "Electron IPC handlers (fs:selectDirectory, fs:validatePath)",
+          "Next.js API route handlers (NextRequest, NextResponse)",
+          "React hooks (useState, useEffect, useRef)"
+        ],
+        "existing_external": [
+          "next (NextRequest, NextResponse)",
+          "react (useState, useEffect, useRef)",
+          "electron (dialog, ipcMain) - already configured"
+        ],
+        "new_external": [],
+        "new_internal": [
+          "scanExecutor service (singleton for managing scans)",
+          "SSE streaming implementation",
+          "Project storage service"
+        ]
+      },
+      "architecture_context": "Next.js App Router with API routes, Electron desktop app with IPC, React components with local state. Scanner integrates by adding new /api/scanner/* routes and updating existing Scanner components to consume APIs."
+    },
+    "4_key_features": {
+      "primary_features": [
+        "Project Management: Add/remove/list projects via API, store in ~/.coderef-scanner-projects.json",
+        "Project Selection: Multi-select projects with checkboxes in ProjectListCard UI",
+        "Batch Scanning: Execute scan-all.py for multiple selected projects sequentially",
+        "Real-Time Output: Stream scan stdout/stderr via Server-Sent Events to console tab",
+        "Scan Control: Start, monitor status, and cancel running scans",
+        "Electron Integration: Native folder dialog for 'Add Path' button via IPC"
+      ],
+      "secondary_features": [
+        "Scan History: Store completed scans in ~/.coderef-scanner-history.json for History tab",
+        "Error Handling: Display errors inline in console (Python not found, invalid paths)",
+        "Auto-scroll Console: Console automatically scrolls to bottom as new output arrives",
+        "Scan Progress: Display current project (e.g., '[2/5] Scanning...')"
+      ],
+      "edge_case_handling": [
+        "Empty project list: Show empty state with 'Add Path' prompt",
+        "No projects selected: Disable 'Scan Projects' button",
+        "Python not found: Show error in console 'Python executable not found in PATH'",
+        "Invalid project path: Validate path exists before adding, show error if not",
+        "Scan process crash: Catch exit code != 0, display error, mark scan as failed",
+        "Browser refresh during scan: SSE reconnects and resumes output streaming",
+        "Multiple tabs open: Each tab gets independent SSE connection to same scan"
+      ],
+      "configuration_options": [
+        "SCAN_SCRIPT_PATH environment variable: Override default scan-all.py location",
+        "generateDocs option: Checkbox to enable/disable foundation docs generation (default: true)"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Create API route directory structure (api/scanner/*)",
+        "SETUP-002: Create TypeScript interfaces in api/scanner/types.ts",
+        "IMPL-001: Implement project storage module (load/save projects.json)",
+        "IMPL-002: Implement GET /api/scanner/projects endpoint",
+        "IMPL-003: Implement POST /api/scanner/projects endpoint with path validation",
+        "IMPL-004: Implement DELETE /api/scanner/projects/:id endpoint",
+        "IMPL-005: Implement ScanExecutor class (subprocess management, EventEmitter)",
+        "IMPL-006: Implement POST /api/scanner/scan endpoint (start batch scan)",
+        "IMPL-007: Implement GET /api/scanner/scan/:id/status endpoint",
+        "IMPL-008: Implement GET /api/scanner/scan/:id/output endpoint (SSE)",
+        "IMPL-009: Implement POST /api/scanner/scan/:id/cancel endpoint",
+        "UI-001: Update ProjectListCard - add useEffect to fetch projects from API",
+        "UI-002: Update ProjectListCard - wire 'Add Path' button to Electron IPC",
+        "UI-003: Update ProjectListCard - add multi-select checkbox logic",
+        "UI-004: Update ProjectListCard - wire remove button to DELETE API",
+        "UI-005: Update ActionBar - accept selectedProjects prop and wire 'Scan Projects' button",
+        "UI-006: Update ConsoleTabs - accept scanId prop and connect to SSE endpoint",
+        "UI-007: Update ConsoleTabs - implement auto-scroll to bottom on new output",
+        "UI-008: Update Scanner index.tsx - manage scan state and pass props to children",
+        "TEST-001: Test project management (add, list, remove, persist)",
+        "TEST-002: Test single project scan with real-time output",
+        "TEST-003: Test batch scan (3 projects) with progress tracking",
+        "TEST-004: Test scan cancellation mid-process",
+        "TEST-005: Test error cases (Python missing, invalid path, scan failure)",
+        "TEST-006: Test browser refresh during scan (SSE reconnect)",
+        "DOC-001: Update CLAUDE.md with Scanner backend implementation details",
+        "DOC-002: Add JSDoc comments to all API routes and ScanExecutor class"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Project Management API",
+          "title": "Phase 1: Project Management API",
+          "purpose": "Create backend endpoints for adding, listing, and removing projects",
+          "complexity": "low",
+          "effort_level": 2,
+          "tasks": [
+            "SETUP-001",
+            "SETUP-002",
+            "IMPL-001",
+            "IMPL-002",
+            "IMPL-003",
+            "IMPL-004"
+          ],
+          "deliverables": [
+            "GET /api/scanner/projects returns all saved projects",
+            "POST /api/scanner/projects adds new project with path validation",
+            "DELETE /api/scanner/projects/:id removes project",
+            "Projects persist in ~/.coderef-scanner-projects.json",
+            "TypeScript interfaces defined in types.ts"
+          ],
+          "completion_criteria": "Can add project via API, projects persist across server restart, can delete project"
+        },
+        {
+          "phase": 2,
+          "name": "Scan Execution Backend",
+          "title": "Phase 2: Scan Execution Backend",
+          "purpose": "Implement subprocess execution and scan management",
+          "complexity": "high",
+          "effort_level": 4,
+          "tasks": [
+            "IMPL-005",
+            "IMPL-006",
+            "IMPL-007",
+            "IMPL-008",
+            "IMPL-009"
+          ],
+          "deliverables": [
+            "ScanExecutor class manages subprocess lifecycle",
+            "POST /api/scanner/scan starts batch scan, returns scanId",
+            "GET /api/scanner/scan/:id/status returns scan progress",
+            "GET /api/scanner/scan/:id/output streams real-time output via SSE",
+            "POST /api/scanner/scan/:id/cancel terminates running scan",
+            "Scans execute sequentially for selected projects",
+            "Output buffered and streamed to all connected clients"
+          ],
+          "completion_criteria": "Can trigger scan via API, subprocess executes scan-all.py, output streams in real-time, can cancel scan"
+        },
+        {
+          "phase": 3,
+          "name": "UI Integration",
+          "title": "Phase 3: UI Integration",
+          "purpose": "Connect Scanner components to backend APIs",
+          "complexity": "medium",
+          "effort_level": 3,
+          "tasks": [
+            "UI-001",
+            "UI-002",
+            "UI-003",
+            "UI-004",
+            "UI-005",
+            "UI-006",
+            "UI-007",
+            "UI-008"
+          ],
+          "deliverables": [
+            "ProjectListCard fetches projects on mount from GET /api/scanner/projects",
+            "'Add Path' button opens Electron dialog, adds project via POST API",
+            "Multi-select checkboxes track selected projects",
+            "Remove button calls DELETE API and refreshes list",
+            "ActionBar 'Scan Projects' button calls POST /api/scanner/scan",
+            "ConsoleTabs connects to SSE endpoint and displays real-time output",
+            "Console auto-scrolls to bottom as new lines arrive",
+            "Scanner component manages scanId state and passes to children"
+          ],
+          "completion_criteria": "Full workflow works end-to-end: Add project → Select → Scan → View output in console"
+        },
+        {
+          "phase": 4,
+          "name": "Testing & Polish",
+          "title": "Phase 4: Testing & Polish",
+          "purpose": "Test all scenarios, handle edge cases, polish UX",
+          "complexity": "medium",
+          "effort_level": 2,
+          "tasks": [
+            "TEST-001",
+            "TEST-002",
+            "TEST-003",
+            "TEST-004",
+            "TEST-005",
+            "TEST-006",
+            "DOC-001",
+            "DOC-002"
+          ],
+          "deliverables": [
+            "All 6 test scenarios pass",
+            "Error messages display clearly in console",
+            "Edge cases handled gracefully",
+            "CLAUDE.md updated with Scanner backend details",
+            "All code has JSDoc comments"
+          ],
+          "completion_criteria": "All tests pass, no critical bugs, documentation complete"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "ScanExecutor.startScan() - verify subprocess spawns with correct args",
+        "ScanExecutor.cancelScan() - verify process terminates on cancel",
+        "loadProjects() - verify JSON parsing and ENOENT handling",
+        "saveProjects() - verify JSON serialization and directory creation"
+      ],
+      "integration_tests": [
+        "POST /api/scanner/scan → scanExecutor.startScan() → subprocess executes",
+        "GET /api/scanner/scan/:id/output → SSE stream delivers output",
+        "Electron IPC fs:selectDirectory → POST /api/scanner/projects → project saved",
+        "ProjectListCard → fetch → render → user interaction → API calls"
+      ],
+      "end_to_end_tests": [
+        "Full workflow: Launch app → Add project → Select → Scan → View output → Scan completes",
+        "Batch scan: Select 3 projects → Scan → All 3 execute sequentially → Output shows progress",
+        "Cancel scan: Start scan → Click cancel → Process terminates → Status shows 'cancelled'"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "Python executable not found",
+          "setup": "Remove python from PATH or set SCAN_SCRIPT_PATH to invalid location",
+          "expected_behavior": "Scan fails immediately with error message in console: 'Python executable not found'",
+          "verification": "Console shows error, scan status is 'failed', no subprocess spawned",
+          "error_handling": "Catch ENOENT from spawn(), display user-friendly error"
+        },
+        {
+          "scenario": "Invalid project path selected",
+          "setup": "Attempt to add non-existent directory path",
+          "expected_behavior": "POST /api/scanner/projects returns 404 FOLDER_NOT_FOUND error",
+          "verification": "Project not added to list, error logged to console",
+          "error_handling": "fs.access() throws ENOENT, caught and returned as API error"
+        },
+        {
+          "scenario": "Scan process crashes mid-execution",
+          "setup": "scan-all.py exits with non-zero code",
+          "expected_behavior": "Scan status shows 'failed', exit code displayed in console",
+          "verification": "Console shows 'Scan failed with exit code X', next project in batch proceeds",
+          "error_handling": "subprocess 'close' event with code != 0 marks scan failed, continues batch"
+        },
+        {
+          "scenario": "Browser refresh during active scan",
+          "setup": "Start scan, wait for output, hard refresh browser (Ctrl+Shift+R)",
+          "expected_behavior": "SSE reconnects, existing output displays, new output continues streaming",
+          "verification": "Console shows all previous output plus new output, no duplicates",
+          "error_handling": "SSE endpoint sends existing buffered output on new connection"
+        },
+        {
+          "scenario": "Multiple scans attempted simultaneously",
+          "setup": "Start scan, immediately start another scan",
+          "expected_behavior": "Second scan returns error or queues (implementation choice)",
+          "verification": "Only one scan runs at a time, clear error message if rejected",
+          "error_handling": "ScanExecutor checks active scan count, rejects if limit reached"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "User can add projects via native folder dialog",
+          "metric": "Electron IPC fs:selectDirectory returns path, POST API succeeds",
+          "target": "100% success rate for valid paths",
+          "validation": "Manual test: Click 'Add Path' → Select folder → Project appears in list"
+        },
+        {
+          "requirement": "Projects persist across app restarts",
+          "metric": "Projects saved to ~/.coderef-scanner-projects.json",
+          "target": "All projects restored on next launch",
+          "validation": "Add 3 projects → Close app → Reopen → All 3 projects present"
+        },
+        {
+          "requirement": "Batch scan executes all selected projects",
+          "metric": "scan-all.py runs for each selected project in sequence",
+          "target": "100% of selected projects scanned",
+          "validation": "Select 3 projects → Scan → Console shows output for all 3"
+        },
+        {
+          "requirement": "Real-time output displayed in console",
+          "metric": "SSE latency from subprocess stdout to UI render",
+          "target": "<500ms latency",
+          "validation": "Start scan → Output appears in console within 500ms of subprocess emit"
+        },
+        {
+          "requirement": "Scan can be cancelled mid-process",
+          "metric": "Subprocess terminates within 2 seconds of cancel request",
+          "target": "100% cancellation success rate",
+          "validation": "Start scan → Click cancel → Process terminates, status shows 'cancelled'"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "Code follows existing patterns",
+          "metric": "Reuses createErrorResponse, createSuccessResponse, path.join patterns",
+          "target": "100% pattern compliance",
+          "validation": "Code review: All API routes use shared utilities, no custom error formats"
+        },
+        {
+          "requirement": "TypeScript type coverage",
+          "metric": "No 'any' types except caught errors",
+          "target": "100% typed",
+          "validation": "Run tsc --noEmit, verify no type errors"
+        },
+        {
+          "requirement": "Error handling comprehensive",
+          "metric": "All error scenarios have explicit handling",
+          "target": "All 5 edge case scenarios handled",
+          "validation": "Test each edge case, verify graceful error messages"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "Project list loads quickly",
+          "metric": "Time from mount to render",
+          "target": "<200ms",
+          "validation": "Chrome DevTools: measure useEffect → setState → render"
+        },
+        {
+          "requirement": "SSE connection established quickly",
+          "metric": "Time from scan start to first output byte",
+          "target": "<1 second",
+          "validation": "Network tab: measure POST /scan response → SSE first message"
+        }
+      ],
+      "security_requirements": [
+        {
+          "requirement": "Path validation prevents traversal",
+          "metric": "All added paths validated with fs.access()",
+          "target": "No path traversal possible",
+          "validation": "Attempt to add path with ../ segments, verify rejected"
+        },
+        {
+          "requirement": "Subprocess args prevent injection",
+          "metric": "spawn() called with array args, never string concatenation",
+          "target": "No command injection vectors",
+          "validation": "Code review: verify all spawn() calls use ['python', scriptPath, arg]"
+        }
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "☑ Read Python Scanner GUI reference (scanner-gui/src/main.py)",
+        "☑ Verify scan-all.py exists at expected location",
+        "☑ Review existing API patterns (/api/coderef/projects)",
+        "☑ Review Electron IPC handlers (fs:selectDirectory)",
+        "☑ Create workorder directory structure"
+      ],
+      "phase_1": [
+        "☐ SETUP-001: Create packages/dashboard/src/app/api/scanner/ directory",
+        "☐ SETUP-001: Create api/scanner/projects/route.ts",
+        "☐ SETUP-001: Create api/scanner/projects/[id]/route.ts",
+        "☐ SETUP-002: Create api/scanner/types.ts with ScannerProject interface",
+        "☐ IMPL-001: Implement getStoragePath() → ~/.coderef-scanner-projects.json",
+        "☐ IMPL-001: Implement loadProjects() with ENOENT handling",
+        "☐ IMPL-001: Implement saveProjects() with directory creation",
+        "☐ IMPL-002: Implement GET /api/scanner/projects (return all)",
+        "☐ IMPL-003: Implement POST /api/scanner/projects with fs.access validation",
+        "☐ IMPL-004: Implement DELETE /api/scanner/projects/:id",
+        "☐ Test: curl GET /api/scanner/projects → returns empty array",
+        "☐ Test: curl POST /api/scanner/projects with valid path → succeeds",
+        "☐ Test: Restart server → projects persist"
+      ],
+      "phase_2": [
+        "☐ IMPL-005: Create api/scanner/lib/scanExecutor.ts",
+        "☐ IMPL-005: Implement ScanExecutor class extending EventEmitter",
+        "☐ IMPL-005: Implement startScan() with sequential project iteration",
+        "☐ IMPL-005: Implement runScanForProject() using child_process.spawn()",
+        "☐ IMPL-005: Implement getScanStatus() returning ScanProgress",
+        "☐ IMPL-005: Implement cancelScan() with process.kill()",
+        "☐ IMPL-006: Create api/scanner/scan/route.ts",
+        "☐ IMPL-006: Implement POST handler with randomUUID() for scanId",
+        "☐ IMPL-006: Call scanExecutor.startScan() asynchronously",
+        "☐ IMPL-007: Create api/scanner/scan/[scanId]/status/route.ts",
+        "☐ IMPL-007: Implement GET handler returning scanExecutor.getScanStatus()",
+        "☐ IMPL-008: Create api/scanner/scan/[scanId]/output/route.ts",
+        "☐ IMPL-008: Implement GET handler with ReadableStream SSE",
+        "☐ IMPL-008: Send buffered output on connection, listen for 'output' events",
+        "☐ IMPL-009: Create api/scanner/scan/[scanId]/cancel/route.ts",
+        "☐ IMPL-009: Implement POST handler calling scanExecutor.cancelScan()",
+        "☐ Test: POST /api/scanner/scan → returns scanId",
+        "☐ Test: GET /api/scanner/scan/:id/status → returns progress",
+        "☐ Test: GET /api/scanner/scan/:id/output → SSE stream works",
+        "☐ Test: Subprocess actually executes and produces output"
+      ],
+      "phase_3": [
+        "☐ UI-001: Update ProjectListCard.tsx - add ScannerProject interface",
+        "☐ UI-001: Add useState<ScannerProject[]> for projects",
+        "☐ UI-001: Add useEffect to fetch from GET /api/scanner/projects",
+        "☐ UI-002: Add handleAddPath() calling window.electron.fs.selectDirectory()",
+        "☐ UI-002: Call POST /api/scanner/projects after folder selection",
+        "☐ UI-003: Add useState<string[]> for selectedIds",
+        "☐ UI-003: Render checkboxes for each project, track selectedIds",
+        "☐ UI-004: Add handleRemove() calling DELETE /api/scanner/projects/:id",
+        "☐ UI-005: Update ActionBar.tsx - add selectedProjects prop",
+        "☐ UI-005: Add handleScan() calling POST /api/scanner/scan",
+        "☐ UI-005: Pass scanId to parent via onScanStart callback",
+        "☐ UI-006: Update ConsoleTabs.tsx - add scanId prop",
+        "☐ UI-006: Add useEffect to create EventSource for SSE",
+        "☐ UI-006: Parse SSE messages and append to consoleOutput state",
+        "☐ UI-007: Add useRef<HTMLDivElement> for console container",
+        "☐ UI-007: Add useEffect to scrollTop = scrollHeight on output change",
+        "☐ UI-008: Update Scanner/index.tsx - add useState<string> for scanId",
+        "☐ UI-008: Pass scanId to ConsoleTabs, selectedIds to ActionBar",
+        "☐ Test: Click 'Add Path' → Dialog opens → Select folder → Project appears",
+        "☐ Test: Select project → Click 'Scan Projects' → Console shows output",
+        "☐ Test: Console auto-scrolls as new output arrives"
+      ],
+      "phase_4": [
+        "☐ TEST-001: Add 3 projects, verify all appear, restart app, verify persist",
+        "☐ TEST-002: Scan single project, verify scan-all.py executes, output correct",
+        "☐ TEST-003: Scan 3 projects, verify sequential execution, progress tracking",
+        "☐ TEST-004: Start scan, cancel mid-process, verify terminates",
+        "☐ TEST-005: Remove python from PATH, start scan, verify error message",
+        "☐ TEST-006: Refresh browser during scan, verify SSE reconnects",
+        "☐ DOC-001: Update CLAUDE.md Recent Changes section with Scanner backend v0.7.0",
+        "☐ DOC-002: Add JSDoc to ScanExecutor class and all API route handlers",
+        "☐ Run npm run build:dashboard - verify no TypeScript errors",
+        "☐ Run npm run dev - verify Scanner page works end-to-end"
+      ],
+      "finalization": [
+        "☐ All 27 tasks completed",
+        "☐ All 6 test scenarios pass",
+        "☐ No TypeScript errors",
+        "☐ CLAUDE.md updated",
+        "☐ Ready for production"
+      ]
+    }
+  }
+}
