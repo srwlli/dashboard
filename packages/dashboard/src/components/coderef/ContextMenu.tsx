@@ -1,7 +1,18 @@
 /**
  * ContextMenu Component
  *
- * Right-click context menu for various operations
+ * @description Right-click context menu system with support for:
+ * - **Single-Level Menus**: Simple list of actions with icons and labels
+ * - **Nested Submenus**: Hierarchical menus with chevron indicators and hover expansion
+ * - **Custom Styling**: Per-item icon and text color customization via className props
+ * - **Automatic Positioning**: Fixed positioning at mouse coordinates (x, y)
+ * - **Click-Outside Handling**: Closes menu when clicking outside the menu bounds
+ * - **Keyboard Support**: Escape key to close menu
+ * - **Visual Feedback**: Hover states on menu items and submenu expansion
+ *
+ * Used throughout Explorer Sidebar for file/folder actions (Add to Favorites, Add to Prompt, Copy Path).
+ *
+ * @see {@link https://github.com/coderef-dashboard/docs/EXPLORER-SIDEBAR.md#context-menu-system} for detailed documentation
  */
 
 'use client';
@@ -10,32 +21,160 @@ import { useEffect, useRef, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+/**
+ * Context Menu Item Definition
+ *
+ * @description Represents a single menu item with optional submenu support.
+ * Items can have custom icon/text styling for visual differentiation (e.g., yellow star for favorites).
+ *
+ * @example
+ * ```tsx
+ * const menuItem: ContextMenuItem = {
+ *   label: 'Add to Favorites',
+ *   icon: Star,
+ *   onClick: () => console.log('Favorited!'),
+ *   iconClassName: 'fill-yellow-400 text-yellow-400',
+ *   submenu: [
+ *     { label: 'Ungrouped', icon: Star, onClick: () => addToFavorites() },
+ *     { label: 'Work Files', icon: Star, onClick: () => addToFavorites('Work Files') },
+ *   ]
+ * };
+ * ```
+ */
 export interface ContextMenuItem {
-  /** Menu item label */
+  /**
+   * Menu item display text
+   * @example "Add to Favorites", "Copy Path", "Remove from Group"
+   */
   label: string;
-  /** Menu item icon */
+
+  /**
+   * Lucide React icon component to display
+   * @example Star, Plus, FolderTree, Check
+   */
   icon: LucideIcon;
-  /** Click handler (ignored if submenu is provided) */
+
+  /**
+   * Click handler function
+   * Ignored if submenu is provided (submenu takes precedence)
+   * @param void
+   * @returns void
+   */
   onClick?: () => void;
-  /** Optional submenu items */
+
+  /**
+   * Optional nested submenu items
+   * When provided, clicking the parent item does nothing - hover to expand submenu
+   * @example [{ label: 'Option 1', icon: Star, onClick: () => {} }]
+   */
   submenu?: ContextMenuItem[];
-  /** Optional icon class name (for styling like fill color) */
+
+  /**
+   * Optional icon styling (e.g., fill color, text color)
+   * @example "fill-yellow-400 text-yellow-400", "text-green-500"
+   */
   iconClassName?: string;
-  /** Optional text color class */
+
+  /**
+   * Optional text color class for the label
+   * @example "text-red-500" for destructive actions
+   */
   textClassName?: string;
 }
 
+/**
+ * ContextMenu Component Props
+ *
+ * @description Props interface for the ContextMenu component.
+ * Requires absolute positioning coordinates and item definitions.
+ */
 interface ContextMenuProps {
-  /** X coordinate for menu position */
+  /**
+   * X coordinate for menu position (pixels from left edge)
+   * Typically set to event.clientX from right-click event
+   * @minimum 0
+   */
   x: number;
-  /** Y coordinate for menu position */
+
+  /**
+   * Y coordinate for menu position (pixels from top edge)
+   * Typically set to event.clientY from right-click event
+   * @minimum 0
+   */
   y: number;
-  /** Menu items to display */
+
+  /**
+   * Menu items to display
+   * Array of ContextMenuItem objects defining menu structure
+   * @minimum 1 item required
+   */
   items: ContextMenuItem[];
-  /** Callback when menu should close */
+
+  /**
+   * Callback when menu should close
+   * Triggered by: outside click, Escape key, item selection
+   */
   onClose: () => void;
 }
 
+/**
+ * ContextMenu Component
+ *
+ * @description Renders a fixed-position context menu at specified coordinates with support
+ * for nested submenus. Manages menu lifecycle (open/close), event handling (clicks, keyboard),
+ * and submenu expansion state.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * // Basic single-level menu
+ * <ContextMenu
+ *   x={event.clientX}
+ *   y={event.clientY}
+ *   items={[
+ *     { label: 'Copy', icon: Copy, onClick: () => navigator.clipboard.writeText('...') },
+ *     { label: 'Delete', icon: Trash, onClick: () => deleteItem(), textClassName: 'text-red-500' },
+ *   ]}
+ *   onClose={() => setContextMenu(null)}
+ * />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Menu with submenu
+ * <ContextMenu
+ *   x={clientX}
+ *   y={clientY}
+ *   items={[
+ *     {
+ *       label: 'Add to Group',
+ *       icon: Star,
+ *       submenu: [
+ *         { label: 'Work Files', icon: Folder, onClick: () => assignToGroup('Work Files') },
+ *         { label: 'Personal', icon: Folder, onClick: () => assignToGroup('Personal') },
+ *       ]
+ *     }
+ *   ]}
+ *   onClose={() => setContextMenu(null)}
+ * />
+ * ```
+ *
+ * @remarks
+ * **Event Handling**: Registers global mousedown and keydown listeners to detect outside clicks
+ * and Escape key presses. Listeners are cleaned up on unmount.
+ *
+ * **Submenu Behavior**: Submenus expand on hover (tracked via hoveredIndex state) and are
+ * positioned absolutely to the right of the parent item with 1px margin.
+ *
+ * **Click Behavior**: Clicking a menu item triggers onClick and immediately closes the menu.
+ * Items with submenus do not trigger onClick when clicked (submenu takes precedence).
+ *
+ * **Positioning**: Uses fixed positioning with inline styles (`left`, `top`) to position at
+ * exact mouse coordinates. No viewport boundary detection - may overflow screen edges.
+ *
+ * @see {@link FileTreeNode} for usage example in file tree context menus
+ * @see {@link FavoritesList} for usage in favorites group management
+ */
 export function ContextMenu({
   x,
   y,

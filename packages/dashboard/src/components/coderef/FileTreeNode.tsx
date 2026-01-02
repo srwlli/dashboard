@@ -22,40 +22,91 @@ import { useWorkflow } from '@/contexts/WorkflowContext';
 import { loadFileContent } from '@/lib/coderef/hybrid-router';
 import type { Attachment } from '@/components/PromptingWorkflow/types';
 
+/**
+ * FileTreeNode Component Props
+ *
+ * @description Props for a single node in the file tree hierarchy.
+ * Recursively renders children for directories.
+ *
+ * @see {@link https://github.com/coderef-dashboard/docs/EXPLORER-SIDEBAR.md#filetreenode} for detailed documentation
+ */
 interface FileTreeNodeProps {
-  /** Tree node data */
+  /**
+   * Tree node data
+   * Contains name, path, type, and optional children
+   */
   node: TreeNode;
 
-  /** Project containing this file */
+  /**
+   * Project containing this file
+   * Required for "Add to Prompt" and "Copy Path" features
+   */
   project?: Project | null;
 
-  /** Current depth level (for indentation) */
+  /**
+   * Current depth level (for indentation)
+   * Used to calculate paddingLeft: `${depth * 12 + 8}px`
+   * @minimum 0
+   */
   depth: number;
 
-  /** Currently selected file path */
+  /**
+   * Currently selected file path
+   * Used for highlighting the active file
+   */
   selectedPath?: string;
 
-  /** Callback when a file is clicked */
+  /**
+   * Callback when a file is clicked
+   * Directories toggle expansion, files trigger content load
+   * @param node - The clicked TreeNode
+   */
   onFileClick: (node: TreeNode) => void;
 
-  /** Callback to toggle favorite status */
+  /**
+   * Callback to toggle favorite status
+   * @param path - File/directory path to favorite/unfavorite
+   * @param groupName - Optional group name for assignment
+   */
   onToggleFavorite?: (path: string, groupName?: string) => void;
 
-  /** Function to check if a path is favorited */
+  /**
+   * Function to check if a path is favorited
+   * @param path - Path to check
+   * @returns true if favorited, false otherwise
+   */
   isFavorite?: (path: string) => boolean;
 
-  /** Available groups for assignment */
+  /**
+   * Available groups for assignment
+   * Displayed in context menu submenu
+   */
   availableGroups?: { id: string; name: string }[];
 
-  /** Callback to assign file to group */
+  /**
+   * Callback to assign file to group
+   * @param path - File path
+   * @param groupName - Group name (undefined for ungrouped)
+   */
   onAssignToGroup?: (path: string, groupName?: string) => void;
 
-  /** Optional custom class name */
+  /**
+   * Optional custom class name
+   * Applied to root container div
+   */
   className?: string;
 }
 
 /**
  * Get appropriate icon for file based on extension
+ *
+ * @param extension - File extension (e.g., '.ts', '.json', '.md')
+ * @returns Lucide React icon component with appropriate color
+ *
+ * @example
+ * getFileIcon('.json') // Returns <FileJson className="w-4 h-4 text-yellow-500" />
+ * getFileIcon('.ts')   // Returns <FileCode className="w-4 h-4 text-green-500" />
+ * getFileIcon('.md')   // Returns <FileText className="w-4 h-4 text-blue-500" />
  */
 function getFileIcon(extension?: string): React.ReactNode {
   const ext = extension?.toLowerCase();
@@ -83,6 +134,14 @@ function getFileIcon(extension?: string): React.ReactNode {
 
 /**
  * Get language identifier from file extension for syntax highlighting
+ *
+ * @param extension - File extension (e.g., '.ts', '.py', '.json')
+ * @returns Language string for syntax highlighting (e.g., 'typescript', 'python', 'json')
+ *
+ * @example
+ * getLanguageFromExtension('.ts')   // Returns 'typescript'
+ * getLanguageFromExtension('.py')   // Returns 'python'
+ * getLanguageFromExtension('.xyz')  // Returns 'text' (fallback)
  */
 function getLanguageFromExtension(extension: string): string {
   const ext = extension.toLowerCase();
@@ -104,6 +163,51 @@ function getLanguageFromExtension(extension: string): string {
   return langMap[ext] || 'text';
 }
 
+/**
+ * FileTreeNode Component
+ *
+ * @description Renders a single node in the file tree hierarchy with support for:
+ * - **Directory Expansion**: Click to expand/collapse folders with chevron indicators
+ * - **File Selection**: Click files to trigger content loading via onFileClick callback
+ * - **Context Menu**: Right-click for Add to Favorites, Add to Prompt, Copy Path actions
+ * - **Favorites Management**: Star indicator for favorited items with group assignment
+ * - **Recursive Rendering**: Automatically renders child nodes for expanded directories
+ * - **Visual Feedback**: Hover states, selection highlighting, icon differentiation
+ * - **Add to Prompt**: Integrates with PromptingWorkflow to attach file content
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <FileTreeNode
+ *   node={{ name: 'index.ts', path: 'src/index.ts', type: 'file', extension: '.ts' }}
+ *   project={selectedProject}
+ *   depth={0}
+ *   selectedPath="src/index.ts"
+ *   onFileClick={(node) => console.log('Clicked:', node.path)}
+ *   onToggleFavorite={(path, group) => updateFavorites(path, group)}
+ *   isFavorite={(path) => favorites.includes(path)}
+ *   availableGroups={[{ id: 'g1', name: 'Work Files' }]}
+ * />
+ * ```
+ *
+ * @remarks
+ * **Indentation Calculation**: Uses `depth * 12 + 8` pixels for paddingLeft to create visual hierarchy
+ *
+ * **Context Menu Actions**:
+ * - **Add/Remove Favorites**: Toggles favorite status, optionally assigns to group
+ * - **Add to Prompt**: Loads file content and creates Attachment object for PromptingWorkflow
+ * - **Copy Path**: Copies full absolute path to clipboard with visual feedback
+ *
+ * **Recursive Behavior**: When directory is expanded, maps over node.children and renders
+ * nested FileTreeNode components with incremented depth
+ *
+ * **Text Truncation Fix**: Parent container uses `min-w-0` to enable proper text truncation
+ * in flex layouts (prevents sidebar expansion beyond 320px)
+ *
+ * @see {@link FileTree} for parent component that manages tree state
+ * @see {@link ContextMenu} for right-click menu implementation
+ * @see {@link FavoritesList} for favorites-only view mode
+ */
 export function FileTreeNode({
   node,
   project,
@@ -221,6 +325,7 @@ export function FileTreeNode({
         className={`
           flex items-center gap-2 py-1.5 px-2 cursor-pointer
           transition-colors duration-150
+          min-w-0
           ${
             isSelected
               ? 'bg-ind-accent/20 text-ind-accent font-medium'

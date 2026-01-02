@@ -1,0 +1,149 @@
+{
+  "workorder_id": "WO-DASHBOARD-TAG-CHIPS-REFACTOR-001",
+  "stub_id": "STUB-081",
+  "feature_name": "separate-tag-chips-from-prompt-cards",
+  "created": "2026-01-01",
+  "status": "pending_plan",
+  "target_project": "coderef-dashboard",
+
+  "problem_statement": "Tag chips are currently embedded inside each prompt card, causing visual clutter and state management issues. Clicking a tag chip on one prompt card causes the same tag to light up on other prompt cards due to shared global selectedTags state.",
+
+  "goal": "Refactor the prompting workflow UI to separate tag chip selection from prompt cards, creating a clearer workflow and fixing state management issues.",
+
+  "requirements": [
+    "Move tag chips out of PromptSelector.tsx prompt cards",
+    "Create dedicated tag selection section (below prompt grid or in sidebar)",
+    "Tags should only display for the currently selected prompt",
+    "Maintain existing tag functionality (toggle, visual states, lucide icons)",
+    "Preserve WorkflowContext integration and localStorage persistence",
+    "Support prompt-specific tag sets (general tags for 0001/0002/0003, ecosystem tags for 0004)",
+    "Clear visual workflow: Select prompt → Select tags → Attach files → Export",
+    "Responsive design matching existing industrial theme (ind-* classes)"
+  ],
+
+  "technical_context": {
+    "current_implementation": {
+      "file": "packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx",
+      "issue_lines": [85, 121],
+      "problem": "Both prompt cards (0001 and 0004) conditionally render tag chips but share same selectedTags array from WorkflowContext",
+      "code_snippet": "Line 85: {prompt.key === '0001' && onToggleTag && (\nLine 121: {prompt.key === '0004' && onToggleTag && ("
+    },
+
+    "tag_systems": {
+      "general_tags": {
+        "file": "packages/dashboard/src/constants/tags.ts",
+        "count": 8,
+        "tags": ["performance", "security", "code-quality", "architecture", "testing", "accessibility", "error-handling", "ux-ui"],
+        "used_by": ["CODE_REVIEW (0001)", "SYNTHESIZE (0002)", "CONSOLIDATE (0003)"]
+      },
+      "ecosystem_tags": {
+        "file": "packages/dashboard/src/constants/ecosystem-tags.ts",
+        "count": 10,
+        "tags": ["documentation", "code-quality", "workflows", "integration", "standards", "agent-coordination", "metadata-governance", "outputs", "performance", "testing"],
+        "used_by": ["CODEREF_ECOSYSTEM_REVIEW (0004)"]
+      }
+    },
+
+    "state_management": {
+      "context": "WorkflowContext (packages/dashboard/src/components/PromptingWorkflow/context/WorkflowContext.tsx)",
+      "storage": "localStorage persistence with hydration checks",
+      "key_state": {
+        "selectedPromptKey": "Currently selected prompt (0001, 0002, 0003, 0004)",
+        "selectedTags": "Array of selected tag IDs - currently global across all prompts",
+        "toggleTag": "Function to add/remove tags from selectedTags array"
+      }
+    },
+
+    "components_affected": [
+      "PromptSelector.tsx - Remove embedded tag chips",
+      "PromptingWorkflowPage.tsx - Add new tag section to layout",
+      "WorkflowContext.tsx - Possibly update to support tags-per-prompt if needed"
+    ]
+  },
+
+  "proposed_solution": {
+    "approach": "Create new TagSelector component that renders conditionally based on selectedPromptKey",
+
+    "new_component": {
+      "name": "TagSelector.tsx",
+      "location": "packages/dashboard/src/components/PromptingWorkflow/components/",
+      "responsibilities": [
+        "Conditionally render tag chips only when a prompt is selected",
+        "Switch between general tags and ecosystem tags based on selectedPromptKey",
+        "Display tag category header (e.g., 'Improvement Tags' or 'Ecosystem Review Tags')",
+        "Integrate with WorkflowContext toggleTag and selectedTags",
+        "Match existing chip styling (ind-* theme, lucide icons, hover states)"
+      ]
+    },
+
+    "layout_options": [
+      {
+        "option": "Below prompt grid",
+        "description": "Dedicated section that appears below the 4 prompt cards when one is selected",
+        "benefits": ["Clear vertical flow", "Keeps tags visible with prompt cards", "Natural top-to-bottom workflow"],
+        "concerns": ["Requires scrolling on smaller screens"]
+      },
+      {
+        "option": "Sidebar panel",
+        "description": "Right sidebar that shows tags + file attachments together",
+        "benefits": ["Consolidates selection UI", "Saves vertical space", "Mirrors typical 2-column layouts"],
+        "concerns": ["Less space for tag chips on narrow screens", "More complex responsive design"]
+      }
+    ],
+
+    "recommended_approach": "Below prompt grid - clearer workflow, simpler implementation"
+  },
+
+  "success_criteria": [
+    "Tag chips no longer render inside prompt cards",
+    "Tags only display when a prompt is selected",
+    "Clicking tag on one prompt does NOT light up on another prompt",
+    "General tags (8) appear for prompts 0001/0002/0003",
+    "Ecosystem tags (10) appear for prompt 0004",
+    "All existing tag functionality preserved (toggle, visual states, icons)",
+    "Workflow is visually clear: Select prompt → Tags appear → Select tags → Continue",
+    "No regression in localStorage persistence or WorkflowContext behavior",
+    "Responsive design works on mobile/tablet/desktop",
+    "Industrial theme styling maintained"
+  ],
+
+  "constraints": [
+    "Must maintain compatibility with existing WorkflowContext",
+    "Cannot break existing export workflow (JSON export must include selected tags)",
+    "Must support both tag systems (general + ecosystem) without code duplication",
+    "Keep existing localStorage persistence behavior",
+    "Match industrial theme design system (ind-* classes, #0c0c0e bg, #ff6b00 accent)",
+    "No external dependencies - use existing Lucide icons and Tailwind utilities"
+  ],
+
+  "testing_requirements": [
+    "Select prompt 0001 → general tags appear",
+    "Select prompt 0004 → ecosystem tags appear",
+    "Toggle tags on prompt 0001 → switch to 0004 → tags reset correctly",
+    "Export JSON includes correct selected tags",
+    "Refresh page → selected tags persist via localStorage",
+    "Mobile responsive behavior",
+    "No console errors or state warnings"
+  ],
+
+  "files_to_modify": [
+    "packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx - Remove lines 85-121 (embedded tag chips)",
+    "packages/dashboard/src/components/PromptingWorkflow/pages/PromptingWorkflowPage.tsx - Add TagSelector component to layout",
+    "packages/dashboard/src/components/PromptingWorkflow/components/TagSelector.tsx - NEW COMPONENT to create"
+  ],
+
+  "files_to_create": [
+    "packages/dashboard/src/components/PromptingWorkflow/components/TagSelector.tsx"
+  ],
+
+  "related_workorders": [
+    "WO-DASHBOARD-ECOSYSTEM-REVIEW-001 - Uses ecosystem tags that will be affected by this refactor"
+  ],
+
+  "notes": [
+    "This refactor fixes the immediate state management issue (chips lighting up on both cards) by ensuring tags only render for selected prompt",
+    "Future enhancement could implement tags-per-prompt state (e.g., selectedTags: { '0001': [], '0004': [] }) but not required for initial fix",
+    "Keep component simple - focus on moving tags out of cards, not complex state refactoring",
+    "Industrial theme colors: bg-[#0c0c0e], accent-[#ff6b00], text-[#e0e0e0]"
+  ]
+}

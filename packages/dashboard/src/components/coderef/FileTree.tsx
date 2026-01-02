@@ -8,52 +8,134 @@ import { FileTreeNode } from './FileTreeNode';
 import { FavoritesList } from './FavoritesList';
 import { Loader2, AlertCircle, FolderOpen, Zap, Cloud } from 'lucide-react';
 
+/**
+ * FileTree Component Props
+ *
+ * @description Props interface for the FileTree component which displays a hierarchical
+ * file/directory structure with support for favorites, filtering, and view modes.
+ *
+ * @see {@link https://github.com/coderef-dashboard/docs/EXPLORER-SIDEBAR.md} for detailed documentation
+ */
 interface FileTreeProps {
-  /** Project to load tree from */
+  /** Project to load tree from (null = no project selected) */
   project: Project | null;
 
-  /** Optional custom tree (for CodeRef mode) - bypasses project loading */
+  /**
+   * Optional custom tree (for CodeRef mode) - bypasses project loading
+   * When provided, tree is rendered directly without API/filesystem calls
+   */
   customTree?: TreeNode[];
 
-  /** Currently selected file path */
+  /** Currently selected file path (for highlighting active file) */
   selectedPath?: string;
 
-  /** Callback when a file is clicked */
+  /**
+   * Callback when a file is clicked
+   * @param node - The clicked TreeNode (file or directory)
+   */
   onFileClick: (node: TreeNode) => void;
 
-  /** Optional loading state (for CodeRef mode) */
+  /**
+   * Optional loading state (for CodeRef mode)
+   * Overrides internal loading state when provided
+   */
   loading?: boolean;
 
-  /** Optional filter to show only a specific subfolder (e.g., 'coderef') */
+  /**
+   * Optional filter to show only a specific subfolder (e.g., 'coderef')
+   * Searches tree recursively and displays only matching folder's children
+   */
   filterPath?: string;
 
-  /** Callback to toggle favorite status */
+  /**
+   * Callback to toggle favorite status
+   * @param path - File/directory path to favorite/unfavorite
+   * @param groupName - Optional group name for assignment
+   */
   onToggleFavorite?: (path: string, groupName?: string) => void;
 
-  /** Function to check if a path is favorited */
+  /**
+   * Function to check if a path is favorited
+   * @param path - Path to check
+   * @returns true if path is in favorites, false otherwise
+   */
   isFavorite?: (path: string) => boolean;
 
-  /** Show only favorited items */
+  /**
+   * Show only favorited items
+   * When true, displays FavoritesList instead of FileTree
+   */
   showOnlyFavorites?: boolean;
 
-  /** Favorites data with groups */
+  /**
+   * Favorites data with groups
+   * Contains both custom groups and favorited file paths
+   */
   favoritesData?: FavoritesData;
 
-  /** Callback to create a new group */
+  /**
+   * Callback to create a new group
+   * @param name - Group display name
+   * @param color - Optional hex color code
+   */
   onCreateGroup?: (name: string, color?: string) => void;
 
-  /** Callback to delete a group */
+  /**
+   * Callback to delete a group
+   * @param groupId - Unique group identifier
+   */
   onDeleteGroup?: (groupId: string) => void;
 
-  /** Callback to rename a group */
+  /**
+   * Callback to rename a group
+   * @param groupId - Group to rename
+   * @param newName - New group name
+   */
   onRenameGroup?: (groupId: string, newName: string) => void;
 
-  /** Callback to assign a file to a group */
+  /**
+   * Callback to assign a file to a group
+   * @param path - File path to assign
+   * @param groupName - Group name (undefined for ungrouped)
+   */
   onAssignToGroup?: (path: string, groupName?: string) => void;
 
-  /** Optional custom class name */
+  /** Optional custom class name for container styling */
   className?: string;
 }
+
+/**
+ * FileTree Component
+ *
+ * @description Displays a hierarchical file/directory tree with support for:
+ * - Project tree loading (via API or filesystem)
+ * - Favorites management with custom groups
+ * - Folder filtering (e.g., show only `coderef/` subfolder)
+ * - Access mode indication (Local vs API)
+ * - Empty states, loading states, error states
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <FileTree
+ *   project={selectedProject}
+ *   selectedPath="src/index.ts"
+ *   onFileClick={(node) => loadFileContent(node.path)}
+ *   favoritesData={favoritesData}
+ *   onToggleFavorite={(path, group) => updateFavorites(path, group)}
+ *   isFavorite={(path) => favorites.includes(path)}
+ * />
+ * ```
+ *
+ * @remarks
+ * - Recursively renders FileTreeNode components
+ * - Supports filtering to specific subfolder via `filterPath`
+ * - Shows FavoritesList when `showOnlyFavorites=true`
+ * - Displays access mode indicator (Local/API) when available
+ *
+ * @see {@link FileTreeNode} for individual node rendering
+ * @see {@link FavoritesList} for favorites view mode
+ */
 
 export function FileTree({
   project,

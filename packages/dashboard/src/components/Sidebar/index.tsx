@@ -29,6 +29,7 @@ export default function Sidebar({ className = '' }: SidebarProps) {
     <aside
       className={`
         bg-ind-panel border-r border-ind-border flex flex-col
+        sticky top-0 h-screen
         transition-all duration-300
         ${isHydrated && isCollapsed
           ? 'w-20 min-w-20 max-w-20 basis-20 flex-shrink-0 flex-grow-0'

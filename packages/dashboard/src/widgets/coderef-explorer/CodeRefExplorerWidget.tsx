@@ -1,3 +1,56 @@
+/**
+ * CodeRef Explorer Widget
+ *
+ * @description Main widget component for the CodeRef Explorer sidebar feature.
+ * Provides a complete file exploration interface with:
+ * - **View Modes**: Projects (single-project tree), CodeRef (multi-project coderef/ folders), Favorites (starred items)
+ * - **Project Selection**: Dropdown to switch between registered projects
+ * - **File Tree**: Hierarchical file/folder navigation with expansion and selection
+ * - **File Viewer**: Right-hand content panel displaying selected file contents
+ * - **Favorites Management**: Per-project favorites with custom groups and localStorage persistence
+ * - **Cross-Tab Sync**: Storage event listeners for multi-tab awareness (conservative logging approach)
+ * - **State Restoration**: Auto-restores last selected project from localStorage on mount
+ *
+ * @component
+ * @example
+ * ```tsx
+ * // Rendered as a page widget
+ * <CodeRefExplorerWidget />
+ * ```
+ *
+ * @remarks
+ * **Layout Structure**: 2-column responsive layout:
+ * - Left: View mode tabs → Project selector → File tree (320px fixed width, min-w-0 for truncation)
+ * - Right: File viewer with syntax highlighting and file metadata
+ *
+ * **State Management**:
+ * - View mode: Controls which tree is displayed (Projects/CodeRef/Favorites)
+ * - Selected project: Current project context (persisted in localStorage)
+ * - Selected file: Currently viewed file (passed to FileViewer)
+ * - Favorites data: Per-project favorites with groups (persisted in localStorage)
+ * - Restoration flag: Prevents localStorage writes during initial mount/restore phase
+ *
+ * **LocalStorage Persistence**:
+ * - `coderef-explorer-selected-project`: Global selected project ID
+ * - `coderef-favorites-{projectId}`: Per-project favorites data (groups + paths)
+ * - Quota handling: Catches QuotaExceededError and continues in degraded mode
+ * - Migration: Automatically migrates old array format to new object format
+ *
+ * **Cross-Tab Synchronization**: Listens for storage events from other tabs but takes
+ * a conservative approach - logs changes but doesn't auto-sync to avoid interrupting
+ * user's intentional multi-tab workflows. Aggressive auto-sync is commented out but available.
+ *
+ * **Performance Considerations**:
+ * - Favorites loaded lazily on project change (not all projects at once)
+ * - Tree rendering is recursive but not virtualized (may be slow for large directories)
+ * - File viewer syntax highlighting uses rehype-prism-plus (client-side processing)
+ *
+ * @see {@link https://github.com/coderef-dashboard/docs/EXPLORER-SIDEBAR.md} for comprehensive documentation
+ * @see {@link FileTree} for tree rendering logic
+ * @see {@link FileViewer} for file content display
+ * @see {@link ViewModeToggle} for view mode switching UI
+ * @see {@link ProjectSelector} for project selection dropdown
+ */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,8 +67,26 @@ import { FileViewer } from '@/components/coderef/FileViewer';
 // import { CodeRefApi } from '@/lib/coderef/api-access';
 // import { aggregateCodeRefTrees, filterTreeByPattern, flattenTree } from '@/lib/coderef/aggregateCodeRefTrees';
 
+/**
+ * Sort Mode Type
+ *
+ * @description Defines sorting options for file tree display.
+ * Currently defined but not implemented in UI.
+ *
+ * @typedef {('name' | 'date')} SortMode
+ * @property {'name'} name - Sort alphabetically by filename (default behavior)
+ * @property {'date'} date - Sort by modification date (not yet implemented)
+ */
 export type SortMode = 'name' | 'date';
 
+/**
+ * CodeRef Explorer Widget Component
+ *
+ * @description Main export component that renders the complete Explorer sidebar interface.
+ * Manages all state, localStorage persistence, and coordinates child components.
+ *
+ * @returns {JSX.Element} Complete Explorer widget with 2-column layout
+ */
 export function CodeRefExplorerWidget() {
   const [viewMode, setViewMode] = useState<ViewMode>('projects');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
