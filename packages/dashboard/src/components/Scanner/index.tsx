@@ -5,6 +5,11 @@ import { ProjectListCard } from './ProjectListCard';
 import { ConsoleTabs } from './ConsoleTabs';
 import { ActionBar } from './ActionBar';
 
+interface ProjectSelection {
+  scan: boolean;
+  populate: boolean;
+}
+
 /**
  * Scanner Component
  * Main scanner interface with dashboard-consistent styling
@@ -13,11 +18,16 @@ import { ActionBar } from './ActionBar';
  * - Full-width action bar at bottom
  */
 export function Scanner() {
-  const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
+  const [selections, setSelections] = useState<Map<string, ProjectSelection>>(new Map());
   const [scanId, setScanId] = useState<string | null>(null);
+  const [projects, setProjects] = useState<Array<{ id: string; name: string; path: string }>>([]);
 
   function handleScanStart(newScanId: string) {
     setScanId(newScanId);
+  }
+
+  function handleProjectsChange(newProjects: Array<{ id: string; name: string; path: string }>) {
+    setProjects(newProjects);
   }
 
   return (
@@ -40,7 +50,10 @@ export function Scanner() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Left Panel: Project List (8 columns on desktop) */}
           <div className="lg:col-span-8 min-h-[500px]">
-            <ProjectListCard onSelectionChange={setSelectedProjectIds} />
+            <ProjectListCard
+              onSelectionChange={setSelections}
+              onProjectsLoad={handleProjectsChange}
+            />
           </div>
 
           {/* Right Panel: Console Tabs (4 columns on desktop) */}
@@ -51,7 +64,11 @@ export function Scanner() {
 
         {/* Bottom Action Bar (full width) */}
         <div className="lg:col-span-12">
-          <ActionBar selectedProjectIds={selectedProjectIds} onScanStart={handleScanStart} />
+          <ActionBar
+            selections={selections}
+            projects={projects}
+            onScanStart={handleScanStart}
+          />
         </div>
       </div>
     </div>

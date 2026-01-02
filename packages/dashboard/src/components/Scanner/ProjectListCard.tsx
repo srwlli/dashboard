@@ -17,14 +17,20 @@ interface ScannerProject {
  * Left panel - saved projects list with checkboxes
  * Shows empty state when no projects configured
  */
-interface ProjectListCardProps {
-  onSelectionChange?: (selectedIds: string[]) => void;
-  onProjectsChange?: () => void;
+interface ProjectSelection {
+  scan: boolean;
+  populate: boolean;
 }
 
-export function ProjectListCard({ onSelectionChange, onProjectsChange }: ProjectListCardProps) {
+interface ProjectListCardProps {
+  onSelectionChange?: (selections: Map<string, ProjectSelection>) => void;
+  onProjectsChange?: () => void;
+  onProjectsLoad?: (projects: ScannerProject[]) => void;
+}
+
+export function ProjectListCard({ onSelectionChange, onProjectsChange, onProjectsLoad }: ProjectListCardProps) {
   const [projects, setProjects] = useState<ScannerProject[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selections, setSelections] = useState<Map<string, ProjectSelection>>(new Map());
   const [loading, setLoading] = useState(true);
 
   // Load projects from API
@@ -34,8 +40,13 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange }: Project
 
   // Notify parent of selection changes
   useEffect(() => {
-    onSelectionChange?.(selectedIds);
-  }, [selectedIds, onSelectionChange]);
+    onSelectionChange?.(selections);
+  }, [selections, onSelectionChange]);
+
+  // Notify parent when projects load
+  useEffect(() => {
+    onProjectsLoad?.(projects);
+  }, [projects, onProjectsLoad]);
 
   async function loadProjects() {
     try {
@@ -104,7 +115,11 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange }: Project
 
       if (data.success) {
         await loadProjects();
-        setSelectedIds((prev) => prev.filter((selectedId) => selectedId !== id));
+        setSelections((prev) => {
+          const newSelections = new Map(prev);
+          newSelections.delete(id);
+          return newSelections;
+        });
         onProjectsChange?.();
       }
     } catch (error) {
@@ -112,13 +127,21 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange }: Project
     }
   }
 
-  function handleCheckboxChange(id: string, checked: boolean) {
-    setSelectedIds((prev) => {
-      if (checked) {
-        return [...prev, id];
-      } else {
-        return prev.filter((selectedId) => selectedId !== id);
-      }
+  function handleScanCheckboxChange(id: string, checked: boolean) {
+    setSelections((prev) => {
+      const newSelections = new Map(prev);
+      const current = newSelections.get(id) || { scan: false, populate: false };
+      newSelections.set(id, { ...current, scan: checked });
+      return newSelections;
+    });
+  }
+
+  function handlePopulateCheckboxChange(id: string, checked: boolean) {
+    setSelections((prev) => {
+      const newSelections = new Map(prev);
+      const current = newSelections.get(id) || { scan: false, populate: false };
+      newSelections.set(id, { ...current, populate: checked });
+      return newSelections;
     });
   }
 
@@ -176,25 +199,46 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange }: Project
           </div>
         ) : (
           <div className="space-y-2">
-            {projects.map((project) => (
-              <div
-                key={project.id}
-                className="flex items-center gap-3 p-3 rounded-md bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(project.id)}
-                  onChange={(e) => handleCheckboxChange(project.id, e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-300 dark:border-neutral-600 text-ind-accent-color focus:ring-2 focus:ring-ind-accent-color/50"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                    {project.name}
-                  </p>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">
-                    {project.path}
-                  </p>
-                </div>
+            {projects.map((project) => {
+              const selection = selections.get(project.id) || { scan: false, populate: false };
+
+              return (
+                <div
+                  key={project.id}
+                  className="flex items-center gap-3 p-3 rounded-md bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group"
+                >
+                  {/* Scan Checkbox */}
+                  <div className="flex flex-col items-center gap-1">
+                    <input
+                      type="checkbox"
+                      checked={selection.scan}
+                      onChange={(e) => handleScanCheckboxChange(project.id, e.target.checked)}
+                      className="w-4 h-4 rounded border-neutral-300 dark:border-neutral-600 text-ind-accent-color focus:ring-2 focus:ring-ind-accent-color/50"
+                      title="Scan"
+                    />
+                    <span className="text-[10px] text-neutral-500 dark:text-neutral-600">Scan</span>
+                  </div>
+
+                  {/* Populate Checkbox */}
+                  <div className="flex flex-col items-center gap-1">
+                    <input
+                      type="checkbox"
+                      checked={selection.populate}
+                      onChange={(e) => handlePopulateCheckboxChange(project.id, e.target.checked)}
+                      className="w-4 h-4 rounded border-neutral-300 dark:border-neutral-600 text-blue-600 focus:ring-2 focus:ring-blue-500/50"
+                      title="Populate"
+                    />
+                    <span className="text-[10px] text-neutral-500 dark:text-neutral-600">Populate</span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                      {project.name}
+                    </p>
+                    <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">
+                      {project.path}
+                    </p>
+                  </div>
                 <button
                   onClick={() => handleRemove(project.id)}
                   className="opacity-0 group-hover:opacity-100 p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded transition-all"
@@ -215,7 +259,8 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange }: Project
                   </svg>
                 </button>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>

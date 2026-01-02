@@ -14,6 +14,14 @@ import * as path from 'path';
 import type { ScanProgress, ScanStatus } from '../types';
 
 /**
+ * Project selection for scan/populate operations
+ */
+interface ProjectSelection {
+  scan: boolean;
+  populate: boolean;
+}
+
+/**
  * Scan execution configuration
  */
 interface ScanConfig {
@@ -22,6 +30,9 @@ interface ScanConfig {
 
   /** Unique scan identifier */
   scanId: string;
+
+  /** Optional: Project selections for multi-phase execution */
+  selections?: Record<string, ProjectSelection>;
 }
 
 /**
@@ -35,6 +46,8 @@ interface ScanConfig {
  */
 export class ScanExecutor extends EventEmitter {
   private projectPaths: string[];
+  private projectIds: Map<string, string>; // Maps path -> projectId
+  private selections: Record<string, ProjectSelection> | undefined;
   private currentProcess: ChildProcess | null = null;
   private currentProjectIndex: number = 0;
   private status: ScanStatus = 'idle';
@@ -46,6 +59,15 @@ export class ScanExecutor extends EventEmitter {
   constructor(config: ScanConfig) {
     super();
     this.projectPaths = config.projectPaths;
+    this.selections = config.selections;
+    this.projectIds = new Map();
+  }
+
+  /**
+   * Set project ID mapping (path -> ID) for selection lookup
+   */
+  public setProjectIdMapping(mapping: Map<string, string>): void {
+    this.projectIds = mapping;
   }
 
   /**
@@ -77,7 +99,33 @@ export class ScanExecutor extends EventEmitter {
         this.currentProjectIndex = i;
         this.emitProgress();
 
-        await this.runScanForProject(this.projectPaths[i]);
+        const projectPath = this.projectPaths[i];
+        const projectId = this.projectIds.get(projectPath);
+        const selection = projectId && this.selections ? this.selections[projectId] : undefined;
+
+        // Phase 1: Scan (if selected or no selections provided - backward compatibility)
+        const shouldScan = !selection || selection.scan;
+        if (shouldScan) {
+          try {
+            await this.runScanForProject(projectPath);
+          } catch (scanError: any) {
+            // If scan fails, log error and skip populate phase for this project
+            this.emitOutput(`[ERROR] Scan failed for ${projectPath}: ${scanError.message}\n`);
+            this.emitOutput(`[Scanner] Skipping populate phase for ${projectPath}\n`);
+            continue; // Move to next project
+          }
+        }
+
+        // Phase 2: Populate (if selected AND scan succeeded)
+        const shouldPopulate = selection && selection.populate;
+        if (shouldPopulate) {
+          try {
+            await this.runPopulateForProject(projectPath);
+          } catch (populateError: any) {
+            // Log populate error but continue (don't fail entire scan)
+            this.emitOutput(`[ERROR] Populate failed for ${projectPath}: ${populateError.message}\n`);
+          }
+        }
       }
 
       // All projects completed successfully
@@ -143,6 +191,60 @@ export class ScanExecutor extends EventEmitter {
       // Handle process error (e.g., python not found)
       this.currentProcess.on('error', (error) => {
         this.emitOutput(`[ERROR] Failed to start scan: ${error.message}\n`);
+        reject(error);
+      });
+    });
+  }
+
+  /**
+   * Run populate-coderef.py for a single project
+   * Uses child_process.spawn() to execute Python script
+   */
+  private async runPopulateForProject(projectPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Locate populate-coderef.py script
+      const populateScriptPath = process.env.POPULATE_SCRIPT_PATH ||
+        'C:\\Users\\willh\\Desktop\\projects\\coderef-system\\scripts\\populate-coderef.py';
+
+      this.emitOutput(`\n[Intelligence] Starting populate for: ${projectPath}`);
+      this.emitOutput(`[Intelligence] Using script: ${populateScriptPath}\n`);
+
+      // Spawn Python subprocess
+      this.currentProcess = spawn('python', [populateScriptPath, projectPath], {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        cwd: path.dirname(populateScriptPath),
+      });
+
+      // Handle stdout
+      this.currentProcess.stdout?.on('data', (data) => {
+        const output = data.toString();
+        this.emitOutput(output);
+      });
+
+      // Handle stderr
+      this.currentProcess.stderr?.on('data', (data) => {
+        const output = data.toString();
+        this.emitOutput(`[ERROR] ${output}`);
+      });
+
+      // Handle process exit
+      this.currentProcess.on('close', (code) => {
+        if (code === 0) {
+          this.emitOutput(`[Intelligence] Completed: ${projectPath}\n`);
+          resolve();
+        } else if (code === null) {
+          // Process was killed (cancelled)
+          this.emitOutput(`[Intelligence] Cancelled: ${projectPath}\n`);
+          resolve();
+        } else {
+          reject(new Error(`Populate failed with exit code ${code}`));
+        }
+        this.currentProcess = null;
+      });
+
+      // Handle process error (e.g., python not found)
+      this.currentProcess.on('error', (error) => {
+        this.emitOutput(`[ERROR] Failed to start populate: ${error.message}\n`);
         reject(error);
       });
     });

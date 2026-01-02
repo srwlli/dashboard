@@ -65,11 +65,22 @@ export interface ScanProgress {
 }
 
 /**
+ * Project selection for scan/populate operations
+ */
+export interface ProjectSelection {
+  scan: boolean;
+  populate: boolean;
+}
+
+/**
  * Request body for starting a new scan
  */
 export interface StartScanRequest {
   /** Array of project IDs to scan */
   projectIds: string[];
+
+  /** Optional: Map of project selections for multi-phase execution */
+  selections?: Record<string, ProjectSelection>;
 }
 
 /**

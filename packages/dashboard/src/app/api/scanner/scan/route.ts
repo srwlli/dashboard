@@ -40,7 +40,7 @@ async function loadProjects(): Promise<ScannerProject[]> {
 export async function POST(request: NextRequest) {
   try {
     const body: StartScanRequest = await request.json();
-    const { projectIds } = body;
+    const { projectIds, selections } = body;
 
     // Validate request
     if (!projectIds || !Array.isArray(projectIds) || projectIds.length === 0) {
@@ -55,8 +55,10 @@ export async function POST(request: NextRequest) {
     // Load all projects
     const allProjects = await loadProjects();
 
-    // Resolve project IDs to paths
+    // Resolve project IDs to paths and build mapping
     const projectPaths: string[] = [];
+    const pathToIdMapping = new Map<string, string>();
+
     for (const id of projectIds) {
       const project = allProjects.find((p) => p.id === id);
       if (!project) {
@@ -68,6 +70,7 @@ export async function POST(request: NextRequest) {
         );
       }
       projectPaths.push(project.path);
+      pathToIdMapping.set(project.path, project.id);
     }
 
     // Generate scan ID
@@ -77,7 +80,11 @@ export async function POST(request: NextRequest) {
     const executor = new ScanExecutor({
       scanId,
       projectPaths,
+      selections,
     });
+
+    // Set project ID mapping for selection lookup
+    executor.setProjectIdMapping(pathToIdMapping);
 
     // Register executor globally
     registerScanExecutor(scanId, executor);
