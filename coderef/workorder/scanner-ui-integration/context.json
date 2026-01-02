@@ -1,0 +1,208 @@
+{
+  "workorder_id": "WO-DASHBOARD-SCANNER-UI-001",
+  "feature_name": "scanner-ui-integration",
+  "created": "2026-01-01",
+  "target_project": "coderef-dashboard",
+  "stub_id": "STUB-079",
+
+  "description": "Create mock UI for CodeRef Scanner interface integrated into dashboard. UI-only mockup with clean empty states, no live data. Inherits global dashboard layout, sidebar navigation, and breadcrumbs.",
+
+  "requirements": [
+    "Create /scanner route in dashboard",
+    "Mock up scanner interface UI (projects list, console tabs, action bar)",
+    "Use extracted design tokens from layout-coderef-scanner-2026-01-01.json",
+    "Inherit global dashboard layout (sidebar nav + breadcrumbs)",
+    "NO dark mode toggle on page (inherits global theme)",
+    "Clean empty states for all sections",
+    "Responsive 12-column grid (8-4 split on desktop)",
+    "NO live data or functional scanning - UI mockup only"
+  ],
+
+  "constraints": [
+    "Must inherit existing dashboard layout system",
+    "Must use existing Tailwind config and design tokens",
+    "Must integrate with existing sidebar navigation",
+    "Must use existing breadcrumb component",
+    "NO backend integration or data fetching",
+    "NO separate dark mode toggle (uses global theme)",
+    "Must have proper empty states (no hardcoded project paths)",
+    "Fixed heights (h-[500px]) should be replaced with responsive flex patterns"
+  ],
+
+  "design_tokens": {
+    "spacing": {
+      "base": "8px",
+      "scale": ["4px", "8px", "12px", "16px", "24px", "32px", "48px"]
+    },
+    "colors": {
+      "primary": "#FF6B00",
+      "primary_hover": "#E65100",
+      "surface_dark": "#171717",
+      "border_dark": "#333333",
+      "console_bg": "#1A1A1A",
+      "console_text_green": "#4ADE80",
+      "console_text_blue": "#60A5FA"
+    },
+    "typography": {
+      "display_font": "Inter, sans-serif",
+      "mono_font": "JetBrains Mono, monospace",
+      "sizes": ["12px", "14px", "16px", "18px", "20px", "24px"]
+    },
+    "border_radius": {
+      "sm": "6px",
+      "md": "8px",
+      "lg": "12px"
+    }
+  },
+
+  "components_to_build": [
+    {
+      "name": "ScannerRoute",
+      "path": "app/scanner/page.tsx",
+      "description": "Main scanner route component",
+      "inherits": "PageLayout (sidebar + breadcrumbs)"
+    },
+    {
+      "name": "ProjectListCard",
+      "description": "Left panel - saved projects list with checkboxes",
+      "empty_state": "No projects configured. Add a path to get started.",
+      "features": [
+        "Empty state UI",
+        "Add Path button (mockup)",
+        "Remove button (mockup)",
+        "Checkbox list (mock data optional)",
+        "Footer tip section"
+      ]
+    },
+    {
+      "name": "ConsoleTabs",
+      "description": "Right sidebar - Console/History/Config tabs",
+      "empty_state": "Ready for scan. Select projects to begin.",
+      "features": [
+        "Tab switcher (Console, History, Config)",
+        "Console terminal mockup",
+        "Empty state for each tab",
+        "Status footer (Idle, version)"
+      ]
+    },
+    {
+      "name": "ActionBar",
+      "description": "Bottom action bar - Scan button + Clear",
+      "features": [
+        "Primary scan button (orange, disabled state when no selection)",
+        "Clear button",
+        "Status text (0 projects selected)"
+      ]
+    }
+  ],
+
+  "layout_structure": {
+    "route": "/scanner",
+    "breadcrumbs": "Dashboard > Scanner",
+    "grid": "12 columns on desktop, 1 column on mobile",
+    "sections": [
+      {
+        "name": "ProjectListCard",
+        "cols": "lg:col-span-8",
+        "responsive": "Full width on mobile/tablet"
+      },
+      {
+        "name": "ConsoleTabs",
+        "cols": "lg:col-span-4",
+        "responsive": "Full width on mobile/tablet, stacks below on small screens"
+      },
+      {
+        "name": "ActionBar",
+        "cols": "lg:col-span-12",
+        "responsive": "Full width, sticky bottom on mobile"
+      }
+    ]
+  },
+
+  "empty_states": {
+    "project_list": {
+      "icon": "folder_open",
+      "title": "No Projects Configured",
+      "description": "Add project paths to include in the scan",
+      "action": "Add Path button"
+    },
+    "console": {
+      "text": "> System Initialized\n> Ready for scan. Waiting for project selection...\n> Tip: Select one or more projects from the left panel"
+    },
+    "history": {
+      "icon": "history",
+      "title": "No Scan History",
+      "description": "Your scan history will appear here after running scans"
+    },
+    "config": {
+      "text": "Mode: Universal Structure\nFilters: *.js, *.ts, *.py\nExclude: node_modules, .git"
+    }
+  },
+
+  "avoid_copying": [
+    "Fixed heights (h-[500px]) - use min-height or flex-grow instead",
+    "Hardcoded project paths - use empty states",
+    "Inline Tailwind config - use existing dashboard config",
+    "Separate dark mode toggle - inherit from global theme",
+    "z-index values - use dashboard's z-index system",
+    "CDN dependencies - use dashboard's build process"
+  ],
+
+  "integration_requirements": {
+    "sidebar_nav": {
+      "add_route": {
+        "label": "Scanner",
+        "icon": "radar",
+        "path": "/scanner",
+        "order": "After Sources, before Settings"
+      }
+    },
+    "breadcrumbs": {
+      "path": "Dashboard > Scanner",
+      "dynamic": false
+    },
+    "theme_inheritance": {
+      "use_global_dark_mode": true,
+      "no_page_level_toggle": true,
+      "inherit_colors": "Use dashboard's existing color system where possible"
+    }
+  },
+
+  "technical_notes": {
+    "framework": "Next.js 14 App Router",
+    "styling": "Tailwind CSS (existing config)",
+    "components": "React Server Components where possible",
+    "state": "Client Components for interactive elements (tabs, checkboxes)",
+    "responsive": "Mobile-first, Tailwind breakpoints (sm, md, lg)",
+    "accessibility": "Semantic HTML, ARIA labels, keyboard navigation"
+  },
+
+  "mockup_guidelines": {
+    "data": "NO live data - use empty states or 1-2 placeholder items max",
+    "functionality": "NO actual scanning - buttons are non-functional mockups",
+    "focus": "Visual design and layout only",
+    "polish": "Clean empty states, proper spacing, hover states",
+    "responsive": "Test at mobile, tablet, desktop breakpoints"
+  },
+
+  "deliverables": [
+    "app/scanner/page.tsx - Main route component",
+    "components/Scanner/ProjectListCard.tsx - Projects list panel",
+    "components/Scanner/ConsoleTabs.tsx - Console/tabs panel",
+    "components/Scanner/ActionBar.tsx - Bottom action bar",
+    "Updated sidebar navigation to include Scanner route",
+    "Screenshots of empty states at all breakpoints"
+  ],
+
+  "success_criteria": [
+    "Scanner route accessible at /scanner",
+    "Sidebar shows Scanner navigation item",
+    "Breadcrumbs display correctly",
+    "All empty states render properly",
+    "Responsive layout works on mobile/tablet/desktop",
+    "NO dark mode toggle on page (inherits global)",
+    "NO live data or backend calls",
+    "Hover states and interactions feel polished",
+    "Matches design tokens from extracted layout"
+  ]
+}

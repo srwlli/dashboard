@@ -1,0 +1,46 @@
+{
+  "workorder_id": "WO-DASHBOARD-SCANNER-UI-001",
+  "feature_name": "scanner-ui-integration",
+  "created": "2026-01-01",
+  "status": "pending_plan",
+
+  "handoff": {
+    "orchestrator_to_agent": "See handoff prompt below",
+    "status": "pending_plan",
+    "instructions": "Review context.json, create implementation plan, update status to 'plan_submitted'"
+  },
+
+  "phases": {
+    "planning": {
+      "status": "pending",
+      "agent_tasks": [
+        "Review context.json requirements",
+        "Review layout-coderef-scanner-2026-01-01.json for design tokens",
+        "Create plan.json with task breakdown",
+        "Update communication.json status to 'plan_submitted'"
+      ]
+    },
+    "implementation": {
+      "status": "pending",
+      "agent_tasks": [
+        "Create /scanner route (app/scanner/page.tsx)",
+        "Build ProjectListCard component with empty state",
+        "Build ConsoleTabs component with tab switching",
+        "Build ActionBar component",
+        "Update sidebar navigation",
+        "Test responsive breakpoints",
+        "Screenshot empty states"
+      ]
+    },
+    "completion": {
+      "status": "pending",
+      "agent_tasks": [
+        "Run /update-deliverables to record git metrics",
+        "Run /archive-feature to move to completed",
+        "Update communication.json status to 'complete'"
+      ]
+    }
+  },
+
+  "communication_log": []
+}
