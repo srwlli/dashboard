@@ -118,36 +118,55 @@ Start your response with a metadata header identifying yourself:
 
 const CODEREF_ECOSYSTEM_REVIEW_PROMPT = `CODEREF ECOSYSTEM REVIEW TASK
 Review the attached coderef ecosystem component(s) for comprehensive analysis.
-Output standard Markdown (.md) inside a SINGLE code block.
+**Output: Valid JSON object** (not markdown, not a code block).
 
-**AGENT IDENTIFICATION REQUIRED**
-Start your response with a metadata header identifying yourself:
+**WORKFLOW COORDINATION**
+This review is part of: **{{REVIEW_TITLE}}**
+Save your response to: \`coderef/reviews/{{REVIEW_TITLE}}/responses/{{YOUR_AGENT_ID}}.json\`
 
----
-**Agent:** [Your model name and version]
-**Date:** [Current date]
-**Task:** CODEREF_ECOSYSTEM_REVIEW
----
+Your agent ID = your working directory name (e.g., "coderef-context", "coderef-docs", "coderef-workflow")
 
-## PART 1: COMPONENT OVERVIEW
-Provide a brief overview of what this component does and its key features:
+**JSON OUTPUT STRUCTURE**
+Return ONLY a valid JSON object with this exact structure:
 
-| Component | Purpose | Key Features |
-|-----------|---------|--------------|
-| ...       | ...     | ...          |
+{
+  "agent_metadata": {
+    "agent_id": "[Your working directory name]",
+    "model": "[Your model name and version]",
+    "date": "[Current ISO 8601 date]",
+    "review_title": "{{REVIEW_TITLE}}"
+  },
+  "component_overview": {
+    "component_name": "[Name of component/document reviewed]",
+    "purpose": "[What this component does]",
+    "key_features": ["[Feature 1]", "[Feature 2]", "[Feature 3]"]
+  },
+  "ecosystem_analysis": {
+    {{TAG_JSON_SECTIONS}}
+  }
+}
 
-## PART 2: ECOSYSTEM ANALYSIS
+**ANALYSIS CATEGORIES**
 {{TAG_SECTION}}
 
-For each category, provide structured analysis with this format:
+For each selected category, provide structured analysis in ecosystem_analysis:
 
-### {{CATEGORY_NAME}}
-**How Used:** [How this component/document is used in the ecosystem]
-**Strengths:** [What works well]
-**Weaknesses:** [What's missing or unclear]
-**Add/Remove:** [Specific suggestions with ADD/REMOVE/REFACTOR prefixes]
+"{{CATEGORY_ID}}": {
+  "how_used": "[How this component/document is used in the ecosystem]",
+  "strengths": ["[Strength 1]", "[Strength 2]", "[Strength 3]"],
+  "weaknesses": ["[Weakness 1]", "[Weakness 2]"],
+  "add_remove": [
+    "ADD: [Specific addition suggestion]",
+    "REMOVE: [Specific removal suggestion]",
+    "REFACTOR: [Specific refactoring suggestion]"
+  ]
+}
 
-Provide 2-5 suggestions per category, focusing on the highest-impact improvements.`;
+**IMPORTANT:**
+- Return ONLY valid JSON (no markdown formatting, no code blocks, no backticks)
+- Include ONLY the categories the user selected
+- Provide 2-5 suggestions per category
+- Save to the specified folder path for coordination with other agents`;
 
 /**
  * Preloaded prompts available in the widget
@@ -182,8 +201,8 @@ export const PRELOADED_PROMPTS: Record<string, PreloadedPrompt> = {
     name: 'CODEREF_ECOSYSTEM_REVIEW',
     label: 'CodeRef Ecosystem Review',
     text: CODEREF_ECOSYSTEM_REVIEW_PROMPT,
-    estimatedTokens: 1100,
-    description: 'Review coderef ecosystem components with focused feedback',
+    estimatedTokens: 1200,
+    description: 'Review coderef ecosystem components → structured JSON analysis',
   },
 };
 
@@ -259,17 +278,19 @@ Provide 2-5 suggestions per category, focusing on the highest-impact improvement
 
 /**
  * Get CODEREF_ECOSYSTEM_REVIEW prompt with tag interpolation
- * Replaces {{TAG_SECTION}} and {{CATEGORY_NAME}} placeholders based on selected ecosystem tags
+ * Replaces {{TAG_SECTION}}, {{TAG_JSON_SECTIONS}}, {{CATEGORY_ID}}, and {{REVIEW_TITLE}} placeholders
  *
  * @param selectedTagIds - Array of selected ecosystem tag IDs (e.g., ['documentation', 'workflows'])
- * @returns Prompt text with tags interpolated
+ * @param reviewTitle - Review title for folder organization (e.g., 'Q1-2026-Documentation-Review')
+ * @returns Prompt text with tags and title interpolated
  *
  * Behavior:
  * - If no tags selected (empty array): Shows all 10 categories
  * - If tags selected: Shows only selected categories
  * - If all 10 tags selected: Treats same as no tags (shows all)
+ * - Review title gets inserted into {{REVIEW_TITLE}} placeholder
  */
-export function getEcosystemPromptWithTags(selectedTagIds: string[] = []): string {
+export function getEcosystemPromptWithTags(selectedTagIds: string[] = [], reviewTitle: string = 'UNTITLED-REVIEW'): string {
   const prompt = PRELOADED_PROMPTS['0004'].text;
 
   // Determine which tags to show
@@ -277,39 +298,28 @@ export function getEcosystemPromptWithTags(selectedTagIds: string[] = []): strin
   const isAllSelected = selectedTagIds.length === 0 || selectedTagIds.length === allTags.length;
   const tagsToShow = isAllSelected ? allTags : getEcosystemTagsByIds(selectedTagIds);
 
-  // Build tag section text
+  // Build tag section text (for ANALYSIS CATEGORIES section)
   let tagSection = '';
   if (isAllSelected) {
     tagSection = 'Provide ecosystem analysis in ALL categories:\n';
-    tagSection += allTags.map(tag => `- **${tag.label}**: ${tag.description}`).join('\n');
+    tagSection += allTags.map(tag => `- **${tag.label}** (${tag.id}): ${tag.description}`).join('\n');
   } else {
     tagSection = `User has requested feedback on: **${tagsToShow.map(t => t.label).join(', ')}**\n\n`;
     tagSection += 'Focus your analysis on these categories:\n';
-    tagSection += tagsToShow.map(tag => `- **${tag.label}**: ${tag.description}`).join('\n');
+    tagSection += tagsToShow.map(tag => `- **${tag.label}** (${tag.id}): ${tag.description}`).join('\n');
   }
 
-  // Replace {{TAG_SECTION}} placeholder
-  let interpolatedPrompt = prompt.replace('{{TAG_SECTION}}', tagSection);
+  // Build JSON sections example (for {{TAG_JSON_SECTIONS}})
+  const jsonSections = tagsToShow.map(tag =>
+    `    "${tag.id}": { ... }`
+  ).join(',\n');
 
-  // Replace {{CATEGORY_NAME}} with actual category names
-  const categoryTemplate = `### {{CATEGORY_NAME}}
-**How Used:** [How this component/document is used in the ecosystem]
-**Strengths:** [What works well]
-**Weaknesses:** [What's missing or unclear]
-**Add/Remove:** [Specific suggestions with ADD/REMOVE/REFACTOR prefixes]
-
-Provide 2-5 suggestions per category, focusing on the highest-impact improvements.`;
-
-  const categorySections = tagsToShow.map(tag =>
-    `### ${tag.label}
-**How Used:** [How this component/document is used in the ecosystem]
-**Strengths:** [What works well]
-**Weaknesses:** [What's missing or unclear]
-**Add/Remove:** [Specific suggestions with ADD/REMOVE/REFACTOR prefixes]`
-  ).join('\n\n');
-
-  // Replace the template section with actual category sections
-  interpolatedPrompt = interpolatedPrompt.replace(categoryTemplate, categorySections);
+  // Replace all placeholders
+  let interpolatedPrompt = prompt
+    .replace(/\{\{REVIEW_TITLE\}\}/g, reviewTitle)
+    .replace('{{TAG_SECTION}}', tagSection)
+    .replace('{{TAG_JSON_SECTIONS}}', jsonSections)
+    .replace(/\{\{CATEGORY_ID\}\}/g, tagsToShow.map(t => t.id).join('", "'));
 
   return interpolatedPrompt;
 }

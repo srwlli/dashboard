@@ -35,6 +35,7 @@ export interface Workflow {
   id: string;                          // UUID
   selectedPrompt?: PreloadedPrompt;
   selectedTags?: string[];             // Selected improvement tag IDs for CODE_REVIEW prompt
+  reviewTitle?: string;                // Review title for CODEREF_ECOSYSTEM_REVIEW prompt
   attachments: Attachment[];
   finalResult?: string;                // LLM output pasted back by user
   createdAt: Date;

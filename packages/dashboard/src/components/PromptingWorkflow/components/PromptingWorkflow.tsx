@@ -6,6 +6,7 @@ import { AttachmentManager } from './AttachmentManager';
 import { WorkflowMeta } from './WorkflowMeta';
 import { ExportMenu } from './ExportMenu';
 import { PasteFinalResultModal } from './PasteFinalResultModal';
+import { ReviewTitleModal } from './ReviewTitleModal';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { useClipboard } from '../hooks/useClipboard';
 import { useFileHandlers } from '../hooks/useFileHandlers';
@@ -30,6 +31,8 @@ export const PromptingWorkflow: React.FC = () => {
   const { write: copyToClipboard } = useClipboard();
   const { selectDirectory } = useFileHandlers();
   const [showPasteFinalResult, setShowPasteFinalResult] = useState(false);
+  const [showReviewTitleModal, setShowReviewTitleModal] = useState(false);
+  const [pendingExportAction, setPendingExportAction] = useState<'copy' | 'json' | 'markdown' | null>(null);
 
   // Validate workflow ready for export
   const isReadyForExport = workflow.selectedPrompt && workflow.attachments.length > 0;
@@ -37,6 +40,13 @@ export const PromptingWorkflow: React.FC = () => {
   const handleCopyJSON = useCallback(async () => {
     if (!isReadyForExport) {
       alert('Please select a prompt and add attachments');
+      return;
+    }
+
+    // Check if CODEREF_ECOSYSTEM_REVIEW prompt - need review title
+    if (workflow.selectedPrompt?.key === '0004') {
+      setPendingExportAction('copy');
+      setShowReviewTitleModal(true);
       return;
     }
 
@@ -50,6 +60,13 @@ export const PromptingWorkflow: React.FC = () => {
   const handleExportJSON = useCallback(async () => {
     if (!isReadyForExport) {
       alert('Please select a prompt and add attachments');
+      return;
+    }
+
+    // Check if CODEREF_ECOSYSTEM_REVIEW prompt - need review title
+    if (workflow.selectedPrompt?.key === '0004') {
+      setPendingExportAction('json');
+      setShowReviewTitleModal(true);
       return;
     }
 
@@ -81,6 +98,13 @@ export const PromptingWorkflow: React.FC = () => {
       return;
     }
 
+    // Check if CODEREF_ECOSYSTEM_REVIEW prompt - need review title
+    if (workflow.selectedPrompt?.key === '0004') {
+      setPendingExportAction('markdown');
+      setShowReviewTitleModal(true);
+      return;
+    }
+
     const directory = await selectDirectory();
     if (!directory) return;
 
@@ -102,6 +126,71 @@ export const PromptingWorkflow: React.FC = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, [workflow, isReadyForExport, selectDirectory]);
+
+  const handleReviewTitleConfirm = useCallback(async (reviewTitle: string) => {
+    setShowReviewTitleModal(false);
+
+    // Create workflow with review title in metadata
+    const workflowWithTitle = {
+      ...workflow,
+      reviewTitle, // Add review title to workflow
+    };
+
+    // Execute the pending export action
+    if (pendingExportAction === 'copy') {
+      const json = generateJSON(workflowWithTitle);
+      const success = await copyToClipboard(json);
+      if (!success) {
+        throw new Error('Failed to copy to clipboard');
+      }
+    } else if (pendingExportAction === 'json') {
+      const directory = await selectDirectory();
+      if (!directory) {
+        setPendingExportAction(null);
+        return;
+      }
+
+      const json = generateJSON(workflowWithTitle);
+      const filename = `workflow_${reviewTitle}_${Date.now()}.json`;
+
+      console.log(`Would save to: ${directory}/${filename}`);
+      console.log('JSON:', json);
+
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else if (pendingExportAction === 'markdown') {
+      const directory = await selectDirectory();
+      if (!directory) {
+        setPendingExportAction(null);
+        return;
+      }
+
+      const markdown = generateMarkdown(workflowWithTitle);
+      const filename = `workflow_${reviewTitle}_${Date.now()}.md`;
+
+      console.log(`Would save to: ${directory}/${filename}`);
+      console.log('Markdown:', markdown);
+
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    setPendingExportAction(null);
+  }, [workflow, pendingExportAction, copyToClipboard, selectDirectory]);
 
   const handleFinalResultSaved = useCallback(
     async (result: string) => {
@@ -199,6 +288,16 @@ export const PromptingWorkflow: React.FC = () => {
         isOpen={showPasteFinalResult}
         onResultSaved={handleFinalResultSaved}
         onClose={() => setShowPasteFinalResult(false)}
+      />
+
+      {/* Review Title Modal (for CODEREF_ECOSYSTEM_REVIEW exports) */}
+      <ReviewTitleModal
+        isOpen={showReviewTitleModal}
+        onConfirm={handleReviewTitleConfirm}
+        onClose={() => {
+          setShowReviewTitleModal(false);
+          setPendingExportAction(null);
+        }}
       />
     </div>
   );
