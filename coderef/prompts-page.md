@@ -62,6 +62,43 @@ export interface ImprovementTag {
 
 ---
 
+## Ecosystem Tag System (10 Categories)
+
+**File:** `constants/ecosystem-tags.ts` (packages/dashboard/src/components/PromptingWorkflow/constants/)
+
+### Ecosystem Tag Data Structure
+
+```typescript
+export interface EcosystemTag {
+  id: string;           // 'documentation', 'workflows', etc.
+  label: string;        // 'Documentation', 'Workflows', etc.
+  icon: string;         // Lucide icon name ('FileText', 'GitBranch')
+  description: string;  // Tooltip text
+}
+```
+
+### 10 Predefined Ecosystem Tags
+
+| Tag ID | Label | Icon | Description |
+|--------|-------|------|-------------|
+| `documentation` | Documentation | FileText | Foundation docs, standards, workflows, coderef outputs |
+| `code-quality` | Code Quality | Code2 | Patterns, complexity, architecture, dependencies |
+| `workflows` | Workflows | GitBranch | Planning, execution, coordination, handoff |
+| `integration` | Integration | Plug | MCP servers, ecosystem, CLI, dashboard, git |
+| `standards` | Standards | Ruler | UI, UX, API, behavior standards |
+| `agent-coordination` | Agent Coordination | Users | Personas, multi-agent, context, tooling |
+| `metadata-governance` | Metadata & Governance | Database | Versioning, provenance, schemas, validation |
+| `outputs` | Outputs | FileOutput | Reports, diagrams, exports, deliverables |
+| `performance` | Performance | Zap | System performance, caching, scalability |
+| `testing` | Testing | FlaskConical | Test coverage, automation, quality |
+
+**Helper Functions:**
+- `getAllEcosystemTags()` - Returns all 10 tags as array
+- `getEcosystemTag(tagId)` - Get single tag by ID
+- `getEcosystemTagsByIds(tagIds)` - Get multiple tags (for selected tags)
+
+---
+
 ## Prompt Templates
 
 **File:** `utils/prompts.ts`
@@ -86,6 +123,13 @@ export interface ImprovementTag {
 - **Tokens:** ~1300
 - **Tags:** Not supported
 - **Description:** "Find patterns and inconsistencies across files"
+
+**4. CODEREF_ECOSYSTEM_REVIEW (key: '0004')**
+- **Purpose:** Review CodeRef ecosystem components with focused feedback
+- **Tokens:** ~1100
+- **Tags:** Supports 10 ecosystem-specific tags
+- **Description:** "Review coderef ecosystem components with focused feedback"
+- **Output:** Structured analysis with how_used, strengths, weaknesses, add_remove fields per tag
 
 ### Prompt Selection UI
 
@@ -118,14 +162,24 @@ Located in `PromptSelector.tsx`:
 
 ## Tag Interaction Flow
 
-**Only applies to CODE_REVIEW prompt (key: '0001')**
+### CODE_REVIEW Tags (key: '0001')
 
-### User Interaction
+**8 Improvement Categories**
 
 1. **User clicks CODE_REVIEW prompt** → Prompt card selected
 2. **Tag chips appear** below prompt description (8 chips)
 3. **User clicks tag chip** → Tag toggles active/inactive
 4. **Multiple tags can be selected** → All selected tags included in export
+
+### CODEREF_ECOSYSTEM_REVIEW Tags (key: '0004')
+
+**10 Ecosystem Categories**
+
+1. **User clicks CODEREF_ECOSYSTEM_REVIEW prompt** → Prompt card selected
+2. **Ecosystem tag chips appear** below prompt description (10 chips)
+3. **User clicks ecosystem tag chip** → Tag toggles active/inactive
+4. **Multiple tags can be selected** → All selected tags included in export
+5. **Same visual styling** as CODE_REVIEW tags for consistency
 
 ### Tag Chip Component
 
@@ -176,6 +230,7 @@ Located in `PromptSelector.tsx`:
 
 ```typescript
 const ICON_MAP: Record<string, LucideIcon> = {
+  // CODE_REVIEW tags (8)
   'Zap': Zap,
   'Lock': Lock,
   'Sparkles': Sparkles,
@@ -184,6 +239,15 @@ const ICON_MAP: Record<string, LucideIcon> = {
   'Accessibility': Accessibility,
   'AlertTriangle': AlertTriangle,
   'Palette': Palette,
+  // CODEREF_ECOSYSTEM_REVIEW tags (10)
+  'FileText': FileText,
+  'Code2': Code2,
+  'GitBranch': GitBranch,
+  'Plug': Plug,
+  'Ruler': Ruler,
+  'Users': Users,
+  'Database': Database,
+  'FileOutput': FileOutput,
 };
 ```
 
@@ -526,8 +590,10 @@ const handleAddToPrompt = async () => {
 
 - **`packages/dashboard/src/app/prompts/page.tsx`** - Prompts page route
 - **`packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx`** - Main workflow orchestrator
-- **`packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx`** - Prompt cards with tag chips (lines 73-106)
-- **`packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts`** - Tag definitions and helpers
+- **`packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx`** - Prompt cards with tag chips (CODE_REVIEW: lines 85-118, CODEREF_ECOSYSTEM_REVIEW: lines 120-154)
+- **`packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts`** - CODE_REVIEW tag definitions (8 tags)
+- **`packages/dashboard/src/components/PromptingWorkflow/constants/ecosystem-tags.ts`** - CODEREF_ECOSYSTEM_REVIEW tag definitions (10 tags)
+- **`packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts`** - Prompt templates (CODE_REVIEW, SYNTHESIZE, CONSOLIDATE, CODEREF_ECOSYSTEM_REVIEW)
 - **`packages/dashboard/src/contexts/WorkflowContext.tsx`** - State management with localStorage
 
 ### Integration Files
@@ -544,9 +610,18 @@ const handleAddToPrompt = async () => {
 
 ## Recent Updates
 
+**2026-01-02 (Commit e2e376e)** - CODEREF_ECOSYSTEM_REVIEW prompt added
+- ✅ Created `constants/ecosystem-tags.ts` with 10 ecosystem categories
+- ✅ Added CODEREF_ECOSYSTEM_REVIEW prompt (key: '0004') with ~1100 tokens
+- ✅ Implemented getEcosystemPromptWithTags() function for tag interpolation
+- ✅ Updated `PromptSelector.tsx` with ecosystem tag chip rendering (lines 120-154)
+- ✅ Added 8 new Lucide icons (FileText, Code2, GitBranch, Plug, Ruler, Users, Database, FileOutput)
+- ✅ Ecosystem tags use same visual styling as CODE_REVIEW tags
+- ✅ Structured output format: how_used, strengths, weaknesses, add_remove fields
+
 **2026-01-01 (Merge c4cb099)** - Tags implementation merged to main
 - ✅ Created `constants/tags.ts` with 8 improvement categories
-- ✅ Updated `PromptSelector.tsx` with tag chip rendering (lines 73-106)
+- ✅ Updated `PromptSelector.tsx` with tag chip rendering (lines 85-118)
 - ✅ Updated `WorkflowContext.tsx` with tag state management (toggleTag, setSelectedTags)
 - ✅ Added icon mapping for 8 Lucide icons
 - ✅ Tag chips only show for CODE_REVIEW prompt (key: '0001')
@@ -558,6 +633,6 @@ const handleAddToPrompt = async () => {
 
 ---
 
-**Last Updated:** 2026-01-01
-**Workorder:** WO-PROMPTING-WORKFLOW-TAGS-001
-**Feature:** Tag-based code review filtering for focused AI feedback
+**Last Updated:** 2026-01-02
+**Workorders:** WO-PROMPTING-WORKFLOW-TAGS-001, WO-DASHBOARD-ECOSYSTEM-REVIEW-001
+**Features:** Tag-based code review filtering + CodeRef ecosystem component review
