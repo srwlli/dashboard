@@ -207,6 +207,7 @@ export function FileTree({
         <FavoritesList
           favoritesData={favoritesData}
           selectedPath={selectedPath}
+          project={project}
           onFileClick={onFileClick}
           onCreateGroup={onCreateGroup}
           onDeleteGroup={onDeleteGroup}

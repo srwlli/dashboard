@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { TreeNode } from '@/lib/coderef/types';
+import type { TreeNode, Project } from '@/lib/coderef/types';
 import type { FavoritesData } from '@/lib/coderef/favorites-types';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -13,11 +13,14 @@ import {
   Trash2,
   Folder,
   FolderOpen,
+  FolderTree,
+  Check,
 } from 'lucide-react';
 
 interface FavoritesListProps {
   favoritesData: FavoritesData;
   selectedPath?: string;
+  project?: Project | null;
   onFileClick: (node: TreeNode) => void;
   onCreateGroup?: (name: string) => void;
   onDeleteGroup?: (groupId: string) => void;
@@ -30,6 +33,7 @@ interface FavoritesListProps {
 export function FavoritesList({
   favoritesData,
   selectedPath,
+  project,
   onFileClick,
   onCreateGroup,
   onDeleteGroup,
@@ -44,6 +48,7 @@ export function FavoritesList({
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [editingGroupName, setEditingGroupName] = useState('');
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; path: string } | null>(null);
+  const [copiedPath, setCopiedPath] = useState(false);
 
   // Group favorites by group name
   const ungroupedFavorites = favoritesData.favorites.filter(f => !f.group);
@@ -106,6 +111,32 @@ export function FavoritesList({
   const handleReassignToGroup = (groupName?: string) => {
     if (contextMenu && onAssignToGroup) {
       onAssignToGroup(contextMenu.path, groupName);
+    }
+  };
+
+  const handleCopyPath = async () => {
+    if (!contextMenu || !project) return;
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1); // Remove '[Directory: ' and ']'
+      }
+
+      // Construct full path
+      const fullPath = `${projectPath}/${contextMenu.path}`;
+      await navigator.clipboard.writeText(fullPath);
+
+      // Show feedback
+      setCopiedPath(true);
+      setTimeout(() => setCopiedPath(false), 2000);
+
+      // Close context menu
+      setContextMenu(null);
+    } catch (error) {
+      console.error('Failed to copy path:', error);
+      alert('Failed to copy path to clipboard');
     }
   };
 
@@ -322,6 +353,17 @@ export function FavoritesList({
                 })),
               ],
             },
+            // Copy Path - works for both files and directories
+            ...(project
+              ? [
+                  {
+                    label: 'Copy Path',
+                    icon: copiedPath ? Check : FolderTree,
+                    onClick: handleCopyPath,
+                    iconClassName: copiedPath ? 'text-green-500' : '',
+                  },
+                ]
+              : []),
           ]}
           onClose={() => setContextMenu(null)}
         />

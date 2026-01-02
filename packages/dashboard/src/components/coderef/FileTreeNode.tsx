@@ -14,6 +14,8 @@ import {
   FileText,
   Star,
   Plus,
+  FolderTree,
+  Check,
 } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
 import { useWorkflow } from '@/contexts/WorkflowContext';
@@ -116,6 +118,7 @@ export function FileTreeNode({
 }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [copiedPath, setCopiedPath] = useState(false);
   const { addAttachments } = useWorkflow();
 
   const isDirectory = node.type === 'directory';
@@ -178,6 +181,32 @@ export function FileTreeNode({
     } catch (error) {
       console.error('Failed to add file to prompt:', error);
       alert('Failed to add file to prompt');
+    }
+  };
+
+  const handleCopyPath = async () => {
+    if (!project) return;
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1); // Remove '[Directory: ' and ']'
+      }
+
+      // Construct full path
+      const fullPath = `${projectPath}/${node.path}`;
+      await navigator.clipboard.writeText(fullPath);
+
+      // Show feedback
+      setCopiedPath(true);
+      setTimeout(() => setCopiedPath(false), 2000);
+
+      // Close context menu
+      setContextMenu(null);
+    } catch (error) {
+      console.error('Failed to copy path:', error);
+      alert('Failed to copy path to clipboard');
     }
   };
 
@@ -306,6 +335,17 @@ export function FileTreeNode({
                     icon: Plus,
                     onClick: handleAddToPrompt,
                     iconClassName: '',
+                  },
+                ]
+              : []),
+            // Copy Path - works for both files and directories
+            ...(project
+              ? [
+                  {
+                    label: 'Copy Path',
+                    icon: copiedPath ? Check : FolderTree,
+                    onClick: handleCopyPath,
+                    iconClassName: copiedPath ? 'text-green-500' : '',
                   },
                 ]
               : []),
