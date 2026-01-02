@@ -1,0 +1,47 @@
+{
+  "workorder_id": "WO-DASHBOARD-ECOSYSTEM-REVIEW-001",
+  "feature_name": "coderef-ecosystem-review-prompt",
+  "created": "2026-01-01",
+  "status": "pending_plan",
+
+  "handoff": {
+    "orchestrator_to_agent": "See context.json for complete requirements",
+    "status": "pending_plan",
+    "instructions": "Review context.json, create implementation plan, update status to 'plan_submitted'"
+  },
+
+  "phases": {
+    "planning": {
+      "status": "pending",
+      "agent_tasks": [
+        "Review context.json requirements",
+        "Review existing CODE_REVIEW pattern (PromptSelector.tsx lines 73-106)",
+        "Review improvement workflow tags structure",
+        "Create plan.json with task breakdown",
+        "Update communication.json status to 'plan_submitted'"
+      ]
+    },
+    "implementation": {
+      "status": "pending",
+      "agent_tasks": [
+        "Create constants/ecosystem-tags.ts with 10 tags",
+        "Add CODEREF_ECOSYSTEM_REVIEW prompt to utils/prompts.ts",
+        "Create getEcosystemPromptWithTags() function",
+        "Update PromptSelector.tsx with ecosystem tag chips (key === '0004')",
+        "Add Lucide icon mapping for 10 new icons",
+        "Test tag selection and export functionality",
+        "Verify no regression in CODE_REVIEW prompt"
+      ]
+    },
+    "completion": {
+      "status": "pending",
+      "agent_tasks": [
+        "Run /update-deliverables to record git metrics",
+        "Run /archive-feature to move to completed",
+        "Update communication.json status to 'complete'"
+      ]
+    }
+  },
+
+  "communication_log": []
+}

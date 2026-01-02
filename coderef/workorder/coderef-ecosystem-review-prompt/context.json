@@ -95,16 +95,36 @@
   "prompt_template_structure": {
     "name": "CODEREF_ECOSYSTEM_REVIEW",
     "key": "0004",
-    "estimated_tokens": 1100,
-    "description": "Review coderef ecosystem components with focused feedback",
+    "estimated_tokens": 1200,
+    "description": "Review coderef ecosystem components with focused feedback - JSON output",
+    "output_format": "JSON (structured analysis)",
+    "workflow_pattern": "Communication.json coordination - agents save to common folder",
     "sections": [
-      "Agent identification header (required metadata)",
-      "PART 1: Component Overview (what component does, key features)",
-      "PART 2: Ecosystem Analysis (tag-based)",
-      "Structured analysis per tag: how_used, strengths, weaknesses, add_remove"
+      "Agent identification metadata",
+      "Component overview",
+      "Tag-based ecosystem analysis (structured JSON per tag)",
+      "Analysis fields: how_used, strengths, weaknesses, add_remove"
     ],
-    "output_format": "Markdown in code block",
-    "tag_interpolation": "Similar to CODE_REVIEW - {{TAG_SECTION}} and {{CATEGORY_NAME}} placeholders"
+    "user_inputs": {
+      "review_title": "User provides descriptive title (e.g., 'Q1-2026-Documentation-Review')",
+      "selected_tags": "User selects 1-10 ecosystem tags",
+      "attachments": "User attaches files from CodeRef Explorer"
+    },
+    "agent_workflow": {
+      "step_1": "Agent receives prompt with review title and selected tags",
+      "step_2": "Agent analyzes attached files/components",
+      "step_3": "Agent creates structured JSON response",
+      "step_4": "Agent saves to: coderef/reviews/{review-title}/responses/{agent-id}.json",
+      "step_5": "Agent ID = their working directory name (e.g., 'coderef-context', 'coderef-docs')"
+    },
+    "common_folder_pattern": {
+      "location": "coderef/reviews/{review-title}/",
+      "structure": {
+        "prompt.json": "Original prompt + metadata",
+        "responses/": "Folder containing all agent responses",
+        "responses/{agent-id}.json": "Individual agent JSON responses"
+      }
+    }
   },
 
   "files_to_create": [
