@@ -1,0 +1,287 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "coderef-ecosystem-review-prompt",
+    "workorder_id": "WO-DASHBOARD-ECOSYSTEM-REVIEW-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "PlanningGenerator",
+    "has_context": false,
+    "has_analysis": false,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-01-02",
+      "ai_assistance": true,
+      "next_review": "2026-02-01"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "available": [],
+        "missing": [
+          "Run /analyze-for-planning to discover docs"
+        ]
+      },
+      "coding_standards": {
+        "available": [],
+        "missing": [
+          "Run /analyze-for-planning to discover standards"
+        ]
+      },
+      "reference_components": {
+        "primary": "Unknown",
+        "secondary": []
+      },
+      "key_patterns_identified": [
+        "Run /analyze-for-planning to identify patterns"
+      ],
+      "technology_stack": {
+        "languages": [],
+        "frameworks": [],
+        "key_libraries": []
+      },
+      "gaps_and_risks": [
+        "Missing project analysis - run /analyze-for-planning first"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Implement Coderef Ecosystem Review Prompt feature to extend system capabilities",
+      "value_proposition": "Enables users to coderef ecosystem review prompt functionality",
+      "real_world_analogy": "Building Coderef Ecosystem Review Prompt from scratch following established patterns",
+      "use_case": "User triggers coderef-ecosystem-review-prompt \u2192 System processes request \u2192 Feature delivers result",
+      "output": "Coderef Ecosystem Review Prompt implementation with tests and documentation"
+    },
+    "2_risk_assessment": {
+      "overall_risk": "low",
+      "complexity": "low (estimated 3-5 files, <200 lines)",
+      "scope": "Estimated 0 requirements affecting multiple components",
+      "file_system_risk": "low (standard code changes only)",
+      "dependencies": [
+        "None identified - may require discovery during implementation"
+      ],
+      "performance_concerns": [
+        "No significant performance concerns identified - monitor during implementation"
+      ],
+      "security_considerations": [
+        "Follow existing security patterns - review during implementation"
+      ],
+      "breaking_changes": "none (extending existing functionality)"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "Identify during implementation based on feature scope"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "Existing modules and components - identify during implementation"
+        ],
+        "existing_external": [
+          "Standard project dependencies"
+        ],
+        "new_external": [],
+        "new_internal": []
+      },
+      "architecture_context": "Standard implementation following existing project architecture and patterns"
+    },
+    "4_key_features": {
+      "primary_features": [
+        "Implement core functionality",
+        "Add error handling",
+        "Integrate with existing system"
+      ],
+      "secondary_features": [
+        "Add logging and monitoring",
+        "Optimize performance"
+      ],
+      "edge_case_handling": [
+        "Empty or null input validation",
+        "Invalid input error handling",
+        "Boundary conditions and limits"
+      ],
+      "configuration_options": [
+        "None"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Create initial project structure and setup development environment with required dependencies",
+        "LOGIC-001: Implement core feature functionality following existing project patterns and architecture",
+        "TEST-001: Write unit tests for all new functionality with minimum 80% code coverage",
+        "TEST-002: Write integration tests to verify end-to-end functionality and component interactions",
+        "DOC-001: Update documentation including README, API docs, and inline code comments for all public interfaces"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Phase 1: Foundation",
+          "description": "Setup and scaffolding - create initial structure, install dependencies, configure environment",
+          "tasks": [
+            "SETUP-001"
+          ],
+          "deliverables": [
+            "All files exist",
+            "Dependencies installed",
+            "Environment configured"
+          ]
+        },
+        {
+          "phase": 2,
+          "name": "Phase 2: Core Implementation",
+          "description": "Implement primary features and business logic following existing patterns",
+          "tasks": [
+            "LOGIC-001"
+          ],
+          "deliverables": [
+            "Happy path works end-to-end",
+            "Core functionality complete"
+          ]
+        },
+        {
+          "phase": 3,
+          "name": "Phase 3: Testing",
+          "description": "Comprehensive testing at unit, integration, and end-to-end levels",
+          "tasks": [
+            "TEST-001"
+          ],
+          "deliverables": [
+            "All tests passing",
+            "Coverage meets requirements"
+          ]
+        },
+        {
+          "phase": 4,
+          "name": "Phase 4: Documentation",
+          "description": "Complete documentation for users and developers",
+          "tasks": [
+            "DOC-001"
+          ],
+          "deliverables": [
+            "All documentation complete",
+            "Examples provided"
+          ]
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "Test individual functions and methods in isolation",
+        "Verify input validation and error handling",
+        "Test edge cases and boundary conditions",
+        "Achieve minimum 80% code coverage"
+      ],
+      "integration_tests": [
+        "Test component interactions and data flow",
+        "Verify end-to-end functionality",
+        "Test integration with existing systems"
+      ],
+      "end_to_end_tests": [
+        "Not applicable"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "Empty or null input provided",
+          "setup": "Call function with None or empty string",
+          "expected_behavior": "Function validates input and returns appropriate error",
+          "verification": "Assert error message and status code",
+          "error_handling": "ValueError or ValidationError"
+        },
+        {
+          "scenario": "Invalid input format provided",
+          "setup": "Call function with malformed or incorrect data type",
+          "expected_behavior": "Function validates input type and returns error",
+          "verification": "Assert error message indicates invalid format",
+          "error_handling": "TypeError or ValidationError"
+        },
+        {
+          "scenario": "Boundary conditions at limits",
+          "setup": "Test with minimum and maximum allowed values",
+          "expected_behavior": "Function handles boundary values correctly",
+          "verification": "Assert results are within expected range",
+          "error_handling": "No error expected for valid boundaries"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "Feature implementation complete",
+          "metric": "All requirements implemented",
+          "target": "100% of specified requirements",
+          "validation": "Manual verification against requirements list"
+        },
+        {
+          "requirement": "Integration successful",
+          "metric": "Feature works with existing system",
+          "target": "No breaking changes to existing functionality",
+          "validation": "Run full test suite"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "Code coverage",
+          "metric": "Line coverage",
+          "target": ">80%",
+          "validation": "Run coverage tool"
+        },
+        {
+          "requirement": "Code quality",
+          "metric": "Linter passes",
+          "target": "Zero linting errors",
+          "validation": "Run linter"
+        },
+        {
+          "requirement": "Type safety",
+          "metric": "Type checker passes",
+          "target": "Zero type errors",
+          "validation": "Run type checker"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "Response time",
+          "metric": "Execution time",
+          "target": "< 1 second for typical operations",
+          "validation": "Performance tests"
+        }
+      ],
+      "security_requirements": [
+        {
+          "requirement": "Input validation",
+          "metric": "All inputs validated",
+          "target": "100% validation coverage",
+          "validation": "Security review"
+        }
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "\u2610 Review complete plan for gaps or ambiguities",
+        "\u2610 Verify all requirements are clear and testable",
+        "\u2610 Set up development environment with required dependencies"
+      ],
+      "phase_1": [
+        "\u2610 SETUP-001: Create initial project structure and setup development environment with required dependencies"
+      ],
+      "phase_2": [
+        "\u2610 LOGIC-001: Implement core feature functionality following existing project patterns and architecture"
+      ],
+      "phase_3": [
+        "\u2610 TEST-001: Write unit tests for all new functionality with minimum 80% code coverage",
+        "\u2610 TEST-002: Write integration tests to verify end-to-end functionality and component interactions"
+      ],
+      "phase_4": [
+        "\u2610 DOC-001: Update documentation including README, API docs, and inline code comments for all public interfaces"
+      ],
+      "finalization": [
+        "\u2610 All tests passing (unit + integration)",
+        "\u2610 Code review completed and approved",
+        "\u2610 Documentation updated and complete",
+        "\u2610 Changelog entry created with version bump",
+        "\u2610 Final verification against success criteria"
+      ]
+    }
+  }
+}

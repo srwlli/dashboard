@@ -1,0 +1,227 @@
+{
+  "workorder_id": "WO-DASHBOARD-ECOSYSTEM-REVIEW-001",
+  "feature_name": "coderef-ecosystem-review-prompt",
+  "created": "2026-01-01",
+  "target_project": "coderef-dashboard",
+  "stub_id": "STUB-078",
+
+  "description": "Add CODEREF_ECOSYSTEM_REVIEW prompt card to dashboard prompting workflow. Reuses CODE_REVIEW component pattern but with 10 ecosystem-specific tags for reviewing coderef system components (docs, workflows, agents, MCP servers).",
+
+  "requirements": [
+    "Create new prompt: CODEREF_ECOSYSTEM_REVIEW (key: '0004')",
+    "Add 10 ecosystem tags to constants/ecosystem-tags.ts",
+    "Reuse existing PromptSelector tag chip pattern from CODE_REVIEW",
+    "Support tag-based scoping (select 1-10 tags)",
+    "Generate structured analysis output (how_used, strengths, weaknesses, add_remove)",
+    "Export to JSON/Markdown with selected tags",
+    "Integrate with existing WorkflowContext state management"
+  ],
+
+  "constraints": [
+    "Must reuse existing CODE_REVIEW tag chip UI pattern",
+    "Must integrate with existing WorkflowContext",
+    "Must use existing export functionality (JSON/Markdown)",
+    "Must follow existing Tailwind styling (ind-* classes)",
+    "10 tags maximum (user requirement)",
+    "Must not break existing CODE_REVIEW prompt functionality"
+  ],
+
+  "ecosystem_tags_definition": {
+    "count": 10,
+    "tags": [
+      {
+        "id": "documentation",
+        "label": "Documentation",
+        "icon": "FileText",
+        "description": "Foundation docs, standards, workflows, coderef outputs"
+      },
+      {
+        "id": "code-quality",
+        "label": "Code Quality",
+        "icon": "Code2",
+        "description": "Patterns, complexity, architecture, dependencies"
+      },
+      {
+        "id": "workflows",
+        "label": "Workflows",
+        "icon": "GitBranch",
+        "description": "Planning, execution, coordination, handoff"
+      },
+      {
+        "id": "integration",
+        "label": "Integration",
+        "icon": "Plug",
+        "description": "MCP servers, ecosystem, CLI, dashboard, git"
+      },
+      {
+        "id": "standards",
+        "label": "Standards",
+        "icon": "Ruler",
+        "description": "UI, UX, API, behavior standards"
+      },
+      {
+        "id": "agent-coordination",
+        "label": "Agent Coordination",
+        "icon": "Users",
+        "description": "Personas, multi-agent, context, tooling"
+      },
+      {
+        "id": "metadata-governance",
+        "label": "Metadata & Governance",
+        "icon": "Database",
+        "description": "Versioning, provenance, schemas, validation"
+      },
+      {
+        "id": "outputs",
+        "label": "Outputs",
+        "icon": "FileOutput",
+        "description": "Reports, diagrams, exports, deliverables"
+      },
+      {
+        "id": "performance",
+        "label": "Performance",
+        "icon": "Zap",
+        "description": "System performance, caching, scalability"
+      },
+      {
+        "id": "testing",
+        "label": "Testing",
+        "icon": "FlaskConical",
+        "description": "Test coverage, automation, quality"
+      }
+    ]
+  },
+
+  "prompt_template_structure": {
+    "name": "CODEREF_ECOSYSTEM_REVIEW",
+    "key": "0004",
+    "estimated_tokens": 1100,
+    "description": "Review coderef ecosystem components with focused feedback",
+    "sections": [
+      "Agent identification header (required metadata)",
+      "PART 1: Component Overview (what component does, key features)",
+      "PART 2: Ecosystem Analysis (tag-based)",
+      "Structured analysis per tag: how_used, strengths, weaknesses, add_remove"
+    ],
+    "output_format": "Markdown in code block",
+    "tag_interpolation": "Similar to CODE_REVIEW - {{TAG_SECTION}} and {{CATEGORY_NAME}} placeholders"
+  },
+
+  "files_to_create": [
+    {
+      "file": "constants/ecosystem-tags.ts",
+      "description": "10 ecosystem tags with Lucide icons",
+      "exports": [
+        "EcosystemTag interface",
+        "ECOSYSTEM_TAGS constant",
+        "getAllEcosystemTags()",
+        "getEcosystemTag(tagId)",
+        "getEcosystemTagsByIds(tagIds[])"
+      ]
+    }
+  ],
+
+  "files_to_modify": [
+    {
+      "file": "utils/prompts.ts",
+      "changes": [
+        "Add CODEREF_ECOSYSTEM_REVIEW_PROMPT constant",
+        "Add to PRELOADED_PROMPTS with key '0004'",
+        "Create getEcosystemPromptWithTags() function (similar to getPromptWithTags)"
+      ]
+    },
+    {
+      "file": "components/PromptSelector.tsx",
+      "changes": [
+        "Import ecosystem tags",
+        "Add conditional rendering for ecosystem tag chips (key === '0004')",
+        "Reuse existing tag chip UI pattern",
+        "Map Lucide icons for ecosystem tags"
+      ]
+    },
+    {
+      "file": "contexts/WorkflowContext.tsx",
+      "changes": [
+        "No changes needed - already supports selectedTags array",
+        "Auto-clears tags when switching between prompts"
+      ]
+    }
+  ],
+
+  "ui_pattern_reuse": {
+    "from": "CODE_REVIEW prompt (key: '0001')",
+    "reuse": [
+      "Tag chip rendering logic (lines 73-106 in PromptSelector.tsx)",
+      "Active/inactive state styling (border-ind-accent, bg-ind-accent/10)",
+      "Icon mapping pattern (ICON_MAP with Lucide icons)",
+      "Click handler with e.stopPropagation()",
+      "Tooltip on hover (title attribute)",
+      "Tag toggle in WorkflowContext"
+    ],
+    "adapt": [
+      "Check for key === '0004' instead of '0001'",
+      "Import from ecosystem-tags.ts instead of tags.ts",
+      "Use getEcosystemPromptWithTags() instead of getPromptWithTags()"
+    ]
+  },
+
+  "integration_points": {
+    "workflow_context": "Uses existing selectedTags state - no changes needed",
+    "export_menu": "Uses existing JSON/Markdown export - includes selectedTags in metadata",
+    "attachment_manager": "No changes - uses existing attachment system",
+    "coderef_explorer": "No changes - existing 'Add to Prompt' works with any prompt"
+  },
+
+  "analysis_output_structure": {
+    "format": "Structured analysis per selected tag",
+    "fields": {
+      "how_used": "How this component/document is used in the ecosystem",
+      "strengths": "What works well",
+      "weaknesses": "What's missing or unclear",
+      "add_remove": "Specific suggestions (ADD/REMOVE/REFACTOR prefixes)"
+    },
+    "example": {
+      "tag": "Documentation",
+      "analysis": {
+        "how_used": "Foundation docs provide project context for agents during planning",
+        "strengths": "Clear structure, comprehensive coverage, version tracking",
+        "weaknesses": "No automated staleness detection, manual updates required",
+        "add_remove": "ADD: Timestamp metadata, REFACTOR: Split large CLAUDE.md into focused modules"
+      }
+    }
+  },
+
+  "reference_files": {
+    "improvement_workflow": "C:/Users/willh/Desktop/assistant/coderef/workflows/coderef-improvement-workflow-process.json",
+    "existing_tags": "packages/dashboard/src/components/PromptingWorkflow/constants/tags.ts",
+    "existing_prompt": "packages/dashboard/src/components/PromptingWorkflow/utils/prompts.ts (CODE_REVIEW)",
+    "tag_chips_ui": "packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx (lines 73-106)"
+  },
+
+  "technical_notes": {
+    "framework": "Next.js 14 App Router",
+    "styling": "Tailwind CSS with ind-* custom classes",
+    "icons": "Lucide React (import from 'lucide-react')",
+    "state": "WorkflowContext with localStorage persistence",
+    "pattern": "Reuse existing CODE_REVIEW tag chip pattern exactly"
+  },
+
+  "deliverables": [
+    "constants/ecosystem-tags.ts - 10 ecosystem tags",
+    "Updated utils/prompts.ts - CODEREF_ECOSYSTEM_REVIEW prompt + getEcosystemPromptWithTags()",
+    "Updated components/PromptSelector.tsx - Ecosystem tag chips for key '0004'",
+    "Documentation in coderef/workorder/coderef-ecosystem-review-prompt/",
+    "Screenshots showing tag selection and export"
+  ],
+
+  "success_criteria": [
+    "4th prompt card appears on /prompts page",
+    "Clicking CODEREF_ECOSYSTEM_REVIEW shows 10 tag chips below card",
+    "Tag chips use same visual style as CODE_REVIEW tags",
+    "Tag selection works (active/inactive states)",
+    "Export includes selected ecosystem tags in metadata",
+    "Prompt text interpolates selected tags correctly",
+    "No regression in existing CODE_REVIEW prompt functionality",
+    "All 10 Lucide icons render correctly"
+  ]
+}
