@@ -1,0 +1,125 @@
+[
+  {
+    "timestamp": "2026-01-01T03:22:54.129011",
+    "workorder_id": "WO-PROMPTING-WORKFLOW-TAGS-001",
+    "feature_name": "prompting-workflow-tags",
+    "task_count": 23,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: Review complete plan for gaps",
+        "activeForm": "PRE-IMPL-001: Reviewing complete plan for gaps",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-002: Verify context.json UX flow matches plan",
+        "activeForm": "PRE-IMPL-002: Verifying context.json UX flow matches plan",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-003: Confirm tag list (8 categories) with stakeholder",
+        "activeForm": "PRE-IMPL-003: Confirming tag list (8 categories) with stakeholder",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:TYPES-001: Add selectedTags to Workflow interface",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:TYPES-001: Adding selectedTags to Workflow interface",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:TAGS-001: Create constants/tags.ts with IMPROVEMENT_TAGS",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:TAGS-001: Creating constants/tags.ts with IMPROVEMENT_TAGS",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-001: Refactor CODE_REVIEW_PROMPT (Top 3 features, Reasoning/Impact)",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-001: Refactoring CODE_REVIEW_PROMPT (Top 3 features, Reasoning/Impact)",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-002: Add getPromptWithTags() helper",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:PROMPT-002: Adding getPromptWithTags() helper",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-001: Add setSelectedTags() to WorkflowContext",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-001: Adding setSelectedTags() to WorkflowContext",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-002: Add toggleTag() to WorkflowContext",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:CONTEXT-002: Adding toggleTag() to WorkflowContext",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:UI-001: Add tag chips to PromptSelector",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:UI-001: Adding tag chips to PromptSelector",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:UI-002: Add click handlers + visual feedback",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:UI-002: Adding click handlers + visual feedback",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:UI-003: Add horizontal scroll for mobile",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:UI-003: Adding horizontal scroll for mobile",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-001: Update generateJSON() with tags",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-001: Updating generateJSON() with tags",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-002: Update generateMarkdown() with tags",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:EXPORT-002: Updating generateMarkdown() with tags",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-001: Test tag toggle",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-001: Testing tag toggle",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-002: Test prompt interpolation",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-002: Testing prompt interpolation",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-003: Test LocalStorage persistence",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-003: Testing LocalStorage persistence",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-004: Test mobile responsive scrolling",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:TEST-004: Testing mobile responsive scrolling",
+        "status": "pending"
+      },
+      {
+        "content": "WO-PROMPTING-WORKFLOW-TAGS-001:DOC-001: Update CLAUDE.md",
+        "activeForm": "WO-PROMPTING-WORKFLOW-TAGS-001:DOC-001: Updating CLAUDE.md",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-001: All tests passing",
+        "activeForm": "FINALIZA-001: Alling tests passing",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-002: Code review completed",
+        "activeForm": "FINALIZA-002: Codeing review completed",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-003: Documentation updated (CLAUDE.md)",
+        "activeForm": "FINALIZA-003: Documentationing updated (CLAUDE.md)",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-004: Changelog entry created",
+        "activeForm": "FINALIZA-004: Changeloging entry created",
+        "status": "pending"
+      }
+    ]
+  }
+]

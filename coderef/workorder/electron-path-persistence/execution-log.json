@@ -1,0 +1,155 @@
+[
+  {
+    "timestamp": "2026-01-01T03:22:53.013666",
+    "workorder_id": "WO-ELECTRON-PATH-PERSISTENCE-001",
+    "feature_name": "electron-path-persistence",
+    "task_count": 29,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: Review complete plan for gaps",
+        "activeForm": "PRE-IMPL-001: Reviewing complete plan for gaps",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-002: Confirm projects.json uses absolute paths (check ~/.coderef-dashboard/projects.json)",
+        "activeForm": "PRE-IMPL-002: Confirming projects.json uses absolute paths (check ~/.coderef-dashboard/projects.json)",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-003: Verify existing IPC handler patterns (fs:stat, fs:readdir) for consistency",
+        "activeForm": "PRE-IMPL-003: Verifying existing IPC handler patterns (fs:stat, fs:readdir) for consistency",
+        "status": "pending"
+      },
+      {
+        "content": "CONFIG-001: Document projects.json schema with absolute path examples in API.md or SCHEMA.md",
+        "activeForm": "CONFIG-001: Documenting projects.json schema with absolute path examples in API.md or SCHEMA.md",
+        "status": "pending"
+      },
+      {
+        "content": "IPC-001: Implement fs:validatePath handler in main.js with fs.access() and fs.stat() checks",
+        "activeForm": "IPC-001: Implementing fs:validatePath handler in main.js with fs.access() and fs.stat() checks",
+        "status": "pending"
+      },
+      {
+        "content": "IPC-001: Return { valid: boolean, reason: string | undefined } response format",
+        "activeForm": "IPC-001: Returning { valid: boolean, reason: string | undefined } response format",
+        "status": "pending"
+      },
+      {
+        "content": "IPC-001: Handle errors (ENOENT, EACCES, ENOTDIR) and convert to validation reasons",
+        "activeForm": "IPC-001: Handleing errors (ENOENT, EACCES, ENOTDIR) and convert to validation reasons",
+        "status": "pending"
+      },
+      {
+        "content": "IPC-002: Add validatePath: (path: string) => Promise<ValidationResult> to preload.js electronAPI.fs",
+        "activeForm": "IPC-002: Adding validatePath: (path: string) => Promise<ValidationResult> to preload.js electronAPI.fs",
+        "status": "pending"
+      },
+      {
+        "content": "IPC-002: Create TypeScript interface for ValidationResult { valid: boolean; reason: string | undefined }",
+        "activeForm": "IPC-002: Creating TypeScript interface for ValidationResult { valid: boolean; reason: string | undefined }",
+        "status": "pending"
+      },
+      {
+        "content": "UI-001: Update checkForStaleHandles() to call window.electronAPI.fs.validatePath(project.path) with optional chaining",
+        "activeForm": "UI-001: Updating checkForStaleHandles() to call window.electronAPI.fs.validatePath(project.path) with optional chaining",
+        "status": "pending"
+      },
+      {
+        "content": "UI-001: Replace fileSystem.isProjectValid() with direct validatePath IPC call",
+        "activeForm": "UI-001: Replaceing fileSystem.isProjectValid() with direct validatePath IPC call",
+        "status": "pending"
+      },
+      {
+        "content": "UI-001: Add projects to staleProjects Set if validation.valid === false",
+        "activeForm": "UI-001: Adding projects to staleProjects Set if validation.valid === false",
+        "status": "pending"
+      },
+      {
+        "content": "UI-002: Update BatchRestoreUI to display validation.reason in error message",
+        "activeForm": "UI-002: Updating BatchRestoreUI to display validation.reason in error message",
+        "status": "pending"
+      },
+      {
+        "content": "UI-002: Add tooltip or error text showing specific failure reason (not found, permission denied, etc.)",
+        "activeForm": "UI-002: Adding tooltip or error text showing specific failure reason (not found, permission denied, etc.)",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-001: Create test with valid absolute path (C:/test/valid-project), verify { valid: true }",
+        "activeForm": "TEST-001: Creating test with valid absolute path (C:/test/valid-project), verify { valid: true }",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-002: Create test with non-existent path, verify { valid: false, reason: 'Path not found' }",
+        "activeForm": "TEST-002: Creating test with non-existent path, verify { valid: false, reason: 'Path not found' }",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-003: Create test with file path (not directory), verify { valid: false, reason: 'Not a directory' }",
+        "activeForm": "TEST-003: Creating test with file path (not directory), verify { valid: false, reason: 'Not a directory' }",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-004: Create test with permission-denied path, verify { valid: false, reason: 'Permission denied' }",
+        "activeForm": "TEST-004: Creating test with permission-denied path, verify { valid: false, reason: 'Permission denied' }",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-4-005: Run all tests and verify 100% pass rate",
+        "activeForm": "PHASE-4-005: Running all tests and verify 100% pass rate",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Add fs:validatePath to IPC handlers section in CLAUDE.md",
+        "activeForm": "DOC-001: Adding fs:validatePath to IPC handlers section in CLAUDE.md",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Document validation flow: ProjectSelector \u2192 validatePath IPC \u2192 fs.access() check",
+        "activeForm": "DOC-001: Documenting validation flow: ProjectSelector \u2192 validatePath IPC \u2192 fs.access() check",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Add troubleshooting guide for invalid path scenarios",
+        "activeForm": "DOC-001: Adding troubleshooting guide for invalid path scenarios",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Update Recent Changes section with v0.6.0 path persistence feature",
+        "activeForm": "DOC-001: Updating Recent Changes section with v0.6.0 path persistence feature",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-001: All tests passing (unit + integration + edge cases)",
+        "activeForm": "FINALIZA-001: Alling tests passing (unit + integration + edge cases)",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-002: Code review completed (verify IPC handler follows existing patterns)",
+        "activeForm": "FINALIZA-002: Codeing review completed (verify IPC handler follows existing patterns)",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-003: Documentation updated (CLAUDE.md, API.md, inline comments)",
+        "activeForm": "FINALIZA-003: Documentationing updated (CLAUDE.md, API.md, inline comments)",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-004: Changelog entry created (v0.6.0 - Electron path persistence)",
+        "activeForm": "FINALIZA-004: Changeloging entry created (v0.6.0 - Electron path persistence)",
+        "status": "pending"
+      },
+      {
+        "content": "Manual testing: Add project \u2192 restart app \u2192 verify no permission dialogs",
+        "activeForm": "Manual testing: Adding project \u2192 restart app \u2192 verify no permission dialogs",
+        "status": "pending"
+      },
+      {
+        "content": "Manual testing: Delete project directory \u2192 verify flagged as stale",
+        "activeForm": "Manual testing: Deleteing project directory \u2192 verify flagged as stale",
+        "status": "pending"
+      }
+    ]
+  }
+]
