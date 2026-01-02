@@ -1,0 +1,347 @@
+{
+  "workorder_id": "WO-PROJECTS-CONTEXT-001",
+  "feature_name": "projects-context-optimization",
+  "created_at": "2026-01-02T22:30:00.000Z",
+  "status": "planning",
+  "0_preparation": {
+    "foundation_docs": {
+      "architecture": "coderef/foundation-docs/ARCHITECTURE.md",
+      "api": "coderef/foundation-docs/API.md",
+      "components": "coderef/foundation-docs/COMPONENTS.md",
+      "schema": "coderef/foundation-docs/SCHEMA.md"
+    },
+    "reference_components": {
+      "ProjectSelector": "packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+      "CodeRefExplorerWidget": "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "CodeRefApi": "packages/dashboard/src/lib/coderef/api-access.ts"
+    },
+    "patterns": {
+      "context_providers": "React Context API for global state management",
+      "loading_states": "Skeleton loading with Tailwind animate-pulse",
+      "optimistic_ui": "Immediate UI updates with rollback on error"
+    }
+  },
+  "1_executive_summary": {
+    "what": "Optimize project loading performance by implementing React Context for shared state, loading skeletons for better UX, and optimistic UI updates for instant feedback",
+    "why": "Currently, ProjectSelector fetches projects from API on every mount (redundant calls), lacks visual loading feedback, and feels sluggish when adding/removing projects",
+    "success": "Sub-100ms perceived project selection changes, zero redundant API calls across navigation, professional loading states",
+    "impact": {
+      "users": "Faster, smoother project selection experience with immediate visual feedback",
+      "codebase": "Centralized project state reduces API overhead by ~80%, improves code reusability",
+      "performance": "Eliminates N redundant API calls (where N = navigation count), reduces time-to-interactive by ~200ms"
+    }
+  },
+  "2_risk_assessment": {
+    "high_risk": [
+      {
+        "risk": "Context state conflicts with existing localStorage persistence in CodeRefExplorerWidget",
+        "impact": "Dual sources of truth could cause selection desync",
+        "mitigation": "Context becomes single source, CodeRefExplorerWidget consumes from context, localStorage only for cross-session persistence"
+      },
+      {
+        "risk": "Optimistic updates rollback could confuse users if network fails",
+        "impact": "User sees project added then disappear on error",
+        "mitigation": "Show error toast immediately on rollback with retry option, add 'adding...' loading state on project card"
+      }
+    ],
+    "medium_risk": [
+      {
+        "risk": "Context re-renders could affect unrelated components",
+        "impact": "Performance degradation if context updates trigger unnecessary re-renders",
+        "mitigation": "Split context into ProjectsContext (list) and ProjectSelectionContext (selected), use React.memo on consumers"
+      }
+    ],
+    "low_risk": [
+      {
+        "risk": "Loading skeleton dimensions might not match actual dropdown",
+        "impact": "Layout shift when skeleton replaced with real component",
+        "mitigation": "Match exact pixel dimensions of ProjectSelector (h-10 with padding)"
+      }
+    ]
+  },
+  "3_current_state_analysis": {
+    "existing_behavior": {
+      "project_loading": {
+        "description": "ProjectSelector fetches projects via CodeRefApi.projects.list() on every mount",
+        "location": "packages/dashboard/src/components/coderef/ProjectSelector.tsx:42-44, 105-116",
+        "issue": "Navigation triggers redundant API calls"
+      },
+      "no_loading_feedback": {
+        "description": "ProjectSelector shows 'Loading...' text in disabled dropdown during fetch",
+        "location": "packages/dashboard/src/components/coderef/ProjectSelector.tsx:372",
+        "issue": "No skeleton UI, not visually engaging"
+      },
+      "blocking_ui_updates": {
+        "description": "Adding project blocks until API responds",
+        "location": "packages/dashboard/src/components/coderef/ProjectSelector.tsx:118-185",
+        "issue": "User waits ~500ms for API round-trip"
+      }
+    },
+    "dependencies": {
+      "direct": [
+        "React 19 (Context API, useContext)",
+        "CodeRefApi.projects",
+        "localStorage"
+      ]
+    }
+  },
+  "4_key_features": {
+    "feature_1_projects_context": {
+      "description": "React Context provider that loads projects once on app mount and shares state across all components",
+      "user_story": "As a developer, I want projects to load once per session so navigation feels instant",
+      "acceptance_criteria": [
+        "ProjectsProvider wraps app in layout.tsx",
+        "useProjects() hook returns { projects, loadProjects, isLoading, error }",
+        "Projects fetched once on provider mount, cached in memory",
+        "ProjectSelector consumes from context instead of fetching directly"
+      ]
+    },
+    "feature_2_loading_skeleton": {
+      "description": "Animated skeleton UI that matches ProjectSelector dimensions during initial load",
+      "user_story": "As a user, I want visual feedback that projects are loading",
+      "acceptance_criteria": [
+        "Skeleton shows on initial app load while projects fetch",
+        "Skeleton matches exact dimensions: h-10, rounded",
+        "Uses Tailwind animate-pulse for shimmer effect",
+        "No layout shift when skeleton replaced with real dropdown"
+      ]
+    },
+    "feature_3_optimistic_updates": {
+      "description": "Immediately update UI when adding/removing projects, rollback on API error",
+      "user_story": "As a user, I want instant feedback when adding/removing projects",
+      "acceptance_criteria": [
+        "Add project: UI shows project immediately, sends API request in background",
+        "Remove project: UI removes project immediately, confirms deletion via API",
+        "Error handling: Rollback UI change and show error toast if API fails",
+        "Loading state: Show 'adding...' spinner on project card during API call"
+      ]
+    }
+  },
+  "5_task_id_system": {
+    "workorder_id": "WO-PROJECTS-CONTEXT-001",
+    "task_prefix": "PROJ-CTX",
+    "task_categories": {
+      "SETUP": "Initial setup and context creation",
+      "SKELETON": "Loading skeleton UI implementation",
+      "OPTIMISTIC": "Optimistic UI updates",
+      "INTEGRATION": "Integrate context into existing components",
+      "TEST": "Testing and validation",
+      "DOCS": "Documentation updates"
+    }
+  },
+  "6_implementation_phases": {
+    "phase_1_setup": {
+      "name": "Setup ProjectsContext Infrastructure",
+      "order": 1,
+      "estimated_effort": "2 hours",
+      "tasks": [
+        {
+          "id": "PROJ-CTX-SETUP-001",
+          "title": "Create ProjectsContext with TypeScript types",
+          "description": "Create packages/dashboard/src/contexts/ProjectsContext.tsx with context definition, provider component, and useProjects hook",
+          "dependencies": [],
+          "estimated_time": "30 min",
+          "files_to_create": ["packages/dashboard/src/contexts/ProjectsContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-SETUP-002",
+          "title": "Implement ProjectsProvider with state management",
+          "description": "Implement provider with useState for projects list, isLoading, error. Add useEffect to call loadProjects on mount",
+          "dependencies": ["PROJ-CTX-SETUP-001"],
+          "estimated_time": "45 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ProjectsContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-SETUP-003",
+          "title": "Add ProjectsProvider to app layout",
+          "description": "Wrap app children with ProjectsProvider in packages/dashboard/src/app/layout.tsx",
+          "dependencies": ["PROJ-CTX-SETUP-002"],
+          "estimated_time": "15 min",
+          "files_to_modify": ["packages/dashboard/src/app/layout.tsx"]
+        }
+      ]
+    },
+    "phase_2_skeleton": {
+      "name": "Loading Skeleton UI",
+      "order": 2,
+      "estimated_effort": "1.5 hours",
+      "tasks": [
+        {
+          "id": "PROJ-CTX-SKELETON-001",
+          "title": "Create ProjectSelectorSkeleton component",
+          "description": "Create skeleton component matching exact dimensions: h-10 rounded bg-ind-border with animate-pulse",
+          "dependencies": ["PROJ-CTX-SETUP-003"],
+          "estimated_time": "30 min",
+          "files_to_create": ["packages/dashboard/src/components/coderef/ProjectSelectorSkeleton.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-SKELETON-002",
+          "title": "Integrate skeleton into ProjectSelector",
+          "description": "Show skeleton when isLoading && projects.length === 0. Return early with ProjectSelectorSkeleton",
+          "dependencies": ["PROJ-CTX-SKELETON-001"],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/components/coderef/ProjectSelector.tsx"]
+        }
+      ]
+    },
+    "phase_3_optimistic": {
+      "name": "Optimistic UI Updates",
+      "order": 3,
+      "estimated_effort": "2.5 hours",
+      "tasks": [
+        {
+          "id": "PROJ-CTX-OPTIMISTIC-001",
+          "title": "Implement optimistic addProject in context",
+          "description": "Add addProject function: generate temp ID, add to state immediately, call API in background, rollback on error",
+          "dependencies": ["PROJ-CTX-SETUP-002"],
+          "estimated_time": "45 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ProjectsContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-OPTIMISTIC-002",
+          "title": "Implement optimistic removeProject in context",
+          "description": "Add removeProject function: remove from state immediately, call API, rollback on error",
+          "dependencies": ["PROJ-CTX-SETUP-002"],
+          "estimated_time": "45 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ProjectsContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-OPTIMISTIC-003",
+          "title": "Update ProjectSelector to use optimistic functions",
+          "description": "Modify handleAddProject to call context.addProject(), remove local API logic",
+          "dependencies": ["PROJ-CTX-OPTIMISTIC-001", "PROJ-CTX-OPTIMISTIC-002"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/components/coderef/ProjectSelector.tsx"]
+        }
+      ]
+    },
+    "phase_4_integration": {
+      "name": "Integrate Context into Components",
+      "order": 4,
+      "estimated_effort": "2 hours",
+      "tasks": [
+        {
+          "id": "PROJ-CTX-INTEGRATION-001",
+          "title": "Refactor ProjectSelector to use context",
+          "description": "Replace local loadProjects with useProjects hook, remove useState for projects/loading/error",
+          "dependencies": ["PROJ-CTX-SETUP-003"],
+          "estimated_time": "45 min",
+          "files_to_modify": ["packages/dashboard/src/components/coderef/ProjectSelector.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-INTEGRATION-002",
+          "title": "Update CodeRefExplorerWidget to use context",
+          "description": "Import useProjects hook, ensure localStorage persistence still works",
+          "dependencies": ["PROJ-CTX-SETUP-003"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx"]
+        }
+      ]
+    },
+    "phase_5_testing": {
+      "name": "Testing & Validation",
+      "order": 5,
+      "estimated_effort": "1.5 hours",
+      "tasks": [
+        {
+          "id": "PROJ-CTX-TEST-001",
+          "title": "Test optimistic add with network errors",
+          "description": "Simulate network failure during project add, verify rollback works",
+          "dependencies": ["PROJ-CTX-OPTIMISTIC-003"],
+          "estimated_time": "20 min"
+        },
+        {
+          "id": "PROJ-CTX-TEST-002",
+          "title": "Performance benchmark - API call reduction",
+          "description": "Count API calls before/after optimization during navigation sequence",
+          "dependencies": ["PROJ-CTX-INTEGRATION-001"],
+          "estimated_time": "25 min"
+        }
+      ]
+    },
+    "phase_6_docs": {
+      "name": "Documentation & Cleanup",
+      "order": 6,
+      "estimated_effort": "1 hour",
+      "tasks": [
+        {
+          "id": "PROJ-CTX-DOCS-001",
+          "title": "Add JSDoc to ProjectsContext",
+          "description": "Add comprehensive JSDoc comments with usage examples",
+          "dependencies": ["PROJ-CTX-INTEGRATION-001"],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/contexts/ProjectsContext.tsx"]
+        },
+        {
+          "id": "PROJ-CTX-DOCS-002",
+          "title": "Update ARCHITECTURE.md with context pattern",
+          "description": "Add ProjectsContext to State Management section",
+          "dependencies": ["PROJ-CTX-INTEGRATION-001"],
+          "estimated_time": "25 min",
+          "files_to_modify": ["coderef/foundation-docs/ARCHITECTURE.md"]
+        }
+      ]
+    }
+  },
+  "7_testing_strategy": {
+    "unit_tests": [
+      "Test ProjectsContext provider initialization",
+      "Test optimistic add/remove operations",
+      "Test rollback logic on API errors"
+    ],
+    "integration_tests": [
+      "Test ProjectSelector with ProjectsContext integration",
+      "Test cross-component state sharing"
+    ],
+    "performance_tests": [
+      {
+        "metric": "API call reduction",
+        "target": "80% reduction in project API calls"
+      },
+      {
+        "metric": "Perceived add latency",
+        "target": "< 100ms from click to UI update"
+      }
+    ]
+  },
+  "8_success_criteria": {
+    "functional": [
+      "ProjectsContext loads projects once on app mount",
+      "Loading skeleton shows during initial load with no layout shift",
+      "Adding project shows immediate UI update",
+      "Error toast shows on optimistic update failure"
+    ],
+    "performance": [
+      "Zero redundant API calls during navigation",
+      "< 100ms perceived latency for add/remove operations",
+      "200ms improvement in time-to-interactive"
+    ],
+    "code_quality": [
+      "ProjectsContext has comprehensive JSDoc documentation",
+      "All optimistic operations have error handling and rollback",
+      "TypeScript strict mode passes with no errors"
+    ]
+  },
+  "9_implementation_checklist": {
+    "before_coding": [
+      "Review ProjectSelector current implementation",
+      "Review CodeRefExplorerWidget state management",
+      "Review CodeRefApi.projects interface"
+    ],
+    "during_implementation": [
+      "Create feature branch: git checkout -b feat/projects-context-optimization",
+      "Complete Phase 1: Setup ProjectsContext infrastructure",
+      "Complete Phase 2: Loading skeleton UI",
+      "Complete Phase 3: Optimistic UI updates",
+      "Complete Phase 4: Integrate context into components",
+      "Complete Phase 5: Testing & validation",
+      "Complete Phase 6: Documentation & cleanup"
+    ],
+    "before_commit": [
+      "All tasks completed and tested",
+      "No TypeScript errors",
+      "No console errors in browser DevTools",
+      "Performance benchmarks documented"
+    ]
+  }
+}
