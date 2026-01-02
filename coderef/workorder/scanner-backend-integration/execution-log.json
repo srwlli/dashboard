@@ -376,5 +376,383 @@
         "status": "pending"
       }
     ]
+  },
+  {
+    "timestamp": "2026-01-02T03:23:42.869003",
+    "workorder_id": "WO-SCANNER-BACKEND-INTEGRATION-001",
+    "feature_name": "scanner-backend-integration",
+    "task_count": 74,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: Read Python Scanner GUI reference (scanner-gui/src/main.py)",
+        "activeForm": "PRE-IMPL-001: Reading Python Scanner GUI reference (scanner-gui/src/main.py)",
+        "status": "completed"
+      },
+      {
+        "content": "PRE-IMPL-002: Verify scan-all.py exists at expected location",
+        "activeForm": "PRE-IMPL-002: Verifying scan-all.py exists at expected location",
+        "status": "completed"
+      },
+      {
+        "content": "PRE-IMPL-003: Review existing API patterns (/api/coderef/projects)",
+        "activeForm": "PRE-IMPL-003: Reviewing existing API patterns (/api/coderef/projects)",
+        "status": "completed"
+      },
+      {
+        "content": "PRE-IMPL-004: Review Electron IPC handlers (fs:selectDirectory)",
+        "activeForm": "PRE-IMPL-004: Reviewing Electron IPC handlers (fs:selectDirectory)",
+        "status": "completed"
+      },
+      {
+        "content": "PRE-IMPL-005: Create workorder directory structure",
+        "activeForm": "PRE-IMPL-005: Creating workorder directory structure",
+        "status": "completed"
+      },
+      {
+        "content": "SETUP-001: Create packages/dashboard/src/app/api/scanner/ directory",
+        "activeForm": "SETUP-001: Creating packages/dashboard/src/app/api/scanner/ directory",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-001: Create api/scanner/projects/route.ts",
+        "activeForm": "SETUP-001: Creating api/scanner/projects/route.ts",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-001: Create api/scanner/projects/[id]/route.ts",
+        "activeForm": "SETUP-001: Creating api/scanner/projects/[id]/route.ts",
+        "status": "pending"
+      },
+      {
+        "content": "SETUP-002: Create api/scanner/types.ts with ScannerProject interface",
+        "activeForm": "SETUP-002: Creating api/scanner/types.ts with ScannerProject interface",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-001: Implement getStoragePath() \u2192 ~/.coderef-scanner-projects.json",
+        "activeForm": "IMPL-001: Implementing getStoragePath() \u2192 ~/.coderef-scanner-projects.json",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-001: Implement loadProjects() with ENOENT handling",
+        "activeForm": "IMPL-001: Implementing loadProjects() with ENOENT handling",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-001: Implement saveProjects() with directory creation",
+        "activeForm": "IMPL-001: Implementing saveProjects() with directory creation",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-002: Implement GET /api/scanner/projects (return all)",
+        "activeForm": "IMPL-002: Implementing GET /api/scanner/projects (return all)",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-003: Implement POST /api/scanner/projects with fs.access validation",
+        "activeForm": "IMPL-003: Implementing POST /api/scanner/projects with fs.access validation",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-004: Implement DELETE /api/scanner/projects/:id",
+        "activeForm": "IMPL-004: Implementing DELETE /api/scanner/projects/:id",
+        "status": "pending"
+      },
+      {
+        "content": "Test: curl GET /api/scanner/projects \u2192 returns empty array",
+        "activeForm": "Test: curling GET /api/scanner/projects \u2192 returns empty array",
+        "status": "pending"
+      },
+      {
+        "content": "Test: curl POST /api/scanner/projects with valid path \u2192 succeeds",
+        "activeForm": "Test: curling POST /api/scanner/projects with valid path \u2192 succeeds",
+        "status": "pending"
+      },
+      {
+        "content": "Test: Restart server \u2192 projects persist",
+        "activeForm": "Test: Restarting server \u2192 projects persist",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Create api/scanner/lib/scanExecutor.ts",
+        "activeForm": "IMPL-005: Creating api/scanner/lib/scanExecutor.ts",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Implement ScanExecutor class extending EventEmitter",
+        "activeForm": "IMPL-005: Implementing ScanExecutor class extending EventEmitter",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Implement startScan() with sequential project iteration",
+        "activeForm": "IMPL-005: Implementing startScan() with sequential project iteration",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Implement runScanForProject() using child_process.spawn()",
+        "activeForm": "IMPL-005: Implementing runScanForProject() using child_process.spawn()",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Implement getScanStatus() returning ScanProgress",
+        "activeForm": "IMPL-005: Implementing getScanStatus() returning ScanProgress",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-005: Implement cancelScan() with process.kill()",
+        "activeForm": "IMPL-005: Implementing cancelScan() with process.kill()",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-006: Create api/scanner/scan/route.ts",
+        "activeForm": "IMPL-006: Creating api/scanner/scan/route.ts",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-006: Implement POST handler with randomUUID() for scanId",
+        "activeForm": "IMPL-006: Implementing POST handler with randomUUID() for scanId",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-006: Call scanExecutor.startScan() asynchronously",
+        "activeForm": "IMPL-006: Calling scanExecutor.startScan() asynchronously",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-007: Create api/scanner/scan/[scanId]/status/route.ts",
+        "activeForm": "IMPL-007: Creating api/scanner/scan/[scanId]/status/route.ts",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-007: Implement GET handler returning scanExecutor.getScanStatus()",
+        "activeForm": "IMPL-007: Implementing GET handler returning scanExecutor.getScanStatus()",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-008: Create api/scanner/scan/[scanId]/output/route.ts",
+        "activeForm": "IMPL-008: Creating api/scanner/scan/[scanId]/output/route.ts",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-008: Implement GET handler with ReadableStream SSE",
+        "activeForm": "IMPL-008: Implementing GET handler with ReadableStream SSE",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-008: Send buffered output on connection, listen for 'output' events",
+        "activeForm": "IMPL-008: Sending buffered output on connection, listen for 'output' events",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-009: Create api/scanner/scan/[scanId]/cancel/route.ts",
+        "activeForm": "IMPL-009: Creating api/scanner/scan/[scanId]/cancel/route.ts",
+        "status": "pending"
+      },
+      {
+        "content": "IMPL-009: Implement POST handler calling scanExecutor.cancelScan()",
+        "activeForm": "IMPL-009: Implementing POST handler calling scanExecutor.cancelScan()",
+        "status": "pending"
+      },
+      {
+        "content": "Test: POST /api/scanner/scan \u2192 returns scanId",
+        "activeForm": "Test: POSTing /api/scanner/scan \u2192 returns scanId",
+        "status": "pending"
+      },
+      {
+        "content": "Test: GET /api/scanner/scan/:id/status \u2192 returns progress",
+        "activeForm": "Test: GETing /api/scanner/scan/:id/status \u2192 returns progress",
+        "status": "pending"
+      },
+      {
+        "content": "Test: GET /api/scanner/scan/:id/output \u2192 SSE stream works",
+        "activeForm": "Test: GETing /api/scanner/scan/:id/output \u2192 SSE stream works",
+        "status": "pending"
+      },
+      {
+        "content": "Test: Subprocess actually executes and produces output",
+        "activeForm": "Test: Subprocessing actually executes and produces output",
+        "status": "pending"
+      },
+      {
+        "content": "UI-001: Update ProjectListCard.tsx - add ScannerProject interface",
+        "activeForm": "UI-001: Updating ProjectListCard.tsx - add ScannerProject interface",
+        "status": "pending"
+      },
+      {
+        "content": "UI-001: Add useState<ScannerProject[]> for projects",
+        "activeForm": "UI-001: Adding useState<ScannerProject[]> for projects",
+        "status": "pending"
+      },
+      {
+        "content": "UI-001: Add useEffect to fetch from GET /api/scanner/projects",
+        "activeForm": "UI-001: Adding useEffect to fetch from GET /api/scanner/projects",
+        "status": "pending"
+      },
+      {
+        "content": "UI-002: Add handleAddPath() calling window.electron.fs.selectDirectory()",
+        "activeForm": "UI-002: Adding handleAddPath() calling window.electron.fs.selectDirectory()",
+        "status": "pending"
+      },
+      {
+        "content": "UI-002: Call POST /api/scanner/projects after folder selection",
+        "activeForm": "UI-002: Calling POST /api/scanner/projects after folder selection",
+        "status": "pending"
+      },
+      {
+        "content": "UI-003: Add useState<string[]> for selectedIds",
+        "activeForm": "UI-003: Adding useState<string[]> for selectedIds",
+        "status": "pending"
+      },
+      {
+        "content": "UI-003: Render checkboxes for each project, track selectedIds",
+        "activeForm": "UI-003: Rendering checkboxes for each project, track selectedIds",
+        "status": "pending"
+      },
+      {
+        "content": "UI-004: Add handleRemove() calling DELETE /api/scanner/projects/:id",
+        "activeForm": "UI-004: Adding handleRemove() calling DELETE /api/scanner/projects/:id",
+        "status": "pending"
+      },
+      {
+        "content": "UI-005: Update ActionBar.tsx - add selectedProjects prop",
+        "activeForm": "UI-005: Updating ActionBar.tsx - add selectedProjects prop",
+        "status": "pending"
+      },
+      {
+        "content": "UI-005: Add handleScan() calling POST /api/scanner/scan",
+        "activeForm": "UI-005: Adding handleScan() calling POST /api/scanner/scan",
+        "status": "pending"
+      },
+      {
+        "content": "UI-005: Pass scanId to parent via onScanStart callback",
+        "activeForm": "UI-005: Passing scanId to parent via onScanStart callback",
+        "status": "pending"
+      },
+      {
+        "content": "UI-006: Update ConsoleTabs.tsx - add scanId prop",
+        "activeForm": "UI-006: Updating ConsoleTabs.tsx - add scanId prop",
+        "status": "pending"
+      },
+      {
+        "content": "UI-006: Add useEffect to create EventSource for SSE",
+        "activeForm": "UI-006: Adding useEffect to create EventSource for SSE",
+        "status": "pending"
+      },
+      {
+        "content": "UI-006: Parse SSE messages and append to consoleOutput state",
+        "activeForm": "UI-006: Parsing SSE messages and append to consoleOutput state",
+        "status": "pending"
+      },
+      {
+        "content": "UI-007: Add useRef<HTMLDivElement> for console container",
+        "activeForm": "UI-007: Adding useRef<HTMLDivElement> for console container",
+        "status": "pending"
+      },
+      {
+        "content": "UI-007: Add useEffect to scrollTop = scrollHeight on output change",
+        "activeForm": "UI-007: Adding useEffect to scrollTop = scrollHeight on output change",
+        "status": "pending"
+      },
+      {
+        "content": "UI-008: Update Scanner/index.tsx - add useState<string> for scanId",
+        "activeForm": "UI-008: Updating Scanner/index.tsx - add useState<string> for scanId",
+        "status": "pending"
+      },
+      {
+        "content": "UI-008: Pass scanId to ConsoleTabs, selectedIds to ActionBar",
+        "activeForm": "UI-008: Passing scanId to ConsoleTabs, selectedIds to ActionBar",
+        "status": "pending"
+      },
+      {
+        "content": "Test: Click 'Add Path' \u2192 Dialog opens \u2192 Select folder \u2192 Project appears",
+        "activeForm": "Test: Clicking 'Add Path' \u2192 Dialog opens \u2192 Select folder \u2192 Project appears",
+        "status": "pending"
+      },
+      {
+        "content": "Test: Select project \u2192 Click 'Scan Projects' \u2192 Console shows output",
+        "activeForm": "Test: Selecting project \u2192 Click 'Scan Projects' \u2192 Console shows output",
+        "status": "pending"
+      },
+      {
+        "content": "Test: Console auto-scrolls as new output arrives",
+        "activeForm": "Test: Consoleing auto-scrolls as new output arrives",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-001: Add 3 projects, verify all appear, restart app, verify persist",
+        "activeForm": "TEST-001: Adding 3 projects, verify all appear, restart app, verify persist",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-002: Scan single project, verify scan-all.py executes, output correct",
+        "activeForm": "TEST-002: Scaning single project, verify scan-all.py executes, output correct",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-003: Scan 3 projects, verify sequential execution, progress tracking",
+        "activeForm": "TEST-003: Scaning 3 projects, verify sequential execution, progress tracking",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-004: Start scan, cancel mid-process, verify terminates",
+        "activeForm": "TEST-004: Starting scan, cancel mid-process, verify terminates",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-005: Remove python from PATH, start scan, verify error message",
+        "activeForm": "TEST-005: Removeing python from PATH, start scan, verify error message",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-006: Refresh browser during scan, verify SSE reconnects",
+        "activeForm": "TEST-006: Refreshing browser during scan, verify SSE reconnects",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-001: Update CLAUDE.md Recent Changes section with Scanner backend v0.7.0",
+        "activeForm": "DOC-001: Updating CLAUDE.md Recent Changes section with Scanner backend v0.7.0",
+        "status": "pending"
+      },
+      {
+        "content": "DOC-002: Add JSDoc to ScanExecutor class and all API route handlers",
+        "activeForm": "DOC-002: Adding JSDoc to ScanExecutor class and all API route handlers",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-4-009: Run npm run build:dashboard - verify no TypeScript errors",
+        "activeForm": "PHASE-4-009: Running npm run build:dashboard - verify no TypeScript errors",
+        "status": "pending"
+      },
+      {
+        "content": "PHASE-4-010: Run npm run dev - verify Scanner page works end-to-end",
+        "activeForm": "PHASE-4-010: Running npm run dev - verify Scanner page works end-to-end",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-001: All 27 tasks completed",
+        "activeForm": "FINALIZA-001: Alling 27 tasks completed",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-002: All 6 test scenarios pass",
+        "activeForm": "FINALIZA-002: Alling 6 test scenarios pass",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-003: No TypeScript errors",
+        "activeForm": "FINALIZA-003: Noing TypeScript errors",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-004: CLAUDE.md updated",
+        "activeForm": "FINALIZA-004: CLAUDE.mding updated",
+        "status": "pending"
+      },
+      {
+        "content": "FINALIZA-005: Ready for production",
+        "activeForm": "FINALIZA-005: Readying for production",
+        "status": "pending"
+      }
+    ]
   }
 ]

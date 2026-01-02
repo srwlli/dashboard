@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 type TabType = 'console' | 'history' | 'config';
 
@@ -9,8 +9,76 @@ type TabType = 'console' | 'history' | 'config';
  * Right sidebar - Console/History/Config tabs
  * Shows terminal-style output and configuration
  */
-export function ConsoleTabs() {
+interface ConsoleTabsProps {
+  scanId: string | null;
+}
+
+export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('console');
+  const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
+  const [scanStatus, setScanStatus] = useState<string>('Idle');
+  const consoleRef = useRef<HTMLDivElement>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+
+  // Connect to SSE stream when scanId changes
+  useEffect(() => {
+    if (!scanId) {
+      setConsoleOutput([]);
+      setScanStatus('Idle');
+      return;
+    }
+
+    setScanStatus('Connecting...');
+
+    // Create EventSource for SSE
+    const eventSource = new EventSource(`/api/scanner/scan/${scanId}/output`);
+    eventSourceRef.current = eventSource;
+
+    eventSource.onopen = () => {
+      setScanStatus('Running');
+    };
+
+    eventSource.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+
+        if (message.type === 'output') {
+          setConsoleOutput((prev) => [...prev, message.data]);
+        } else if (message.type === 'progress') {
+          const progress = message.data;
+          setScanStatus(
+            `Scanning ${progress.currentProjectIndex + 1}/${progress.totalProjects}`
+          );
+        } else if (message.type === 'complete') {
+          setScanStatus('Completed');
+          eventSource.close();
+        } else if (message.type === 'error') {
+          setConsoleOutput((prev) => [...prev, `[ERROR] ${message.data}`]);
+          setScanStatus('Error');
+          eventSource.close();
+        }
+      } catch (error) {
+        console.error('Failed to parse SSE message:', error);
+      }
+    };
+
+    eventSource.onerror = () => {
+      setScanStatus('Error');
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+      eventSourceRef.current = null;
+    };
+  }, [scanId]);
+
+  // Auto-scroll console to bottom
+  useEffect(() => {
+    if (consoleRef.current) {
+      consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+    }
+  }, [consoleOutput]);
 
   const tabs: { id: TabType; label: string }[] = [
     { id: 'console', label: 'Console' },
@@ -43,14 +111,36 @@ export function ConsoleTabs() {
       {/* Tab Content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === 'console' && (
-          <div className="p-4 font-mono text-sm bg-neutral-950 dark:bg-neutral-950 min-h-full">
-            <div className="text-green-400">{'>'} System Initialized</div>
-            <div className="text-blue-400 mt-2">
-              {'>'} Ready for scan. Waiting for project selection...
-            </div>
-            <div className="text-neutral-500 mt-2">
-              {'>'} Tip: Select one or more projects from the left panel
-            </div>
+          <div
+            ref={consoleRef}
+            className="p-4 font-mono text-sm bg-neutral-950 dark:bg-neutral-950 min-h-full overflow-y-auto"
+          >
+            {consoleOutput.length === 0 ? (
+              <>
+                <div className="text-green-400">{'>'} System Initialized</div>
+                <div className="text-blue-400 mt-2">
+                  {'>'} Ready for scan. Waiting for project selection...
+                </div>
+                <div className="text-neutral-500 mt-2">
+                  {'>'} Tip: Select one or more projects from the left panel
+                </div>
+              </>
+            ) : (
+              consoleOutput.map((line, index) => (
+                <div
+                  key={index}
+                  className={
+                    line.includes('[ERROR]')
+                      ? 'text-red-400'
+                      : line.includes('[Scanner]')
+                      ? 'text-green-400'
+                      : 'text-neutral-300'
+                  }
+                >
+                  {line}
+                </div>
+              ))
+            )}
           </div>
         )}
 
@@ -104,7 +194,20 @@ export function ConsoleTabs() {
       <div className="border-t border-neutral-200 dark:border-neutral-800 px-4 py-2 bg-neutral-50 dark:bg-neutral-900/50">
         <div className="flex items-center justify-between text-xs">
           <span className="text-neutral-600 dark:text-neutral-400">
-            Status: <span className="text-green-500 font-medium">Idle</span>
+            Status:{' '}
+            <span
+              className={`font-medium ${
+                scanStatus === 'Running' || scanStatus.includes('Scanning')
+                  ? 'text-blue-500'
+                  : scanStatus === 'Completed'
+                  ? 'text-green-500'
+                  : scanStatus === 'Error'
+                  ? 'text-red-500'
+                  : 'text-green-500'
+              }`}
+            >
+              {scanStatus}
+            </span>
           </span>
           <span className="text-neutral-500">v1.0.0</span>
         </div>
