@@ -106,7 +106,7 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
               onClick={handleExecuteClick}
               disabled={!hasSelections || scanning}
               className={`
-                flex items-center gap-2 px-6 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-all active:translate-y-0.5
+                flex items-center gap-2 px-6 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-colors active:translate-y-0.5
                 ${
                   !hasSelections || scanning
                     ? 'bg-neutral-200 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-600 cursor-not-allowed'

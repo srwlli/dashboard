@@ -167,7 +167,7 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
         </div>
         <button
           onClick={handleAddPath}
-          className="px-4 py-2 bg-ind-accent hover:bg-ind-accent-hover text-black rounded-md text-sm font-bold uppercase tracking-wider transition-all active:translate-y-0.5 flex-shrink-0"
+          className="px-4 py-2 bg-ind-accent hover:bg-ind-accent-hover text-black rounded-md text-sm font-bold uppercase tracking-wider transition-colors active:translate-y-0.5 flex-shrink-0"
         >
           Add Path
         </button>
