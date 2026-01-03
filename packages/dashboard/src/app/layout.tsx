@@ -4,6 +4,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AccentColorProvider } from '@/contexts/AccentColorContext';
 import { SidebarProvider } from '@/contexts/SidebarContext';
+import { ProjectsProvider } from '@/contexts/ProjectsContext';
+import { ExplorerProvider } from '@/contexts/ExplorerContext';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -66,9 +68,13 @@ export default function RootLayout({
           <ThemeProvider>
             <AccentColorProvider>
               <SidebarProvider>
-                <RootClientWrapper>
-                  {children}
-                </RootClientWrapper>
+                <ProjectsProvider>
+                  <ExplorerProvider>
+                    <RootClientWrapper>
+                      {children}
+                    </RootClientWrapper>
+                  </ExplorerProvider>
+                </ProjectsProvider>
               </SidebarProvider>
             </AccentColorProvider>
           </ThemeProvider>

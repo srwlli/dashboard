@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CodeRefApi } from '@/lib/coderef/api-access';
+import { useProjects } from '@/contexts/ProjectsContext';
 import type { Project } from '@/lib/coderef/types';
 import { fileSystem, platform } from '@/lib/coderef/platform';
 import { Folder, Plus, Trash2, AlertCircle } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
 import { BatchRestoreUI } from './BatchRestoreUI';
+import { ProjectSelectorSkeleton } from './ProjectSelectorSkeleton';
 
 interface ProjectSelectorProps {
   /** Currently selected project ID */
@@ -28,24 +29,24 @@ export function ProjectSelector({
   initialProjectId,
   className = '',
 }: ProjectSelectorProps) {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Get projects from context
+  const { projects, isLoading, error: contextError, addProject, removeProject } = useProjects();
+
+  // Local state
   const [adding, setAdding] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [staleProjects, setStaleProjects] = useState<Set<string>>(new Set());
   const [staleReasons, setStaleReasons] = useState<Map<string, string>>(new Map());
   const [hasRestoredInitial, setHasRestoredInitial] = useState(false);
   const [showRemovalMenu, setShowRemovalMenu] = useState(false);
 
-  // Load projects on mount
-  useEffect(() => {
-    loadProjects();
-  }, []);
+  // Combine errors from context and local state
+  const error = contextError || localError;
 
   // Auto-select initial project after projects load (for persistence restoration)
   useEffect(() => {
-    if (!hasRestoredInitial && !loading && projects.length > 0 && initialProjectId) {
+    if (!hasRestoredInitial && !isLoading && projects.length > 0 && initialProjectId) {
       console.log('[ProjectSelector] Attempting to restore project:', initialProjectId);
       const projectToRestore = projects.find((p) => p.id === initialProjectId);
       if (projectToRestore) {
@@ -56,7 +57,7 @@ export function ProjectSelector({
       }
       setHasRestoredInitial(true);
     }
-  }, [projects, loading, initialProjectId, hasRestoredInitial, onProjectChange]);
+  }, [projects, isLoading, initialProjectId, hasRestoredInitial, onProjectChange]);
 
   // Initialize persistence layer on mount - attempt silent restoration
   useEffect(() => {
@@ -102,23 +103,10 @@ export function ProjectSelector({
     }
   }, [selectedProjectId, projects]);
 
-  const loadProjects = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await CodeRefApi.projects.list();
-      setProjects(response.projects);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleAddProject = async () => {
     try {
       setAdding(true);
-      setError(null);
+      setLocalError(null);
 
       console.log(`[${platform}] Adding new project...`);
 
@@ -138,19 +126,7 @@ export function ProjectSelector({
 
       console.log(`[${platform}] Selected project:`, { projectId, projectName, projectPath });
 
-      // Step 3: Register project with API
-      // ProjectPath format depends on platform:
-      //   Web:      "[Directory: folder-name]"
-      //   Electron: "C:/absolute/path/to/folder"
-      await CodeRefApi.projects.create({
-        id: projectId,
-        name: projectName,
-        path: projectPath, // Works for both platforms!
-      });
-
-      console.log(`[${platform}] Project registered successfully`);
-
-      // Step 4: For Web, save the directory handle
+      // Step 3: For Web, save the directory handle BEFORE adding to context
       if (platform === 'web') {
         // Re-open picker to get handle (workaround for abstraction layer)
         const { showDirectoryPicker } = await import('@/lib/coderef/local-access');
@@ -165,6 +141,15 @@ export function ProjectSelector({
         console.log('[Electron] Path stored permanently:', projectPath);
       }
 
+      // Step 4: Add project via context (optimistic update with rollback)
+      await addProject({
+        id: projectId,
+        name: projectName,
+        path: projectPath,
+      });
+
+      console.log(`[${platform}] Project added successfully`);
+
       // Step 5: Select the new project immediately
       const newProject: Project = {
         id: projectId,
@@ -173,12 +158,9 @@ export function ProjectSelector({
         addedAt: new Date().toISOString(),
       };
       onProjectChange(newProject);
-
-      // Step 6: Reload projects list to refresh UI
-      await loadProjects();
     } catch (err) {
       console.error(`[${platform}] Failed to add project:`, err);
-      setError((err as Error).message);
+      setLocalError((err as Error).message);
     } finally {
       setAdding(false);
     }
@@ -195,10 +177,7 @@ export function ProjectSelector({
     try {
       console.log(`[${platform}] Removing project:`, idToRemove);
 
-      // Remove from API
-      await CodeRefApi.projects.remove(idToRemove);
-
-      // Platform-specific cleanup
+      // Platform-specific cleanup BEFORE removing from context
       if (platform === 'web') {
         // Remove from IndexedDB (if it exists)
         try {
@@ -213,6 +192,9 @@ export function ProjectSelector({
         console.log('[Electron] Path reference removed (no cleanup needed)');
       }
 
+      // Remove via context (optimistic update with rollback)
+      await removeProject(idToRemove);
+
       // Clear stale projects set for this project
       setStaleProjects((prev) => {
         const next = new Set(prev);
@@ -220,15 +202,13 @@ export function ProjectSelector({
         return next;
       });
 
-      await loadProjects();
-
       // If we removed the currently selected project, clear selection
       if (idToRemove === selectedProjectId) {
         onProjectChange(null);
       }
     } catch (err) {
       console.error(`[${platform}] Failed to remove project:`, err);
-      setError((err as Error).message);
+      setLocalError((err as Error).message);
     }
   };
 
@@ -245,8 +225,6 @@ export function ProjectSelector({
 
       // Remove all projects sequentially
       for (const project of projects) {
-        await CodeRefApi.projects.remove(project.id);
-
         // Platform-specific cleanup
         if (platform === 'web') {
           try {
@@ -256,17 +234,19 @@ export function ProjectSelector({
             console.log('[Web] No IndexedDB handle to remove for:', project.name);
           }
         }
+
+        // Remove via context (optimistic update)
+        await removeProject(project.id);
       }
 
       console.log(`[${platform}] All projects removed successfully`);
 
       // Clear all state
       setStaleProjects(new Set());
-      await loadProjects();
       onProjectChange(null);
     } catch (err) {
       console.error(`[${platform}] Failed to remove all projects:`, err);
-      setError((err as Error).message);
+      setLocalError((err as Error).message);
     }
   };
 
@@ -348,6 +328,11 @@ export function ProjectSelector({
     setContextMenu({ x: e.clientX, y: e.clientY });
   };
 
+  // Show skeleton during initial load (after all hooks are called)
+  if (isLoading && projects.length === 0) {
+    return <ProjectSelectorSkeleton />;
+  }
+
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center gap-1.5">
@@ -356,7 +341,7 @@ export function ProjectSelector({
             value={selectedProjectId || ''}
             onChange={handleSelectChange}
             onContextMenu={handleContextMenu}
-            disabled={loading || projects.length === 0}
+            disabled={isLoading || projects.length === 0}
             className="
               w-full px-2 py-1.5 pl-7 pr-6 rounded text-sm
               bg-ind-bg border border-ind-border
@@ -369,7 +354,7 @@ export function ProjectSelector({
             "
           >
             <option value="">
-              {loading ? 'Loading...' : projects.length === 0 ? 'No projects' : 'Select'}
+              {isLoading ? 'Loading...' : projects.length === 0 ? 'No projects' : 'Select'}
             </option>
             {projects.map((project) => (
               <option key={project.id} value={project.id}>
@@ -382,7 +367,7 @@ export function ProjectSelector({
 
         <button
           onClick={handleAddProject}
-          disabled={loading || adding}
+          disabled={isLoading || adding}
           className="
             p-1.5 rounded flex-shrink-0
             bg-ind-accent text-ind-panel
@@ -400,7 +385,7 @@ export function ProjectSelector({
         <div className="relative">
           <button
             onClick={() => setShowRemovalMenu(!showRemovalMenu)}
-            disabled={loading || projects.length === 0}
+            disabled={isLoading || projects.length === 0}
             className="
               p-1.5 rounded flex-shrink-0
               bg-red-500/10 text-red-500 border border-red-500/30

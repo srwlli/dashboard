@@ -57,8 +57,9 @@ import { useState, useEffect } from 'react';
 import type { Project, TreeNode } from '@/lib/coderef/types';
 import type { FavoritesData, FavoriteGroup } from '@/lib/coderef/favorites-types';
 import { createEmptyFavoritesData } from '@/lib/coderef/favorites-types';
-import { ViewModeToggle, type ViewMode } from '@/components/coderef/ViewModeToggle';
+import { ViewModeToggle } from '@/components/coderef/ViewModeToggle';
 import { ProjectSelector } from '@/components/coderef/ProjectSelector';
+import { useExplorer } from '@/contexts/ExplorerContext';
 // DORMANT: FileTypeFilter - will be used for multi-project aggregation in future
 // import { FileTypeFilter, type FileType, FILE_TYPE_OPTIONS } from '@/components/coderef/FileTypeFilter';
 import { FileTree } from '@/components/coderef/FileTree';
@@ -88,9 +89,8 @@ export type SortMode = 'name' | 'date';
  * @returns {JSX.Element} Complete Explorer widget with 2-column layout
  */
 export function CodeRefExplorerWidget() {
-  const [viewMode, setViewMode] = useState<ViewMode>('projects');
+  const { viewMode, selectedFile, setViewMode, setSelectedFile } = useExplorer();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
   const [isRestoringProject, setIsRestoringProject] = useState(true);
   const [initialProjectId, setInitialProjectId] = useState<string | undefined>(undefined);
 
@@ -246,8 +246,7 @@ export function CodeRefExplorerWidget() {
 
   const handleViewModeChange = (mode: ViewMode) => {
     setViewMode(mode);
-    // Clear selection when switching modes
-    setSelectedFile(null);
+    // Note: setViewMode in context already clears selection
   };
 
   const handleToggleFavorite = (path: string, groupName?: string) => {
