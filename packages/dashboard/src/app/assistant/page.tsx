@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Clipboard, Lightbulb, RotateCw } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
+import { PageCard } from '@/components/PageCard';
 import TabNavigation from '@/components/TabNavigation';
 import WorkorderList from '@/components/WorkorderList';
 import StubList from '@/components/StubList';
@@ -26,14 +27,7 @@ export default function AssistantPage() {
 
   return (
     <PageLayout>
-      {/* Card with corner accents wrapping all assistant content */}
-      <div className="bg-ind-panel border-2 border-ind-border p-8 relative">
-        {/* Corner accents */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-ind-accent"></div>
-        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-ind-accent"></div>
-        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-ind-accent"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ind-accent"></div>
-
+      <PageCard>
         <div className="space-y-4 sm:space-y-6 min-w-0">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 min-w-0">
@@ -108,7 +102,7 @@ export default function AssistantPage() {
             </div>
           )}
         </div>
-      </div>
+      </PageCard>
     </PageLayout>
   );
 }
