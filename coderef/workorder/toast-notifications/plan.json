@@ -1,0 +1,703 @@
+{
+  "workorder_id": "WO-TOAST-NOTIFICATIONS-001",
+  "feature_name": "toast-notifications",
+  "created_at": "2026-01-02T23:45:00.000Z",
+  "status": "planning",
+  "0_preparation": {
+    "foundation_docs": {
+      "architecture": "coderef/foundation-docs/ARCHITECTURE.md",
+      "components": "coderef/foundation-docs/COMPONENTS.md",
+      "notifications_review": "coderef/reference-sheets/notifications-ux-review.md",
+      "data_flow": "coderef/reference-sheets/data-flow-architecture.md"
+    },
+    "reference_components": {
+      "ActionBar": "packages/dashboard/src/components/Scanner/ActionBar.tsx",
+      "WorkorderList": "packages/dashboard/src/components/WorkorderList/index.tsx",
+      "StubList": "packages/dashboard/src/components/StubList/index.tsx",
+      "AssistantPage": "packages/dashboard/src/app/assistant/page.tsx",
+      "ErrorBoundary": "packages/dashboard/src/components/ErrorBoundary.tsx",
+      "ConfirmationDialog": "packages/dashboard/src/components/Scanner/ConfirmationDialog.tsx"
+    },
+    "patterns": {
+      "industrial_design": "Sharp corners (border-radius: 0), ind-* color tokens, monospace fonts",
+      "loading_states": "Skeleton loading with Tailwind animate-pulse",
+      "error_handling": "Inline error states with retry actions",
+      "window_events": "Custom events for cross-component communication (refetch-workorders, refetch-stubs)"
+    },
+    "anti_patterns_to_remove": {
+      "browser_alerts": "Scanner ActionBar uses blocking alert() dialogs (lines 74, 78)",
+      "console_logging": "Assistant page logs clicks to console instead of user feedback (lines 84, 99)",
+      "no_success_feedback": "Refresh button completes silently with no confirmation (lines 42-64)"
+    }
+  },
+  "1_executive_summary": {
+    "what": "Implement a unified toast notification system using Sonner library with industrial design theme, replacing all browser alerts, adding success feedback for user actions, and providing actionable error messages with retry capability",
+    "why": "Dashboard currently lacks cohesive user feedback - uses blocking browser alerts (breaks design consistency), has no success confirmations (users uncertain if actions completed), and provides no retry mechanism for failed operations. This creates poor UX and violates industrial design aesthetic.",
+    "success": "All user actions provide immediate visual feedback via themed toasts, zero browser alert() dialogs remain, failed operations include retry buttons, and loading states transition smoothly to success/error notifications",
+    "impact": {
+      "users": "Clear, non-blocking feedback for all actions (refresh, scan, settings), instant success confirmations, ability to retry failed operations without repeating entire workflow",
+      "codebase": "Centralized notification API eliminates fragmented feedback patterns, reduces code duplication by ~150 lines, improves error handling consistency across 15+ components",
+      "design": "Consistent industrial aesthetic with corner accents, sharp borders, monospace fonts - all notifications match dashboard theme (dark mode compatible)"
+    }
+  },
+  "2_risk_assessment": {
+    "high_risk": [
+      {
+        "risk": "Sonner library conflicts with existing Next.js 16 App Router client components",
+        "impact": "Toaster component may not render properly in Server Components or cause hydration errors",
+        "mitigation": "Import Toaster with 'use client' directive in root layout, test hydration in both development and production builds"
+      },
+      {
+        "risk": "Removing alert() dialogs breaks existing error flows without proper toast replacement",
+        "impact": "Users lose critical error messages if migration incomplete",
+        "mitigation": "Create migration checklist with 1:1 mapping of all alert() calls to toast.error() with enhanced retry actions"
+      }
+    ],
+    "medium_risk": [
+      {
+        "risk": "Toast z-index conflicts with existing modals (ConfirmationDialog, Scanner modals)",
+        "impact": "Toasts appear behind modals or don't show at all",
+        "mitigation": "Set Toaster z-index to z-[9999], higher than modal z-50. Test all modal + toast combinations."
+      },
+      {
+        "risk": "Promise-based toasts (toast.promise) don't work with window event refresh pattern",
+        "impact": "Cannot show loading → success transitions for refetch-workorders/refetch-stubs events",
+        "mitigation": "Manually control toast lifecycle: toast.loading() on event dispatch, dismiss + toast.success() on completion. May require refactoring hooks to expose completion callbacks."
+      },
+      {
+        "risk": "Industrial theme customization breaks on Sonner library updates",
+        "impact": "Sharp corners/borders/fonts reset to defaults after npm update",
+        "mitigation": "Use unstyled mode with full custom classNames, avoid relying on default Sonner styles. Document theme in separate ToastTheme.tsx file."
+      }
+    ],
+    "low_risk": [
+      {
+        "risk": "Toast auto-dismiss timers might be too short for users to read",
+        "impact": "Success messages disappear before user notices",
+        "mitigation": "Use recommended durations: success 3s, error 8s, warning 5s, info 4s. Add closeButton for manual dismissal."
+      },
+      {
+        "risk": "Screen reader announcements duplicate with existing aria-live regions",
+        "impact": "Users with screen readers hear notifications twice",
+        "mitigation": "Audit existing aria-live regions in WorkorderList/StubList, ensure Sonner announcements don't conflict"
+      }
+    ]
+  },
+  "3_current_state_analysis": {
+    "existing_behavior": {
+      "browser_alerts": {
+        "description": "Scanner ActionBar uses blocking alert() dialogs for errors",
+        "location": "packages/dashboard/src/components/Scanner/ActionBar.tsx:74, 78",
+        "issue": "Breaks industrial design, blocks UI interaction, no theme support"
+      },
+      "console_logging": {
+        "description": "Assistant page logs workorder/stub clicks to console",
+        "location": "packages/dashboard/src/app/assistant/page.tsx:84, 99",
+        "issue": "No user-visible feedback, placeholder behavior"
+      },
+      "no_success_feedback": {
+        "description": "Refresh button completes silently with no confirmation",
+        "location": "packages/dashboard/src/app/assistant/page.tsx:42-64",
+        "issue": "Users can't tell if refresh worked or how many items loaded"
+      },
+      "inline_error_states": {
+        "description": "WorkorderList/StubList show inline error messages",
+        "location": "packages/dashboard/src/components/WorkorderList/index.tsx:46-54, StubList/index.tsx:50-57",
+        "issue": "Good pattern for list failures, but no retry action provided"
+      },
+      "loading_skeletons": {
+        "description": "Skeleton loaders during data fetch",
+        "location": "WorkorderList/index.tsx:56-70, StubList/index.tsx:60-74",
+        "issue": "Works well but no transition to success notification"
+      },
+      "scanner_loading_indicator": {
+        "description": "Execute button shows spinner during scan start",
+        "location": "packages/dashboard/src/components/Scanner/ActionBar.tsx:118-125",
+        "issue": "Basic loading state but no completion feedback, no progress indication"
+      }
+    },
+    "dependencies": {
+      "direct": [
+        "sonner (to install): ~3KB toast notification library",
+        "React 19: Context for provider",
+        "Next.js 16 App Router: Client component integration",
+        "Tailwind CSS: Industrial theme styling"
+      ],
+      "affected_components": [
+        "ActionBar (Scanner) - remove alert() calls",
+        "AssistantPage - add success toasts for refresh",
+        "WorkorderList/StubList - add retry actions to errors",
+        "useWorkorders/useStubs hooks - may need completion callbacks"
+      ]
+    }
+  },
+  "4_key_features": {
+    "feature_1_sonner_integration": {
+      "description": "Install and configure Sonner toast library with industrial design theme in root layout",
+      "user_story": "As a developer, I want a centralized toast API so all components can show consistent notifications",
+      "acceptance_criteria": [
+        "Sonner installed via npm install sonner",
+        "Toaster component added to packages/dashboard/src/app/layout.tsx with 'use client' directive",
+        "Position set to top-right (non-intrusive)",
+        "Theme configured: dark mode, sharp corners (borderRadius: 0), monospace fonts",
+        "Custom classNames for ind-* color tokens (bg-ind-panel, border-ind-border, text-ind-text)",
+        "z-index set to z-[9999] to appear above modals",
+        "closeButton enabled for manual dismissal"
+      ]
+    },
+    "feature_2_industrial_theme": {
+      "description": "Custom toast styles matching dashboard industrial design (corner accents, sharp borders, monospace)",
+      "user_story": "As a user, I want notifications to match the dashboard aesthetic so the experience feels cohesive",
+      "acceptance_criteria": [
+        "Create packages/dashboard/src/components/notifications/ToastTheme.tsx",
+        "Define industrial color mappings: success=ind-success, error=ind-error, warning=ind-warning, info=ind-accent",
+        "Configure unstyled mode with custom classNames",
+        "Add corner accents wrapper component (optional enhancement)",
+        "All toasts use sharp corners (border-radius: 0)",
+        "Title uses uppercase tracking-wider font styling",
+        "Description uses text-xs font-mono for technical messages"
+      ]
+    },
+    "feature_3_replace_alerts": {
+      "description": "Replace all browser alert() dialogs with themed toast.error() notifications",
+      "user_story": "As a user, I want error messages that don't block my workflow and match the app design",
+      "acceptance_criteria": [
+        "ActionBar.tsx line 74: Replace alert() with toast.error() showing API error message + retry button",
+        "ActionBar.tsx line 78: Replace alert() with toast.error() showing generic error + retry button",
+        "Retry action calls handleConfirmedExecution() again",
+        "Error toasts auto-dismiss after 8 seconds",
+        "Zero alert() calls remain in codebase (verified via grep)"
+      ]
+    },
+    "feature_4_success_feedback": {
+      "description": "Add success toasts for all user actions (refresh, scan complete, settings save)",
+      "user_story": "As a user, I want confirmation when actions complete successfully so I know they worked",
+      "acceptance_criteria": [
+        "Refresh button (Assistant page): Show 'Refreshed workorders (N loaded)' or 'Refreshed stubs (N loaded)'",
+        "Scanner execution: Show 'Scan started (N projects)' immediately, then 'Scan completed (N files)' on finish",
+        "Settings save (ThemePanel): Show 'Settings saved' with accent color preview",
+        "All success toasts auto-dismiss after 3 seconds",
+        "Toast descriptions include relevant counts/metrics"
+      ]
+    },
+    "feature_5_loading_toasts": {
+      "description": "Show loading toasts for long-running operations (>1 second) with smooth transitions to success/error",
+      "user_story": "As a user, I want to see progress for slow operations so I know the app didn't freeze",
+      "acceptance_criteria": [
+        "Refresh operations: toast.loading('Refreshing...') → toast.success('Loaded N items')",
+        "Scanner execution: toast.loading('Starting scan...') → toast.success('Scan completed')",
+        "Loading toasts show spinner icon",
+        "Smooth transition: dismiss loading toast, show result toast in same position",
+        "Manual dismiss available if operation takes > 10 seconds"
+      ]
+    },
+    "feature_6_retry_actions": {
+      "description": "Add retry buttons to error toasts for failed API operations",
+      "user_story": "As a user, I want to retry failed operations without repeating my entire workflow",
+      "acceptance_criteria": [
+        "All API error toasts include 'Retry' action button",
+        "Retry button styled with bg-ind-accent hover:bg-ind-accent-hover",
+        "Clicking retry dismisses toast and re-executes original operation",
+        "Retry preserves original context (same project selections, same filters, etc.)",
+        "Error toast duration extended to 8 seconds to allow time to click retry"
+      ]
+    },
+    "feature_7_enhanced_empty_states": {
+      "description": "Improve empty state messages with icons and call-to-action buttons (optional enhancement)",
+      "user_story": "As a user, I want helpful guidance when lists are empty",
+      "acceptance_criteria": [
+        "WorkorderList empty state: Add folder icon + 'No workorders found' message",
+        "StubList empty state: Add lightbulb icon + 'No stubs found' message",
+        "Filtered empty state: Show 'No items match filters' + 'Clear Filters' button",
+        "Empty states remain inline (not toasts) for better UX"
+      ]
+    }
+  },
+  "5_task_id_system": {
+    "workorder_id": "WO-TOAST-NOTIFICATIONS-001",
+    "task_prefix": "TOAST",
+    "task_categories": {
+      "SETUP": "Install Sonner and configure root layout",
+      "THEME": "Industrial design theme customization",
+      "MIGRATE": "Replace alert() dialogs with toasts",
+      "SUCCESS": "Add success feedback for user actions",
+      "LOADING": "Implement loading toasts with transitions",
+      "RETRY": "Add retry actions to error toasts",
+      "ENHANCE": "Optional enhancements (empty states, corner accents)",
+      "TEST": "Testing and validation",
+      "DOCS": "Documentation updates"
+    }
+  },
+  "6_implementation_phases": {
+    "phase_1_setup": {
+      "name": "Install Sonner and Configure Root Layout",
+      "order": 1,
+      "estimated_effort": "1 hour",
+      "tasks": [
+        {
+          "id": "TOAST-SETUP-001",
+          "title": "Install Sonner library",
+          "description": "Run npm install sonner in packages/dashboard directory",
+          "dependencies": [],
+          "estimated_time": "5 min",
+          "command": "cd packages/dashboard && npm install sonner"
+        },
+        {
+          "id": "TOAST-SETUP-002",
+          "title": "Add Toaster to root layout",
+          "description": "Import Toaster from sonner in packages/dashboard/src/app/layout.tsx, add with 'use client' directive, configure basic props (position, theme, closeButton)",
+          "dependencies": ["TOAST-SETUP-001"],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/app/layout.tsx"]
+        },
+        {
+          "id": "TOAST-SETUP-003",
+          "title": "Test basic toast functionality",
+          "description": "Add temporary test button in dashboard page to verify toast.success(), toast.error(), toast.loading() work correctly",
+          "dependencies": ["TOAST-SETUP-002"],
+          "estimated_time": "15 min",
+          "files_to_modify": ["packages/dashboard/src/app/page.tsx (temporary test)"]
+        },
+        {
+          "id": "TOAST-SETUP-004",
+          "title": "Configure z-index for modal compatibility",
+          "description": "Set Toaster z-index to z-[9999] via style prop, test with ConfirmationDialog open to verify toasts appear above modal",
+          "dependencies": ["TOAST-SETUP-003"],
+          "estimated_time": "10 min",
+          "files_to_modify": ["packages/dashboard/src/app/layout.tsx"]
+        }
+      ]
+    },
+    "phase_2_theme": {
+      "name": "Industrial Design Theme Customization",
+      "order": 2,
+      "estimated_effort": "2 hours",
+      "tasks": [
+        {
+          "id": "TOAST-THEME-001",
+          "title": "Create ToastTheme.tsx configuration file",
+          "description": "Create packages/dashboard/src/components/notifications/ToastTheme.tsx with industrial theme classNames (sharp corners, ind-* tokens, monospace fonts)",
+          "dependencies": ["TOAST-SETUP-002"],
+          "estimated_time": "30 min",
+          "files_to_create": ["packages/dashboard/src/components/notifications/ToastTheme.tsx"]
+        },
+        {
+          "id": "TOAST-THEME-002",
+          "title": "Apply custom classNames to Toaster",
+          "description": "Configure Toaster with unstyled: true, add classNames for toast, title, description, actionButton, closeButton using industrial tokens",
+          "dependencies": ["TOAST-THEME-001"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/app/layout.tsx"]
+        },
+        {
+          "id": "TOAST-THEME-003",
+          "title": "Test theme in dark mode",
+          "description": "Toggle dark mode in dashboard, verify toast colors match ind-* tokens, check contrast ratios for accessibility",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "15 min"
+        },
+        {
+          "id": "TOAST-THEME-004",
+          "title": "Verify sharp corners and borders",
+          "description": "Inspect toast element in DevTools, confirm border-radius: 0 applied, borders use ind-border color, no rounded corners visible",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "10 min"
+        }
+      ]
+    },
+    "phase_3_migrate_alerts": {
+      "name": "Replace Alert Dialogs with Toasts",
+      "order": 3,
+      "estimated_effort": "1.5 hours",
+      "tasks": [
+        {
+          "id": "TOAST-MIGRATE-001",
+          "title": "Replace ActionBar alert() on line 74",
+          "description": "Replace alert(`Failed to start scan: ${data.error.message}`) with toast.error() showing error message + retry button that calls handleConfirmedExecution",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "25 min",
+          "files_to_modify": ["packages/dashboard/src/components/Scanner/ActionBar.tsx"]
+        },
+        {
+          "id": "TOAST-MIGRATE-002",
+          "title": "Replace ActionBar alert() on line 78",
+          "description": "Replace alert('Failed to start scan') with toast.error() showing generic error + retry button",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/components/Scanner/ActionBar.tsx"]
+        },
+        {
+          "id": "TOAST-MIGRATE-003",
+          "title": "Remove console.error fallback logging",
+          "description": "Keep console.error for debugging but ensure user sees toast, don't rely on console as primary feedback",
+          "dependencies": ["TOAST-MIGRATE-001", "TOAST-MIGRATE-002"],
+          "estimated_time": "10 min",
+          "files_to_modify": ["packages/dashboard/src/components/Scanner/ActionBar.tsx"]
+        },
+        {
+          "id": "TOAST-MIGRATE-004",
+          "title": "Verify zero alert() calls remain",
+          "description": "Run grep -r 'alert(' packages/dashboard/src to verify no browser alerts remain in codebase",
+          "dependencies": ["TOAST-MIGRATE-003"],
+          "estimated_time": "5 min",
+          "command": "grep -r 'alert\\(' packages/dashboard/src"
+        }
+      ]
+    },
+    "phase_4_success_feedback": {
+      "name": "Add Success Feedback for User Actions",
+      "order": 4,
+      "estimated_effort": "2 hours",
+      "tasks": [
+        {
+          "id": "TOAST-SUCCESS-001",
+          "title": "Add success toast for workorders refresh",
+          "description": "In AssistantPage, after refetch-workorders event dispatches, listen for hook completion and show toast.success('Refreshed workorders (N loaded)')",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/app/assistant/page.tsx", "packages/dashboard/src/hooks/useWorkorders.ts"]
+        },
+        {
+          "id": "TOAST-SUCCESS-002",
+          "title": "Add success toast for stubs refresh",
+          "description": "In AssistantPage, after refetch-stubs event dispatches, listen for hook completion and show toast.success('Refreshed stubs (N loaded)')",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/app/assistant/page.tsx", "packages/dashboard/src/hooks/useStubs.ts"]
+        },
+        {
+          "id": "TOAST-SUCCESS-003",
+          "title": "Add success toast for scanner execution",
+          "description": "In ActionBar, show toast.success('Scan started (N projects)') immediately after API call succeeds, include project count in description",
+          "dependencies": ["TOAST-MIGRATE-002"],
+          "estimated_time": "25 min",
+          "files_to_modify": ["packages/dashboard/src/components/Scanner/ActionBar.tsx"]
+        },
+        {
+          "id": "TOAST-SUCCESS-004",
+          "title": "Add success toast for settings save (if applicable)",
+          "description": "In ThemePanel or settings page, show toast.success('Settings saved') after save completes successfully",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/components/ThemePanel.tsx"]
+        }
+      ]
+    },
+    "phase_5_loading_toasts": {
+      "name": "Implement Loading Toasts with Transitions",
+      "order": 5,
+      "estimated_effort": "2.5 hours",
+      "tasks": [
+        {
+          "id": "TOAST-LOADING-001",
+          "title": "Add loading toast for workorders refresh",
+          "description": "Show toast.loading('Refreshing workorders...') when event dispatches, dismiss when fetch completes, transition to success/error toast",
+          "dependencies": ["TOAST-SUCCESS-001"],
+          "estimated_time": "40 min",
+          "files_to_modify": ["packages/dashboard/src/app/assistant/page.tsx", "packages/dashboard/src/hooks/useWorkorders.ts"]
+        },
+        {
+          "id": "TOAST-LOADING-002",
+          "title": "Add loading toast for stubs refresh",
+          "description": "Show toast.loading('Refreshing stubs...') when event dispatches, dismiss when fetch completes, transition to success/error toast",
+          "dependencies": ["TOAST-SUCCESS-002"],
+          "estimated_time": "40 min",
+          "files_to_modify": ["packages/dashboard/src/app/assistant/page.tsx", "packages/dashboard/src/hooks/useStubs.ts"]
+        },
+        {
+          "id": "TOAST-LOADING-003",
+          "title": "Add loading toast for scanner execution",
+          "description": "Show toast.loading('Starting scan...') when Execute clicked, replace with success/error toast when API responds",
+          "dependencies": ["TOAST-SUCCESS-003"],
+          "estimated_time": "35 min",
+          "files_to_modify": ["packages/dashboard/src/components/Scanner/ActionBar.tsx"]
+        },
+        {
+          "id": "TOAST-LOADING-004",
+          "title": "Test loading → success transition timing",
+          "description": "Verify smooth transition from loading to success toast (no flash/flicker), ensure spinner visible for at least 300ms for visual consistency",
+          "dependencies": ["TOAST-LOADING-003"],
+          "estimated_time": "20 min"
+        }
+      ]
+    },
+    "phase_6_retry_actions": {
+      "name": "Add Retry Actions to Error Toasts",
+      "order": 6,
+      "estimated_effort": "1.5 hours",
+      "tasks": [
+        {
+          "id": "TOAST-RETRY-001",
+          "title": "Add retry to scanner API errors",
+          "description": "All toast.error() calls in ActionBar include action: { label: 'Retry', onClick: handleConfirmedExecution }",
+          "dependencies": ["TOAST-MIGRATE-002"],
+          "estimated_time": "30 min",
+          "files_to_modify": ["packages/dashboard/src/components/Scanner/ActionBar.tsx"]
+        },
+        {
+          "id": "TOAST-RETRY-002",
+          "title": "Add retry to workorders fetch errors",
+          "description": "If workorders fetch fails, show toast.error() with retry button that calls useWorkorders().refetch()",
+          "dependencies": ["TOAST-LOADING-001"],
+          "estimated_time": "25 min",
+          "files_to_modify": ["packages/dashboard/src/app/assistant/page.tsx"]
+        },
+        {
+          "id": "TOAST-RETRY-003",
+          "title": "Add retry to stubs fetch errors",
+          "description": "If stubs fetch fails, show toast.error() with retry button that calls useStubs().refetch()",
+          "dependencies": ["TOAST-LOADING-002"],
+          "estimated_time": "25 min",
+          "files_to_modify": ["packages/dashboard/src/app/assistant/page.tsx"]
+        },
+        {
+          "id": "TOAST-RETRY-004",
+          "title": "Test retry button styling and behavior",
+          "description": "Verify retry buttons use ind-accent background, hover state works, clicking dismisses toast and re-executes operation",
+          "dependencies": ["TOAST-RETRY-003"],
+          "estimated_time": "15 min"
+        }
+      ]
+    },
+    "phase_7_enhance": {
+      "name": "Optional Enhancements",
+      "order": 7,
+      "estimated_effort": "1 hour (optional)",
+      "tasks": [
+        {
+          "id": "TOAST-ENHANCE-001",
+          "title": "Create corner accent toast wrapper (optional)",
+          "description": "Create packages/dashboard/src/components/notifications/IndustrialToast.tsx with corner accents using toast.custom()",
+          "dependencies": ["TOAST-THEME-002"],
+          "estimated_time": "30 min",
+          "files_to_create": ["packages/dashboard/src/components/notifications/IndustrialToast.tsx"]
+        },
+        {
+          "id": "TOAST-ENHANCE-002",
+          "title": "Enhance empty states with icons (optional)",
+          "description": "Add icons to WorkorderList/StubList empty states: folder icon for workorders, lightbulb for stubs",
+          "dependencies": [],
+          "estimated_time": "20 min",
+          "files_to_modify": ["packages/dashboard/src/components/WorkorderList/index.tsx", "packages/dashboard/src/components/StubList/index.tsx"]
+        }
+      ]
+    },
+    "phase_8_testing": {
+      "name": "Testing & Validation",
+      "order": 8,
+      "estimated_effort": "1.5 hours",
+      "tasks": [
+        {
+          "id": "TOAST-TEST-001",
+          "title": "Test all toast types (success, error, warning, info, loading)",
+          "description": "Manually trigger each toast type, verify styling matches industrial theme, check auto-dismiss timers",
+          "dependencies": ["TOAST-RETRY-004"],
+          "estimated_time": "20 min"
+        },
+        {
+          "id": "TOAST-TEST-002",
+          "title": "Test toast z-index with modals",
+          "description": "Open ConfirmationDialog, trigger toast while modal open, verify toast appears above modal (z-[9999] > z-50)",
+          "dependencies": ["TOAST-SETUP-004"],
+          "estimated_time": "10 min"
+        },
+        {
+          "id": "TOAST-TEST-003",
+          "title": "Test retry button functionality",
+          "description": "Trigger error toast, click retry button, verify operation re-executes and toast dismisses",
+          "dependencies": ["TOAST-RETRY-004"],
+          "estimated_time": "15 min"
+        },
+        {
+          "id": "TOAST-TEST-004",
+          "title": "Test loading → success transitions",
+          "description": "Trigger refresh/scan operations, verify smooth transition from loading spinner to success message (no flicker)",
+          "dependencies": ["TOAST-LOADING-004"],
+          "estimated_time": "15 min"
+        },
+        {
+          "id": "TOAST-TEST-005",
+          "title": "Test dark mode theme consistency",
+          "description": "Toggle dark mode, verify all toast types maintain readable contrast and match ind-* color tokens",
+          "dependencies": ["TOAST-THEME-003"],
+          "estimated_time": "10 min"
+        },
+        {
+          "id": "TOAST-TEST-006",
+          "title": "Test screen reader announcements",
+          "description": "Enable screen reader (NVDA/JAWS), trigger toasts, verify aria-live announcements work correctly",
+          "dependencies": ["TOAST-TEST-001"],
+          "estimated_time": "20 min"
+        }
+      ]
+    },
+    "phase_9_docs": {
+      "name": "Documentation & Cleanup",
+      "order": 9,
+      "estimated_effort": "1 hour",
+      "tasks": [
+        {
+          "id": "TOAST-DOCS-001",
+          "title": "Add JSDoc to ToastTheme.tsx",
+          "description": "Add comprehensive JSDoc comments explaining industrial theme configuration and usage examples",
+          "dependencies": ["TOAST-THEME-001"],
+          "estimated_time": "15 min",
+          "files_to_modify": ["packages/dashboard/src/components/notifications/ToastTheme.tsx"]
+        },
+        {
+          "id": "TOAST-DOCS-002",
+          "title": "Update ARCHITECTURE.md with notification system",
+          "description": "Add Toast Notification System section to architecture docs explaining Sonner integration and industrial theme",
+          "dependencies": ["TOAST-TEST-006"],
+          "estimated_time": "25 min",
+          "files_to_modify": ["coderef/foundation-docs/ARCHITECTURE.md"]
+        },
+        {
+          "id": "TOAST-DOCS-003",
+          "title": "Create notification usage guide",
+          "description": "Create docs/notifications.md with usage examples for toast.success(), toast.error(), toast.loading(), retry actions",
+          "dependencies": ["TOAST-TEST-006"],
+          "estimated_time": "20 min",
+          "files_to_create": ["docs/notifications.md"]
+        },
+        {
+          "id": "TOAST-DOCS-004",
+          "title": "Remove temporary test code",
+          "description": "Remove test button added in TOAST-SETUP-003, clean up any debug console.log statements",
+          "dependencies": ["TOAST-TEST-006"],
+          "estimated_time": "5 min",
+          "files_to_modify": ["packages/dashboard/src/app/page.tsx"]
+        }
+      ]
+    }
+  },
+  "7_testing_strategy": {
+    "manual_tests": [
+      "Verify all alert() dialogs replaced with toasts",
+      "Test each toast type (success, error, warning, info, loading)",
+      "Verify toast z-index above modals (ConfirmationDialog)",
+      "Test retry buttons re-execute original operations",
+      "Verify loading → success transitions are smooth (no flicker)",
+      "Test dark mode theme consistency across all toast types",
+      "Verify screen reader announcements (aria-live)",
+      "Test auto-dismiss timers (success: 3s, error: 8s, warning: 5s, info: 4s)",
+      "Verify closeButton allows manual dismissal",
+      "Test toast styling matches industrial design (sharp corners, ind-* tokens, monospace)"
+    ],
+    "integration_tests": [
+      "Test refresh button → loading toast → success toast workflow",
+      "Test scanner execution → loading toast → success toast workflow",
+      "Test API error → error toast with retry → success on retry",
+      "Test multiple toasts stacking correctly (max 3-5 visible)",
+      "Test toast dismissal doesn't affect other toasts"
+    ],
+    "accessibility_tests": [
+      {
+        "test": "Screen reader announcements",
+        "tool": "NVDA/JAWS",
+        "criteria": "Toast messages announced via aria-live"
+      },
+      {
+        "test": "Keyboard navigation",
+        "tool": "Manual keyboard testing",
+        "criteria": "Escape key dismisses toasts, Tab focuses close button"
+      },
+      {
+        "test": "Color contrast",
+        "tool": "Chrome DevTools Accessibility",
+        "criteria": "WCAG AA compliance (4.5:1 for text, 3:1 for borders)"
+      }
+    ],
+    "performance_tests": [
+      {
+        "metric": "Toast render time",
+        "target": "< 16ms (one frame at 60fps)"
+      },
+      {
+        "metric": "Bundle size increase",
+        "target": "< 5KB gzipped (Sonner library)"
+      },
+      {
+        "metric": "Toast dismissal lag",
+        "target": "< 50ms from auto-dismiss trigger to removal"
+      }
+    ]
+  },
+  "8_success_criteria": {
+    "functional": [
+      "Zero browser alert() dialogs remain in codebase",
+      "All user actions provide visual feedback (refresh, scan, settings save)",
+      "Error toasts include retry buttons that re-execute operations",
+      "Loading toasts show for operations > 1 second",
+      "Success toasts auto-dismiss after 3 seconds",
+      "Error toasts auto-dismiss after 8 seconds",
+      "Toast z-index (z-[9999]) appears above all modals",
+      "closeButton allows manual dismissal of any toast"
+    ],
+    "design": [
+      "All toasts use sharp corners (border-radius: 0)",
+      "Toast colors match ind-* design tokens (ind-panel, ind-border, ind-success, ind-error, ind-warning, ind-accent)",
+      "Toast titles use uppercase tracking-wider font styling",
+      "Toast descriptions use text-xs font-mono for technical details",
+      "Dark mode theme works correctly (toasts readable in both light/dark)",
+      "Industrial aesthetic consistent with dashboard design"
+    ],
+    "accessibility": [
+      "Screen reader announcements work via Sonner's built-in aria-live regions",
+      "Keyboard navigation: Escape dismisses all toasts, Tab focuses close button",
+      "Color contrast meets WCAG AA standards (4.5:1 for text)",
+      "Focus indicators visible on interactive elements (retry buttons, close button)"
+    ],
+    "performance": [
+      "Bundle size increase < 5KB gzipped (Sonner library verified)",
+      "Toast render time < 16ms (60fps target)",
+      "No layout shift when toasts appear/disappear"
+    ],
+    "code_quality": [
+      "ToastTheme.tsx has comprehensive JSDoc documentation",
+      "All toast calls use descriptive messages (not generic 'Success' or 'Error')",
+      "Retry actions preserve original operation context",
+      "TypeScript strict mode passes with no errors",
+      "No console.warn or console.error related to toast rendering"
+    ]
+  },
+  "9_implementation_checklist": {
+    "before_coding": [
+      "Review notifications-ux-review.md for current state analysis",
+      "Review Scanner ActionBar.tsx for alert() locations",
+      "Review AssistantPage for refresh button implementation",
+      "Review Sonner documentation (https://sonner.emilkowal.ski/)",
+      "Confirm Next.js 16 compatibility with Sonner"
+    ],
+    "during_implementation": [
+      "Create feature branch: git checkout -b feat/toast-notifications",
+      "Complete Phase 1: Install Sonner and configure root layout",
+      "Complete Phase 2: Industrial design theme customization",
+      "Complete Phase 3: Replace alert dialogs with toasts",
+      "Complete Phase 4: Add success feedback for user actions",
+      "Complete Phase 5: Implement loading toasts with transitions",
+      "Complete Phase 6: Add retry actions to error toasts",
+      "Complete Phase 7: Optional enhancements (corner accents, empty states)",
+      "Complete Phase 8: Testing & validation",
+      "Complete Phase 9: Documentation & cleanup"
+    ],
+    "before_commit": [
+      "All tasks completed and tested",
+      "Zero alert() calls remain (verified via grep)",
+      "All toast types tested (success, error, warning, info, loading)",
+      "Dark mode theme verified",
+      "Screen reader announcements tested",
+      "No TypeScript errors",
+      "No console errors in browser DevTools",
+      "Documentation updated (ARCHITECTURE.md, notifications.md)",
+      "Temporary test code removed"
+    ],
+    "before_merge": [
+      "Create pull request with screenshots of toast examples",
+      "Code review completed",
+      "All accessibility tests passed (screen reader, keyboard nav, contrast)",
+      "Performance benchmarks documented (bundle size, render time)",
+      "User acceptance testing completed"
+    ]
+  }
+}
