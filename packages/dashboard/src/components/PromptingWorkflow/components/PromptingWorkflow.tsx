@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { PageCard } from '@/components/PageCard';
 import { PromptSelector } from './PromptSelector';
 import { AttachmentManager } from './AttachmentManager';
 import { WorkflowMeta } from './WorkflowMeta';
@@ -225,13 +226,7 @@ export const PromptingWorkflow: React.FC = () => {
 
   return (
     <div className="w-full space-y-6">
-      <div className="bg-ind-panel border-2 border-ind-border p-8 relative">
-        {/* Corner accents */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-ind-accent"></div>
-        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-ind-accent"></div>
-        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-ind-accent"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ind-accent"></div>
-
+      <PageCard>
         <div className="space-y-6">
           {/* Prompt Selection */}
           <PromptSelector
@@ -281,7 +276,7 @@ export const PromptingWorkflow: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
+      </PageCard>
 
       {/* Paste Final Result Modal */}
       <PasteFinalResultModal

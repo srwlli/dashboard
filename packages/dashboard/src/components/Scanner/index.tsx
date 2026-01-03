@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { PageCard } from '@/components/PageCard';
 import { ProjectListCard } from './ProjectListCard';
 import { ConsoleTabs } from './ConsoleTabs';
 import { ActionBar } from './ActionBar';
@@ -13,7 +14,7 @@ interface ProjectSelection {
 /**
  * Scanner Component
  * Main scanner interface with dashboard-consistent styling
- * - Corner accent borders matching dashboard design
+ * - Uses PageCard for corner accents and full-viewport fill
  * - 12-column responsive grid (8-4 split on desktop)
  * - Full-width action bar at bottom
  */
@@ -31,13 +32,7 @@ export function Scanner() {
   }
 
   return (
-    <div className="bg-ind-panel border-2 border-ind-border p-8 relative">
-      {/* Corner accents */}
-      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-ind-accent"></div>
-      <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-ind-accent"></div>
-      <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-ind-accent"></div>
-      <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ind-accent"></div>
-
+    <PageCard>
       <div className="space-y-6 sm:space-y-8">
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-ind-text mb-2">Scanner</h1>
@@ -71,6 +66,6 @@ export function Scanner() {
           />
         </div>
       </div>
-    </div>
+    </PageCard>
   );
 }

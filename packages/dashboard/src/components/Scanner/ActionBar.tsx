@@ -93,10 +93,10 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
 
   return (
     <>
-      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-4">
+      <div className="bg-ind-panel border-2 border-ind-border p-4">
         <div className="flex items-center justify-between gap-4">
           {/* Left: Status */}
-          <div className="text-sm text-neutral-600 dark:text-neutral-400">
+          <div className="text-sm text-ind-text-muted">
             {buildSelectionText()}
           </div>
 
@@ -106,10 +106,10 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
               onClick={handleExecuteClick}
               disabled={!hasSelections || scanning}
               className={`
-                flex items-center gap-2 px-6 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-colors active:translate-y-0.5
+                flex items-center gap-2 px-6 py-2 text-sm font-bold uppercase tracking-wider transition-colors active:translate-y-0.5
                 ${
                   !hasSelections || scanning
-                    ? 'bg-neutral-200 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-600 cursor-not-allowed'
+                    ? 'bg-ind-border text-ind-text-muted cursor-not-allowed'
                     : 'bg-ind-accent hover:bg-ind-accent-hover text-black'
                 }
               `}

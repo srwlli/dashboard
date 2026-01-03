@@ -87,9 +87,9 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
   ];
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 h-full flex flex-col">
+    <div className="bg-ind-panel border-2 border-ind-border h-full flex flex-col">
       {/* Tab Headers */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 flex">
+      <div className="border-b-2 border-ind-border flex">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -98,8 +98,8 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
               px-4 py-3 text-sm font-medium transition-colors relative
               ${
                 activeTab === tab.id
-                  ? 'text-ind-accent-color border-b-2 border-ind-accent-color'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
+                  ? 'text-ind-accent border-b-2 border-ind-accent'
+                  : 'text-ind-text-muted hover:text-ind-text'
               }
             `}
           >
@@ -113,7 +113,7 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
         {activeTab === 'console' && (
           <div
             ref={consoleRef}
-            className="p-4 font-mono text-sm bg-neutral-950 dark:bg-neutral-950 min-h-full overflow-y-auto"
+            className="p-4 font-mono text-sm bg-ind-bg min-h-full overflow-y-auto"
           >
             {consoleOutput.length === 0 ? (
               <>
@@ -121,7 +121,7 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
                 <div className="text-blue-400 mt-2">
                   {'>'} Ready for scan. Waiting for project selection...
                 </div>
-                <div className="text-neutral-500 mt-2">
+                <div className="text-ind-text-muted mt-2">
                   {'>'} Tip: Select one or more projects from the left panel
                 </div>
               </>
@@ -134,7 +134,7 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
                       ? 'text-red-400'
                       : line.includes('[Scanner]')
                       ? 'text-green-400'
-                      : 'text-neutral-300'
+                      : 'text-ind-text'
                   }
                 >
                   {line}
@@ -146,9 +146,9 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
 
         {activeTab === 'history' && (
           <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center px-4">
-            <div className="w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-ind-bg border-2 border-ind-border flex items-center justify-center mb-4">
               <svg
-                className="w-8 h-8 text-neutral-400 dark:text-neutral-600"
+                className="w-8 h-8 text-ind-text-muted"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -161,28 +161,28 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
+            <h3 className="text-lg font-medium text-ind-text mb-2">
               No Scan History
             </h3>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-sm">
+            <p className="text-sm text-ind-text-muted max-w-sm">
               Your scan history will appear here after running scans
             </p>
           </div>
         )}
 
         {activeTab === 'config' && (
-          <div className="p-4 font-mono text-sm bg-neutral-950 dark:bg-neutral-950 min-h-full">
-            <div className="text-neutral-300">
+          <div className="p-4 font-mono text-sm bg-ind-bg min-h-full">
+            <div className="text-ind-text">
               <div className="mb-2">
-                <span className="text-neutral-500">Mode:</span> Universal
+                <span className="text-ind-text-muted">Mode:</span> Universal
                 Structure
               </div>
               <div className="mb-2">
-                <span className="text-neutral-500">Filters:</span> *.js, *.ts,
+                <span className="text-ind-text-muted">Filters:</span> *.js, *.ts,
                 *.py
               </div>
               <div className="mb-2">
-                <span className="text-neutral-500">Exclude:</span> node_modules,
+                <span className="text-ind-text-muted">Exclude:</span> node_modules,
                 .git
               </div>
             </div>
@@ -191,9 +191,9 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
       </div>
 
       {/* Footer Status */}
-      <div className="border-t border-neutral-200 dark:border-neutral-800 px-4 py-2 bg-neutral-50 dark:bg-neutral-900/50">
+      <div className="border-t-2 border-ind-border px-4 py-2 bg-ind-bg">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-neutral-600 dark:text-neutral-400">
+          <span className="text-ind-text-muted">
             Status:{' '}
             <span
               className={`font-medium ${
@@ -209,7 +209,7 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
               {scanStatus}
             </span>
           </span>
-          <span className="text-neutral-500">v1.0.0</span>
+          <span className="text-ind-text-muted">v1.0.0</span>
         </div>
       </div>
     </div>
