@@ -34,17 +34,10 @@ export function Scanner() {
   return (
     <PageCard>
       <div className="space-y-6 sm:space-y-8">
-        <div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-ind-text mb-2">Scanner</h1>
-          <p className="text-xs sm:text-sm md:text-base text-ind-text-muted">
-            Scan projects to discover CodeRef structure and workorders.
-          </p>
-        </div>
-
         {/* Main Grid: 12 columns on desktop, stacks on mobile */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Left Panel: Project List (8 columns on desktop) */}
-          <div className="lg:col-span-8 min-h-[500px]">
+          <div className="lg:col-span-8 h-[500px]">
             <ProjectListCard
               onSelectionChange={setSelections}
               onProjectsLoad={handleProjectsChange}
@@ -52,7 +45,7 @@ export function Scanner() {
           </div>
 
           {/* Right Panel: Console Tabs (4 columns on desktop) */}
-          <div className="lg:col-span-4 min-h-[500px]">
+          <div className="lg:col-span-4 h-[500px]">
             <ConsoleTabs scanId={scanId} />
           </div>
         </div>

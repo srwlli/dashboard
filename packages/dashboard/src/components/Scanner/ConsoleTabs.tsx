@@ -113,7 +113,7 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
         {activeTab === 'console' && (
           <div
             ref={consoleRef}
-            className="p-4 font-mono text-sm bg-ind-bg min-h-full overflow-y-auto"
+            className="p-4 font-mono text-sm bg-ind-bg h-full overflow-y-auto"
           >
             {consoleOutput.length === 0 ? (
               <>
@@ -171,7 +171,7 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
         )}
 
         {activeTab === 'config' && (
-          <div className="p-4 font-mono text-sm bg-ind-bg min-h-full">
+          <div className="p-4 font-mono text-sm bg-ind-bg h-full overflow-y-auto">
             <div className="text-ind-text">
               <div className="mb-2">
                 <span className="text-ind-text-muted">Mode:</span> Universal

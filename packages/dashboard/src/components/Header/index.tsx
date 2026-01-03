@@ -9,10 +9,11 @@ const breadcrumbMap: Record<string, { label: string; href: string }> = {
   '/': { label: 'Dashboard', href: '/' },
   '/prompts': { label: 'Prompts', href: '/prompts' },
   '/settings': { label: 'Settings', href: '/settings' },
-  '/user-settings': { label: 'User Settings', href: '/user-settings' },
+  '/user': { label: 'User', href: '/user' },
   '/assistant': { label: 'Assistant', href: '/assistant' },
-  '/coderef-explorer': { label: 'Explorer', href: '/coderef-explorer' },
+  '/explorer': { label: 'Explorer', href: '/explorer' },
   '/scanner': { label: 'Scanner', href: '/scanner' },
+  '/ecosystem': { label: 'Ecosystem', href: '/ecosystem' },
 };
 
 interface HeaderProps {

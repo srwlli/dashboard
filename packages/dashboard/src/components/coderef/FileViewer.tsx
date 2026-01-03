@@ -9,6 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeSlug from 'rehype-slug';
+import { MermaidViewer } from './MermaidViewer';
 
 interface FileViewerProps {
   /** Project containing the file */
@@ -169,6 +170,8 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
 
   const isJson = fileData.extension === '.json';
   const isMarkdown = fileData.extension === '.md';
+  const isMermaid = fileData.extension === '.mmd';
+  const isHtml = fileData.extension === '.html' || fileData.extension === '.htm';
   const isCode =
     ['.ts', '.tsx', '.js', '.jsx', '.py', '.java', '.c', '.cpp', '.rs', '.go'].includes(
       fileData.extension
@@ -189,6 +192,7 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
       '.go': 'go',
       '.json': 'json',
       '.md': 'markdown',
+      '.mmd': 'mermaid',
     };
     return langMap[ext] || 'text';
   };
@@ -378,6 +382,20 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
             >
               {displayContent}
             </ReactMarkdown>
+          </div>
+        ) : isMermaid ? (
+          // Render Mermaid diagrams (architecture diagrams, dependency graphs, flowcharts)
+          <MermaidViewer chart={displayContent} />
+        ) : isHtml ? (
+          // Render HTML files in sandboxed iframe for live preview
+          <div className="w-full h-full bg-white">
+            <iframe
+              srcDoc={displayContent}
+              sandbox="allow-scripts allow-same-origin"
+              className="w-full h-full border-0"
+              style={{ minHeight: '600px' }}
+              title={fileData.name}
+            />
           </div>
         ) : isJson || isCode ? (
           // Render code files with syntax highlighting

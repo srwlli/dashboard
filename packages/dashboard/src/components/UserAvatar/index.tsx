@@ -5,7 +5,7 @@ import { User } from 'lucide-react';
 
 export default function UserAvatar() {
   return (
-    <Link href="/user-settings">
+    <Link href="/user">
       <button
         className="
           flex items-center justify-center
@@ -16,7 +16,7 @@ export default function UserAvatar() {
           hover:scale-110 hover:shadow-lg
           transition-all duration-200
         "
-        aria-label="User Settings"
+        aria-label="User"
       >
         <User className="w-4 h-4" />
       </button>
