@@ -26,6 +26,11 @@ const SKIP_DIRS = new Set([
 ]);
 
 /**
+ * Hidden directories to allow (not skip)
+ */
+const ALLOWED_HIDDEN = new Set(['.env', '.coderef']);
+
+/**
  * Show directory picker dialog
  * Returns null if user cancels
  */
@@ -56,7 +61,7 @@ export async function buildTreeFromHandle(
   try {
     for await (const entry of dirHandle.values()) {
       // Skip hidden files and excluded directories
-      if (entry.name.startsWith('.') && entry.name !== '.env') {
+      if (entry.name.startsWith('.') && !ALLOWED_HIDDEN.has(entry.name)) {
         continue;
       }
 

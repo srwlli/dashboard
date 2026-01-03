@@ -57,7 +57,7 @@ import { useState, useEffect } from 'react';
 import type { Project, TreeNode } from '@/lib/coderef/types';
 import type { FavoritesData, FavoriteGroup } from '@/lib/coderef/favorites-types';
 import { createEmptyFavoritesData } from '@/lib/coderef/favorites-types';
-import { ViewModeToggle } from '@/components/coderef/ViewModeToggle';
+import { ViewModeToggle, type ViewMode } from '@/components/coderef/ViewModeToggle';
 import { ProjectSelector } from '@/components/coderef/ProjectSelector';
 import { useExplorer } from '@/contexts/ExplorerContext';
 // DORMANT: FileTypeFilter - will be used for multi-project aggregation in future
@@ -369,7 +369,11 @@ export function CodeRefExplorerWidget() {
           selectedPath={selectedFile?.path}
           onFileClick={handleFileClick}
           className="flex-1"
-          filterPath={viewMode === 'coderef' ? 'coderef' : undefined}
+          filterPath={
+            viewMode === 'coderef' ? 'coderef' :
+            viewMode === 'dotcoderef' ? '.coderef' :
+            undefined
+          }
           onToggleFavorite={handleToggleFavorite}
           isFavorite={isFavorite}
           showOnlyFavorites={viewMode === 'favorites'}

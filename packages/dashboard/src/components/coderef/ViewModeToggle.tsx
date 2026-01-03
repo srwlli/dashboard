@@ -1,16 +1,17 @@
 /**
  * ViewModeToggle Component
  *
- * Tab toggle for switching between Project, CodeRef, and Favorites view modes in Explorer.
- * Displays [Project] [CodeRef] [Favorites] tabs as border-attached tabs.
- * - Project = full project directory
- * - CodeRef = coderef/ subdirectory only
- * - Favorites = user-favorited files/folders
+ * Tab toggle for switching between root, coderef, .coderef, and favorite view modes in Explorer.
+ * Displays [root] [coderef] [.coderef] [favorite] tabs as border-attached tabs.
+ * - root = full project directory
+ * - coderef = coderef/ subdirectory only
+ * - .coderef = .coderef/ subdirectory only (system files, hides index.json)
+ * - favorite = user-favorited files/folders
  */
 
 'use client';
 
-export type ViewMode = 'projects' | 'coderef' | 'favorites';
+export type ViewMode = 'projects' | 'coderef' | 'dotcoderef' | 'favorites';
 
 interface ViewModeToggleProps {
   /** Current active view mode */
@@ -22,18 +23,19 @@ interface ViewModeToggleProps {
 }
 
 /**
- * ViewModeToggle component with Project/CodeRef/Favorites tabs
+ * ViewModeToggle component with root/coderef/.coderef/favorite tabs
  * Styled as border-attached tabs (browser-style)
  */
 export function ViewModeToggle({ value, onChange, className = '' }: ViewModeToggleProps) {
   const tabs: Array<{ id: ViewMode; label: string }> = [
-    { id: 'projects', label: 'Project' },
-    { id: 'coderef', label: 'CodeRef' },
-    { id: 'favorites', label: 'Favorites' },
+    { id: 'projects', label: 'root' },
+    { id: 'coderef', label: 'coderef' },
+    { id: 'dotcoderef', label: '.coderef' },
+    { id: 'favorites', label: 'favorite' },
   ];
 
   return (
-    <div className={`flex gap-0.5 border-b border-ind-border ${className}`}>
+    <div className={`flex border-b border-ind-border overflow-x-auto overflow-y-hidden ${className}`}>
       {tabs.map((tab) => {
         const isActive = value === tab.id;
 
@@ -42,7 +44,7 @@ export function ViewModeToggle({ value, onChange, className = '' }: ViewModeTogg
             key={tab.id}
             onClick={() => onChange(tab.id)}
             className={`
-              px-4 py-2 text-sm font-medium
+              flex-1 px-2 sm:px-3 py-2 text-sm font-medium whitespace-nowrap
               transition-all duration-200
               border-t border-l border-r
               ${

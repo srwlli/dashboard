@@ -241,6 +241,11 @@ export function FileTree({
     displayTree = filterTreeToFolder(displayTree, filterPath);
   }
 
+  // Hide index.json in .coderef tab (file is 15MB, exceeds 10MB limit)
+  if (filterPath === '.coderef') {
+    displayTree = displayTree.filter(node => node.name !== 'index.json');
+  }
+
   // Then apply favorites filter if specified
   if (showOnlyFavorites) {
     displayTree = filterTreeToFavorites(displayTree);

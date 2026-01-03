@@ -65,7 +65,7 @@ export function ExplorerProvider({ children }: ExplorerProviderProps) {
   // Restore view mode from localStorage on mount
   useEffect(() => {
     const savedViewMode = localStorage.getItem('coderef-explorer-view-mode');
-    if (savedViewMode && (savedViewMode === 'projects' || savedViewMode === 'coderef' || savedViewMode === 'favorites')) {
+    if (savedViewMode && (savedViewMode === 'projects' || savedViewMode === 'coderef' || savedViewMode === 'dotcoderef' || savedViewMode === 'favorites')) {
       setViewModeState(savedViewMode as ViewMode);
     }
     setIsInitialized(true);

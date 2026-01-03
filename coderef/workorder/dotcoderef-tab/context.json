@@ -1,0 +1,39 @@
+{
+  "feature_name": "dotcoderef-tab",
+  "description": "Add a new 4th tab to the Explorer sidebar that displays .coderef/ system files. The tab will show .coderef/ folder contents while hiding index.json by default to prevent file size errors (15MB file). This complements the existing Projects, CodeRef (user docs), and Favorites tabs.",
+  "goal": "Enable users to access .coderef/ system files (context.md, doc_generation_data.json, diagrams/, exports/, reports/) through the Explorer UI without exposing the problematic 15MB index.json file.",
+  "requirements": [
+    "Add new 'dotcoderef' view mode to ViewMode type definition",
+    "Add 4th tab button in ViewModeToggle component labeled '.coderef'",
+    "Whitelist .coderef/ directory in both local-access.ts and tree/route.ts to allow scanning hidden directory",
+    "Add filtering logic in FileTree.tsx to hide index.json when filterPath === '.coderef'",
+    "Wire up new tab in CodeRefExplorerWidget.tsx to map 'dotcoderef' view mode to filterPath='.coderef'",
+    "Maintain existing behavior for Projects, CodeRef, and Favorites tabs",
+    "Preserve 10MB file size protection for all file loading"
+  ],
+  "out_of_scope": [],
+  "constraints": [
+    "Must not modify existing tab behaviors",
+    "Must maintain same rendering system (FileTree/FileTreeNode recursion)",
+    "index.json must be visible in Projects tab but hidden in .coderef tab",
+    "Must use existing filterTreeToFolder function (single string, not array)",
+    "All .coderef/ files except index.json should appear at depth 0 in the new tab"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-DOTCODEREF-TAB-001",
+    "workorder_assigned_at": "2026-01-03T06:50:46.259978+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-DOTCODEREF-TAB-001",
+    "feature_id": "dotcoderef-tab",
+    "last_updated": "2026-01-03",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-02"
+  }
+}

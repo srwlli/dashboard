@@ -1,0 +1,319 @@
+{
+  "meta": {
+    "workorder_id": "WO-DOTCODEREF-TAB-001",
+    "feature_name": "dotcoderef-tab",
+    "version": "1.0.0",
+    "created": "2026-01-03",
+    "status": "pending"
+  },
+  "executive_summary": {
+    "overview": "Add a fourth tab to the Explorer sidebar to display .coderef/ system files. This new tab will show the contents of the .coderef/ folder (context.md, doc_generation_data.json, diagrams/, exports/, reports/) while hiding index.json by default to prevent file size errors.",
+    "problem": "The .coderef/ directory contains important system-generated files that users cannot currently access through the Explorer UI. The directory is currently filtered out as a hidden folder. Additionally, the index.json file in this directory is 15MB, exceeding the 10MB file size limit.",
+    "solution": "Create a new '.coderef' view mode tab that: 1) Whitelists the .coderef/ directory in both local and API tree scanning modes, 2) Adds a fourth tab to ViewModeToggle, 3) Filters the tree to show only .coderef/ contents, 4) Hides index.json specifically in this tab while keeping it visible in Projects tab",
+    "benefits": [
+      "Users can access .coderef/ system files through the UI",
+      "Prevents file size errors by hiding 15MB index.json",
+      "Maintains consistency with existing tab pattern",
+      "No breaking changes to existing tabs"
+    ],
+    "scope": {
+      "in_scope": [
+        "Whitelist .coderef/ directory in file scanning",
+        "Add 4th tab to ViewModeToggle",
+        "Update ViewMode type definition",
+        "Add index.json filtering logic",
+        "Wire up new tab in CodeRefExplorerWidget"
+      ],
+      "out_of_scope": [
+        "Modifying existing tab behaviors",
+        "Changing file size limits",
+        "Adding download functionality for large files",
+        "Virtualization for large file trees"
+      ]
+    }
+  },
+  "risk_assessment": {
+    "risks": [
+      {
+        "id": "RISK-001",
+        "category": "technical",
+        "description": "Type definition mismatch if ViewMode type isn't updated consistently across all files",
+        "impact": "high",
+        "probability": "medium",
+        "mitigation": "Use TypeScript compiler to catch type errors before testing"
+      },
+      {
+        "id": "RISK-002",
+        "category": "ux",
+        "description": "Users may expect index.json to be visible in .coderef tab",
+        "impact": "low",
+        "probability": "medium",
+        "mitigation": "Document that index.json is hidden due to file size, visible in Projects tab"
+      },
+      {
+        "id": "RISK-003",
+        "category": "technical",
+        "description": "Filter logic may not work correctly if .coderef/ directory doesn't exist in project",
+        "impact": "medium",
+        "probability": "low",
+        "mitigation": "Existing empty state handling in FileTree will handle this case"
+      }
+    ],
+    "dependencies": [
+      {
+        "name": "ExplorerContext",
+        "type": "internal",
+        "status": "exists",
+        "notes": "Must update ViewMode type definition"
+      },
+      {
+        "name": "FileTree component",
+        "type": "internal",
+        "status": "exists",
+        "notes": "Add filtering logic for index.json"
+      },
+      {
+        "name": "ViewModeToggle component",
+        "type": "internal",
+        "status": "exists",
+        "notes": "Add 4th tab button"
+      }
+    ]
+  },
+  "current_state": {
+    "existing_behavior": "Explorer sidebar has 3 tabs: Projects (full tree), CodeRef (coderef/ folder only), and Favorites (starred items). The .coderef/ directory is currently filtered out as a hidden directory in both local-access.ts and tree/route.ts.",
+    "limitations": [
+      ".coderef/ directory is completely inaccessible through UI",
+      "index.json (15MB) would exceed 10MB file size limit if exposed",
+      "Only 3 view modes available: projects, coderef, favorites"
+    ],
+    "technical_context": {
+      "files_to_modify": [
+        "packages/dashboard/src/lib/coderef/local-access.ts",
+        "packages/dashboard/src/app/api/coderef/tree/route.ts",
+        "packages/dashboard/src/contexts/ExplorerContext.tsx",
+        "packages/dashboard/src/components/coderef/ViewModeToggle.tsx",
+        "packages/dashboard/src/components/coderef/FileTree.tsx",
+        "packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx"
+      ],
+      "key_patterns": [
+        "ViewMode type definition in ExplorerContext",
+        "filterTreeToFolder function in FileTree.tsx",
+        "SKIP_DIRS and hidden file filtering in local-access.ts and tree/route.ts"
+      ]
+    }
+  },
+  "implementation_phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "Whitelist .coderef Directory",
+      "description": "Update file scanning logic to allow .coderef/ directory to be included in tree results",
+      "order": 1,
+      "tasks": [
+        {
+          "task_id": "WHITELIST-001",
+          "title": "Update local-access.ts to whitelist .coderef",
+          "description": "Add .coderef to ALLOWED_HIDDEN set in local-access.ts. Replace single .env check with Set-based check for both .env and .coderef directories.",
+          "type": "code",
+          "estimated_effort": "15 minutes",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "ALLOWED_HIDDEN constant defined as Set(['.env', '.coderef'])",
+            "Hidden directory filter uses ALLOWED_HIDDEN.has() check",
+            ".coderef directory appears in tree when scanning locally"
+          ]
+        },
+        {
+          "task_id": "WHITELIST-002",
+          "title": "Update tree/route.ts to whitelist .coderef",
+          "description": "Add .coderef to ALLOWED_HIDDEN set in API route handler. Mirror the same change from local-access.ts for consistency between local and API modes.",
+          "type": "code",
+          "estimated_effort": "15 minutes",
+          "dependencies": ["WHITELIST-001"],
+          "acceptance_criteria": [
+            "ALLOWED_HIDDEN constant defined identically to local-access.ts",
+            "API mode tree includes .coderef directory",
+            "Both modes return consistent tree structure"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_2",
+      "name": "Update Type Definitions",
+      "description": "Extend ViewMode type to include new 'dotcoderef' option",
+      "order": 2,
+      "tasks": [
+        {
+          "task_id": "TYPES-001",
+          "title": "Add 'dotcoderef' to ViewMode type",
+          "description": "Update ViewMode type definition in ExplorerContext.tsx to include 'dotcoderef' as a valid view mode option alongside 'projects', 'coderef', and 'favorites'.",
+          "type": "code",
+          "estimated_effort": "5 minutes",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "ViewMode type includes 'dotcoderef' option",
+            "TypeScript compiler accepts 'dotcoderef' in all ViewMode usages",
+            "No type errors in related components"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "Add UI Tab Component",
+      "description": "Add fourth tab button to ViewModeToggle component",
+      "order": 3,
+      "tasks": [
+        {
+          "task_id": "UI-001",
+          "title": "Add .coderef tab to ViewModeToggle",
+          "description": "Add a new tab button in ViewModeToggle.tsx with value='dotcoderef' and label='.coderef'. Position it between 'CodeRef' and 'Favorites' tabs.",
+          "type": "code",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["TYPES-001"],
+          "acceptance_criteria": [
+            "Fourth tab button renders with label '.coderef'",
+            "Tab button has value='dotcoderef'",
+            "Clicking tab triggers onChange with 'dotcoderef' value",
+            "Tab styling matches existing tabs"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "Implement Filtering Logic",
+      "description": "Add logic to filter .coderef/ contents and hide index.json",
+      "order": 4,
+      "tasks": [
+        {
+          "task_id": "FILTER-001",
+          "title": "Add index.json filtering in FileTree",
+          "description": "In FileTree.tsx, after applying filterTreeToFolder, add conditional logic to filter out index.json when filterPath === '.coderef'. Use array filter method on displayTree to exclude nodes where node.name === 'index.json'.",
+          "type": "code",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["TYPES-001"],
+          "acceptance_criteria": [
+            "index.json is filtered out when filterPath === '.coderef'",
+            "index.json remains visible in Projects tab (no filterPath)",
+            "All other .coderef/ files are visible in .coderef tab",
+            "Filter logic doesn't affect other tabs"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_5",
+      "name": "Wire Up View Mode",
+      "description": "Connect new tab to filtering logic in CodeRefExplorerWidget",
+      "order": 5,
+      "tasks": [
+        {
+          "task_id": "WIRE-001",
+          "title": "Map dotcoderef view mode to filterPath",
+          "description": "In CodeRefExplorerWidget.tsx, update the filterPath prop passed to FileTree. Add conditional logic: if viewMode === 'dotcoderef', set filterPath='.coderef'. Use ternary operator chain for clean mapping.",
+          "type": "code",
+          "estimated_effort": "15 minutes",
+          "dependencies": ["UI-001", "FILTER-001"],
+          "acceptance_criteria": [
+            "Clicking .coderef tab sets filterPath to '.coderef'",
+            "FileTree receives correct filterPath value",
+            "Tab switching updates tree display correctly",
+            "Existing tabs continue to work (projects, coderef, favorites)"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_6",
+      "name": "Testing and Validation",
+      "description": "Test all four tabs and edge cases",
+      "order": 6,
+      "tasks": [
+        {
+          "task_id": "TEST-001",
+          "title": "Test all tab functionality",
+          "description": "Verify all four tabs work correctly: Projects shows full tree including .coderef/ and index.json, CodeRef shows coderef/ contents, .coderef shows .coderef/ contents without index.json, Favorites shows starred items.",
+          "type": "testing",
+          "estimated_effort": "30 minutes",
+          "dependencies": ["WIRE-001"],
+          "acceptance_criteria": [
+            "Projects tab shows .coderef/ directory and index.json",
+            "CodeRef tab shows coderef/ contents (unchanged)",
+            ".coderef tab shows .coderef/ files except index.json",
+            "Favorites tab works unchanged",
+            "Clicking index.json in Projects tab shows file size error (15MB > 10MB)",
+            "File selection works in all tabs"
+          ]
+        },
+        {
+          "task_id": "TEST-002",
+          "title": "Test edge cases",
+          "description": "Test behavior when .coderef/ directory doesn't exist, when it's empty, and when switching between tabs rapidly.",
+          "type": "testing",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["TEST-001"],
+          "acceptance_criteria": [
+            "Empty state shown if .coderef/ doesn't exist",
+            "No errors when switching tabs rapidly",
+            "Tree expands/collapses correctly in all tabs",
+            "Context menu works in all tabs"
+          ]
+        }
+      ]
+    }
+  ],
+  "testing_strategy": {
+    "unit_tests": [
+      "ViewMode type accepts 'dotcoderef' value",
+      "filterTreeToFolder works with '.coderef' path",
+      "index.json filtering logic works correctly"
+    ],
+    "integration_tests": [
+      "Tab switching updates filterPath correctly",
+      ".coderef directory appears in tree after whitelisting",
+      "File selection works across all tabs"
+    ],
+    "manual_tests": [
+      "Click through all four tabs and verify tree content",
+      "Verify index.json hidden in .coderef tab but visible in Projects",
+      "Test file viewing in .coderef tab",
+      "Test favorites functionality in .coderef files"
+    ]
+  },
+  "success_criteria": {
+    "functional": [
+      "Four tabs visible and clickable in Explorer sidebar",
+      ".coderef tab displays .coderef/ directory contents",
+      "index.json hidden in .coderef tab",
+      "index.json visible in Projects tab",
+      "All existing tabs continue to work"
+    ],
+    "technical": [
+      "No TypeScript compilation errors",
+      "No console errors during tab switching",
+      "Tree rendering performance unchanged",
+      "10MB file size protection still enforced"
+    ],
+    "user_experience": [
+      "Tab switching is smooth and responsive",
+      "Empty states display correctly",
+      "File selection and viewing works in new tab",
+      "Context menu works on .coderef files"
+    ]
+  },
+  "rollback_plan": {
+    "triggers": [
+      "TypeScript compilation errors that can't be resolved",
+      "Breaking changes to existing tab functionality",
+      "Performance degradation in tree rendering"
+    ],
+    "steps": [
+      "Revert all code changes via git",
+      "Remove ViewMode type changes",
+      "Remove .coderef from ALLOWED_HIDDEN sets",
+      "Verify existing tabs work correctly"
+    ]
+  }
+}
