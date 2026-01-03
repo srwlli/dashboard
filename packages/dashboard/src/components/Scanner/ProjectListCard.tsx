@@ -156,13 +156,21 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 h-full flex flex-col">
       {/* Header */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 p-4">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-          Saved Projects
-        </h2>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-          Select projects to include in scan
-        </p>
+      <div className="border-b border-neutral-200 dark:border-neutral-800 p-4 flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            Saved Projects
+          </h2>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+            Select projects to include in scan
+          </p>
+        </div>
+        <button
+          onClick={handleAddPath}
+          className="px-4 py-2 bg-ind-accent hover:bg-ind-accent-hover text-black rounded-md text-sm font-bold uppercase tracking-wider transition-all active:translate-y-0.5 flex-shrink-0"
+        >
+          Add Path
+        </button>
       </div>
 
       {/* Content */}
@@ -187,15 +195,9 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
             <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
               No Projects Configured
             </h3>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6 max-w-sm">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-sm">
               Add project paths to include in the scan
             </p>
-            <button
-              onClick={handleAddPath}
-              className="px-4 py-2 bg-ind-accent-color hover:bg-ind-accent-hover text-white rounded-md text-sm font-medium transition-colors"
-            >
-              Add Path
-            </button>
           </div>
         ) : (
           <div className="space-y-2">
