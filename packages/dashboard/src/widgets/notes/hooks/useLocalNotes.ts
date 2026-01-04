@@ -26,6 +26,7 @@ export function useLocalNotes() {
 
   /**
    * Load notes from localStorage on mount
+   * Create 3 default blank cards if no notes exist
    */
   useEffect(() => {
     try {
@@ -33,6 +34,32 @@ export function useLocalNotes() {
       if (stored) {
         const parsed = JSON.parse(stored);
         setNotes(parsed);
+      } else {
+        // Create 3 default blank cards
+        const defaultNotes: LocalNote[] = [
+          {
+            id: `note-${Date.now()}-1`,
+            title: '',
+            content: '',
+            savedToFile: false,
+            lastModified: new Date().toISOString(),
+          },
+          {
+            id: `note-${Date.now()}-2`,
+            title: '',
+            content: '',
+            savedToFile: false,
+            lastModified: new Date().toISOString(),
+          },
+          {
+            id: `note-${Date.now()}-3`,
+            title: '',
+            content: '',
+            savedToFile: false,
+            lastModified: new Date().toISOString(),
+          },
+        ];
+        setNotes(defaultNotes);
       }
     } catch (err) {
       console.error('Failed to load notes from localStorage:', err);
