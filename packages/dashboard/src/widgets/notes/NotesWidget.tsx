@@ -128,7 +128,7 @@ export default function NotesWidget() {
               return (
                 <div
                   key={note.id}
-                  className="bg-ind-panel border-2 border-ind-border rounded-lg p-4 flex flex-col min-h-screen"
+                  className="bg-ind-panel border-2 border-ind-border rounded-lg p-4 flex flex-col h-96"
                 >
                   {/* Title Input */}
                   <input
