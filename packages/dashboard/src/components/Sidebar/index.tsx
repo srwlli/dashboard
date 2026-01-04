@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useSidebar } from '@/contexts/SidebarContext';
-import { ChevronLeft, ChevronRight, Home, BookOpen, Zap, Settings, FolderTree, Radar, Network } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, BookOpen, Zap, Settings, FolderTree, Radar, Network, FileText } from 'lucide-react';
 import NavItem from './NavItem';
 
 const mainNavItems = [
@@ -10,6 +10,7 @@ const mainNavItems = [
   { label: 'Prompts', href: '/prompts', icon: BookOpen },
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },
+  { label: 'Notes', href: '/notes', icon: FileText },
   { label: 'Scanner', href: '/scanner', icon: Radar },
   { label: 'Resources', href: '/resources', icon: Network },
 ];

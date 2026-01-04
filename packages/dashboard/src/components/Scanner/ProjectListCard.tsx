@@ -209,18 +209,6 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
                   key={project.id}
                   className="flex items-center gap-3 p-3 bg-ind-bg border border-ind-border hover:border-ind-accent transition-colors group"
                 >
-                  {/* Scan Checkbox */}
-                  <div className="flex flex-col items-center gap-1">
-                    <input
-                      type="checkbox"
-                      checked={selection.scan}
-                      onChange={(e) => handleScanCheckboxChange(project.id, e.target.checked)}
-                      className="w-4 h-4 border-ind-border text-ind-accent focus:ring-2 focus:ring-ind-accent/50"
-                      title="Scan"
-                    />
-                    <span className="text-[10px] text-ind-text-muted">Scan</span>
-                  </div>
-
                   {/* Populate Checkbox */}
                   <div className="flex flex-col items-center gap-1">
                     <input
@@ -231,6 +219,18 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
                       title="Populate"
                     />
                     <span className="text-[10px] text-ind-text-muted">Populate</span>
+                  </div>
+
+                  {/* Scan Checkbox */}
+                  <div className="flex flex-col items-center gap-1">
+                    <input
+                      type="checkbox"
+                      checked={selection.scan}
+                      onChange={(e) => handleScanCheckboxChange(project.id, e.target.checked)}
+                      className="w-4 h-4 border-ind-border text-ind-accent focus:ring-2 focus:ring-ind-accent/50"
+                      title="Scan"
+                    />
+                    <span className="text-[10px] text-ind-text-muted">Scan</span>
                   </div>
 
                   <div className="flex-1 min-w-0">

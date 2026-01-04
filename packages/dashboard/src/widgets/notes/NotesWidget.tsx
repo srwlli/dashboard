@@ -7,7 +7,7 @@
  * Provides overall layout (2-column: list + editor) with industrial theme
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditorMode } from './types';
 import { useNotes } from './hooks/useNotes';
 import { useAutoSave } from './hooks/useAutoSave';
@@ -42,6 +42,45 @@ export default function NotesWidget() {
     },
     enabled: !!currentNote,
   });
+
+  /**
+   * Keyboard shortcuts
+   * Cmd/Ctrl+S: Manual save
+   * Cmd/Ctrl+P: Toggle preview
+   * Cmd/Ctrl+N: New note
+   */
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey;
+
+      // Cmd/Ctrl+S: Manual save
+      if (isMod && e.key === 's') {
+        e.preventDefault();
+        if (currentNote) {
+          triggerSave();
+        }
+      }
+
+      // Cmd/Ctrl+P: Toggle preview
+      if (isMod && e.key === 'p') {
+        e.preventDefault();
+        if (currentNote) {
+          setEditorMode(prev =>
+            prev === EditorMode.Edit ? EditorMode.Preview : EditorMode.Edit
+          );
+        }
+      }
+
+      // Cmd/Ctrl+N: New note
+      if (isMod && e.key === 'n') {
+        e.preventDefault();
+        handleCreateNote();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentNote, triggerSave, handleCreateNote]);
 
   /**
    * Handle note selection from list
