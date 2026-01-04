@@ -12,6 +12,7 @@ import { EventEmitter } from 'events';
 import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
 import type { ScanProgress, ScanStatus } from '../types';
+import { CodeRefApi, ApiError } from '@/lib/coderef/api-access';
 
 /**
  * Project selection for scan/populate operations
@@ -143,57 +144,35 @@ export class ScanExecutor extends EventEmitter {
   }
 
   /**
-   * Run scan-all.py for a single project
-   * Uses child_process.spawn() to execute Python script
+   * Run scan for a single project via /api/scan endpoint
+   * Uses @coderef/core scanner directly (no subprocess)
    */
   private async runScanForProject(projectPath: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Locate scan-all.py script
-      const scanScriptPath = process.env.SCAN_SCRIPT_PATH ||
-        'C:\\Users\\willh\\Desktop\\projects\\coderef-system\\scripts\\scan-all.py';
-
+    try {
       this.emitOutput(`\n[Scanner] Starting scan for: ${projectPath}`);
-      this.emitOutput(`[Scanner] Using script: ${scanScriptPath}\n`);
+      this.emitOutput(`[Scanner] Using @coderef/core scanner (in-process)\n`);
 
-      // Spawn Python subprocess
-      this.currentProcess = spawn('python', [scanScriptPath, projectPath], {
-        stdio: ['ignore', 'pipe', 'pipe'],
-        cwd: path.dirname(scanScriptPath),
+      // Call API endpoint with scanner options
+      const result = await CodeRefApi.scan.scan(projectPath, {
+        lang: ['ts', 'tsx', 'js', 'jsx'],
+        recursive: true,
+        exclude: ['node_modules', '.git', 'dist', 'build', '.next'],
       });
 
-      // Handle stdout
-      this.currentProcess.stdout?.on('data', (data) => {
-        const output = data.toString();
-        this.emitOutput(output);
-      });
-
-      // Handle stderr
-      this.currentProcess.stderr?.on('data', (data) => {
-        const output = data.toString();
-        this.emitOutput(`[ERROR] ${output}`);
-      });
-
-      // Handle process exit
-      this.currentProcess.on('close', (code) => {
-        if (code === 0) {
-          this.emitOutput(`[Scanner] Completed: ${projectPath}\n`);
-          resolve();
-        } else if (code === null) {
-          // Process was killed (cancelled)
-          this.emitOutput(`[Scanner] Cancelled: ${projectPath}\n`);
-          resolve();
-        } else {
-          reject(new Error(`Scan failed with exit code ${code}`));
-        }
-        this.currentProcess = null;
-      });
-
-      // Handle process error (e.g., python not found)
-      this.currentProcess.on('error', (error) => {
-        this.emitOutput(`[ERROR] Failed to start scan: ${error.message}\n`);
-        reject(error);
-      });
-    });
+      // Emit completion with summary
+      const { summary } = result;
+      this.emitOutput(`[Scanner] Scan completed successfully`);
+      this.emitOutput(`[Scanner] Found ${summary.totalElements} elements in ${summary.filesScanned} files`);
+      this.emitOutput(`[Scanner] Scan duration: ${summary.scanDuration}ms\n`);
+    } catch (error: any) {
+      // Handle API errors
+      if (error instanceof ApiError) {
+        this.emitOutput(`[ERROR] Scan failed: ${error.message}\n`);
+        throw new Error(`Scan failed: ${error.message}`);
+      }
+      this.emitOutput(`[ERROR] Scan failed: ${error.message}\n`);
+      throw error;
+    }
   }
 
   /**

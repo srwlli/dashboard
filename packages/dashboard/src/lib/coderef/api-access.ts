@@ -8,6 +8,7 @@
 import type { TreeNode } from '@/app/api/coderef/tree/route';
 import type { FileData } from '@/app/api/coderef/file/route';
 import type { CodeRefProject } from '@/app/api/coderef/projects/route';
+import type { ElementData } from '@coderef/core';
 
 /**
  * API response wrapper
@@ -147,10 +148,58 @@ export const FileApi = {
 };
 
 /**
+ * Scan options interface
+ */
+export interface ScanOptions {
+  lang?: string[];
+  recursive?: boolean;
+  exclude?: string[];
+}
+
+/**
+ * Scan summary statistics
+ */
+export interface ScanSummary {
+  totalElements: number;
+  byType: Record<string, number>;
+  byLanguage: Record<string, number>;
+  filesScanned: number;
+  scanDuration: number;
+}
+
+/**
+ * Scan result
+ */
+export interface ScanResult {
+  elements: ElementData[];
+  summary: ScanSummary;
+}
+
+/**
+ * Scanner API calls
+ */
+export const ScanApi = {
+  /**
+   * Scan project using @coderef/core scanner
+   *
+   * @param projectPath - Absolute path to project directory
+   * @param options - Scanner options (lang, recursive, exclude)
+   * @returns Scan results with elements and summary
+   */
+  async scan(projectPath: string, options?: ScanOptions): Promise<ScanResult> {
+    return apiFetch('/api/scan', {
+      method: 'POST',
+      body: JSON.stringify({ projectPath, options }),
+    });
+  },
+};
+
+/**
  * Combined API export
  */
 export const CodeRefApi = {
   projects: ProjectsApi,
   tree: TreeApi,
   file: FileApi,
+  scan: ScanApi,
 };

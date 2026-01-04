@@ -132,7 +132,7 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
                   className={
                     line.includes('[ERROR]')
                       ? 'text-red-400'
-                      : line.includes('[Scanner]')
+                      : line.includes('[Scanner]') || line.includes('[Intelligence]')
                       ? 'text-green-400'
                       : 'text-ind-text'
                   }
@@ -173,17 +173,25 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
         {activeTab === 'config' && (
           <div className="p-4 font-mono text-sm bg-ind-bg h-full overflow-y-auto">
             <div className="text-ind-text">
-              <div className="mb-2">
-                <span className="text-ind-text-muted">Mode:</span> Universal
-                Structure
-              </div>
-              <div className="mb-2">
-                <span className="text-ind-text-muted">Filters:</span> *.js, *.ts,
-                *.py
-              </div>
-              <div className="mb-2">
-                <span className="text-ind-text-muted">Exclude:</span> node_modules,
-                .git
+              <div className="mb-4">
+                <div className="text-ind-accent font-semibold mb-2">
+                  Scanner Configuration
+                </div>
+                <div className="mb-2">
+                  <span className="text-ind-text-muted">Engine:</span>{' '}
+                  @coderef/core (in-process)
+                </div>
+                <div className="mb-2">
+                  <span className="text-ind-text-muted">Languages:</span> ts, tsx,
+                  js, jsx
+                </div>
+                <div className="mb-2">
+                  <span className="text-ind-text-muted">Recursive:</span> true
+                </div>
+                <div className="mb-2">
+                  <span className="text-ind-text-muted">Exclude:</span> node_modules,
+                  .git, dist, build, .next
+                </div>
               </div>
             </div>
           </div>

@@ -15,6 +15,7 @@
     "test:verbose": "jest --verbose"
   },
   "dependencies": {
+    "@coderef/core": "file:../../../projects/coderef-system/packages/core",
     "@coderef-dashboard/core": "file:../core",
     "@tailwindcss/typography": "^0.5.19",
     "@types/react-syntax-highlighter": "^15.5.13",
