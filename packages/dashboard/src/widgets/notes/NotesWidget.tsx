@@ -7,7 +7,7 @@
  * Provides overall layout (2-column: list + editor) with industrial theme
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { EditorMode } from './types';
 import { useNotes } from './hooks/useNotes';
 import { useAutoSave } from './hooks/useAutoSave';
@@ -42,6 +42,29 @@ export default function NotesWidget() {
     },
     enabled: !!currentNote,
   });
+
+  /**
+   * Handle note creation
+   */
+  const handleCreateNote = useCallback(async () => {
+    try {
+      const defaultName = `untitled-${Date.now()}.md`;
+      await createNote({ name: defaultName, content: '' });
+    } catch (err) {
+      console.error('Failed to create note:', err);
+    }
+  }, [createNote]);
+
+  /**
+   * Handle note selection from list
+   */
+  const handleNoteSelect = async (name: string) => {
+    try {
+      await loadNote(name);
+    } catch (err) {
+      console.error('Failed to load note:', err);
+    }
+  };
 
   /**
    * Keyboard shortcuts
@@ -81,29 +104,6 @@ export default function NotesWidget() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentNote, triggerSave, handleCreateNote]);
-
-  /**
-   * Handle note selection from list
-   */
-  const handleNoteSelect = async (name: string) => {
-    try {
-      await loadNote(name);
-    } catch (err) {
-      console.error('Failed to load note:', err);
-    }
-  };
-
-  /**
-   * Handle note creation
-   */
-  const handleCreateNote = async () => {
-    try {
-      const defaultName = `untitled-${Date.now()}.md`;
-      await createNote({ name: defaultName, content: '' });
-    } catch (err) {
-      console.error('Failed to create note:', err);
-    }
-  };
 
   /**
    * Handle note deletion
