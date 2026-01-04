@@ -9,7 +9,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import rehypeSlug from 'rehype-slug';
 import { EditorMode } from './types';
 import { useNotes } from './hooks/useNotes';
 import { useAutoSave } from './hooks/useAutoSave';
@@ -248,8 +250,37 @@ export default function NotesWidget() {
                 )}
 
                 {editorMode === EditorMode.Preview && (
-                  <div className="prose prose-invert max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <div className="prose prose-sm prose-invert max-w-none">
+                    <ReactMarkdown
+                      rehypePlugins={[rehypeSlug]}
+                      components={{
+                        code(props) {
+                          const { children, className, ...rest } = props;
+                          const match = /language-(\w+)/.exec(className || '');
+                          const language = match ? match[1] : 'text';
+                          const isInline = !match;
+
+                          return !isInline ? (
+                            <SyntaxHighlighter
+                              style={vscDarkPlus}
+                              language={language}
+                              PreTag="div"
+                              customStyle={{
+                                margin: 0,
+                                borderRadius: '0.375rem',
+                                fontSize: '0.875rem',
+                              }}
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          ) : (
+                            <code className={className} {...rest}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
                       {editorContent || '*No content to preview*'}
                     </ReactMarkdown>
                   </div>
