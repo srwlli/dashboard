@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useNotes Hook
  *
