@@ -108,8 +108,15 @@ export function useNotes(): UseNotesResult {
         // Refresh notes list
         await refreshNotes();
 
-        // Load the new note
-        await loadNote(request.name);
+        // Set current note directly (don't use loadNote since notes array hasn't updated yet)
+        setCurrentNote({
+          name: request.name,
+          path: request.name,
+          content: request.content || '',
+          modified: new Date().toISOString(),
+          size: Buffer.byteLength(request.content || '', 'utf-8'),
+          extension: request.name.substring(request.name.lastIndexOf('.')),
+        });
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to create note';
         setError(errorMessage);
