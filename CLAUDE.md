@@ -1,10 +1,10 @@
 # CodeRef Dashboard - AI Context Documentation
 
 **Project:** coderef-dashboard
-**Version:** 0.6.0
+**Version:** 0.7.0
 **Status:** 🚧 Development
 **Created:** 2025-12-28
-**Last Updated:** 2026-01-02
+**Last Updated:** 2026-01-04
 
 ---
 
@@ -21,14 +21,17 @@
 - **Papertrail** - Workorder tracking and documentation trail
 - **CodeRef System** - Workflow management and project structure standards
 
-**Latest Update (v0.6.0):**
-- ✅ Scanner UI mockup interface at `/scanner` route
-- ✅ ProjectListCard component with empty states
-- ✅ ConsoleTabs component with Console/History/Config tabs
-- ✅ ActionBar component with Scan/Clear buttons
-- ✅ Responsive 12-column grid layout (8-4 desktop split)
-- ✅ Sidebar navigation integration with Radar icon
-- ✅ UI-only mockup (no backend integration)
+**Latest Update (v0.7.0):**
+- ✅ **Notes Widget**: Production-ready note-taking with file persistence
+  - File persistence to `coderef/notes/` directory
+  - Auto-save with 500ms debounce + manual save (Cmd/Ctrl+S)
+  - localStorage backup on save failure
+  - Edit/Preview mode toggle (Cmd/Ctrl+P)
+  - Keyboard shortcuts (Cmd/Ctrl+S, P, N)
+  - Security: path validation, extension allowlist, size limits
+  - API routes: PUT/DELETE/LIST with server-side validation
+- ✅ Sidebar navigation integration with FileText icon
+- ✅ Industrial theme styling throughout
 
 ---
 
@@ -189,6 +192,7 @@ Benefits: Reduced initial bundle size, extensibility without code changes, faste
 |---------|---------|------|
 | `Resource Aggregation` | Scan and display workorders, stubs, docs from multiple projects | Core Feature |
 | `Widget System` | Modular, extensible components for different views | Core Architecture |
+| `Notes Widget` | Production-ready note-taking with file persistence to coderef/notes/ | Core Feature |
 | `CodeRef MCP Integration` | AI-assisted development via Model Context Protocol | Ecosystem |
 | `Papertrail Integration` | Workorder tracking and documentation audit trails | Ecosystem |
 | `Multi-Project Support` | Aggregate and visualize unlimited CodeRef projects | Core Feature |
@@ -201,7 +205,7 @@ Benefits: Reduced initial bundle size, extensibility without code changes, faste
 | `Type Safety` | Full TypeScript coverage with shared type definitions | DX |
 | `Monorepo Workspaces` | Multi-package development with shared dependencies | Architecture |
 
-**Total:** 13 features across 5 categories (Core, Ecosystem, UI/UX, Deployment, Architecture)
+**Total:** 14 features across 5 categories (Core, Ecosystem, UI/UX, Deployment, Architecture)
 
 ---
 
@@ -579,6 +583,32 @@ npm run package:win
 ---
 
 ## Recent Changes
+
+### v0.7.0 - Notes Widget (2026-01-04)
+- ✅ **Notes Widget**: Production-ready note-taking with file persistence
+  - **API Layer**: PUT/DELETE/LIST routes with security validation
+    - Path validation (coderef/notes/ only, no directory traversal)
+    - Extension allowlist (.md, .txt, .json)
+    - 1MB size limit enforcement
+  - **State Management**: useNotes + useAutoSave hooks
+    - CRUD operations (create, load, delete)
+    - 500ms debounced auto-save
+    - localStorage backup on save failure
+  - **UI Components**: NotesWidget with 2-column layout
+    - Notes list sidebar (30% width, responsive)
+    - Editor with Edit/Preview modes
+    - Industrial theme styling
+  - **Features**:
+    - Keyboard shortcuts (Cmd/Ctrl+S, P, N)
+    - Auto-save with save status indicator
+    - Delete with confirmation
+    - Responsive design (stacks on mobile)
+- ✅ Added Notes navigation to sidebar with FileText icon
+- ✅ Full documentation in widgets/notes/README.md
+- ✅ Updated CLAUDE.md with v0.7.0 changes
+
+**Workorder:** WO-NOTES-WIDGET-001
+**Progress:** 17/26 tasks (65%)
 
 ### v0.6.0 - Scanner UI Integration (2026-01-02)
 - ✅ Created `/scanner` route with responsive 12-column grid layout
