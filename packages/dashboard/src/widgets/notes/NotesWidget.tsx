@@ -8,10 +8,6 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import rehypeSlug from 'rehype-slug';
 import { useNotes } from './hooks/useNotes';
 import { useAutoSave } from './hooks/useAutoSave';
 import { useProjects } from '@/contexts/ProjectsContext';
@@ -202,55 +198,14 @@ export default function NotesWidget() {
                 </div>
               </div>
 
-              {/* Side-by-side Editor + Preview */}
-              <div className="flex-1 flex overflow-hidden">
-                {/* Editor (left 50%) */}
-                <div className="w-1/2 border-r border-ind-border overflow-y-auto p-4">
-                  <textarea
-                    value={editorContent}
-                    onChange={e => setEditorContent(e.target.value)}
-                    className="w-full h-full resize-none bg-transparent text-ind-text font-mono text-sm focus:outline-none"
-                    placeholder="Start writing markdown..."
-                  />
-                </div>
-
-                {/* Preview (right 50%) */}
-                <div className="w-1/2 overflow-y-auto p-4">
-                  <div className="prose prose-sm prose-invert max-w-none">
-                    <ReactMarkdown
-                      rehypePlugins={[rehypeSlug]}
-                      components={{
-                        code(props) {
-                          const { children, className, ...rest } = props;
-                          const match = /language-(\w+)/.exec(className || '');
-                          const language = match ? match[1] : 'text';
-                          const isInline = !match;
-
-                          return !isInline ? (
-                            <SyntaxHighlighter
-                              style={vscDarkPlus}
-                              language={language}
-                              PreTag="div"
-                              customStyle={{
-                                margin: 0,
-                                borderRadius: '0.375rem',
-                                fontSize: '0.875rem',
-                              }}
-                            >
-                              {String(children).replace(/\n$/, '')}
-                            </SyntaxHighlighter>
-                          ) : (
-                            <code className={className} {...rest}>
-                              {children}
-                            </code>
-                          );
-                        },
-                      }}
-                    >
-                      {editorContent || '*Start writing to see preview...*'}
-                    </ReactMarkdown>
-                  </div>
-                </div>
+              {/* Full-width Text Editor */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <textarea
+                  value={editorContent}
+                  onChange={e => setEditorContent(e.target.value)}
+                  className="w-full h-full resize-none bg-transparent text-ind-text font-mono text-sm focus:outline-none"
+                  placeholder="Start writing..."
+                />
               </div>
             </>
           )}
