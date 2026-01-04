@@ -13,7 +13,9 @@ import { PageCard } from '@/components/PageCard';
 export default function NotesPage() {
   return (
     <PageCard padding="p-4">
-      <NotesWidget />
+      <div className="h-full min-h-[calc(100vh-8rem)]">
+        <NotesWidget />
+      </div>
     </PageCard>
   );
 }
