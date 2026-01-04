@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Notes Page
  *
@@ -6,11 +8,12 @@
  */
 
 import { NotesWidget } from '@/widgets/notes';
+import { PageCard } from '@/components/PageCard';
 
 export default function NotesPage() {
   return (
-    <div className="h-screen w-full">
+    <PageCard padding="p-4">
       <NotesWidget />
-    </div>
+    </PageCard>
   );
 }
