@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "composite": true,
+    "types": ["node"],
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "strict": false,
+    "lib": ["ES2019", "ES2020"]
+  },
+  "include": [
+    "*.ts",
+    "utils/**/*.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coderef-core-updates",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "demo-all-modules.ts"
+  ]
+}

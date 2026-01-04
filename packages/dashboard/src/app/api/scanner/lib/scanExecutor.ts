@@ -12,7 +12,7 @@ import { EventEmitter } from 'events';
 import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
 import type { ScanProgress, ScanStatus } from '../types';
-import { CodeRefApi, ApiError } from '@/lib/coderef/api-access';
+import { scanCurrentElements, type ElementData } from '@coderef/core';
 
 /**
  * Project selection for scan/populate operations
@@ -144,34 +144,40 @@ export class ScanExecutor extends EventEmitter {
   }
 
   /**
-   * Run scan for a single project via /api/scan endpoint
-   * Uses @coderef/core scanner directly (no subprocess)
+   * Run scan for a single project using @coderef/core directly
+   * No subprocess, no HTTP - pure in-process scanning
    */
   private async runScanForProject(projectPath: string): Promise<void> {
     try {
       this.emitOutput(`\n[Scanner] Starting scan for: ${projectPath}`);
       this.emitOutput(`[Scanner] Using @coderef/core scanner (in-process)\n`);
 
-      // Call API endpoint with scanner options
-      const result = await CodeRefApi.scan.scan(projectPath, {
-        lang: ['ts', 'tsx', 'js', 'jsx'],
-        recursive: true,
-        exclude: ['node_modules', '.git', 'dist', 'build', '.next'],
-      });
+      const startTime = Date.now();
+
+      // Call scanner directly (no HTTP, no subprocess)
+      const elements: ElementData[] = await scanCurrentElements(
+        projectPath,
+        ['ts', 'tsx', 'js', 'jsx'],
+        {
+          recursive: true,
+          exclude: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.next/**'],
+        }
+      );
+
+      const scanDuration = Date.now() - startTime;
+
+      // Calculate summary statistics
+      const filesScanned = new Set(elements.map(el => el.file)).size;
+      const totalElements = elements.length;
 
       // Emit completion with summary
-      const { summary } = result;
       this.emitOutput(`[Scanner] Scan completed successfully`);
-      this.emitOutput(`[Scanner] Found ${summary.totalElements} elements in ${summary.filesScanned} files`);
-      this.emitOutput(`[Scanner] Scan duration: ${summary.scanDuration}ms\n`);
+      this.emitOutput(`[Scanner] Found ${totalElements} elements in ${filesScanned} files`);
+      this.emitOutput(`[Scanner] Scan duration: ${scanDuration}ms\n`);
     } catch (error: any) {
-      // Handle API errors
-      if (error instanceof ApiError) {
-        this.emitOutput(`[ERROR] Scan failed: ${error.message}\n`);
-        throw new Error(`Scan failed: ${error.message}`);
-      }
+      // Handle scanner errors directly
       this.emitOutput(`[ERROR] Scan failed: ${error.message}\n`);
-      throw error;
+      throw new Error(`Scan failed: ${error.message}`);
     }
   }
 

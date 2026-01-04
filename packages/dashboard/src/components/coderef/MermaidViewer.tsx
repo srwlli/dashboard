@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import mermaid from 'mermaid';
 import { AlertCircle } from 'lucide-react';
 
 interface MermaidViewerProps {
@@ -27,11 +26,21 @@ interface MermaidViewerProps {
 export function MermaidViewer({ chart, className = '' }: MermaidViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const [initialized, setInitialized] = useState(false);
+  const [mermaidLoaded, setMermaidLoaded] = useState(false);
 
+  // Debug logging
   useEffect(() => {
-    // Initialize mermaid once
-    if (!initialized) {
+    console.log('[MermaidViewer] Chart received:', chart?.substring(0, 100));
+    console.log('[MermaidViewer] Chart length:', chart?.length);
+  }, [chart]);
+
+  // Load mermaid dynamically on client-side only
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    import('mermaid').then((mod) => {
+      const mermaid = mod.default;
+
       mermaid.initialize({
         startOnLoad: false,
         theme: 'dark',
@@ -51,12 +60,17 @@ export function MermaidViewer({ chart, className = '' }: MermaidViewerProps) {
         fontFamily: 'ui-sans-serif, system-ui, sans-serif',
         logLevel: 'error',
       });
-      setInitialized(true);
-    }
-  }, [initialized]);
 
+      setMermaidLoaded(true);
+    }).catch((err) => {
+      console.error('Failed to load mermaid:', err);
+      setError('Failed to load diagram renderer');
+    });
+  }, []);
+
+  // Render diagram when mermaid is loaded and chart changes
   useEffect(() => {
-    if (!initialized || !containerRef.current || !chart) return;
+    if (!mermaidLoaded || !containerRef.current || !chart) return;
 
     const renderDiagram = async () => {
       try {
@@ -68,7 +82,8 @@ export function MermaidViewer({ chart, className = '' }: MermaidViewerProps) {
           containerRef.current.innerHTML = '';
         }
 
-        // Render the diagram
+        // Dynamic import for render call
+        const { default: mermaid } = await import('mermaid');
         const { svg } = await mermaid.render(uniqueId, chart);
 
         // Insert rendered SVG
@@ -82,7 +97,7 @@ export function MermaidViewer({ chart, className = '' }: MermaidViewerProps) {
     };
 
     renderDiagram();
-  }, [chart, initialized]);
+  }, [chart, mermaidLoaded]);
 
   if (error) {
     return (
@@ -96,6 +111,16 @@ export function MermaidViewer({ chart, className = '' }: MermaidViewerProps) {
               {chart.substring(0, 200)}...
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!mermaidLoaded) {
+    return (
+      <div className={`p-6 bg-gray-900 rounded-lg ${className}`}>
+        <div className="text-center text-gray-400 text-sm">
+          Loading diagram renderer...
         </div>
       </div>
     );

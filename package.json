@@ -5,6 +5,7 @@
   "private": true,
   "workspaces": [
     "packages/core",
+    "packages/coderef-core",
     "packages/dashboard",
     "packages/electron-app"
   ],

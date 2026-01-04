@@ -1,0 +1,649 @@
+// coderef-core/scanner.ts
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
+import { glob } from 'glob';
+import { minimatch } from 'minimatch';
+import { ElementData, ScanOptions } from './types';
+
+/**
+ * Pattern configurations by language
+ */
+export const LANGUAGE_PATTERNS: Record<string, Array<{
+  type: ElementData['type'],
+  pattern: RegExp,
+  nameGroup: number
+}>> = {
+  // TypeScript/JavaScript patterns
+  ts: [
+    // Function declarations
+    { type: 'function', pattern: /(?:export\s+)?(?:async\s+)?function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    // Arrow functions (const/let/var)
+    { type: 'function', pattern: /(?:export\s+)?(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>/g, nameGroup: 1 },
+    // Class declarations
+    { type: 'class', pattern: /(?:export\s+)?class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    // Constants (ALL_CAPS identifiers) - MUST come before component pattern
+    { type: 'constant', pattern: /(?:export\s+)?(?:const|let|var)\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 },
+    // React components (function style)
+    { type: 'component', pattern: /(?:export\s+)?(?:function|const)\s+([A-Z][a-zA-Z0-9_$]*)\s*(?:=|\()/g, nameGroup: 1 },
+    // React hooks
+    { type: 'hook', pattern: /(?:export\s+)?(?:function|const)\s+(use[A-Z][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
+    // Class methods
+    { type: 'method', pattern: /(?:public|private|protected|async)?\s*([a-zA-Z0-9_$]+)\s*\([^)]*\)\s*{/g, nameGroup: 1 }
+  ],
+  // Same patterns for JavaScript
+  js: [
+    { type: 'function', pattern: /(?:export\s+)?(?:async\s+)?function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    { type: 'function', pattern: /(?:export\s+)?(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>/g, nameGroup: 1 },
+    { type: 'class', pattern: /(?:export\s+)?class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    // Constants (ALL_CAPS identifiers) - MUST come before component pattern
+    { type: 'constant', pattern: /(?:export\s+)?(?:const|let|var)\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 },
+    { type: 'component', pattern: /(?:export\s+)?(?:function|const)\s+([A-Z][a-zA-Z0-9_$]*)\s*(?:=|\()/g, nameGroup: 1 },
+    { type: 'hook', pattern: /(?:export\s+)?(?:function|const)\s+(use[A-Z][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
+    { type: 'method', pattern: /(?:public|private|protected|async)?\s*([a-zA-Z0-9_$]+)\s*\([^)]*\)\s*{/g, nameGroup: 1 }
+  ],
+  // Add patterns for .tsx and .jsx
+  tsx: [
+    { type: 'function', pattern: /(?:export\s+)?(?:async\s+)?function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    { type: 'function', pattern: /(?:export\s+)?(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>/g, nameGroup: 1 },
+    { type: 'class', pattern: /(?:export\s+)?class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    // Constants (ALL_CAPS identifiers) - MUST come before component pattern
+    { type: 'constant', pattern: /(?:export\s+)?(?:const|let|var)\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 },
+    { type: 'component', pattern: /(?:export\s+)?(?:function|const)\s+([A-Z][a-zA-Z0-9_$]*)\s*(?:=|\()/g, nameGroup: 1 },
+    { type: 'hook', pattern: /(?:export\s+)?(?:function|const)\s+(use[A-Z][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
+    { type: 'method', pattern: /(?:public|private|protected|async)?\s*([a-zA-Z0-9_$]+)\s*\([^)]*\)\s*{/g, nameGroup: 1 }
+  ],
+  jsx: [
+    { type: 'function', pattern: /(?:export\s+)?(?:async\s+)?function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    { type: 'function', pattern: /(?:export\s+)?(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>/g, nameGroup: 1 },
+    { type: 'class', pattern: /(?:export\s+)?class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+    // Constants (ALL_CAPS identifiers) - MUST come before component pattern
+    { type: 'constant', pattern: /(?:export\s+)?(?:const|let|var)\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 },
+    { type: 'component', pattern: /(?:export\s+)?(?:function|const)\s+([A-Z][a-zA-Z0-9_$]*)\s*(?:=|\()/g, nameGroup: 1 },
+    { type: 'hook', pattern: /(?:export\s+)?(?:function|const)\s+(use[A-Z][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
+    { type: 'method', pattern: /(?:public|private|protected|async)?\s*([a-zA-Z0-9_$]+)\s*\([^)]*\)\s*{/g, nameGroup: 1 }
+  ],
+  // Python patterns
+  py: [
+    { type: 'function', pattern: /def\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
+    { type: 'class', pattern: /class\s+([a-zA-Z0-9_]+)\s*(?:\(|:)/g, nameGroup: 1 },
+    { type: 'method', pattern: /\s+def\s+([a-zA-Z0-9_]+)\s*\(self/g, nameGroup: 1 }
+  ],
+  // Go patterns
+  go: [
+    // Function declarations: func FunctionName(...) {...}
+    { type: 'function', pattern: /func\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
+    // Method declarations: func (receiver) MethodName(...) {...}
+    { type: 'method', pattern: /func\s+\([^)]+\)\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
+    // Struct declarations: type StructName struct {...}
+    { type: 'class', pattern: /type\s+([a-zA-Z0-9_]+)\s+struct\s*{/g, nameGroup: 1 },
+    // Interface declarations: type InterfaceName interface {...}
+    { type: 'class', pattern: /type\s+([a-zA-Z0-9_]+)\s+interface\s*{/g, nameGroup: 1 },
+    // Constants: const ConstName = ...
+    { type: 'constant', pattern: /const\s+([A-Z][a-zA-Z0-9_]*)\s*=/g, nameGroup: 1 }
+  ],
+  // Rust patterns
+  rs: [
+    // Function declarations: fn function_name(...) {...} or pub fn function_name(...)
+    { type: 'function', pattern: /(?:pub\s+)?fn\s+([a-zA-Z0-9_]+)\s*(?:<[^>]*>)?\s*\(/g, nameGroup: 1 },
+    // Struct declarations: struct StructName {...} or pub struct StructName
+    { type: 'class', pattern: /(?:pub\s+)?struct\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
+    // Enum declarations: enum EnumName {...} or pub enum EnumName
+    { type: 'class', pattern: /(?:pub\s+)?enum\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
+    // Trait declarations: trait TraitName {...} or pub trait TraitName
+    { type: 'class', pattern: /(?:pub\s+)?trait\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
+    // Impl blocks: impl StructName {...}
+    { type: 'method', pattern: /impl\s+(?:[a-zA-Z0-9_]+\s+for\s+)?([a-zA-Z0-9_]+)/g, nameGroup: 1 },
+    // Constants: const CONST_NAME: Type = ...
+    { type: 'constant', pattern: /const\s+([A-Z][A-Z0-9_]*)\s*:/g, nameGroup: 1 }
+  ],
+  // Java patterns
+  java: [
+    // Class declarations: public class ClassName, class ClassName
+    { type: 'class', pattern: /(?:public\s+|private\s+|protected\s+)?class\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
+    // Interface declarations
+    { type: 'class', pattern: /(?:public\s+)?interface\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
+    // Enum declarations
+    { type: 'class', pattern: /(?:public\s+)?enum\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
+    // Method declarations (simplified - catches most methods)
+    { type: 'method', pattern: /(?:public|private|protected)\s+(?:static\s+)?(?:\w+)\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
+    // Constants: public static final TYPE CONSTANT_NAME
+    { type: 'constant', pattern: /(?:public\s+)?static\s+final\s+\w+\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 }
+  ],
+  // C++ patterns
+  cpp: [
+    // Class declarations: class ClassName
+    { type: 'class', pattern: /class\s+([a-zA-Z0-9_]+)\s*(?:[:{]|$)/g, nameGroup: 1 },
+    // Struct declarations: struct StructName
+    { type: 'class', pattern: /struct\s+([a-zA-Z0-9_]+)\s*(?:[:{]|$)/g, nameGroup: 1 },
+    // Function declarations: ReturnType functionName(...)
+    { type: 'function', pattern: /(?:^|\s)(?:inline\s+|static\s+|virtual\s+)*\w+\s+([a-zA-Z0-9_]+)\s*\([^)]*\)\s*(?:const\s*)?[{;]/g, nameGroup: 1 },
+    // Method declarations (within class - simplified)
+    { type: 'method', pattern: /^\s+(?:virtual\s+|static\s+|inline\s+)*\w+\s+([a-zA-Z0-9_]+)\s*\([^)]*\)/gm, nameGroup: 1 },
+    // Constants: const Type CONSTANT_NAME or #define CONSTANT_NAME
+    { type: 'constant', pattern: /#define\s+([A-Z][A-Z0-9_]*)/g, nameGroup: 1 },
+    { type: 'constant', pattern: /const\s+\w+\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 }
+  ],
+  // C patterns (similar to C++)
+  c: [
+    // Struct declarations
+    { type: 'class', pattern: /struct\s+([a-zA-Z0-9_]+)\s*(?:[{]|$)/g, nameGroup: 1 },
+    // Function declarations
+    { type: 'function', pattern: /(?:^|\s)(?:static\s+|inline\s+)*\w+\s+([a-zA-Z0-9_]+)\s*\([^)]*\)\s*[{;]/g, nameGroup: 1 },
+    // Constants: #define CONSTANT_NAME
+    { type: 'constant', pattern: /#define\s+([A-Z][A-Z0-9_]*)/g, nameGroup: 1 }
+  ]
+};
+
+// Default supported languages
+const DEFAULT_SUPPORTED_LANGS = ['ts', 'js', 'tsx', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'];
+
+/**
+ * Cache entry for storing scan results
+ */
+interface CacheEntry {
+  mtime: number;
+  elements: ElementData[];
+}
+
+/**
+ * Global cache for scan results
+ * Key: absolute file path
+ * Value: CacheEntry with modification time and cached elements
+ */
+const SCAN_CACHE = new Map<string, CacheEntry>();
+
+/**
+ * Scanner class to manage state and context
+ */
+class Scanner {
+  private elements: ElementData[] = [];
+  private currentFile: string | null = null;
+  private currentLine: number | null = null;
+  private currentPattern: RegExp | null = null;
+
+  constructor() {
+    // Initialize empty scanner
+  }
+
+  public addElement(element: ElementData): void {
+    this.elements.push(element);
+  }
+
+  private processLine(line: string, lineNumber: number, file: string, pattern: RegExp, type: ElementData['type'], nameGroup: number): void {
+    this.currentLine = lineNumber;
+    this.currentPattern = pattern;
+
+    pattern.lastIndex = 0;
+    let match;
+    while ((match = pattern.exec(line)) !== null) {
+      const name = match[nameGroup];
+      if (name) {
+        // Detect if the element is exported
+        const exported = /(?:^|\s)export\s+/.test(match[0]) || /(?:^|\s)export\s+default\s+/.test(line);
+
+        this.addElement({
+          type,
+          name,
+          file,
+          line: lineNumber,
+          exported
+        });
+      }
+    }
+  }
+
+  public processFile(file: string, content: string, patterns: Array<{ type: ElementData['type'], pattern: RegExp, nameGroup: number }>, includeComments: boolean): void {
+    this.currentFile = file;
+    const lines = content.split('\n');
+    
+    for (const { type, pattern, nameGroup } of patterns) {
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!includeComments && isLineCommented(line)) {
+          continue;
+        }
+        this.processLine(line, i + 1, file, pattern, type, nameGroup);
+      }
+    }
+  }
+
+  public getElements(): ElementData[] {
+    return this.elements;
+  }
+}
+
+// Export the Scanner class
+export { Scanner };
+
+/**
+ * Type priority for deduplication (higher priority = more specific type)
+ * When the same element is detected with multiple types, keep the highest priority
+ */
+const TYPE_PRIORITY: Record<ElementData['type'], number> = {
+  'constant': 6,    // Most specific - ALL_CAPS constants
+  'component': 5,   // React components (PascalCase functions)
+  'hook': 4,        // React hooks (use* functions)
+  'class': 3,       // Class declarations
+  'method': 2,      // Class methods
+  'function': 1,    // Generic functions
+  'unknown': 0      // Fallback
+};
+
+/**
+ * Deduplicates elements by keeping only the highest priority type for each unique (name, line, file) tuple
+ * @param elements Array of elements to deduplicate
+ * @returns Deduplicated array with single entry per unique element
+ */
+function deduplicateElements(elements: ElementData[]): ElementData[] {
+  const elementMap = new Map<string, ElementData>();
+
+  for (const element of elements) {
+    // Create unique key from name, line, and file
+    const key = `${element.file}:${element.line}:${element.name}`;
+    const existing = elementMap.get(key);
+
+    if (!existing) {
+      // First time seeing this element
+      elementMap.set(key, element);
+    } else {
+      // Element already exists - keep the one with higher priority
+      const existingPriority = TYPE_PRIORITY[existing.type] || 0;
+      const newPriority = TYPE_PRIORITY[element.type] || 0;
+
+      if (newPriority > existingPriority) {
+        elementMap.set(key, element);
+      }
+    }
+  }
+
+  return Array.from(elementMap.values());
+}
+
+/**
+ * Checks if a path should be excluded based on glob patterns
+ * @param filePath The path to check (normalized with forward slashes)
+ * @param excludePatterns Array of glob patterns
+ * @returns true if path should be excluded
+ */
+function shouldExcludePath(filePath: string, excludePatterns: string[]): boolean {
+  // Normalize path to forward slashes for consistent matching
+  const normalizedPath = filePath.replace(/\\/g, '/');
+
+  for (const pattern of excludePatterns) {
+    // Match against the full path and also the relative portions
+    if (minimatch(normalizedPath, pattern, { dot: true })) {
+      return true;
+    }
+
+    // Also check if any part of the path matches the pattern
+    // This handles cases like '**/node_modules/**' matching any node_modules directory
+    const pathParts = normalizedPath.split('/');
+    for (let i = 0; i < pathParts.length; i++) {
+      const partialPath = pathParts.slice(i).join('/');
+      if (minimatch(partialPath, pattern, { dot: true })) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Scans the current codebase for code elements (functions, classes, components, hooks)
+ * @param dir Directory to scan
+ * @param lang File extension to scan (or array of extensions)
+ * @param options Additional scanning options
+ * @returns Array of code elements with their type, name, file and line number
+ */
+export async function scanCurrentElements(
+  dir: string, 
+  lang: string | string[] = 'ts',
+  options: ScanOptions = {}
+): Promise<ElementData[]> {
+  const scanner = new Scanner();
+  const langs = Array.isArray(lang) ? lang : [lang];
+  
+  // Default options
+  const {
+    include = undefined,
+    exclude: excludeOption = ['**/node_modules/**', '**/dist/**', '**/build/**'],
+    recursive = true,
+    langs: optionLangs = [],
+    customPatterns = [],
+    includeComments = false,
+    verbose = false
+  } = options;
+
+  // Normalize exclude to always be an array
+  const exclude = Array.isArray(excludeOption) ? excludeOption : [excludeOption];
+  
+  // Combine langs from args and options
+  const allLangs = [...new Set([...langs, ...optionLangs])];
+  
+  if (verbose) {
+    console.log('Scanner config:', {
+      dir,
+      langs: allLangs,
+      include,
+      exclude,
+      recursive
+    });
+  }
+  
+  // Resolve the directory path and keep Windows format for fs operations
+  const resolvedDir = path.resolve(dir);
+  
+  if (verbose) {
+    console.log(`Resolved directory: ${resolvedDir}`);
+  }
+  
+  // Validate languages
+  for (const currentLang of allLangs) {
+    if (!LANGUAGE_PATTERNS[currentLang] && !DEFAULT_SUPPORTED_LANGS.includes(currentLang)) {
+      console.warn(`Warning: Language '${currentLang}' is not officially supported. Using generic patterns.`);
+      LANGUAGE_PATTERNS[currentLang] = [
+        { type: 'function', pattern: /function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
+        { type: 'class', pattern: /class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 }
+      ];
+    }
+  }
+  
+  // Add custom patterns
+  for (const customPattern of customPatterns) {
+    if (!LANGUAGE_PATTERNS[customPattern.lang]) {
+      LANGUAGE_PATTERNS[customPattern.lang] = [];
+    }
+    LANGUAGE_PATTERNS[customPattern.lang].push({
+      type: customPattern.type,
+      pattern: customPattern.pattern,
+      nameGroup: customPattern.nameGroup
+    });
+  }
+  
+  try {
+    let files = [];
+    
+    if (verbose) {
+      console.log(`Scanning directory: ${resolvedDir}`);
+    }
+    
+    // Get all files in the directory with proper path handling
+    const allFiles = fs.readdirSync(resolvedDir, { withFileTypes: true });
+    
+    if (verbose) {
+      console.log(`Found ${allFiles.length} entries in directory`);
+      console.log('Directory entries:', allFiles.map(f => f.name));
+      console.log('Supported languages:', allLangs);
+    }
+    
+    // Process each entry
+    for (const entry of allFiles) {
+      const fullPath = path.join(resolvedDir, entry.name);
+
+      if (entry.isDirectory()) {
+        // Check if directory should be excluded
+        if (shouldExcludePath(fullPath, exclude)) {
+          if (verbose) {
+            console.log(`Excluding directory: ${fullPath}`);
+          }
+          continue;
+        }
+
+        if (recursive) {
+          if (verbose) {
+            console.log(`Recursively scanning directory: ${fullPath}`);
+          }
+          // Recursively scan subdirectories
+          const subDirElements = await scanCurrentElements(fullPath, allLangs, {
+            ...options,
+            recursive: true
+          });
+          for (const element of subDirElements) {
+            scanner.addElement(element);
+          }
+        } else if (verbose) {
+          console.log(`Skipping directory (recursive=false): ${fullPath}`);
+        }
+        continue;
+      }
+      
+      if (!entry.isFile()) {
+        if (verbose) {
+          console.log(`Skipping non-file: ${entry.name}`);
+        }
+        continue;
+      }
+      
+      const ext = path.extname(entry.name).substring(1);
+      if (verbose) {
+        console.log(`Checking file: ${entry.name} with extension: ${ext}`);
+      }
+      
+      // Handle special cases for TypeScript/JavaScript
+      let currentLang = ext;
+      if (ext === 'tsx' && allLangs.includes('ts')) {
+        currentLang = 'ts';
+      } else if (ext === 'jsx' && allLangs.includes('js')) {
+        currentLang = 'js';
+      }
+      
+      const shouldInclude = allLangs.includes(currentLang);
+
+      if (shouldInclude) {
+        // Only normalize to forward slashes after fs operations
+        const normalizedPath = fullPath.replace(/\\/g, '/');
+
+        // Check if file should be excluded
+        if (shouldExcludePath(normalizedPath, exclude)) {
+          if (verbose) {
+            console.log(`Excluding file: ${normalizedPath}`);
+          }
+          continue;
+        }
+
+        files.push(normalizedPath);
+        if (verbose) {
+          console.log(`Including file: ${normalizedPath} (mapped to language: ${currentLang})`);
+        }
+      } else if (verbose) {
+        console.log(`Skipping file with unsupported extension: ${entry.name} (extension: ${ext}, mapped to: ${currentLang})`);
+      }
+    }
+    
+    if (verbose) {
+      console.log(`Found ${files.length} files to process:`, files);
+    }
+    
+    // Process files
+    for (const file of files) {
+      try {
+        // Check cache first
+        const stats = fs.statSync(file);
+        const currentMtime = stats.mtimeMs;
+        const cached = SCAN_CACHE.get(file);
+
+        if (cached && cached.mtime === currentMtime) {
+          // File hasn't changed, use cached results
+          if (verbose) {
+            console.log(`Using cached results for: ${file}`);
+          }
+          for (const element of cached.elements) {
+            scanner.addElement(element);
+          }
+          continue;
+        }
+
+        // File is new or has been modified, scan it
+        if (verbose && cached) {
+          console.log(`Cache miss (file modified): ${file}`);
+        } else if (verbose) {
+          console.log(`Cache miss (new file): ${file}`);
+        }
+
+        const content = fs.readFileSync(file, 'utf-8');
+        let currentLang = path.extname(file).substring(1);
+
+        // Map .tsx to .ts patterns
+        if (currentLang === 'tsx') {
+          currentLang = 'ts';
+        }
+
+        if (verbose) {
+          console.log(`Processing file: ${file} with language: ${currentLang}`);
+        }
+
+        const patterns = LANGUAGE_PATTERNS[currentLang] || [];
+
+        if (patterns.length === 0) {
+          if (verbose) {
+            console.log(`No patterns found for language: ${currentLang}`);
+          }
+          continue;
+        }
+
+        if (!includeComments && isEntirelyCommented(content)) {
+          if (verbose) {
+            console.log(`Skipping entirely commented file: ${file}`);
+          }
+          continue;
+        }
+
+        // Track elements before processing this file
+        const elementsBefore = scanner.getElements().length;
+
+        scanner.processFile(file, content, patterns, includeComments);
+
+        // Get elements added for this file
+        const allElements = scanner.getElements();
+        const fileElements = allElements.slice(elementsBefore);
+
+        // Store in cache
+        SCAN_CACHE.set(file, {
+          mtime: currentMtime,
+          elements: fileElements
+        });
+
+        if (verbose) {
+          console.log(`Cached ${fileElements.length} elements for: ${file}`);
+        }
+      } catch (error) {
+        if (verbose) {
+          console.error(`Error processing file ${file}:`, error);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error scanning directory ${dir}:`, error);
+  }
+
+  // Deduplicate elements before returning
+  const elements = scanner.getElements();
+  const deduplicated = deduplicateElements(elements);
+
+  if (verbose) {
+    console.log(`Deduplication: ${elements.length} elements → ${deduplicated.length} unique elements`);
+  }
+
+  return deduplicated;
+}
+
+/**
+ * Clears the scan cache
+ * Useful for testing or when you want to force a full rescan
+ */
+export function clearScanCache(): void {
+  SCAN_CACHE.clear();
+}
+
+/**
+ * Gets cache statistics
+ * @returns Object with cache size and hit/miss information
+ */
+export function getScanCacheStats(): { size: number; entries: number } {
+  let totalSize = 0;
+  for (const [, entry] of SCAN_CACHE) {
+    totalSize += entry.elements.length;
+  }
+  return {
+    size: totalSize,
+    entries: SCAN_CACHE.size
+  };
+}
+
+/**
+ * Checks if a line is commented out
+ */
+export function isLineCommented(line: string): boolean {
+  // Remove leading whitespace
+  const trimmed = line.trim();
+  // Check for single-line comments
+  return trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*');
+}
+
+/**
+ * Checks if a file appears to be entirely comments or typings
+ */
+function isEntirelyCommented(content: string): boolean {
+  // Check for .d.ts-like files
+  if (content.includes('declare module') || content.includes('declare namespace')) {
+    return true;
+  }
+  
+  const nonEmptyLines = content.split('\n').filter(line => line.trim().length > 0);
+  const commentedLines = nonEmptyLines.filter(isLineCommented);
+  
+  // Consider a file all comments if >90% of non-empty lines are comments
+  return commentedLines.length > nonEmptyLines.length * 0.9;
+}
+
+/**
+ * Registry to register custom element pattern recognizers
+ */
+export const ScannerRegistry = {
+  /**
+   * Register a custom pattern for recognizing elements
+   */
+  registerPattern(
+    lang: string, 
+    type: ElementData['type'], 
+    pattern: RegExp, 
+    nameGroup: number = 1
+  ): void {
+    if (!LANGUAGE_PATTERNS[lang]) {
+      LANGUAGE_PATTERNS[lang] = [];
+    }
+    
+    LANGUAGE_PATTERNS[lang].push({
+      type,
+      pattern,
+      nameGroup
+    });
+  },
+  
+  /**
+   * Get all registered patterns for a language
+   */
+  getPatterns(lang: string): Array<{
+    type: ElementData['type'],
+    pattern: RegExp,
+    nameGroup: number
+  }> {
+    return LANGUAGE_PATTERNS[lang] || [];
+  },
+  
+  /**
+   * Check if a language is supported
+   */
+  isLanguageSupported(lang: string): boolean {
+    return Boolean(LANGUAGE_PATTERNS[lang]) || DEFAULT_SUPPORTED_LANGS.includes(lang);
+  },
+  
+  /**
+   * Get all supported languages
+   */
+  getSupportedLanguages(): string[] {
+    return [...Object.keys(LANGUAGE_PATTERNS), ...DEFAULT_SUPPORTED_LANGS];
+  }
+};

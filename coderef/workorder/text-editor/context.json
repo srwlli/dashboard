@@ -1,0 +1,43 @@
+{
+  "feature_name": "text-editor",
+  "description": "Build a text editor widget for the dashboard that saves notes to coderef/notes/ using the existing hybrid-router pattern (Web FS Access + API fallback). Extend /api/coderef/file or create /api/coderef/notes route with server-side path restrictions. Match industrial theme tokens. Include auto-save, size limits, and .txt/.md/.json file support.",
+  "goal": "Add functionality - Create a notes editor widget that follows existing architectural patterns (hybrid-router + api-access) without adding new Electron IPC",
+  "requirements": [
+    "UI components (editor, toolbar, etc.)",
+    "File operations (save to coderef/notes/)",
+    "API integration (extend /api/coderef/file or create /api/coderef/notes)",
+    "Styling (match industrial theme with global CSS tokens)",
+    "Auto-save functionality",
+    "Size limits enforcement",
+    "Support .txt/.md/.json file types",
+    "Use existing hybrid-router pattern",
+    "Extend api-access.ts with saveNote method"
+  ],
+  "out_of_scope": [],
+  "constraints": [
+    "Use hybrid-router pattern (Web FS Access + API fallback)",
+    "No new Electron IPC (extend existing API routes)",
+    "Match industrial theme (use --ind-* CSS tokens)",
+    "Restrict writes to coderef/notes/ only (server-side validation)",
+    "Allowlist file types: .md, .txt, .json",
+    "Enforce file size limits",
+    "Follow ELECTRON-IPC-ANALYSIS.md guidance"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-TEXT-EDITOR-001",
+    "workorder_assigned_at": "2026-01-04T08:55:01.018750+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-TEXT-EDITOR-001",
+    "feature_id": "text-editor",
+    "last_updated": "2026-01-04",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-03"
+  }
+}

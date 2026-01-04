@@ -7,7 +7,11 @@
       "Bash(git rm:*)",
       "Bash(git commit:*)",
       "mcp__coderef-workflow__execute_plan",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npm install)",
+      "Bash(node -e:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []

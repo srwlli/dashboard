@@ -1,0 +1,716 @@
+{
+  "meta": {
+    "workorder_id": "WO-NOTES-WIDGET-001",
+    "feature_name": "text-editor",
+    "version": "1.0.0",
+    "created": "2026-01-04",
+    "status": "pending"
+  },
+  "executive_summary": {
+    "overview": "Build a production-ready Notes widget with file persistence to coderef/notes/ directory. The widget provides an industrial-themed text editor for creating, editing, and managing markdown notes that persist to the file system using the existing hybrid router pattern (Web FS Access API + Next.js API fallback).",
+    "problem": "The existing text-editor widget prototype uses in-memory storage only, losing all notes on page refresh. Users need a persistent note-taking solution integrated into the dashboard that follows the established architectural patterns and doesn't introduce new Electron IPC complexity.",
+    "solution": "Extend the existing /api/coderef/file API route to support safe writes to <projectRoot>/coderef/notes/, implement a Notes widget that uses api-access.ts following the same pattern as FileViewer, and provide a polished UI with industrial theme matching the dashboard design system.",
+    "benefits": [
+      "Persistent notes that survive page refreshes and app restarts",
+      "Reuses proven hybrid router + API architecture (no new Electron IPC)",
+      "Follows established file access patterns from Explorer",
+      "Scoped write access (only to coderef/notes/) prevents security issues",
+      "Industrial theme integration for visual consistency"
+    ],
+    "scope": {
+      "in_scope": [
+        "Extend /api/coderef/file to support PUT/POST for writes",
+        "Add server-side write restrictions (coderef/notes/ only, size limits, allowlist)",
+        "Create api-access.ts methods for saveNote and deleteNote",
+        "Build NotesWidget component with editor, file list, and chrome",
+        "Implement auto-save with debouncing",
+        "Add industrial theme styling (bg-ind-panel, border-ind-border, etc.)",
+        "Support markdown preview mode",
+        "Add note creation, rename, and deletion UI"
+      ],
+      "out_of_scope": [
+        "Rich text editing (stick to plaintext/markdown)",
+        "Real-time collaboration features",
+        "Note encryption",
+        "Note sharing/export to external services",
+        "Version history/undo beyond browser defaults",
+        "Custom Electron IPC for note operations"
+      ]
+    }
+  },
+  "risk_assessment": {
+    "risks": [
+      {
+        "id": "RISK-001",
+        "category": "security",
+        "description": "Write API could be exploited to write files outside coderef/notes/",
+        "impact": "critical",
+        "probability": "low",
+        "mitigation": "Server-side path validation using path.normalize + path.join to prevent directory traversal. Reject requests outside <projectRoot>/coderef/notes/. Add file extension allowlist (.md, .txt, .json only)."
+      },
+      {
+        "id": "RISK-002",
+        "category": "technical",
+        "description": "Auto-save could cause race conditions with rapid edits",
+        "impact": "medium",
+        "probability": "medium",
+        "mitigation": "Use debounce (500ms delay) + request deduplication. Track save state (idle/saving/error) to prevent concurrent writes. Debounced save cancels previous pending saves."
+      },
+      {
+        "id": "RISK-003",
+        "category": "ux",
+        "description": "Users may lose work if auto-save fails silently",
+        "impact": "high",
+        "probability": "low",
+        "mitigation": "Add explicit save status indicator (Saved/Saving.../Error). Fallback to localStorage on save failure with 'Unsaved (backup in browser)' message. Restore from localStorage on mount."
+      },
+      {
+        "id": "RISK-004",
+        "category": "technical",
+        "description": "Large notes (>1MB) could timeout or exceed API route limits",
+        "impact": "medium",
+        "probability": "low",
+        "mitigation": "Enforce 1MB max file size on server. Show character counter warning at 900KB. Next.js API route body parser limit is 4MB by default, so 1MB limit is safe."
+      },
+      {
+        "id": "RISK-005",
+        "category": "integration",
+        "description": "Hybrid router pattern may not work seamlessly for writes like it does for reads",
+        "impact": "medium",
+        "probability": "medium",
+        "mitigation": "Start with API-only writes (simpler, works in all contexts). File System Access API write support can be added in future iteration if needed. Focus on parity with Explorer read patterns first."
+      }
+    ],
+    "dependencies": [
+      {
+        "name": "/api/coderef/file route",
+        "type": "internal",
+        "status": "exists",
+        "notes": "Currently supports GET only. Needs PUT/POST handler for writes."
+      },
+      {
+        "name": "api-access.ts",
+        "type": "internal",
+        "status": "exists",
+        "notes": "Used by FileViewer for reads. Add saveNote/deleteNote methods."
+      },
+      {
+        "name": "hybrid-router.ts",
+        "type": "internal",
+        "status": "exists",
+        "notes": "Reference for pattern but writes will be API-only initially."
+      },
+      {
+        "name": "Industrial theme tokens",
+        "type": "internal",
+        "status": "exists",
+        "notes": "CSS variables in globals.css (--ind-bg, --ind-panel, etc.)"
+      },
+      {
+        "name": "ProjectsContext",
+        "type": "internal",
+        "status": "exists",
+        "notes": "Provides current project root for note operations"
+      }
+    ]
+  },
+  "current_state": {
+    "existing_behavior": "The text-editor widget prototype exists in packages/dashboard/src/widgets/text-editor/ but uses in-memory state only (useState). Notes are lost on refresh. The widget has basic UI chrome but no file persistence.",
+    "limitations": [
+      "No file system integration (notes lost on refresh)",
+      "No note listing or file management UI",
+      "No auto-save or save status indicators",
+      "Missing integration with project context",
+      "No markdown preview mode"
+    ],
+    "technical_context": {
+      "existing_files": [
+        "packages/dashboard/src/widgets/text-editor/index.tsx (basic editor prototype)",
+        "packages/dashboard/src/app/api/coderef/file/route.ts (read-only API)",
+        "packages/dashboard/src/lib/coderef/api-access.ts (read methods only)",
+        "packages/dashboard/src/app/globals.css (industrial theme tokens)"
+      ],
+      "files_to_create": [
+        "packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+        "packages/dashboard/src/widgets/notes/components/NotesList.tsx",
+        "packages/dashboard/src/widgets/notes/components/EditorSurface.tsx",
+        "packages/dashboard/src/widgets/notes/components/NotesToolbar.tsx",
+        "packages/dashboard/src/widgets/notes/hooks/useAutoSave.ts",
+        "packages/dashboard/src/widgets/notes/hooks/useNotes.ts",
+        "packages/dashboard/src/widgets/notes/types.ts",
+        "packages/dashboard/src/widgets/notes/index.tsx"
+      ],
+      "files_to_modify": [
+        "packages/dashboard/src/app/api/coderef/file/route.ts (add PUT handler)",
+        "packages/dashboard/src/lib/coderef/api-access.ts (add write methods)",
+        "packages/dashboard/src/app/api/coderef/notes/route.ts (new: list notes API)"
+      ],
+      "key_patterns": [
+        "Hybrid router pattern for isomorphic file access",
+        "API-access wrapper pattern from FileViewer",
+        "Project context consumption via useProjects hook",
+        "Industrial theme token usage (bg-ind-panel, text-ind-text, etc.)",
+        "Server-side path validation and sanitization"
+      ]
+    }
+  },
+  "implementation_phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "API Route Foundation",
+      "description": "Extend API routes to support safe note writing and listing",
+      "order": 1,
+      "tasks": [
+        {
+          "task_id": "API-001",
+          "title": "Add PUT handler to /api/coderef/file",
+          "description": "Extend packages/dashboard/src/app/api/coderef/file/route.ts with PUT handler. Implement server-side validation: 1) Ensure target path is within <projectRoot>/coderef/notes/ using path.normalize + path.join, 2) Reject paths with '..' or absolute paths, 3) Allowlist file extensions (.md, .txt, .json), 4) Enforce 1MB max body size, 5) Return success/error JSON response.",
+          "type": "code",
+          "estimated_effort": "45 minutes",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "PUT handler accepts { projectRoot, filePath, content } body",
+            "Path validation rejects writes outside coderef/notes/",
+            "Directory traversal attempts (../) are blocked",
+            "File extension allowlist enforced (.md, .txt, .json only)",
+            "1MB size limit enforced with 413 response for oversized content",
+            "Returns 200 with { success: true, path } on success",
+            "Returns 400/403/500 with error messages for validation failures"
+          ]
+        },
+        {
+          "task_id": "API-002",
+          "title": "Create /api/coderef/notes route for listing",
+          "description": "Create new API route packages/dashboard/src/app/api/coderef/notes/route.ts with GET handler. Accept projectRoot query param. Use Node.js fs.readdir to scan <projectRoot>/coderef/notes/. Return array of note metadata: { name, path, size, modified, extension }. Handle missing directory gracefully (return empty array).",
+          "type": "code",
+          "estimated_effort": "30 minutes",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "GET /api/coderef/notes?projectRoot=<path> works",
+            "Returns array of notes with metadata (name, path, size, modified)",
+            "Returns empty array if coderef/notes/ doesn't exist",
+            "Filters out hidden files and non-allowlisted extensions",
+            "Returns 500 with error message on file system errors",
+            "Response includes total count and timestamp"
+          ]
+        },
+        {
+          "task_id": "API-003",
+          "title": "Add DELETE handler to /api/coderef/file",
+          "description": "Add DELETE handler to /api/coderef/file/route.ts. Use same path validation as PUT (coderef/notes/ only). Use fs.unlink to remove file. Return success confirmation or error.",
+          "type": "code",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["API-001"],
+          "acceptance_criteria": [
+            "DELETE handler accepts { projectRoot, filePath } body",
+            "Same path validation as PUT (coderef/notes/ scope only)",
+            "Returns 200 with { success: true, deleted: path } on success",
+            "Returns 404 if file doesn't exist",
+            "Returns 403 if path validation fails",
+            "Handles permission errors gracefully"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_2",
+      "name": "API Client Wrapper",
+      "description": "Add note operations to api-access.ts wrapper library",
+      "order": 2,
+      "tasks": [
+        {
+          "task_id": "CLIENT-001",
+          "title": "Add saveNote method to api-access.ts",
+          "description": "In packages/dashboard/src/lib/coderef/api-access.ts, add saveNote async function. Accept (projectRoot, relativePath, content) params. Make PUT request to /api/coderef/file. Handle response and throw descriptive errors. Return saved file path on success.",
+          "type": "code",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["API-001"],
+          "acceptance_criteria": [
+            "Function signature: async saveNote(projectRoot: string, relativePath: string, content: string): Promise<string>",
+            "Makes PUT /api/coderef/file with correct body format",
+            "Throws error with server message on failure",
+            "Returns saved file path on success",
+            "Includes proper error handling for network failures"
+          ]
+        },
+        {
+          "task_id": "CLIENT-002",
+          "title": "Add listNotes method to api-access.ts",
+          "description": "Add listNotes async function. Accept projectRoot param. Make GET request to /api/coderef/notes. Return array of note metadata. Handle empty directory case.",
+          "type": "code",
+          "estimated_effort": "15 minutes",
+          "dependencies": ["API-002"],
+          "acceptance_criteria": [
+            "Function signature: async listNotes(projectRoot: string): Promise<NoteMetadata[]>",
+            "Makes GET /api/coderef/notes?projectRoot=<path>",
+            "Returns empty array if no notes exist",
+            "Throws error on API failure",
+            "Type definition for NoteMetadata exported"
+          ]
+        },
+        {
+          "task_id": "CLIENT-003",
+          "title": "Add deleteNote method to api-access.ts",
+          "description": "Add deleteNote async function. Accept (projectRoot, relativePath) params. Make DELETE request to /api/coderef/file. Return success confirmation.",
+          "type": "code",
+          "estimated_effort": "15 minutes",
+          "dependencies": ["API-003"],
+          "acceptance_criteria": [
+            "Function signature: async deleteNote(projectRoot: string, relativePath: string): Promise<void>",
+            "Makes DELETE /api/coderef/file with correct body",
+            "Throws error on failure",
+            "Returns void on success",
+            "Handles 404 gracefully with descriptive error"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "Notes Widget Foundation",
+      "description": "Build core NotesWidget component with state management",
+      "order": 3,
+      "tasks": [
+        {
+          "task_id": "WIDGET-001",
+          "title": "Create types.ts for Notes domain",
+          "description": "Create packages/dashboard/src/widgets/notes/types.ts. Define TypeScript interfaces: Note (name, path, content, modified, size), SaveStatus (enum: idle/saving/saved/error), EditorMode (enum: edit/preview).",
+          "type": "code",
+          "estimated_effort": "15 minutes",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "Note interface includes all required fields with proper types",
+            "SaveStatus enum covers all states",
+            "EditorMode enum defined",
+            "All types exported for use in components",
+            "JSDoc comments for complex types"
+          ]
+        },
+        {
+          "task_id": "WIDGET-002",
+          "title": "Create useNotes hook for state management",
+          "description": "Create packages/dashboard/src/widgets/notes/hooks/useNotes.ts. Implement custom hook that manages: notes list (state), current note (state), loading states, CRUD operations (create, load, delete), integration with api-access methods. Use useEffect to load notes list on mount. Integrate with ProjectsContext to get current projectRoot.",
+          "type": "code",
+          "estimated_effort": "45 minutes",
+          "dependencies": ["CLIENT-001", "CLIENT-002", "CLIENT-003", "WIDGET-001"],
+          "acceptance_criteria": [
+            "Hook returns { notes, currentNote, loading, createNote, loadNote, deleteNote }",
+            "Uses listNotes API to fetch notes on mount",
+            "Updates notes list after create/delete operations",
+            "Handles loading and error states",
+            "Uses current project from ProjectsContext",
+            "Creates coderef/notes/ directory if missing (via API)"
+          ]
+        },
+        {
+          "task_id": "WIDGET-003",
+          "title": "Create useAutoSave hook with debouncing",
+          "description": "Create packages/dashboard/src/widgets/notes/hooks/useAutoSave.ts. Implement custom hook that: accepts (content, onSave) params, debounces saves by 500ms, tracks save status (idle/saving/saved/error), cancels pending saves on unmount, provides manual save trigger. Use useCallback and useEffect for optimization.",
+          "type": "code",
+          "estimated_effort": "30 minutes",
+          "dependencies": ["WIDGET-001"],
+          "acceptance_criteria": [
+            "Hook returns { saveStatus, triggerSave }",
+            "Auto-save triggers 500ms after last content change",
+            "Save status reflects current operation state",
+            "Pending saves cancelled on unmount",
+            "Manual triggerSave() bypasses debounce",
+            "No duplicate saves for identical content",
+            "localStorage fallback on save failure"
+          ]
+        },
+        {
+          "task_id": "WIDGET-004",
+          "title": "Build NotesWidget main component",
+          "description": "Create packages/dashboard/src/widgets/notes/NotesWidget.tsx. Smart container component that: uses useNotes and useAutoSave hooks, manages editor vs preview mode, handles current note selection, provides overall layout (2-column: list + editor), integrates industrial theme tokens. Export as default from index.tsx.",
+          "type": "code",
+          "estimated_effort": "40 minutes",
+          "dependencies": ["WIDGET-002", "WIDGET-003"],
+          "acceptance_criteria": [
+            "Component uses 'use client' directive",
+            "Two-column layout: NotesList (30%) + Editor (70%)",
+            "Responsive: stacks on mobile (<768px)",
+            "Manages mode state (edit/preview)",
+            "Passes props to child components",
+            "Uses bg-ind-bg for background",
+            "Height: h-full with flex layout"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "UI Components - Notes List",
+      "description": "Build the notes list sidebar component",
+      "order": 4,
+      "tasks": [
+        {
+          "task_id": "UI-001",
+          "title": "Build NotesList component",
+          "description": "Create packages/dashboard/src/widgets/notes/components/NotesList.tsx. Display list of notes with: note name, modified date, size, delete button, active state highlight, 'New Note' button at top. Use industrial theme for styling. Show empty state when no notes exist.",
+          "type": "code",
+          "estimated_effort": "45 minutes",
+          "dependencies": ["WIDGET-004"],
+          "acceptance_criteria": [
+            "Scrollable list with overflow-y-auto",
+            "Each note shows name, date (formatted), size (formatted)",
+            "Active note highlighted with border-ind-accent",
+            "Delete button (trash icon) with confirmation",
+            "New Note button at top with plus icon",
+            "Empty state: 'No notes yet. Create your first note.'",
+            "Industrial theme: bg-ind-panel, border-ind-border",
+            "Hover states for interactivity"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_5",
+      "name": "UI Components - Editor",
+      "description": "Build the editor surface and toolbar components",
+      "order": 5,
+      "tasks": [
+        {
+          "task_id": "UI-002",
+          "title": "Build NotesToolbar component",
+          "description": "Create packages/dashboard/src/widgets/notes/components/NotesToolbar.tsx. Top toolbar with: note title (editable input), mode toggle (Edit/Preview buttons), save status indicator, character count (warn at 900KB). Industrial styling with proper spacing and icons.",
+          "type": "code",
+          "estimated_effort": "35 minutes",
+          "dependencies": ["WIDGET-004"],
+          "acceptance_criteria": [
+            "Title input: text-ind-text, border-ind-border, editable",
+            "Mode toggle: two buttons (Edit/Preview) with active state",
+            "Save status: text indicator (Saved/Saving.../Error) with icons",
+            "Character count: bottom-right, turns text-ind-accent above 900KB",
+            "Industrial theme throughout",
+            "Proper spacing: px-4 py-2",
+            "Icons from lucide-react"
+          ]
+        },
+        {
+          "task_id": "UI-003",
+          "title": "Build EditorSurface component",
+          "description": "Create packages/dashboard/src/widgets/notes/components/EditorSurface.tsx. Main content area with: textarea in edit mode (full-width, monospace), markdown preview in preview mode (using react-markdown), proper padding and industrial styling, auto-focus on mount.",
+          "type": "code",
+          "estimated_effort": "40 minutes",
+          "dependencies": ["UI-002"],
+          "acceptance_criteria": [
+            "Textarea: w-full, h-full, resize-none, font-mono, text-ind-text",
+            "Background: bg-ind-panel",
+            "Preview uses react-markdown with syntax highlighting",
+            "Auto-focus textarea on edit mode",
+            "Scrollable content: overflow-y-auto",
+            "Padding: p-4",
+            "Placeholder text: 'Start writing...' (text-ind-text-muted)",
+            "Tab key inserts 2 spaces (not focus change)"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_6",
+      "name": "Integration & Polish",
+      "description": "Wire up components, add route, and polish UX",
+      "order": 6,
+      "tasks": [
+        {
+          "task_id": "INTEGRATION-001",
+          "title": "Wire up all components in NotesWidget",
+          "description": "Complete integration in NotesWidget.tsx: connect NotesList callbacks, wire EditorSurface content to state, integrate auto-save with EditorSurface changes, handle note selection, handle new note creation, handle delete with confirmation.",
+          "type": "code",
+          "estimated_effort": "45 minutes",
+          "dependencies": ["UI-001", "UI-003"],
+          "acceptance_criteria": [
+            "Clicking note in list loads content in editor",
+            "Auto-save triggers on content change with debounce",
+            "New note creates untitled.md and selects it",
+            "Delete button removes note after confirmation",
+            "Save status updates in toolbar",
+            "All state flows correctly between components",
+            "No console errors during interaction"
+          ]
+        },
+        {
+          "task_id": "INTEGRATION-002",
+          "title": "Add /notes route in dashboard",
+          "description": "Create packages/dashboard/src/app/notes/page.tsx. Render NotesWidget in full-page layout. Add navigation item to sidebar with FileText icon. Ensure proper mounting and unmounting behavior.",
+          "type": "code",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["INTEGRATION-001"],
+          "acceptance_criteria": [
+            "Route /notes renders NotesWidget",
+            "Page uses dashboard layout (with sidebar)",
+            "Sidebar shows 'Notes' navigation item",
+            "Icon: FileText from lucide-react",
+            "Widget occupies full available height",
+            "Mounting/unmounting preserves state via persistence"
+          ]
+        },
+        {
+          "task_id": "INTEGRATION-003",
+          "title": "Add localStorage backup persistence",
+          "description": "In useAutoSave hook, add fallback: on save failure, write to localStorage with key coderef-notes-backup-<noteId>. On component mount, check for backup and restore if exists. Clear backup on successful save. Show 'Unsaved (backup in browser)' message when using fallback.",
+          "type": "code",
+          "estimated_effort": "30 minutes",
+          "dependencies": ["INTEGRATION-001"],
+          "acceptance_criteria": [
+            "Save failure triggers localStorage.setItem",
+            "Backup key format: coderef-notes-backup-<filename>",
+            "Mount checks for backup and restores",
+            "Successful save clears backup",
+            "Save status shows '(backup in browser)' when using fallback",
+            "Try/catch for localStorage quota exceeded"
+          ]
+        },
+        {
+          "task_id": "POLISH-001",
+          "title": "Add keyboard shortcuts",
+          "description": "Add keyboard shortcuts: Cmd/Ctrl+S for manual save, Cmd/Ctrl+P for preview toggle, Cmd/Ctrl+N for new note. Use useEffect with keydown listener. Show shortcuts in tooltip/help.",
+          "type": "code",
+          "estimated_effort": "25 minutes",
+          "dependencies": ["INTEGRATION-001"],
+          "acceptance_criteria": [
+            "Cmd/Ctrl+S triggers manual save (preventDefault)",
+            "Cmd/Ctrl+P toggles edit/preview mode",
+            "Cmd/Ctrl+N creates new note",
+            "Shortcuts work when widget is focused",
+            "No conflicts with browser shortcuts",
+            "Tooltip shows shortcuts on hover"
+          ]
+        },
+        {
+          "task_id": "POLISH-002",
+          "title": "Add rename note functionality",
+          "description": "Add rename feature: double-click note name in list to edit inline, blur or Enter to save, Escape to cancel. Use api-access to rename (delete + create with new name). Update current note reference.",
+          "type": "code",
+          "estimated_effort": "35 minutes",
+          "dependencies": ["INTEGRATION-001"],
+          "acceptance_criteria": [
+            "Double-click note name enables edit mode",
+            "Input shows with current name selected",
+            "Enter saves new name",
+            "Escape cancels edit",
+            "Rename updates file on server (move operation)",
+            "List updates with new name",
+            "Validation: prevent empty names, invalid characters"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_7",
+      "name": "Testing & Validation",
+      "description": "Comprehensive testing of all functionality",
+      "order": 7,
+      "tasks": [
+        {
+          "task_id": "TEST-001",
+          "title": "Test CRUD operations",
+          "description": "Manual testing of create, read, update, delete operations. Verify: new note creation, loading existing notes, auto-save after edits, manual save, delete with confirmation. Test error cases: invalid paths, oversized content, permission errors.",
+          "type": "testing",
+          "estimated_effort": "45 minutes",
+          "dependencies": ["INTEGRATION-002"],
+          "acceptance_criteria": [
+            "New note creates coderef/notes/untitled.md",
+            "Existing notes load correctly",
+            "Auto-save writes to file after 500ms",
+            "Manual save (Cmd+S) works immediately",
+            "Delete removes file and updates list",
+            "Oversized content (>1MB) shows error",
+            "Path validation prevents directory traversal"
+          ]
+        },
+        {
+          "task_id": "TEST-002",
+          "title": "Test persistence and recovery",
+          "description": "Test localStorage fallback, backup restoration, and state persistence across refreshes. Simulate save failures, page refreshes, browser restarts.",
+          "type": "testing",
+          "estimated_effort": "30 minutes",
+          "dependencies": ["INTEGRATION-003"],
+          "acceptance_criteria": [
+            "Save failure writes to localStorage backup",
+            "Backup restores on next mount",
+            "Successful save clears backup",
+            "Notes list persists across page refresh",
+            "Current note selection restored after refresh",
+            "Quota exceeded handled gracefully"
+          ]
+        },
+        {
+          "task_id": "TEST-003",
+          "title": "Test UI interactions",
+          "description": "Test all UI elements: note selection, mode toggle, title editing, rename, keyboard shortcuts, responsive layout. Verify industrial theme styling throughout.",
+          "type": "testing",
+          "estimated_effort": "40 minutes",
+          "dependencies": ["POLISH-001", "POLISH-002"],
+          "acceptance_criteria": [
+            "Clicking note in list loads in editor",
+            "Edit/Preview toggle works smoothly",
+            "Title edit saves correctly",
+            "Rename works via double-click",
+            "All keyboard shortcuts functional",
+            "Layout responsive on mobile/tablet/desktop",
+            "Industrial theme consistent throughout",
+            "No visual glitches or flash"
+          ]
+        },
+        {
+          "task_id": "TEST-004",
+          "title": "Test edge cases",
+          "description": "Test edge cases: empty notes directory, no project selected, special characters in filenames, concurrent edits, rapid mode switching, very long content.",
+          "type": "testing",
+          "estimated_effort": "35 minutes",
+          "dependencies": ["TEST-003"],
+          "acceptance_criteria": [
+            "Empty directory shows proper empty state",
+            "No project selected shows graceful error",
+            "Special characters in filename handled correctly",
+            "Rapid edits don't cause duplicate saves",
+            "Mode switching doesn't lose content",
+            "Long content (900KB+) shows warning",
+            "Network errors show user-friendly messages"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_8",
+      "name": "Documentation & Cleanup",
+      "description": "Add documentation and remove prototype code",
+      "order": 8,
+      "tasks": [
+        {
+          "task_id": "DOC-001",
+          "title": "Add component documentation",
+          "description": "Add JSDoc comments to all components and hooks. Document props, return values, usage examples. Add README.md in notes/ directory explaining architecture and usage.",
+          "type": "documentation",
+          "estimated_effort": "30 minutes",
+          "dependencies": ["TEST-004"],
+          "acceptance_criteria": [
+            "All components have JSDoc comments",
+            "Props documented with @param tags",
+            "Return values documented with @returns",
+            "Usage examples in README.md",
+            "Architecture explained in README.md",
+            "Known limitations documented"
+          ]
+        },
+        {
+          "task_id": "DOC-002",
+          "title": "Update CLAUDE.md with notes feature",
+          "description": "Add notes widget to features catalog in CLAUDE.md. Document integration points, architecture decisions, and usage patterns.",
+          "type": "documentation",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["DOC-001"],
+          "acceptance_criteria": [
+            "Notes widget added to features catalog",
+            "Architecture decisions documented",
+            "Integration points listed",
+            "Usage patterns explained",
+            "Version updated to reflect new feature"
+          ]
+        },
+        {
+          "task_id": "CLEANUP-001",
+          "title": "Remove text-editor prototype",
+          "description": "Remove or archive the old text-editor widget prototype code since it's replaced by the production Notes widget.",
+          "type": "code",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["TEST-004"],
+          "acceptance_criteria": [
+            "Old text-editor directory removed or moved to archive",
+            "No references to old widget in codebase",
+            "Git history preserved (no force push)",
+            "No broken imports or dead code"
+          ]
+        }
+      ]
+    }
+  ],
+  "testing_strategy": {
+    "unit_tests": [
+      "API route path validation logic",
+      "useAutoSave debouncing behavior",
+      "useNotes state management",
+      "File extension allowlist validation",
+      "Size limit enforcement"
+    ],
+    "integration_tests": [
+      "End-to-end note creation flow",
+      "Auto-save persistence to file system",
+      "Note deletion and list update",
+      "Rename operation (delete + create)",
+      "localStorage backup fallback"
+    ],
+    "manual_tests": [
+      "Full CRUD workflow in UI",
+      "Keyboard shortcuts",
+      "Responsive layout on different screen sizes",
+      "Industrial theme visual consistency",
+      "Error message clarity",
+      "Performance with many notes (20+ files)"
+    ],
+    "security_tests": [
+      "Directory traversal attempts (../ in paths)",
+      "Write outside coderef/notes/ blocked",
+      "Invalid file extensions rejected",
+      "Oversized content rejected",
+      "XSS attempts in note content (markdown rendering)"
+    ]
+  },
+  "success_criteria": {
+    "functional": [
+      "Notes persist to coderef/notes/ directory",
+      "Auto-save works with 500ms debounce",
+      "Manual save (Cmd+S) works immediately",
+      "Create, rename, delete operations work",
+      "Markdown preview renders correctly",
+      "localStorage backup activates on save failure",
+      "Notes list updates in real-time"
+    ],
+    "technical": [
+      "No path traversal vulnerabilities",
+      "1MB size limit enforced",
+      "File extension allowlist enforced",
+      "No TypeScript compilation errors",
+      "No React warnings in console",
+      "Auto-save doesn't cause race conditions",
+      "API routes follow existing patterns (hybrid-router style)"
+    ],
+    "user_experience": [
+      "Save status always visible and accurate",
+      "Industrial theme consistent throughout",
+      "Responsive on mobile/tablet/desktop",
+      "Keyboard shortcuts intuitive",
+      "Empty states clear and helpful",
+      "Error messages actionable",
+      "No flash of unstyled content",
+      "Smooth transitions between edit/preview"
+    ],
+    "security": [
+      "Writes restricted to coderef/notes/ only",
+      "Directory traversal blocked",
+      "File type allowlist enforced",
+      "Size limits prevent DoS",
+      "User input sanitized",
+      "No XSS vulnerabilities in markdown preview"
+    ]
+  },
+  "rollback_plan": {
+    "triggers": [
+      "Critical security vulnerability discovered in path validation",
+      "Auto-save causing data loss or corruption",
+      "Performance degradation affecting dashboard",
+      "Breaking changes to existing API routes",
+      "TypeScript compilation errors blocking builds"
+    ],
+    "steps": [
+      "Revert all commits related to notes feature via git",
+      "Remove /notes route from dashboard",
+      "Remove notes navigation item from sidebar",
+      "Restore text-editor prototype if removed",
+      "Run full test suite to verify dashboard stability",
+      "Notify users if any notes were created (provide manual backup instructions)"
+    ]
+  }
+}

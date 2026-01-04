@@ -145,15 +145,81 @@ Resource sheets are comprehensive documentation files that provide deep technica
 - IndexedDB persistence for FileSystemDirectoryHandle objects
 - Silent permission restoration and stale handle detection
 - Platform abstraction layer (File System Access API vs IPC)
-- Batch re-authorization workflows with BatchRestoreUI
-- Controlled selection pattern with initialProjectId restoration
 
 **When to Reference:**
 - Working on project management features
 - Debugging persistence or permission issues
-- Understanding Web vs Electron platform differences
-- Implementing cross-platform file system access
-- Adding directory selection workflows
+
+---
+
+### 7. Electron Wrapper
+
+**File:** [ELECTRON-WRAPPER.md](./ELECTRON-WRAPPER.md)
+**Module:** `packages/electron-app/src/main.ts`
+**Complexity:** Medium
+
+**Topics Covered:**
+- IPC (Inter-Process Communication) Architecture
+- Native File System access via Electron bridge
+- Production Next.js server spawning
+- Security (Context Isolation, Node Integration)
+
+**When to Reference:**
+- Implementing native features
+- Debugging bridge issues
+- Understanding build/packaging logic
+
+---
+
+### 8. Widget System
+
+**File:** [WIDGET-SYSTEM.md](./WIDGET-SYSTEM.md)
+**Architecture:** `packages/dashboard/src/lib/WidgetRegistry.ts`
+**Complexity:** Medium
+
+**Topics Covered:**
+- Widget registration in `coderef-dashboard.config.json`
+- Folder/File conventions for new widgets
+- Layout inheritance and persistence patterns
+- Guidelines for "Industrial" styled widgets
+
+**When to Reference:**
+- Creating new dashboard widgets (e.g., File Editor)
+- Managing widget discovery and configuration
+
+---
+
+### 10. FileViewer
+
+**File:** [FILE-VIEWER.md](./FILE-VIEWER.md)
+**Component:** `packages/dashboard/src/components/coderef/FileViewer.tsx`
+**Complexity:** Medium
+
+**Topics Covered:**
+- Syntax highlighting and rich media rendering
+- Support for Markdown, Mermaid, HTML, and Code
+- Integration with Hybrid Router
+
+**When to Reference:**
+- Adding support for new file types
+- Debugging file display issues
+
+---
+
+### 11. Hybrid Router
+
+**File:** [HYBRID-ROUTER.md](./HYBRID-ROUTER.md)
+**Module:** `packages/dashboard/src/lib/coderef/hybrid-router.ts`
+**Complexity:** High
+
+**Topics Covered:**
+- Dual-mode data fetching (Local FS vs API)
+- Fallback strategies for permissions and capabilities
+- Unified interface for data access
+
+**When to Reference:**
+- Debugging data loading issues
+- Understanding offline vs online capabilities
 
 ---
 
@@ -163,20 +229,22 @@ Resource sheets are comprehensive documentation files that provide deep technica
 - [CodeRefExplorerWidget](./CODEREF-EXPLORER-WIDGET.md) - Complex state with localStorage persistence
 - [ProjectSelector](./ProjectSelector-resource-sheet.md) - Cross-platform project state with IndexedDB
 - [FileTree](./FILE-TREE.md) - Hybrid tree loading with filtering
+- [WIDGET-SYSTEM](./WIDGET-SYSTEM.md) - Self-contained widget persistence
+
+### Platform & Shell
+- [ELECTRON-WRAPPER](./ELECTRON-WRAPPER.md) - Native integration and IPC bridge
+- [ProjectSelector](./ProjectSelector-resource-sheet.md) - Web/Electron platform abstraction
 
 ### Backend Services
 - [ScanExecutor](./SCAN-EXECUTOR.md) - Process orchestration and SSE streaming
 - [API Access](./API-ACCESS.md) - HTTP client library
+- [Stubs System](./stubs-system.md) - Mock API infrastructure
 
-### UI Components
+### UI Components & Workflows
 - [ProjectSelector](./ProjectSelector-resource-sheet.md) - Platform-aware directory selection
 - [FileTree](./FILE-TREE.md) - Recursive tree rendering
 - [PromptingWorkflow](./PROMPTING-WORKFLOW.md) - Workflow orchestration
-
-### Integration Patterns
-- [ProjectSelector](./ProjectSelector-resource-sheet.md) - Web/Electron platform abstraction
-- [API Access](./API-ACCESS.md) - Client-server communication
-- [ScanExecutor](./SCAN-EXECUTOR.md) - Event-driven architecture
+- [Assistant Page](./assistant-page.md) - AI-powered interface design
 
 ---
 
@@ -202,9 +270,9 @@ Resource sheets are comprehensive documentation files that provide deep technica
 
 ---
 
-**Generated:** 2026-01-02
-**Total Resource Sheets:** 6
-**Total Lines Documented:** 2,101 lines of code
+**Generated:** 2026-01-04
+**Total Resource Sheets:** 14
+**Total Lines Documented:** 3,500+ lines of code
 
 ---
 

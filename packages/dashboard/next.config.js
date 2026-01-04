@@ -10,6 +10,12 @@ const nextConfig = {
   turbopack: {},
   // Webpack config (for --webpack mode or production builds)
   webpack: (config, { isServer }) => {
+    // Add module resolution paths to find @coderef/core in parent node_modules
+    config.resolve.modules = [
+      ...(config.resolve.modules || []),
+      require('path').resolve(__dirname, '../../node_modules'),
+    ];
+
     // Exclude Electron and Node.js built-ins from client bundles
     if (!isServer) {
       config.resolve.fallback = {
