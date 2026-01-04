@@ -17,8 +17,23 @@ import { useStubs } from '@/hooks/useStubs';
 export default function AssistantPage() {
   const [activeTab, setActiveTab] = useState<string>('workorders');
 
-  const { workorders, isLoading: workordersLoading, error: workordersError } = useWorkorders();
+  const { workorders, byStatus, isLoading: workordersLoading, error: workordersError } = useWorkorders();
   const { stubs, isLoading: stubsLoading, error: stubsError } = useStubs();
+
+  // Calculate stub breakdowns for inline stats
+  const stubsByStatus = {
+    stub: stubs.filter(s => s.status === 'stub').length,
+    planned: stubs.filter(s => s.status === 'planned').length,
+    in_progress: stubs.filter(s => s.status === 'in_progress').length,
+    completed: stubs.filter(s => s.status === 'completed').length,
+  };
+
+  const stubsByPriority = {
+    low: stubs.filter(s => s.priority === 'low').length,
+    medium: stubs.filter(s => s.priority === 'medium').length,
+    high: stubs.filter(s => s.priority === 'high').length,
+    critical: stubs.filter(s => s.priority === 'critical').length,
+  };
 
   const tabs = [
     { id: 'workorders', label: 'Workorders', icon: Clipboard },
@@ -75,6 +90,28 @@ export default function AssistantPage() {
           {/* Workorders Tab */}
           {activeTab === 'workorders' && (
             <div>
+              {/* Inline Stats Bar */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 pb-3 border-b border-ind-border/30">
+                {/* Total */}
+                <div className="text-xs sm:text-sm">
+                  <span className="text-ind-text-muted">Total:</span>
+                  <span className="ml-1 font-semibold text-ind-accent">{workorders.length}</span>
+                </div>
+
+                {/* Status Breakdown */}
+                {Object.keys(byStatus || {}).length > 0 && (
+                  <>
+                    <div className="h-3 w-px bg-ind-border/50"></div>
+                    {Object.entries(byStatus || {}).map(([status, count]) => (
+                      <div key={status} className="text-xs sm:text-sm">
+                        <span className="text-ind-text-muted capitalize">{status.replace(/_/g, ' ')}:</span>
+                        <span className="ml-1 font-medium text-ind-text">{count}</span>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+
               {/* Content */}
               <div>
                 <WorkorderList
@@ -90,6 +127,57 @@ export default function AssistantPage() {
           {/* Stubs Tab */}
           {activeTab === 'stubs' && (
             <div className="min-w-0 overflow-hidden">
+              {/* Inline Stats Bar */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 pb-3 border-b border-ind-border/30">
+                {/* Total */}
+                <div className="text-xs sm:text-sm">
+                  <span className="text-ind-text-muted">Total:</span>
+                  <span className="ml-1 font-semibold text-ind-accent">{stubs.length}</span>
+                </div>
+
+                {/* Status Breakdown */}
+                {stubs.length > 0 && (
+                  <>
+                    <div className="h-3 w-px bg-ind-border/50"></div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">Stub:</span>
+                      <span className="ml-1 font-medium text-ind-text">{stubsByStatus.stub}</span>
+                    </div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">Planned:</span>
+                      <span className="ml-1 font-medium text-ind-text">{stubsByStatus.planned}</span>
+                    </div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">In Progress:</span>
+                      <span className="ml-1 font-medium text-ind-text">{stubsByStatus.in_progress}</span>
+                    </div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">Completed:</span>
+                      <span className="ml-1 font-medium text-ind-text">{stubsByStatus.completed}</span>
+                    </div>
+
+                    {/* Priority Breakdown */}
+                    <div className="h-3 w-px bg-ind-border/50"></div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">Critical:</span>
+                      <span className="ml-1 font-medium text-red-400">{stubsByPriority.critical}</span>
+                    </div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">High:</span>
+                      <span className="ml-1 font-medium text-orange-400">{stubsByPriority.high}</span>
+                    </div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">Medium:</span>
+                      <span className="ml-1 font-medium text-yellow-400">{stubsByPriority.medium}</span>
+                    </div>
+                    <div className="text-xs sm:text-sm">
+                      <span className="text-ind-text-muted">Low:</span>
+                      <span className="ml-1 font-medium text-green-400">{stubsByPriority.low}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
               {/* Content */}
               <div className="min-w-0">
                 <StubList
