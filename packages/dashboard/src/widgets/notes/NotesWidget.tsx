@@ -112,89 +112,82 @@ export default function NotesWidget() {
     );
   }
 
+  // Always show exactly 3 cards
+  const displayNotes = notes.slice(0, 3);
+  while (displayNotes.length < 3) {
+    displayNotes.push({
+      id: `temp-${displayNotes.length}`,
+      title: '',
+      content: '',
+      savedToFile: false,
+      lastModified: new Date().toISOString(),
+    });
+  }
+
   return (
-    <div className="h-full flex flex-col bg-ind-bg relative">
-      {/* Dynamic Note Cards */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {notes.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-ind-text-muted">
-            <p>No notes yet. Click the + button to create one.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
-            {notes.map(note => {
-              const isSaving = savingNotes.has(note.id);
+    <div className="h-full flex gap-4 bg-ind-bg">
+      {/* 3 Note Cards - Inline, Full Height */}
+      {displayNotes.map((note, index) => {
+        const isSaving = savingNotes.has(note.id);
 
-              return (
-                <div
-                  key={note.id}
-                  className="bg-ind-panel border-2 border-ind-border rounded-lg p-4 flex flex-col h-96"
+        return (
+          <div
+            key={note.id}
+            className="flex-1 bg-ind-panel border-2 border-ind-border rounded-lg p-4 flex flex-col"
+          >
+            {/* Title Input */}
+            <input
+              type="text"
+              placeholder="Untitled"
+              value={note.title}
+              onChange={e => updateNote(note.id, { title: e.target.value })}
+              className="bg-transparent border-b border-ind-border px-2 py-1 mb-3 text-ind-text font-semibold focus:outline-none focus:border-ind-accent"
+            />
+
+            {/* Content Textarea */}
+            <textarea
+              placeholder="Start writing..."
+              value={note.content}
+              onChange={e => updateNote(note.id, { content: e.target.value })}
+              className="flex-1 resize-none bg-transparent text-ind-text text-sm focus:outline-none mb-3"
+            />
+
+            {/* Footer: Status + Actions */}
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-ind-text-muted">
+                {note.savedToFile ? (
+                  <span className="text-green-500">✓ Saved to {note.filename}</span>
+                ) : (
+                  <span>Local draft</span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Save Button */}
+                {!note.savedToFile && (
+                  <button
+                    onClick={() => handleSaveNote(note.id, note.title, note.content)}
+                    disabled={isSaving}
+                    className="p-1.5 hover:bg-ind-bg rounded transition-colors disabled:opacity-50"
+                    title="Save to file system"
+                  >
+                    <Save className="w-4 h-4 text-ind-text-muted hover:text-ind-accent" />
+                  </button>
+                )}
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => handleDeleteNote(note.id)}
+                  className="p-1.5 hover:bg-ind-bg rounded transition-colors"
+                  title="Delete note"
                 >
-                  {/* Title Input */}
-                  <input
-                    type="text"
-                    placeholder="Untitled"
-                    value={note.title}
-                    onChange={e => updateNote(note.id, { title: e.target.value })}
-                    className="bg-transparent border-b border-ind-border px-2 py-1 mb-3 text-ind-text font-semibold focus:outline-none focus:border-ind-accent"
-                  />
-
-                  {/* Content Textarea */}
-                  <textarea
-                    placeholder="Start writing..."
-                    value={note.content}
-                    onChange={e => updateNote(note.id, { content: e.target.value })}
-                    className="flex-1 resize-none bg-transparent text-ind-text text-sm focus:outline-none mb-3"
-                  />
-
-                  {/* Footer: Status + Actions */}
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-ind-text-muted">
-                      {note.savedToFile ? (
-                        <span className="text-green-500">✓ Saved to {note.filename}</span>
-                      ) : (
-                        <span>Local draft</span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {/* Save Button */}
-                      {!note.savedToFile && (
-                        <button
-                          onClick={() => handleSaveNote(note.id, note.title, note.content)}
-                          disabled={isSaving}
-                          className="p-1.5 hover:bg-ind-bg rounded transition-colors disabled:opacity-50"
-                          title="Save to file system"
-                        >
-                          <Save className="w-4 h-4 text-ind-text-muted hover:text-ind-accent" />
-                        </button>
-                      )}
-
-                      {/* Delete Button */}
-                      <button
-                        onClick={() => handleDeleteNote(note.id)}
-                        className="p-1.5 hover:bg-ind-bg rounded transition-colors"
-                        title="Delete note"
-                      >
-                        <Trash2 className="w-4 h-4 text-ind-text-muted hover:text-red-500" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                  <Trash2 className="w-4 h-4 text-ind-text-muted hover:text-red-500" />
+                </button>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
-
-      {/* Floating (+) Button - Bottom Right */}
-      <button
-        onClick={handleCreateNote}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-ind-accent text-white rounded-full shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center text-2xl font-light z-10"
-        aria-label="Create new note"
-      >
-        +
-      </button>
+        );
+      })}
     </div>
   );
 }
