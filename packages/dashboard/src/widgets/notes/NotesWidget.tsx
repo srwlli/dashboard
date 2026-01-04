@@ -12,7 +12,6 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeSlug from 'rehype-slug';
-import { EditorMode } from './types';
 import { useNotes } from './hooks/useNotes';
 import { useAutoSave } from './hooks/useAutoSave';
 import { useProjects } from '@/contexts/ProjectsContext';
@@ -29,7 +28,6 @@ export default function NotesWidget() {
   const { projects } = useProjects();
   const { notes, currentNote, loading, error, createNote, loadNote, deleteNote, refreshNotes } =
     useNotes();
-  const [editorMode, setEditorMode] = useState<EditorMode>(EditorMode.Edit);
   const [editorContent, setEditorContent] = useState('');
   const [noteTitle, setNoteTitle] = useState('');
 
@@ -73,7 +71,6 @@ export default function NotesWidget() {
   /**
    * Keyboard shortcuts
    * Cmd/Ctrl+S: Manual save
-   * Cmd/Ctrl+P: Toggle preview
    * Cmd/Ctrl+N: New note
    */
   useEffect(() => {
@@ -85,16 +82,6 @@ export default function NotesWidget() {
         e.preventDefault();
         if (currentNote) {
           triggerSave();
-        }
-      }
-
-      // Cmd/Ctrl+P: Toggle preview
-      if (isMod && e.key === 'p') {
-        e.preventDefault();
-        if (currentNote) {
-          setEditorMode(prev =>
-            prev === EditorMode.Edit ? EditorMode.Preview : EditorMode.Edit
-          );
         }
       }
 
@@ -207,29 +194,6 @@ export default function NotesWidget() {
                 />
 
                 <div className="ml-4 flex items-center gap-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditorMode(EditorMode.Edit)}
-                      className={`px-3 py-1 rounded text-sm ${
-                        editorMode === EditorMode.Edit
-                          ? 'bg-ind-accent text-white'
-                          : 'text-ind-text-muted hover:text-ind-text'
-                      }`}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setEditorMode(EditorMode.Preview)}
-                      className={`px-3 py-1 rounded text-sm ${
-                        editorMode === EditorMode.Preview
-                          ? 'bg-ind-accent text-white'
-                          : 'text-ind-text-muted hover:text-ind-text'
-                      }`}
-                    >
-                      Preview
-                    </button>
-                  </div>
-
                   <div className="text-ind-text-muted text-xs">
                     {saveStatus === 'saving' && '💾 Saving...'}
                     {saveStatus === 'saved' && '✓ Saved'}
@@ -238,18 +202,20 @@ export default function NotesWidget() {
                 </div>
               </div>
 
-              {/* Editor Surface */}
-              <div className="flex-1 overflow-y-auto p-4">
-                {editorMode === EditorMode.Edit && (
+              {/* Side-by-side Editor + Preview */}
+              <div className="flex-1 flex overflow-hidden">
+                {/* Editor (left 50%) */}
+                <div className="w-1/2 border-r border-ind-border overflow-y-auto p-4">
                   <textarea
                     value={editorContent}
                     onChange={e => setEditorContent(e.target.value)}
                     className="w-full h-full resize-none bg-transparent text-ind-text font-mono text-sm focus:outline-none"
-                    placeholder="Start writing..."
+                    placeholder="Start writing markdown..."
                   />
-                )}
+                </div>
 
-                {editorMode === EditorMode.Preview && (
+                {/* Preview (right 50%) */}
+                <div className="w-1/2 overflow-y-auto p-4">
                   <div className="prose prose-sm prose-invert max-w-none">
                     <ReactMarkdown
                       rehypePlugins={[rehypeSlug]}
@@ -281,10 +247,10 @@ export default function NotesWidget() {
                         },
                       }}
                     >
-                      {editorContent || '*No content to preview*'}
+                      {editorContent || '*Start writing to see preview...*'}
                     </ReactMarkdown>
                   </div>
-                )}
+                </div>
               </div>
             </>
           )}
