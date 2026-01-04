@@ -125,7 +125,7 @@ export default function NotesWidget() {
   }
 
   return (
-    <div className="h-full flex gap-4 bg-ind-bg">
+    <div className="h-[calc(100vh-8rem)] flex gap-4 bg-ind-bg">
       {/* 3 Note Cards - Inline, Full Height */}
       {displayNotes.map((note, index) => {
         const isSaving = savingNotes.has(note.id);
