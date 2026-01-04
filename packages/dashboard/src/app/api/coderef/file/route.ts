@@ -79,6 +79,7 @@ const TEXT_EXTENSIONS = new Set([
   '.gitignore',
   '.dockerignore',
   '.editorconfig',
+  '.mmd', // Mermaid diagram files
 ]);
 
 /**
@@ -98,6 +99,7 @@ function getMimeType(ext: string): string {
     '.xml': 'application/xml',
     '.yml': 'application/yaml',
     '.yaml': 'application/yaml',
+    '.mmd': 'text/vnd.mermaid',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -114,6 +116,164 @@ function getMimeType(ext: string): string {
  */
 function isTextFile(ext: string): boolean {
   return TEXT_EXTENSIONS.has(ext);
+}
+
+/**
+ * Allowlisted file extensions for writing
+ * Restricted to safe text formats for notes
+ */
+const WRITE_ALLOWED_EXTENSIONS = new Set(['.md', '.txt', '.json']);
+
+/**
+ * Maximum file size for writes (1MB)
+ */
+const MAX_WRITE_SIZE = 1024 * 1024; // 1MB
+
+/**
+ * Validate write path to ensure it's within coderef/notes/
+ * Prevents directory traversal and unauthorized writes
+ */
+function validateWritePath(projectRoot: string, relativePath: string): {
+  valid: boolean;
+  error?: string;
+  resolvedPath?: string;
+} {
+  // Reject absolute paths
+  if (path.isAbsolute(relativePath)) {
+    return { valid: false, error: 'Relative path required (absolute paths not allowed)' };
+  }
+
+  // Reject paths with directory traversal attempts
+  if (relativePath.includes('..')) {
+    return { valid: false, error: 'Directory traversal not allowed (..)' };
+  }
+
+  // Normalize and join paths to prevent traversal
+  const normalizedRelative = path.normalize(relativePath);
+  const resolvedPath = path.join(projectRoot, 'coderef', 'notes', normalizedRelative);
+
+  // Verify the resolved path is still within coderef/notes/
+  const notesDir = path.join(projectRoot, 'coderef', 'notes');
+  if (!resolvedPath.startsWith(notesDir)) {
+    return { valid: false, error: 'Path must be within coderef/notes/ directory' };
+  }
+
+  // Validate file extension
+  const ext = path.extname(normalizedRelative).toLowerCase();
+  if (!WRITE_ALLOWED_EXTENSIONS.has(ext)) {
+    return {
+      valid: false,
+      error: `Invalid file extension. Allowed: ${Array.from(WRITE_ALLOWED_EXTENSIONS).join(', ')}`,
+    };
+  }
+
+  return { valid: true, resolvedPath };
+}
+
+/**
+ * PUT /api/coderef/file
+ * Writes content to a file in coderef/notes/ directory
+ * Body: { projectRoot: string, filePath: string, content: string }
+ */
+export async function PUT(request: NextRequest): Promise<NextResponse> {
+  try {
+    const body = await request.json();
+    const { projectRoot, filePath, content } = body;
+
+    // Validate required fields
+    if (!projectRoot || !filePath || content === undefined) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Missing required fields: projectRoot, filePath, content',
+        },
+        { received: Object.keys(body) }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Validate content type
+    if (typeof content !== 'string') {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Content must be a string',
+        },
+        { contentType: typeof content }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Enforce size limit (1MB)
+    const contentSize = Buffer.byteLength(content, 'utf-8');
+    if (contentSize > MAX_WRITE_SIZE) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'FILE_TOO_LARGE',
+          message: 'Content exceeds maximum size limit (1MB)',
+        },
+        { size: contentSize, limit: MAX_WRITE_SIZE }
+      );
+      return NextResponse.json(errorResponse, { status: 413 });
+    }
+
+    // Validate write path
+    const validation = validateWritePath(projectRoot, filePath);
+    if (!validation.valid) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'INVALID_PATH',
+          message: validation.error!,
+        },
+        { projectRoot, filePath }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+    }
+
+    const resolvedPath = validation.resolvedPath!;
+
+    // Ensure directory exists
+    const dir = path.dirname(resolvedPath);
+    try {
+      await fs.mkdir(dir, { recursive: true });
+    } catch (error: any) {
+      if (error.code === 'EACCES' || error.code === 'EPERM') {
+        const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
+          path: dir,
+          operation: 'mkdir',
+        });
+        return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+      }
+      throw error;
+    }
+
+    // Write file
+    try {
+      await fs.writeFile(resolvedPath, content, 'utf-8');
+    } catch (error: any) {
+      if (error.code === 'EACCES' || error.code === 'EPERM') {
+        const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
+          path: resolvedPath,
+          operation: 'write',
+        });
+        return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+      }
+      throw error;
+    }
+
+    const response = createSuccessResponse({
+      success: true,
+      path: resolvedPath,
+      size: contentSize,
+    });
+
+    return NextResponse.json(response, { status: HttpStatus.OK });
+  } catch (error) {
+    const errorResponse = createErrorResponse(ErrorCodes.INTERNAL_ERROR, {
+      reason: (error as Error).message,
+    });
+    return NextResponse.json(errorResponse, { status: HttpStatus.INTERNAL_ERROR });
+  }
 }
 
 /**
@@ -222,6 +382,104 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     };
 
     const response = createSuccessResponse(fileData);
+
+    return NextResponse.json(response, { status: HttpStatus.OK });
+  } catch (error) {
+    const errorResponse = createErrorResponse(ErrorCodes.INTERNAL_ERROR, {
+      reason: (error as Error).message,
+    });
+    return NextResponse.json(errorResponse, { status: HttpStatus.INTERNAL_ERROR });
+  }
+}
+
+/**
+ * DELETE /api/coderef/file
+ * Deletes a file in coderef/notes/ directory
+ * Body: { projectRoot: string, filePath: string }
+ */
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  try {
+    const body = await request.json();
+    const { projectRoot, filePath } = body;
+
+    // Validate required fields
+    if (!projectRoot || !filePath) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Missing required fields: projectRoot, filePath',
+        },
+        { received: Object.keys(body) }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Validate delete path (reuse write validation)
+    const validation = validateWritePath(projectRoot, filePath);
+    if (!validation.valid) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'INVALID_PATH',
+          message: validation.error!,
+        },
+        { projectRoot, filePath }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+    }
+
+    const resolvedPath = validation.resolvedPath!;
+
+    // Check if file exists
+    try {
+      const stats = await fs.stat(resolvedPath);
+      if (!stats.isFile()) {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'INVALID_PATH',
+            message: 'Path is not a file',
+          },
+          { path: resolvedPath }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      }
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'FILE_NOT_FOUND',
+            message: 'File not found',
+          },
+          { path: resolvedPath }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
+      }
+      if (error.code === 'EACCES' || error.code === 'EPERM') {
+        const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
+          path: resolvedPath,
+        });
+        return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+      }
+      throw error;
+    }
+
+    // Delete file
+    try {
+      await fs.unlink(resolvedPath);
+    } catch (error: any) {
+      if (error.code === 'EACCES' || error.code === 'EPERM') {
+        const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
+          path: resolvedPath,
+          operation: 'delete',
+        });
+        return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+      }
+      throw error;
+    }
+
+    const response = createSuccessResponse({
+      success: true,
+      deleted: resolvedPath,
+    });
 
     return NextResponse.json(response, { status: HttpStatus.OK });
   } catch (error) {

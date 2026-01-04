@@ -167,6 +167,7 @@ export async function loadFileFromHandle(
     '.dart',
     '.vue',
     '.svelte',
+    '.mmd', // Mermaid diagram files
   ]);
 
   const isText = textExtensions.has(extension.toLowerCase());

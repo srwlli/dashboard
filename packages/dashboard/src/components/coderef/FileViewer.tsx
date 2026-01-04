@@ -208,6 +208,14 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
     }
   }
 
+  // Debug mermaid files
+  if (isMermaid) {
+    console.log('[FileViewer] Mermaid file detected');
+    console.log('[FileViewer] Extension:', fileData.extension);
+    console.log('[FileViewer] Encoding:', fileData.encoding);
+    console.log('[FileViewer] Content preview:', displayContent?.substring(0, 100));
+  }
+
   return (
     <div className={`flex flex-col h-full ${className}`}>
       {/* File header */}

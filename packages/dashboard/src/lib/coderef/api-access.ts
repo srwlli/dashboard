@@ -195,6 +195,58 @@ export const ScanApi = {
 };
 
 /**
+ * Note metadata (from /api/coderef/notes)
+ */
+export interface NoteMetadata {
+  name: string;
+  path: string;
+  size: number;
+  modified: string;
+  extension: string;
+}
+
+/**
+ * Notes API calls
+ */
+export const NotesApi = {
+  /**
+   * Save note content to file
+   * Writes to <projectRoot>/coderef/notes/<filePath>
+   */
+  async save(projectRoot: string, filePath: string, content: string): Promise<string> {
+    const result = await apiFetch<{ success: boolean; path: string; size: number }>(
+      '/api/coderef/file',
+      {
+        method: 'PUT',
+        body: JSON.stringify({ projectRoot, filePath, content }),
+      }
+    );
+    return result.path;
+  },
+
+  /**
+   * List all notes in project
+   */
+  async list(projectRoot: string): Promise<NoteMetadata[]> {
+    const params = new URLSearchParams({ projectRoot });
+    const result = await apiFetch<{ notes: NoteMetadata[]; total: number; timestamp: string }>(
+      `/api/coderef/notes?${params.toString()}`
+    );
+    return result.notes;
+  },
+
+  /**
+   * Delete note file
+   */
+  async delete(projectRoot: string, filePath: string): Promise<void> {
+    await apiFetch<{ success: boolean; deleted: string }>('/api/coderef/file', {
+      method: 'DELETE',
+      body: JSON.stringify({ projectRoot, filePath }),
+    });
+  },
+};
+
+/**
  * Combined API export
  */
 export const CodeRefApi = {
@@ -202,4 +254,5 @@ export const CodeRefApi = {
   tree: TreeApi,
   file: FileApi,
   scan: ScanApi,
+  notes: NotesApi,
 };
