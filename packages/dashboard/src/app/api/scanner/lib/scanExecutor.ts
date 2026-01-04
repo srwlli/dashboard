@@ -182,20 +182,69 @@ export class ScanExecutor extends EventEmitter {
   }
 
   /**
-   * Run populate-coderef.py for a single project
+   * Find available Python command with full path resolution
+   */
+  private async findPythonCommand(): Promise<string> {
+    const { execSync } = require('child_process');
+
+    // Use environment variable if set
+    if (process.env.PYTHON_COMMAND) {
+      return process.env.PYTHON_COMMAND;
+    }
+
+    // On Windows, try to find Python using 'where' command
+    if (process.platform === 'win32') {
+      try {
+        const result = execSync('where python', { encoding: 'utf-8' }).trim();
+        const firstPath = result.split('\n')[0].trim();
+        if (firstPath) {
+          return firstPath;
+        }
+      } catch {
+        // If 'where python' fails, try 'py' launcher
+        try {
+          execSync('py --version', { encoding: 'utf-8' });
+          return 'py';
+        } catch {
+          // Fall back to 'python' and let it fail with helpful error
+          return 'python';
+        }
+      }
+    }
+
+    // On Unix/macOS, try which command
+    try {
+      const result = execSync('which python3 || which python', { encoding: 'utf-8' }).trim();
+      if (result) {
+        return result;
+      }
+    } catch {
+      // Fall back to python3
+    }
+
+    return 'python3';
+  }
+
+  /**
+   * Run generate-coderef-directories.py for a single project
    * Uses child_process.spawn() to execute Python script
    */
   private async runPopulateForProject(projectPath: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Locate populate-coderef.py script
-      const populateScriptPath = process.env.POPULATE_SCRIPT_PATH ||
-        'C:\\Users\\willh\\Desktop\\projects\\coderef-system\\scripts\\populate-coderef.py';
+    // Locate generate-coderef-directories.py script (now in dashboard monorepo)
+    const populateScriptPath = process.env.POPULATE_SCRIPT_PATH ||
+      path.resolve(__dirname, '../../../../../coderef-core/scripts/generate-coderef-directories.py');
 
-      this.emitOutput(`\n[Intelligence] Starting populate for: ${projectPath}`);
-      this.emitOutput(`[Intelligence] Using script: ${populateScriptPath}\n`);
+    // Find Python command with full path
+    const pythonCmd = await this.findPythonCommand();
+
+    this.emitOutput(`\n[Intelligence] Generating coderef directories for: ${projectPath}`);
+    this.emitOutput(`[Intelligence] Using Python: ${pythonCmd}`);
+    this.emitOutput(`[Intelligence] Using script: ${populateScriptPath}\n`);
+
+    return new Promise((resolve, reject) => {
 
       // Spawn Python subprocess
-      this.currentProcess = spawn('python', [populateScriptPath, projectPath], {
+      this.currentProcess = spawn(pythonCmd, [populateScriptPath, projectPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: path.dirname(populateScriptPath),
       });
@@ -229,7 +278,13 @@ export class ScanExecutor extends EventEmitter {
 
       // Handle process error (e.g., python not found)
       this.currentProcess.on('error', (error) => {
-        this.emitOutput(`[ERROR] Failed to start populate: ${error.message}\n`);
+        this.emitOutput(`[ERROR] Failed to start Python: ${error.message}\n`);
+        this.emitOutput(`[ERROR] Could not find '${pythonCmd}' command\n`);
+        this.emitOutput(`[HELP] Try one of these solutions:\n`);
+        this.emitOutput(`  1. Install Python: https://www.python.org/downloads/\n`);
+        this.emitOutput(`  2. Set PYTHON_COMMAND env var (e.g., PYTHON_COMMAND=python3)\n`);
+        this.emitOutput(`  3. Add Python to your system PATH\n`);
+        this.emitOutput(`  4. On Windows, try installing from Microsoft Store\n`);
         reject(error);
       });
     });
