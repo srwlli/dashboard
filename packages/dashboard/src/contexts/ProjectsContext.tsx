@@ -122,7 +122,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
 
     try {
       // Call API in background
-      await ProjectsApi.delete(projectId);
+      await ProjectsApi.remove(projectId);
     } catch (err) {
       // Rollback on error
       setProjects(originalProjects);

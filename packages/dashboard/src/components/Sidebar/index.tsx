@@ -11,7 +11,7 @@ const mainNavItems = [
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },
   { label: 'Scanner', href: '/scanner', icon: Radar },
-  { label: 'Ecosystem', href: '/ecosystem', icon: Network },
+  { label: 'Resources', href: '/resources', icon: Network },
 ];
 
 const bottomNavItems = [

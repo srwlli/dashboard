@@ -13,7 +13,7 @@ const breadcrumbMap: Record<string, { label: string; href: string }> = {
   '/assistant': { label: 'Assistant', href: '/assistant' },
   '/explorer': { label: 'Explorer', href: '/explorer' },
   '/scanner': { label: 'Scanner', href: '/scanner' },
-  '/ecosystem': { label: 'Ecosystem', href: '/ecosystem' },
+  '/resources': { label: 'Resources', href: '/resources' },
 };
 
 interface HeaderProps {

@@ -1,0 +1,508 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://coderef.dev/schemas/project-selector",
+  "title": "Project Selector Component",
+  "description": "Type definitions and validation schema for the cross-platform ProjectSelector component in CodeRef Dashboard",
+  "version": "1.0.0",
+  "type": "object",
+  "definitions": {
+    "ProjectSelectorComponent": {
+      "type": "object",
+      "description": "Stateful container for managing project lifecycle and directory permissions",
+      "properties": {
+        "componentName": {
+          "type": "string",
+          "const": "ProjectSelector",
+          "description": "Component name identifier"
+        },
+        "filePath": {
+          "type": "string",
+          "const": "packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+          "description": "File location in monorepo"
+        },
+        "componentType": {
+          "type": "string",
+          "const": "client",
+          "description": "React client component (not server component)"
+        },
+        "props": {
+          "$ref": "#/definitions/ProjectSelectorProps"
+        },
+        "state": {
+          "$ref": "#/definitions/ComponentState"
+        },
+        "platform": {
+          "$ref": "#/definitions/PlatformSupport"
+        },
+        "dependencies": {
+          "$ref": "#/definitions/Dependencies"
+        },
+        "performance": {
+          "$ref": "#/definitions/PerformanceBudget"
+        }
+      },
+      "required": ["componentName", "filePath", "componentType", "props", "state"]
+    },
+    "ProjectSelectorProps": {
+      "type": "object",
+      "description": "Component props interface",
+      "properties": {
+        "selectedProjectId": {
+          "type": ["string", "null"],
+          "description": "Currently selected project ID (controlled component)"
+        },
+        "onProjectChange": {
+          "type": "string",
+          "const": "(project: Project | null) => void",
+          "description": "Callback when project selection changes"
+        },
+        "initialProjectId": {
+          "type": ["string", "null"],
+          "description": "Initial project ID to auto-select on first load (for persistence)"
+        },
+        "className": {
+          "type": "string",
+          "default": "",
+          "description": "Optional custom Tailwind class name"
+        }
+      },
+      "required": ["onProjectChange"]
+    },
+    "ComponentState": {
+      "type": "object",
+      "description": "Internal component state",
+      "properties": {
+        "projects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Project"
+          },
+          "description": "List of all registered projects"
+        },
+        "loading": {
+          "type": "boolean",
+          "default": true,
+          "description": "Loading indicator for API calls"
+        },
+        "error": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Error message to display"
+        },
+        "adding": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable buttons during add flow"
+        },
+        "contextMenu": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/definitions/ContextMenuPosition" }
+          ],
+          "description": "Context menu position or null"
+        },
+        "staleProjects": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Set of project IDs needing re-authorization"
+        },
+        "staleReasons": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Map of project ID to stale reason"
+        },
+        "hasRestoredInitial": {
+          "type": "boolean",
+          "default": false,
+          "description": "Flag to prevent double-restoration"
+        },
+        "showRemovalMenu": {
+          "type": "boolean",
+          "default": false,
+          "description": "Dropdown visibility toggle"
+        }
+      },
+      "required": ["projects", "loading", "error", "adding", "staleProjects", "staleReasons", "hasRestoredInitial", "showRemovalMenu"]
+    },
+    "Project": {
+      "type": "object",
+      "description": "Project entity schema",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^project-\\d+$",
+          "description": "Unique identifier (timestamp-based)"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Display name extracted from path"
+        },
+        "path": {
+          "type": "string",
+          "description": "Platform-specific path format"
+        },
+        "addedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of when project was added"
+        }
+      },
+      "required": ["id", "name", "path", "addedAt"]
+    },
+    "PathFormat": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\[Directory: .+\\]$",
+          "description": "Web path format: [Directory: folder-name]"
+        },
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z]:/",
+          "description": "Electron Windows path: C:/absolute/path/to/folder"
+        },
+        {
+          "type": "string",
+          "pattern": "^/",
+          "description": "Electron Unix path: /absolute/path/to/folder"
+        }
+      ]
+    },
+    "ContextMenuPosition": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "Horizontal pixel position"
+        },
+        "y": {
+          "type": "number",
+          "description": "Vertical pixel position"
+        }
+      },
+      "required": ["x", "y"]
+    },
+    "PlatformSupport": {
+      "type": "object",
+      "description": "Cross-platform compatibility",
+      "properties": {
+        "web": {
+          "type": "object",
+          "properties": {
+            "fileSystemAPI": {
+              "type": "string",
+              "const": "File System Access API",
+              "description": "Chrome 86+, Edge 86+"
+            },
+            "persistence": {
+              "type": "string",
+              "const": "IndexedDB",
+              "description": "Directory handle storage"
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["granted", "denied", "prompt"]
+              },
+              "description": "Permission states for directory handles"
+            }
+          }
+        },
+        "electron": {
+          "type": "object",
+          "properties": {
+            "fileSystem": {
+              "type": "string",
+              "const": "Node.js fs module",
+              "description": "Direct filesystem access via IPC"
+            },
+            "persistence": {
+              "type": "string",
+              "const": "Project.path field",
+              "description": "Absolute path stored in API"
+            },
+            "validation": {
+              "type": "string",
+              "const": "window.electronAPI.fs.validatePath",
+              "description": "IPC-based fs.access() without permission prompts"
+            }
+          }
+        }
+      }
+    },
+    "Dependencies": {
+      "type": "object",
+      "description": "Internal and external dependencies",
+      "properties": {
+        "react": {
+          "type": "object",
+          "properties": {
+            "hooks": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["useState", "useEffect"]
+              },
+              "description": "React hooks used"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$"
+            }
+          }
+        },
+        "internalComponents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "path": { "type": "string" },
+              "purpose": { "type": "string" }
+            },
+            "required": ["name", "path"]
+          },
+          "description": "Internal components imported"
+        },
+        "platformModules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "platform": {
+                "type": "string",
+                "enum": ["web", "electron", "both"]
+              },
+              "dynamic": {
+                "type": "boolean",
+                "description": "Loaded via dynamic import()"
+              }
+            }
+          },
+          "description": "Platform-specific modules"
+        },
+        "externalPackages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "version": { "type": "string" },
+              "purpose": { "type": "string" }
+            },
+            "required": ["name"]
+          },
+          "description": "Third-party npm packages"
+        }
+      }
+    },
+    "PerformanceBudget": {
+      "type": "object",
+      "description": "Performance targets and constraints",
+      "properties": {
+        "componentSize": {
+          "type": "object",
+          "properties": {
+            "fileSize": {
+              "type": "number",
+              "const": 18,
+              "description": "File size in KB (uncompressed)"
+            },
+            "bundleImpact": {
+              "type": "number",
+              "const": 6,
+              "description": "Bundle size in KB (gzipped)"
+            }
+          }
+        },
+        "rendering": {
+          "type": "object",
+          "properties": {
+            "initialRender": {
+              "type": "number",
+              "maximum": 16,
+              "description": "Initial render time in ms (60fps)"
+            },
+            "rerender": {
+              "type": "number",
+              "maximum": 8,
+              "description": "Re-render on state change in ms"
+            },
+            "projectsLimit": {
+              "type": "number",
+              "const": 1000,
+              "description": "Dropdown performance threshold"
+            }
+          }
+        },
+        "operations": {
+          "type": "object",
+          "properties": {
+            "mountTime": {
+              "type": "number",
+              "maximum": 500,
+              "description": "Time to first interactive in ms"
+            },
+            "addProject": {
+              "type": "number",
+              "maximum": 1000,
+              "description": "Add project duration in ms"
+            },
+            "staleDetection": {
+              "type": "number",
+              "maximum": 2000,
+              "description": "Stale handle detection time in ms (50 projects)"
+            },
+            "indexedDB": {
+              "type": "number",
+              "maximum": 100,
+              "description": "IndexedDB operation latency in ms"
+            }
+          }
+        }
+      }
+    },
+    "APIContract": {
+      "type": "object",
+      "description": "CodeRef API integration contract",
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": ["GET", "POST", "DELETE"]
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^/projects"
+              },
+              "requestSchema": {
+                "type": "object"
+              },
+              "responseSchema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "component": {
+      "$ref": "#/definitions/ProjectSelectorComponent"
+    }
+  },
+  "required": ["component"],
+  "examples": [
+    {
+      "component": {
+        "componentName": "ProjectSelector",
+        "filePath": "packages/dashboard/src/components/coderef/ProjectSelector.tsx",
+        "componentType": "client",
+        "props": {
+          "selectedProjectId": "project-1672531199000",
+          "onProjectChange": "(project: Project | null) => void",
+          "initialProjectId": "project-1672531199000",
+          "className": "mb-4"
+        },
+        "state": {
+          "projects": [
+            {
+              "id": "project-1672531199000",
+              "name": "my-app",
+              "path": "[Directory: my-app]",
+              "addedAt": "2023-01-01T00:00:00.000Z"
+            }
+          ],
+          "loading": false,
+          "error": null,
+          "adding": false,
+          "contextMenu": null,
+          "staleProjects": [],
+          "staleReasons": {},
+          "hasRestoredInitial": true,
+          "showRemovalMenu": false
+        },
+        "platform": {
+          "web": {
+            "fileSystemAPI": "File System Access API",
+            "persistence": "IndexedDB",
+            "permissions": ["granted", "denied", "prompt"]
+          },
+          "electron": {
+            "fileSystem": "Node.js fs module",
+            "persistence": "Project.path field",
+            "validation": "window.electronAPI.fs.validatePath"
+          }
+        },
+        "dependencies": {
+          "react": {
+            "hooks": ["useState", "useEffect"],
+            "version": "18.3.0"
+          },
+          "internalComponents": [
+            {
+              "name": "ContextMenu",
+              "path": "./ContextMenu",
+              "purpose": "Right-click menu for project actions"
+            },
+            {
+              "name": "BatchRestoreUI",
+              "path": "./BatchRestoreUI",
+              "purpose": "Stale project re-authorization UI"
+            }
+          ],
+          "platformModules": [
+            {
+              "name": "@/lib/coderef/platform",
+              "platform": "both",
+              "dynamic": false
+            },
+            {
+              "name": "@/lib/coderef/persistence",
+              "platform": "web",
+              "dynamic": true
+            },
+            {
+              "name": "@/lib/coderef/indexeddb",
+              "platform": "web",
+              "dynamic": true
+            }
+          ],
+          "externalPackages": [
+            {
+              "name": "lucide-react",
+              "version": "^0.263.1",
+              "purpose": "Icon components"
+            }
+          ]
+        },
+        "performance": {
+          "componentSize": {
+            "fileSize": 18,
+            "bundleImpact": 6
+          },
+          "rendering": {
+            "initialRender": 16,
+            "rerender": 8,
+            "projectsLimit": 1000
+          },
+          "operations": {
+            "mountTime": 500,
+            "addProject": 1000,
+            "staleDetection": 2000,
+            "indexedDB": 100
+          }
+        }
+      }
+    }
+  ]
+}

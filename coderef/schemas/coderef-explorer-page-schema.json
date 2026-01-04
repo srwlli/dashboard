@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://coderef.dev/schemas/coderef-explorer-page",
+  "title": "CodeRef Explorer Page Component",
+  "description": "Type definitions and validation schema for the CodeRef Explorer page component in the CodeRef Dashboard",
+  "version": "1.0.0",
+  "type": "object",
+  "definitions": {
+    "CodeRefExplorerPageComponent": {
+      "type": "object",
+      "description": "Next.js App Router page component for exploring codebase elements",
+      "properties": {
+        "componentName": {
+          "type": "string",
+          "const": "CodeRefExplorerPage",
+          "description": "Component name identifier"
+        },
+        "filePath": {
+          "type": "string",
+          "const": "packages/dashboard/src/app/coderef-explorer/page.tsx",
+          "description": "File location in monorepo"
+        },
+        "route": {
+          "$ref": "#/definitions/RouteDefinition"
+        },
+        "layout": {
+          "$ref": "#/definitions/LayoutOverrides"
+        },
+        "metadata": {
+          "$ref": "#/definitions/PageMetadata"
+        },
+        "dependencies": {
+          "$ref": "#/definitions/Dependencies"
+        },
+        "performance": {
+          "$ref": "#/definitions/PerformanceBudget"
+        }
+      },
+      "required": ["componentName", "filePath", "route", "metadata"]
+    },
+    "RouteDefinition": {
+      "type": "object",
+      "description": "Next.js App Router routing configuration",
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/coderef-explorer$",
+          "description": "URL path for this page"
+        },
+        "dynamic": {
+          "type": "boolean",
+          "const": false,
+          "description": "Static route (no dynamic segments)"
+        },
+        "routeType": {
+          "type": "string",
+          "enum": ["app-router", "pages-router"],
+          "const": "app-router",
+          "description": "Next.js routing paradigm"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "const": ["coderef-explorer"],
+          "description": "URL path segments"
+        },
+        "searchParams": {
+          "$ref": "#/definitions/SearchParams"
+        }
+      },
+      "required": ["path", "dynamic", "routeType"]
+    },
+    "SearchParams": {
+      "type": "object",
+      "description": "URL search parameters for filtering and navigation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["function", "class", "component", "hook", "type", "interface"],
+          "description": "Filter by element type"
+        },
+        "file": {
+          "type": "string",
+          "description": "Filter by file path (partial match)"
+        },
+        "search": {
+          "type": "string",
+          "description": "Search term for element names"
+        },
+        "view": {
+          "type": "string",
+          "enum": ["grid", "list"],
+          "description": "View mode preference"
+        },
+        "selected": {
+          "type": "string",
+          "description": "Pre-selected element ID"
+        }
+      }
+    },
+    "LayoutOverrides": {
+      "type": "object",
+      "description": "Layout customizations for this page",
+      "properties": {
+        "inheritRootLayout": {
+          "type": "boolean",
+          "description": "Whether to use root layout.tsx"
+        },
+        "customLayout": {
+          "type": ["string", "null"],
+          "description": "Path to custom layout file if applicable"
+        },
+        "layoutComponents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Layout wrapper components used"
+        }
+      }
+    },
+    "PageMetadata": {
+      "type": "object",
+      "description": "SEO and browser metadata",
+      "properties": {
+        "title": {
+          "type": "string",
+          "pattern": "^.{1,60}$",
+          "description": "Page title (SEO optimized, max 60 chars)"
+        },
+        "description": {
+          "type": "string",
+          "pattern": "^.{1,160}$",
+          "description": "Meta description (max 160 chars)"
+        },
+        "openGraph": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "description": { "type": "string" },
+            "images": {
+              "type": "array",
+              "items": { "type": "string", "format": "uri" }
+            }
+          }
+        },
+        "robots": {
+          "type": "object",
+          "properties": {
+            "index": { "type": "boolean" },
+            "follow": { "type": "boolean" }
+          }
+        }
+      },
+      "required": ["title", "description"]
+    },
+    "Dependencies": {
+      "type": "object",
+      "description": "Internal and external dependencies",
+      "properties": {
+        "react": {
+          "type": "object",
+          "properties": {
+            "hooks": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["useState", "useEffect", "useCallback", "useMemo", "useRef", "useContext"]
+              },
+              "description": "React hooks used in component"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "description": "React version requirement"
+            }
+          }
+        },
+        "nextjs": {
+          "type": "object",
+          "properties": {
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["app-router", "server-components", "metadata-api", "streaming"]
+              }
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$"
+            }
+          }
+        },
+        "internalComponents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "path": { "type": "string" },
+              "purpose": { "type": "string" }
+            },
+            "required": ["name", "path"]
+          },
+          "description": "Internal components imported"
+        },
+        "externalPackages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "version": { "type": "string" },
+              "purpose": { "type": "string" }
+            },
+            "required": ["name"]
+          },
+          "description": "Third-party npm packages"
+        }
+      }
+    },
+    "PerformanceBudget": {
+      "type": "object",
+      "description": "Performance targets and constraints",
+      "properties": {
+        "bundleSize": {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "number",
+              "description": "Target bundle size in KB"
+            },
+            "max": {
+              "type": "number",
+              "description": "Maximum acceptable bundle size in KB"
+            }
+          },
+          "required": ["target", "max"]
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "FCP": {
+              "type": "number",
+              "description": "First Contentful Paint target (ms)"
+            },
+            "LCP": {
+              "type": "number",
+              "description": "Largest Contentful Paint target (ms)"
+            },
+            "TTI": {
+              "type": "number",
+              "description": "Time to Interactive target (ms)"
+            },
+            "CLS": {
+              "type": "number",
+              "description": "Cumulative Layout Shift target (score)"
+            }
+          }
+        },
+        "renderingStrategy": {
+          "type": "string",
+          "enum": ["SSR", "SSG", "ISR", "CSR"],
+          "description": "Next.js rendering strategy"
+        }
+      }
+    }
+  },
+  "properties": {
+    "component": {
+      "$ref": "#/definitions/CodeRefExplorerPageComponent"
+    }
+  },
+  "required": ["component"],
+  "examples": [
+    {
+      "component": {
+        "componentName": "CodeRefExplorerPage",
+        "filePath": "packages/dashboard/src/app/coderef-explorer/page.tsx",
+        "route": {
+          "path": "/coderef-explorer",
+          "dynamic": false,
+          "routeType": "app-router",
+          "segments": ["coderef-explorer"],
+          "searchParams": {
+            "type": "function",
+            "file": "src/lib",
+            "search": "useCodeRef",
+            "view": "grid",
+            "selected": "elem_123"
+          }
+        },
+        "layout": {
+          "inheritRootLayout": true,
+          "customLayout": null,
+          "layoutComponents": ["DashboardShell", "Sidebar"]
+        },
+        "metadata": {
+          "title": "CodeRef Explorer - Browse Codebase Elements",
+          "description": "Interactive codebase explorer powered by CodeRef analysis",
+          "robots": {
+            "index": true,
+            "follow": true
+          }
+        },
+        "dependencies": {
+          "react": {
+            "hooks": ["useState", "useEffect", "useCallback"],
+            "version": "18.3.0"
+          },
+          "nextjs": {
+            "features": ["app-router", "server-components", "metadata-api"],
+            "version": "14.0.0"
+          },
+          "internalComponents": [
+            {
+              "name": "ExplorerSidebar",
+              "path": "@/components/explorer/sidebar",
+              "purpose": "Navigation and filtering UI"
+            },
+            {
+              "name": "CodeElementCard",
+              "path": "@/components/explorer/card",
+              "purpose": "Display individual code elements"
+            }
+          ]
+        },
+        "performance": {
+          "bundleSize": {
+            "target": 150,
+            "max": 200
+          },
+          "metrics": {
+            "FCP": 1000,
+            "LCP": 2500,
+            "TTI": 3000,
+            "CLS": 0.1
+          },
+          "renderingStrategy": "SSR"
+        }
+      }
+    }
+  ]
+}

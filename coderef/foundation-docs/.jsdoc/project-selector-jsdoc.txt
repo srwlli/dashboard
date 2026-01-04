@@ -1,0 +1,423 @@
+# JSDoc Suggestions for Project Selector Component
+# Generated: 2026-01-02
+# Element: ProjectSelector (Cross-platform stateful container)
+# File: packages/dashboard/src/components/coderef/ProjectSelector.tsx
+
+---
+
+## Copy-Paste JSDoc Comments
+
+### Main Component
+
+```typescript
+/**
+ * Project Selector Component
+ *
+ * Cross-platform stateful container for managing project lifecycle (add/remove/select)
+ * and handling platform-specific directory permissions (Web File System Access API vs
+ * Electron IPC). Provides automatic persistence restoration and stale handle detection.
+ *
+ * @component
+ * @category Components
+ * @subcategory CodeRef
+ *
+ * @architecture
+ * - Platform Abstraction Layer (Web vs Electron)
+ * - Stateful Controller (owns project list state)
+ * - Persistence Delegation (IndexedDB for Web, fs paths for Electron)
+ *
+ * @platform
+ * - Web: File System Access API (Chrome 86+, Edge 86+)
+ * - Electron: Node.js fs module via IPC
+ *
+ * @persistence
+ * - Web: Directory handles stored in IndexedDB
+ * - Electron: Absolute paths stored in API
+ *
+ * @param {ProjectSelectorProps} props - Component props
+ * @param {string} [props.selectedProjectId] - Currently selected project ID (controlled)
+ * @param {(project: Project | null) => void} props.onProjectChange - Selection change callback
+ * @param {string} [props.initialProjectId] - Initial project for auto-restoration
+ * @param {string} [props.className] - Additional Tailwind classes
+ *
+ * @returns {JSX.Element} Project selector dropdown with add/remove buttons
+ *
+ * @example
+ * ```tsx
+ * // Basic usage (uncontrolled)
+ * <ProjectSelector
+ *   onProjectChange={(project) => {
+ *     console.log('Selected:', project?.name);
+ *   }}
+ * />
+ *
+ * // Controlled with persistence restoration
+ * const [selectedId, setSelectedId] = useState<string | undefined>();
+ *
+ * <ProjectSelector
+ *   selectedProjectId={selectedId}
+ *   initialProjectId={localStorage.getItem('lastProjectId') || undefined}
+ *   onProjectChange={(project) => {
+ *     setSelectedId(project?.id);
+ *     if (project) {
+ *       localStorage.setItem('lastProjectId', project.id);
+ *     }
+ *   }}
+ * />
+ * ```
+ *
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API} File System Access API
+ * @see {@link coderef/foundation-docs/PROJECT-SELECTOR.md} Complete resource sheet
+ *
+ * @statemanagement
+ * - Component owns project list state (loaded from API)
+ * - Parent owns selectedProjectId (controlled component pattern)
+ * - Persistence layer owns directory handles (IndexedDB) or paths (Electron API)
+ *
+ * @lifecycle
+ * 1. Mount → Load projects from API
+ * 2. Projects loaded → Initialize persistence, check stale handles
+ * 3. Auto-restore initial project (one-time)
+ * 4. User adds project → Picker → API → IndexedDB/Path → Select
+ * 5. User removes project → Confirm → API → IndexedDB cleanup → Reload
+ *
+ * @failuremodes
+ * - Permission denied (Web): Silent cancellation, no error
+ * - Stale handle (Web): Detected, BatchRestoreUI prompts re-auth
+ * - Directory deleted (Electron): Validation fails, display reason
+ * - IndexedDB quota: Logged, fallback to permission prompt on reload
+ * - API error: Display red error banner
+ *
+ * @performance
+ * - Mount time: < 500ms (excluding API)
+ * - Add project: < 1 second
+ * - Stale detection: < 2 seconds (50 projects)
+ * - Projects limit: 1000 (dropdown threshold)
+ *
+ * @accessibility
+ * - TODO: Add aria-label to dropdown
+ * - TODO: Keyboard navigation for context menu
+ * - TODO: role="alert" for error banner
+ * - TODO: aria-live for loading states
+ *
+ * @todo Parallelize stale handle checks for faster validation
+ * @todo Virtualize dropdown for 1000+ projects
+ * @todo Add keyboard shortcut (Delete key) for project removal
+ * @todo Cache validation results to reduce permission checks
+ */
+export function ProjectSelector({
+  selectedProjectId,
+  onProjectChange,
+  initialProjectId,
+  className = '',
+}: ProjectSelectorProps) {
+  // Implementation
+}
+```
+
+### Props Interface
+
+```typescript
+/**
+ * ProjectSelector component props
+ *
+ * @interface ProjectSelectorProps
+ *
+ * @property {string} [selectedProjectId] - Currently selected project ID (controlled component pattern)
+ * @property {(project: Project | null) => void} onProjectChange - Callback invoked when selection changes
+ * @property {string} [initialProjectId] - Initial project ID to auto-select on first load (for persistence restoration)
+ * @property {string} [className] - Optional custom Tailwind class name for layout customization
+ */
+interface ProjectSelectorProps {
+  selectedProjectId?: string;
+  onProjectChange: (project: Project | null) => void;
+  initialProjectId?: string;
+  className?: string;
+}
+```
+
+### Project Type
+
+```typescript
+/**
+ * Project entity schema
+ *
+ * Represents a registered project with platform-specific path format.
+ *
+ * @interface Project
+ *
+ * @property {string} id - Unique identifier (format: "project-{timestamp}")
+ * @property {string} name - Display name extracted from path (last path segment or [Directory: name])
+ * @property {string} path - Platform-specific path format:
+ *   - Web: "[Directory: folder-name]" (synthetic, real handle in IndexedDB)
+ *   - Electron: "C:/absolute/path/to/folder" (real filesystem path)
+ * @property {string} addedAt - ISO 8601 timestamp of when project was added
+ *
+ * @example
+ * ```typescript
+ * // Web project
+ * {
+ *   id: "project-1672531199000",
+ *   name: "my-app",
+ *   path: "[Directory: my-app]",
+ *   addedAt: "2023-01-01T00:00:00.000Z"
+ * }
+ *
+ * // Electron project
+ * {
+ *   id: "project-1672531199000",
+ *   name: "my-app",
+ *   path: "C:/projects/my-app",
+ *   addedAt: "2023-01-01T00:00:00.000Z"
+ * }
+ * ```
+ */
+interface Project {
+  id: string;
+  name: string;
+  path: string;
+  addedAt: string;
+}
+```
+
+### Helper Function
+
+```typescript
+/**
+ * Extract project name from platform-specific path
+ *
+ * Handles both Web synthetic paths and Electron absolute paths.
+ *
+ * @function extractProjectName
+ * @private
+ *
+ * @param {string} projectPath - Platform-specific path format
+ * @returns {string} Extracted project name
+ *
+ * @example
+ * ```typescript
+ * // Web format
+ * extractProjectName("[Directory: my-app]"); // "my-app"
+ *
+ * // Electron Windows format
+ * extractProjectName("C:/projects/my-app"); // "my-app"
+ *
+ * // Electron Unix format
+ * extractProjectName("/home/user/projects/my-app"); // "my-app"
+ * ```
+ */
+function extractProjectName(projectPath: string): string {
+  // Implementation
+}
+```
+
+### Key Methods
+
+```typescript
+/**
+ * Load projects from CodeRef API
+ *
+ * Fetches all registered projects and updates component state.
+ * Sets loading/error states appropriately.
+ *
+ * @async
+ * @function loadProjects
+ * @private
+ *
+ * @throws {Error} Network error or API failure
+ *
+ * @sideeffects
+ * - Updates `projects` state
+ * - Updates `loading` state
+ * - Updates `error` state on failure
+ */
+const loadProjects = async () => {
+  // Implementation
+}
+
+/**
+ * Handle add project flow
+ *
+ * Platform-specific workflow:
+ * 1. Show directory picker (File System API for Web, Electron dialog for desktop)
+ * 2. Generate project ID and extract name
+ * 3. Register with CodeRefApi
+ * 4. Web: Save directory handle to IndexedDB
+ * 5. Select new project immediately
+ * 6. Reload projects list
+ *
+ * @async
+ * @function handleAddProject
+ * @private
+ *
+ * @throws {Error} Picker cancelled, API failure, or IndexedDB quota exceeded
+ *
+ * @platform
+ * - Web: Uses File System Access API showDirectoryPicker()
+ * - Electron: Uses Electron dialog via IPC
+ *
+ * @sideeffects
+ * - Calls `onProjectChange` with new project
+ * - Updates `projects` state via `loadProjects()`
+ * - Saves directory handle to IndexedDB (Web only)
+ * - Updates `adding` state during flow
+ */
+const handleAddProject = async () => {
+  // Implementation
+}
+
+/**
+ * Handle project removal
+ *
+ * Prompts for confirmation, then:
+ * 1. Remove from CodeRefApi
+ * 2. Web: Delete directory handle from IndexedDB
+ * 3. Clear from staleProjects set
+ * 4. Reload projects list
+ * 5. Clear selection if removed project was selected
+ *
+ * @async
+ * @function handleRemoveProject
+ * @private
+ *
+ * @param {string} [projectId] - Project ID to remove (defaults to selectedProjectId)
+ *
+ * @throws {Error} API failure or IndexedDB error
+ *
+ * @sideeffects
+ * - Calls `onProjectChange(null)` if selected project was removed
+ * - Updates `projects` state via `loadProjects()`
+ * - Deletes IndexedDB entry (Web only)
+ * - Shows browser confirm() dialog
+ */
+const handleRemoveProject = async (projectId?: string) => {
+  // Implementation
+}
+
+/**
+ * Check all projects for stale directory handles
+ *
+ * Platform-specific validation:
+ * - Web: queryPermission() on each directory handle
+ * - Electron: fs.access() via IPC on each path
+ *
+ * @async
+ * @function checkForStaleHandles
+ * @private
+ *
+ * @throws {Error} Validation error (logged, doesn't fail component)
+ *
+ * @sideeffects
+ * - Updates `staleProjects` state with invalid project IDs
+ * - Updates `staleReasons` state with reason per project
+ *
+ * @performance
+ * - Target: < 2 seconds for 50 projects
+ * - TODO: Parallelize with Promise.allSettled()
+ */
+const checkForStaleHandles = async () => {
+  // Implementation
+}
+```
+
+---
+
+## Usage Instructions
+
+### How to Apply These JSDoc Comments
+
+1. **Open the target file:**
+   ```
+   packages/dashboard/src/components/coderef/ProjectSelector.tsx
+   ```
+
+2. **Add main component JSDoc** above the `export function ProjectSelector` declaration
+
+3. **Add interface JSDoc** above `interface ProjectSelectorProps`
+
+4. **Add type JSDoc** above `interface Project` (if defined in this file)
+
+5. **Add helper JSDoc** above `function extractProjectName`
+
+6. **Add method JSDoc** above key internal functions (loadProjects, handleAddProject, etc.)
+
+7. **Save and validate** with TypeScript/ESLint
+
+### What's Auto-Filled vs Manual
+
+**Auto-Filled (from code analysis):**
+- Component name: ProjectSelector
+- File path: packages/dashboard/src/components/coderef/ProjectSelector.tsx
+- Props interface: ProjectSelectorProps
+- Dependencies: CodeRefApi, platform, fileSystem
+- React hooks: useState, useEffect
+- Platform detection: 'web' vs 'electron'
+
+**Requires Manual Input:**
+- Specific performance metrics (mount time, add project duration)
+- Actual browser compatibility (Chrome/Edge versions tested)
+- IndexedDB schema details (object store structure)
+- Electron IPC method signatures
+- Accessibility test results
+- Real-world validation timing (50 projects benchmark)
+
+### Validation Checklist
+
+After adding JSDoc comments, verify:
+
+- [ ] JSDoc syntax is valid (no TypeScript errors)
+- [ ] All props documented with types and descriptions
+- [ ] Platform-specific behavior clearly marked (@platform)
+- [ ] Side effects documented (@sideeffects)
+- [ ] Async methods marked with @async
+- [ ] Error handling documented (@throws)
+- [ ] Performance targets specified (@performance)
+- [ ] @example code is runnable and accurate
+- [ ] Links in @see tags are valid
+- [ ] Accessibility gaps noted (@accessibility)
+
+---
+
+## Related Documentation
+
+- **Markdown docs:** `coderef/foundation-docs/PROJECT-SELECTOR.md`
+- **JSON Schema:** `coderef/schemas/project-selector-schema.json`
+- **Component dependencies:**
+  - BatchRestoreUI: `./BatchRestoreUI.tsx`
+  - ContextMenu: `./ContextMenu.tsx`
+- **Platform layer:**
+  - Platform abstraction: `@/lib/coderef/platform`
+  - Web persistence: `@/lib/coderef/persistence`
+  - IndexedDB: `@/lib/coderef/indexeddb`
+
+---
+
+## Notes for Developers
+
+**When to update this JSDoc:**
+- Platform support changes (add Safari, Firefox support)
+- New props added (e.g., `maxProjects` limit)
+- State management changes (new state variables)
+- Performance budgets change
+- API contract changes (new endpoints)
+- Permission model changes (Web File System API updates)
+
+**Tooling integration:**
+- TypeScript IntelliSense: Hover over component shows full JSDoc
+- ESLint: Can validate JSDoc completeness with `eslint-plugin-jsdoc`
+- TypeDoc: Can generate HTML docs from JSDoc comments
+- IDE: Quick reference without leaving editor
+
+**Best practices:**
+- Keep @example code synchronized with actual component usage
+- Update @todo items as features are implemented
+- Add @deprecated tags when phasing out props
+- Use @see links to cross-reference related components
+- Document platform differences explicitly with @platform tags
+
+**Common pitfalls:**
+- Forgetting to update JSDoc when props change
+- Not documenting platform-specific behavior
+- Missing @sideeffects for state-changing methods
+- Incomplete @throws documentation
+- Outdated @example code
