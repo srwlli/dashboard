@@ -8,6 +8,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { EditorMode } from './types';
 import { useNotes } from './hooks/useNotes';
 import { useAutoSave } from './hooks/useAutoSave';
@@ -247,7 +249,9 @@ export default function NotesWidget() {
 
                 {editorMode === EditorMode.Preview && (
                   <div className="prose prose-invert max-w-none">
-                    <pre className="whitespace-pre-wrap text-ind-text">{editorContent}</pre>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {editorContent || '*No content to preview*'}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>
