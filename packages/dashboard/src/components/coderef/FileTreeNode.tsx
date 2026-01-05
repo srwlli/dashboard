@@ -255,9 +255,16 @@ export function FileTreeNode({
     }
   };
 
-  const handleContextMenu = (e: React.MouseEvent) => {
+  const handleContextMenu = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Build move submenu if not already built
+    if (!moveSubmenu && projects.length > 0) {
+      const submenu = await buildMoveSubmenu();
+      setMoveSubmenu(submenu);
+    }
+
     setContextMenu({ x: e.clientX, y: e.clientY });
   };
 
@@ -551,13 +558,6 @@ export function FileTreeNode({
     return items;
   };
 
-  const handleMoveMenuOpen = async () => {
-    if (!moveSubmenu) {
-      const submenu = await buildMoveSubmenu();
-      setMoveSubmenu(submenu);
-    }
-  };
-
   const paddingLeft = `${depth * 12 + 8}px`;
 
   return (
@@ -733,7 +733,6 @@ export function FileTreeNode({
                   {
                     label: 'Move',
                     icon: FolderInput,
-                    onHover: handleMoveMenuOpen,
                     submenu: moveSubmenu || undefined,
                     iconClassName: '',
                   },
