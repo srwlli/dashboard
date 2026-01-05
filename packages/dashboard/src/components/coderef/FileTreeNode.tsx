@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { TreeNode } from '@/app/api/coderef/tree/route';
 import type { Project } from '@/lib/coderef/types';
 import {
@@ -101,6 +101,12 @@ interface FileTreeNodeProps {
    * Triggers a reload of the project tree
    */
   onTreeRefresh?: () => void;
+
+  /**
+   * Pre-built move submenu (cached at FileTree level)
+   * Passed down from parent to avoid rebuilding for every node
+   */
+  moveSubmenu?: ContextMenuItem[] | null;
 
   /**
    * Optional custom class name
@@ -231,6 +237,7 @@ export function FileTreeNode({
   availableGroups = [],
   onAssignToGroup,
   onTreeRefresh,
+  moveSubmenu,
   className = '',
 }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -238,7 +245,6 @@ export function FileTreeNode({
   const [copiedPath, setCopiedPath] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
-  const [moveSubmenu, setMoveSubmenu] = useState<ContextMenuItem[] | null>(null);
   const { addAttachments } = useWorkflow();
   const { projects } = useProjects();
 
@@ -255,16 +261,11 @@ export function FileTreeNode({
     }
   };
 
-  const handleContextMenu = async (e: React.MouseEvent) => {
+  const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Build move submenu if not already built
-    if (!moveSubmenu && projects.length > 0) {
-      const submenu = await buildMoveSubmenu();
-      setMoveSubmenu(submenu);
-    }
-
+    // Move submenu is pre-built in useEffect, show menu immediately
     setContextMenu({ x: e.clientX, y: e.clientY });
   };
 
@@ -412,6 +413,9 @@ export function FileTreeNode({
 
       console.log(`Renamed ${result.type}: ${result.oldPath} → ${result.newPath}`);
 
+      // Show success confirmation
+      alert(`Successfully renamed "${node.name}" to "${newName.trim()}"`);
+
       // Reset rename state
       setRenaming(false);
       setNewName('');
@@ -464,18 +468,26 @@ export function FileTreeNode({
 
       const crossProject = destProject && destProject.id !== sourceProjectId;
 
+      // Show confirmation for all moves
+      let confirmMessage: string;
       if (crossProject) {
-        const confirmMessage = `Move ${node.name} to a different project (${destProject.name})?\n\nThis will move the file/directory from:\n${project.name}\n\nTo:\n${destProject.name}`;
-        if (!window.confirm(confirmMessage)) {
-          setContextMenu(null);
-          return;
-        }
+        confirmMessage = `Move "${node.name}" to a different project?\n\nFrom: ${project.name}\nTo: ${destProject.name}\n\nDestination: ${destinationDir}`;
+      } else {
+        confirmMessage = `Move "${node.name}" to:\n\n${destinationDir}`;
+      }
+
+      if (!window.confirm(confirmMessage)) {
+        setContextMenu(null);
+        return;
       }
 
       // Move via API
       const result = await CodeRefApi.file.move(sourcePath, destinationDir);
 
       console.log(`Moved ${result.type}: ${result.oldPath} → ${result.newPath}`);
+
+      // Show success confirmation
+      alert(`Successfully moved "${node.name}" to:\n${destinationDir}`);
 
       // Close context menu
       setContextMenu(null);
@@ -491,71 +503,16 @@ export function FileTreeNode({
     }
   };
 
-  const buildDirectorySubmenu = (
-    treeNodes: TreeNode[],
-    projectPath: string,
-    depth: number = 0
-  ): ContextMenuItem[] => {
-    if (depth > 5) return []; // Prevent infinite recursion
-
-    return treeNodes
-      .filter(n => n.type === 'directory') // Only directories
-      .filter(n => {
-        // Don't show the source node as a destination
-        const currentNodeFullPath = project ? `${project.path}/${node.path}` : '';
-        const candidateFullPath = `${projectPath}/${n.path}`;
-        return candidateFullPath !== currentNodeFullPath;
-      })
-      .map(dir => {
-        const fullDirPath = `${projectPath}/${dir.path}`;
-
-        return {
-          label: dir.name,
-          icon: Folder,
-          onClick: () => handleMove(fullDirPath),
-          submenu: dir.children ? buildDirectorySubmenu(dir.children, projectPath, depth + 1) : undefined,
-        };
-      });
-  };
-
-  const buildMoveSubmenu = async (): Promise<ContextMenuItem[]> => {
-    const items: ContextMenuItem[] = [];
-
-    for (const proj of projects) {
-      try {
-        // Load project tree
-        const result = await loadProjectTree(proj);
-        const tree = result.data;
-
-        // Clean project path
-        let projPath = proj.path;
-        if (projPath.startsWith('[Directory: ') && projPath.endsWith(']')) {
-          projPath = projPath.slice(12, -1);
-        }
-
-        // Build submenu for this project
-        const projectSubmenu: ContextMenuItem[] = [
-          // Option to move to project root
-          {
-            label: '(Root)',
-            icon: FolderOpen,
-            onClick: () => handleMove(projPath),
-          },
-          // Directory tree
-          ...buildDirectorySubmenu(tree, projPath),
-        ];
-
-        items.push({
-          label: proj.name,
-          icon: FolderOpen,
-          submenu: projectSubmenu,
-        });
-      } catch (error) {
-        console.error(`Failed to load tree for project ${proj.name}:`, error);
-      }
-    }
-
-    return items;
+  // Recursively inject onClick handlers into move submenu
+  const injectMoveHandlers = (items: any[]): ContextMenuItem[] => {
+    return items.map((item: any) => {
+      const newItem: ContextMenuItem = {
+        ...item,
+        onClick: item.destination ? () => handleMove(item.destination) : undefined,
+        submenu: item.submenu ? injectMoveHandlers(item.submenu) : undefined,
+      };
+      return newItem;
+    });
   };
 
   const paddingLeft = `${depth * 12 + 8}px`;
@@ -644,6 +601,7 @@ export function FileTreeNode({
               availableGroups={availableGroups}
               onAssignToGroup={onAssignToGroup}
               onTreeRefresh={onTreeRefresh}
+              moveSubmenu={moveSubmenu}
             />
           ))}
         </div>
@@ -728,12 +686,12 @@ export function FileTreeNode({
                 ]
               : []),
             // Move - works for both files and directories
-            ...(project && projects.length > 0
+            ...(project && projects.length > 0 && moveSubmenu
               ? [
                   {
                     label: 'Move',
                     icon: FolderInput,
-                    submenu: moveSubmenu || undefined,
+                    submenu: injectMoveHandlers(moveSubmenu),
                     iconClassName: '',
                   },
                 ]

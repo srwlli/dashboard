@@ -118,6 +118,90 @@ interface ContextMenuProps {
 }
 
 /**
+ * SmartSubmenu Component
+ *
+ * @description Submenu with intelligent viewport boundary detection.
+ * Automatically positions itself to avoid overflow:
+ * - To the left if no room on the right
+ * - Upward if no room at the bottom
+ */
+interface SmartSubmenuProps {
+  items: ContextMenuItem[];
+  onItemClick: (onClick?: () => void) => void;
+}
+
+function SmartSubmenu({ items, onItemClick }: SmartSubmenuProps) {
+  const submenuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ horizontal: 'right', vertical: 'top' });
+  const [hoveredSubIndex, setHoveredSubIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (submenuRef.current) {
+      const rect = submenuRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Check horizontal overflow
+      const horizontal = rect.right > viewportWidth ? 'left' : 'right';
+
+      // Check vertical overflow
+      const vertical = rect.bottom > viewportHeight ? 'bottom' : 'top';
+
+      setPosition({ horizontal, vertical });
+    }
+  }, []);
+
+  const positionClasses =
+    position.horizontal === 'right' ? 'left-full ml-1' : 'right-full mr-1';
+  const verticalClass =
+    position.vertical === 'top' ? 'top-0' : 'bottom-0';
+
+  return (
+    <div
+      ref={submenuRef}
+      className={`absolute ${positionClasses} ${verticalClass} bg-ind-panel border border-ind-border rounded shadow-lg py-1 min-w-[180px] max-h-[400px] overflow-y-auto`}
+    >
+      {items.map((subItem, subIndex) => {
+        const SubIcon = subItem.icon;
+        const hasNestedSubmenu = subItem.submenu && subItem.submenu.length > 0;
+
+        return (
+          <div
+            key={subIndex}
+            className="relative"
+            onMouseEnter={() => setHoveredSubIndex(subIndex)}
+            onMouseLeave={() => setHoveredSubIndex(null)}
+          >
+            <button
+              onClick={() => !hasNestedSubmenu && onItemClick(subItem.onClick)}
+              className={`w-full px-3 py-2 text-left text-sm hover:bg-ind-bg flex items-center gap-2 justify-between ${
+                subItem.textClassName || 'text-ind-text'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <SubIcon className={`w-4 h-4 ${subItem.iconClassName || ''}`} />
+                <span>{subItem.label}</span>
+              </div>
+              {hasNestedSubmenu && (
+                <ChevronRight className="w-3.5 h-3.5 text-ind-text-muted" />
+              )}
+            </button>
+
+            {/* Nested submenu (recursive) - only show on hover */}
+            {hasNestedSubmenu && hoveredSubIndex === subIndex && (
+              <SmartSubmenu
+                items={subItem.submenu!}
+                onItemClick={onItemClick}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
  * ContextMenu Component
  *
  * @description Renders a fixed-position context menu at specified coordinates with support
@@ -163,14 +247,13 @@ interface ContextMenuProps {
  * **Event Handling**: Registers global mousedown and keydown listeners to detect outside clicks
  * and Escape key presses. Listeners are cleaned up on unmount.
  *
- * **Submenu Behavior**: Submenus expand on hover (tracked via hoveredIndex state) and are
- * positioned absolutely to the right of the parent item with 1px margin.
+ * **Submenu Behavior**: Submenus expand on hover with smart positioning that detects viewport
+ * boundaries and adjusts direction (left/right, up/down) to stay visible.
  *
  * **Click Behavior**: Clicking a menu item triggers onClick and immediately closes the menu.
  * Items with submenus do not trigger onClick when clicked (submenu takes precedence).
  *
- * **Positioning**: Uses fixed positioning with inline styles (`left`, `top`) to position at
- * exact mouse coordinates. No viewport boundary detection - may overflow screen edges.
+ * **Positioning**: Uses fixed positioning with viewport boundary detection to prevent overflow.
  *
  * @see {@link FileTreeNode} for usage example in file tree context menus
  * @see {@link FavoritesList} for usage in favorites group management
@@ -183,6 +266,31 @@ export function ContextMenu({
 }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ x, y });
+
+  // Adjust menu position to stay within viewport bounds
+  useEffect(() => {
+    if (menuRef.current) {
+      const menuRect = menuRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let adjustedX = x;
+      let adjustedY = y;
+
+      // Adjust horizontal position if menu overflows right edge
+      if (x + menuRect.width > viewportWidth) {
+        adjustedX = viewportWidth - menuRect.width - 10; // 10px margin
+      }
+
+      // Adjust vertical position if menu overflows bottom edge
+      if (y + menuRect.height > viewportHeight) {
+        adjustedY = viewportHeight - menuRect.height - 10; // 10px margin
+      }
+
+      setMenuPosition({ x: adjustedX, y: adjustedY });
+    }
+  }, [x, y]);
 
   // Close menu on outside click or escape key
   useEffect(() => {
@@ -218,7 +326,7 @@ export function ContextMenu({
     <div
       ref={menuRef}
       className="fixed z-50 bg-ind-panel border border-ind-border rounded shadow-lg py-1 min-w-[180px]"
-      style={{ left: `${x}px`, top: `${y}px` }}
+      style={{ left: `${menuPosition.x}px`, top: `${menuPosition.y}px` }}
     >
       {items.map((item, index) => {
         const Icon = item.icon;
@@ -246,27 +354,12 @@ export function ContextMenu({
               )}
             </button>
 
-            {/* Submenu */}
+            {/* Submenu with smart positioning */}
             {hasSubmenu && hoveredIndex === index && (
-              <div
-                className="absolute left-full top-0 ml-1 bg-ind-panel border border-ind-border rounded shadow-lg py-1 min-w-[180px]"
-              >
-                {item.submenu!.map((subItem, subIndex) => {
-                  const SubIcon = subItem.icon;
-                  return (
-                    <button
-                      key={subIndex}
-                      onClick={() => handleItemClick(subItem.onClick)}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-ind-bg flex items-center gap-2 ${
-                        subItem.textClassName || 'text-ind-text'
-                      }`}
-                    >
-                      <SubIcon className={`w-4 h-4 ${subItem.iconClassName || ''}`} />
-                      <span>{subItem.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <SmartSubmenu
+                items={item.submenu!}
+                onItemClick={handleItemClick}
+              />
             )}
           </div>
         );

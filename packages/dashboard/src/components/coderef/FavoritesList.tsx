@@ -1,20 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { TreeNode, Project } from '@/lib/coderef/types';
 import type { FavoritesData } from '@/lib/coderef/favorites-types';
 import { ContextMenu } from './ContextMenu';
+import type { ContextMenuItem } from './ContextMenu';
 import { CodeRefApi } from '@/lib/coderef/api-access';
+import { useProjects } from '@/contexts/ProjectsContext';
+import { loadProjectTree } from '@/lib/coderef/hybrid-router';
 import {
   ChevronRight,
   ChevronDown,
   Star,
   Plus,
   Edit2,
+  Edit3,
   Trash2,
   Folder,
   FolderOpen,
   FolderTree,
+  FolderInput,
   Check,
 } from 'lucide-react';
 
@@ -30,6 +35,7 @@ interface FavoritesListProps {
   onAssignToGroup?: (path: string, groupName?: string) => void;
   availableGroups?: { id: string; name: string }[];
   onTreeRefresh?: () => void;
+  moveSubmenu?: any[] | null; // Pre-built move submenu from parent
 }
 
 export function FavoritesList({
@@ -44,6 +50,7 @@ export function FavoritesList({
   onAssignToGroup,
   availableGroups = [],
   onTreeRefresh,
+  moveSubmenu,
 }: FavoritesListProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [creatingGroup, setCreatingGroup] = useState(false);
@@ -52,6 +59,7 @@ export function FavoritesList({
   const [editingGroupName, setEditingGroupName] = useState('');
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; path: string } | null>(null);
   const [copiedPath, setCopiedPath] = useState(false);
+  const { projects } = useProjects();
 
   // Group favorites by group name
   const ungroupedFavorites = favoritesData.favorites.filter(f => !f.group);
@@ -184,6 +192,121 @@ export function FavoritesList({
       alert(`Failed to delete ${contextMenu.path}: ${(error as Error).message}`);
       setContextMenu(null);
     }
+  };
+
+  const handleRename = async (newName: string) => {
+    if (!contextMenu || !project || !newName.trim()) return;
+
+    const fileName = contextMenu.path.split('/').pop() || contextMenu.path;
+    if (newName.trim() === fileName) {
+      setContextMenu(null);
+      return;
+    }
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1);
+      }
+
+      // Construct full absolute path
+      const fullPath = `${projectPath}/${contextMenu.path}`;
+
+      // Rename via API
+      const result = await CodeRefApi.file.rename(fullPath, newName.trim());
+
+      console.log(`Renamed ${result.type}: ${result.oldPath} → ${result.newPath}`);
+
+      // Show success confirmation
+      alert(`Successfully renamed "${fileName}" to "${newName.trim()}"`);
+
+      // Close context menu
+      setContextMenu(null);
+
+      // Refresh tree to reflect rename
+      if (onTreeRefresh) {
+        onTreeRefresh();
+      }
+    } catch (error) {
+      console.error('Failed to rename:', error);
+      alert(`Failed to rename ${fileName}: ${(error as Error).message}`);
+      setContextMenu(null);
+    }
+  };
+
+  const handleMove = async (destinationDir: string) => {
+    if (!contextMenu || !project) return;
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1);
+      }
+
+      // Construct full absolute source path
+      const sourcePath = `${projectPath}/${contextMenu.path}`;
+
+      // Check if moving to different project
+      const sourceProjectId = project.id;
+      const destProject = projects.find(p => {
+        let pPath = p.path;
+        if (pPath.startsWith('[Directory: ') && pPath.endsWith(']')) {
+          pPath = pPath.slice(12, -1);
+        }
+        return destinationDir.startsWith(pPath);
+      });
+
+      const crossProject = destProject && destProject.id !== sourceProjectId;
+      const fileName = contextMenu.path.split('/').pop() || contextMenu.path;
+
+      // Show confirmation for all moves
+      let confirmMessage: string;
+      if (crossProject) {
+        confirmMessage = `Move "${fileName}" to a different project?\n\nFrom: ${project.name}\nTo: ${destProject.name}\n\nDestination: ${destinationDir}`;
+      } else {
+        confirmMessage = `Move "${fileName}" to:\n\n${destinationDir}`;
+      }
+
+      if (!window.confirm(confirmMessage)) {
+        setContextMenu(null);
+        return;
+      }
+
+      // Move via API
+      const result = await CodeRefApi.file.move(sourcePath, destinationDir);
+
+      console.log(`Moved ${result.type}: ${result.oldPath} → ${result.newPath}`);
+
+      // Show success confirmation
+      alert(`Successfully moved "${fileName}" to:\n${destinationDir}`);
+
+      // Close context menu
+      setContextMenu(null);
+
+      // Refresh tree to reflect move
+      if (onTreeRefresh) {
+        onTreeRefresh();
+      }
+    } catch (error) {
+      console.error('Failed to move:', error);
+      const fileName = contextMenu.path.split('/').pop() || contextMenu.path;
+      alert(`Failed to move ${fileName}: ${(error as Error).message}`);
+      setContextMenu(null);
+    }
+  };
+
+  // Recursively inject onClick handlers into move submenu
+  const injectMoveHandlers = (items: any[]): ContextMenuItem[] => {
+    return items.map((item: any) => {
+      const newItem: ContextMenuItem = {
+        ...item,
+        onClick: item.destination ? () => handleMove(item.destination) : undefined,
+        submenu: item.submenu ? injectMoveHandlers(item.submenu) : undefined,
+      };
+      return newItem;
+    });
   };
 
   if (favoritesData.favorites.length === 0) {
@@ -399,6 +522,36 @@ export function FavoritesList({
                 })),
               ],
             },
+            // Rename - works for favorited files
+            ...(project
+              ? [
+                  {
+                    label: 'Rename',
+                    icon: Edit3,
+                    onClick: () => {
+                      const fileName = contextMenu.path.split('/').pop() || contextMenu.path;
+                      const newName = window.prompt('Enter new name:', fileName);
+                      if (newName) {
+                        handleRename(newName);
+                      } else {
+                        setContextMenu(null);
+                      }
+                    },
+                    iconClassName: '',
+                  },
+                ]
+              : []),
+            // Move - works for favorited files
+            ...(project && moveSubmenu
+              ? [
+                  {
+                    label: 'Move',
+                    icon: FolderInput,
+                    submenu: injectMoveHandlers(moveSubmenu),
+                    iconClassName: '',
+                  },
+                ]
+              : []),
             // Copy Path - works for both files and directories
             ...(project
               ? [

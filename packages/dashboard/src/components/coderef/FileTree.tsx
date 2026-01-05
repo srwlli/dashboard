@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import type { Project, TreeNode, AccessMode } from '@/lib/coderef/types';
 import type { FavoritesData } from '@/lib/coderef/favorites-types';
+import type { ContextMenuItem } from './ContextMenu';
 import { loadProjectTree } from '@/lib/coderef/hybrid-router';
+import { useProjects } from '@/contexts/ProjectsContext';
 import { FileTreeNode } from './FileTreeNode';
 import { FavoritesList } from './FavoritesList';
-import { Loader2, AlertCircle, FolderOpen, Zap, Cloud } from 'lucide-react';
+import { Loader2, AlertCircle, FolderOpen, Folder, Zap, Cloud } from 'lucide-react';
 
 /**
  * FileTree Component Props
@@ -158,6 +160,20 @@ export function FileTree({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode | null>(null);
+  const [moveSubmenu, setMoveSubmenu] = useState<ContextMenuItem[] | null>(null);
+  const { projects } = useProjects();
+
+  // Pre-build move submenu when projects change (performance optimization)
+  // Builds ONCE for entire tree instead of once per node
+  useEffect(() => {
+    const preloadMoveSubmenu = async () => {
+      if (projects.length > 0) {
+        const submenu = await buildMoveSubmenu();
+        setMoveSubmenu(submenu);
+      }
+    };
+    preloadMoveSubmenu();
+  }, [projects]);
 
   // Use custom tree if provided (CodeRef mode)
   useEffect(() => {
@@ -240,6 +256,70 @@ export function FileTree({
     return filtered;
   };
 
+  // Build directory submenu for move operation
+  const buildDirectorySubmenu = (
+    treeNodes: TreeNode[],
+    projectPath: string,
+    depth: number = 0
+  ): any[] => {
+    if (depth > 5) return []; // Prevent infinite recursion
+
+    return treeNodes
+      .filter(n => n.type === 'directory') // Only directories
+      .map(dir => {
+        const fullDirPath = `${projectPath}/${dir.path}`;
+
+        return {
+          label: dir.name,
+          icon: Folder,
+          destination: fullDirPath, // Store path for FileTreeNode to use
+          submenu: dir.children ? buildDirectorySubmenu(dir.children, projectPath, depth + 1) : undefined,
+        };
+      });
+  };
+
+  // Build move submenu with all projects and their directories
+  const buildMoveSubmenu = async (): Promise<any[]> => {
+    const items: any[] = [];
+
+    for (const proj of projects) {
+      try {
+        // Load project tree
+        const result = await loadProjectTree(proj);
+        const tree = result.data;
+
+        // Clean project path
+        let projPath = proj.path;
+        if (projPath.startsWith('[Directory: ') && projPath.endsWith(']')) {
+          projPath = projPath.slice(12, -1);
+        }
+
+        // Build submenu for this project
+        const projectSubmenu: any[] = [
+          // Option to move to project root
+          {
+            label: '(Root)',
+            icon: FolderOpen,
+            destination: projPath, // Store path for FileTreeNode to use
+          },
+          // Directory tree
+          ...buildDirectorySubmenu(tree, projPath),
+        ];
+
+        items.push({
+          label: proj.name,
+          icon: FolderOpen,
+          destination: projPath, // Make project name clickable to root
+          submenu: projectSubmenu,
+        });
+      } catch (error) {
+        console.error(`Failed to load tree for project ${proj.name}:`, error);
+      }
+    }
+
+    return items;
+  };
+
   // Apply filters
   let displayTree = tree;
 
@@ -310,6 +390,7 @@ export function FileTree({
           onAssignToGroup={onAssignToGroup}
           availableGroups={favoritesData.groups}
           onTreeRefresh={handleTreeRefresh}
+          moveSubmenu={moveSubmenu}
         />
       </div>
     );
@@ -362,6 +443,7 @@ export function FileTree({
             availableGroups={favoritesData?.groups || []}
             onAssignToGroup={onAssignToGroup}
             onTreeRefresh={handleTreeRefresh}
+            moveSubmenu={moveSubmenu}
           />
         ))}
       </div>
