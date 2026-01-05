@@ -195,6 +195,13 @@ export function FileTree({
     }
   };
 
+  // Refresh callback for tree updates (e.g., after file deletion)
+  const handleTreeRefresh = () => {
+    if (project && !customTree) {
+      loadTree(project);
+    }
+  };
+
   // Filter tree to show only a specific subfolder
   const filterTreeToFolder = (nodes: TreeNode[], folderName: string): TreeNode[] => {
     for (const node of nodes) {
@@ -302,6 +309,7 @@ export function FileTree({
           onToggleFavorite={onToggleFavorite}
           onAssignToGroup={onAssignToGroup}
           availableGroups={favoritesData.groups}
+          onTreeRefresh={handleTreeRefresh}
         />
       </div>
     );
@@ -353,6 +361,7 @@ export function FileTree({
             isFavorite={isFavorite}
             availableGroups={favoritesData?.groups || []}
             onAssignToGroup={onAssignToGroup}
+            onTreeRefresh={handleTreeRefresh}
           />
         ))}
       </div>

@@ -16,10 +16,12 @@ import {
   Plus,
   FolderTree,
   Check,
+  Trash2,
 } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { loadFileContent } from '@/lib/coderef/hybrid-router';
+import { CodeRefApi } from '@/lib/coderef/api-access';
 import type { Attachment } from '@/components/PromptingWorkflow/types';
 
 /**
@@ -89,6 +91,12 @@ interface FileTreeNodeProps {
    * @param groupName - Group name (undefined for ungrouped)
    */
   onAssignToGroup?: (path: string, groupName?: string) => void;
+
+  /**
+   * Callback to refresh the tree after modifications (e.g., deletion)
+   * Triggers a reload of the project tree
+   */
+  onTreeRefresh?: () => void;
 
   /**
    * Optional custom class name
@@ -218,6 +226,7 @@ export function FileTreeNode({
   isFavorite,
   availableGroups = [],
   onAssignToGroup,
+  onTreeRefresh,
   className = '',
 }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -314,6 +323,51 @@ export function FileTreeNode({
     }
   };
 
+  const handleDelete = async () => {
+    if (!project) return;
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1); // Remove '[Directory: ' and ']'
+      }
+
+      // Construct full absolute path
+      const fullPath = `${projectPath}/${node.path}`;
+
+      // Confirmation dialog
+      const itemType = node.type === 'directory' ? 'directory' : 'file';
+      const confirmMessage = `Are you sure you want to delete this ${itemType}?\n\n${node.name}\n\n${
+        node.type === 'directory' ? 'This will delete all contents recursively.' : 'This action cannot be undone.'
+      }`;
+
+      if (!window.confirm(confirmMessage)) {
+        setContextMenu(null);
+        return;
+      }
+
+      // Delete via API
+      const result = await CodeRefApi.file.delete(fullPath, {
+        recursive: node.type === 'directory',
+      });
+
+      console.log(`Deleted ${result.type}: ${result.deleted}`);
+
+      // Close context menu
+      setContextMenu(null);
+
+      // Refresh tree to reflect deletion
+      if (onTreeRefresh) {
+        onTreeRefresh();
+      }
+    } catch (error) {
+      console.error('Failed to delete:', error);
+      alert(`Failed to delete ${node.name}: ${(error as Error).message}`);
+      setContextMenu(null);
+    }
+  };
+
   const paddingLeft = `${depth * 12 + 8}px`;
 
   return (
@@ -386,6 +440,7 @@ export function FileTreeNode({
               isFavorite={isFavorite}
               availableGroups={availableGroups}
               onAssignToGroup={onAssignToGroup}
+              onTreeRefresh={onTreeRefresh}
             />
           ))}
         </div>
@@ -451,6 +506,17 @@ export function FileTreeNode({
                     icon: copiedPath ? Check : FolderTree,
                     onClick: handleCopyPath,
                     iconClassName: copiedPath ? 'text-green-500' : '',
+                  },
+                ]
+              : []),
+            // Delete - works for both files and directories
+            ...(project
+              ? [
+                  {
+                    label: 'Delete',
+                    icon: Trash2,
+                    onClick: handleDelete,
+                    iconClassName: 'text-red-500',
                   },
                 ]
               : []),

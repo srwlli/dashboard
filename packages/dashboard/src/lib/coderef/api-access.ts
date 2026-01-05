@@ -145,6 +145,26 @@ export const FileApi = {
     }
     return fileData.content;
   },
+
+  /**
+   * Delete a file or directory
+   *
+   * @param filePath - Absolute path to file or directory
+   * @param options - Delete options (recursive for directories)
+   * @returns Deletion result with path and type
+   */
+  async delete(
+    filePath: string,
+    options?: { recursive?: boolean }
+  ): Promise<{ success: boolean; deleted: string; type: 'file' | 'directory' }> {
+    return apiFetch('/api/coderef/file', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        filePath,
+        recursive: options?.recursive ?? false,
+      }),
+    });
+  },
 };
 
 /**

@@ -397,78 +397,122 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
  * Deletes a file in coderef/notes/ directory
  * Body: { projectRoot: string, filePath: string }
  */
+/**
+ * Critical paths that should never be deleted
+ */
+const PROTECTED_PATHS = new Set([
+  '.git',
+  'node_modules',
+  'package.json',
+  'package-lock.json',
+  '.env',
+  '.env.local',
+  '.env.production',
+]);
+
+/**
+ * Check if a path is protected from deletion
+ */
+function isProtectedPath(filePath: string): boolean {
+  const basename = path.basename(filePath);
+  return PROTECTED_PATHS.has(basename);
+}
+
+/**
+ * DELETE /api/coderef/file
+ * Deletes a file or directory
+ * Body: { filePath: string, recursive?: boolean }
+ */
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const { projectRoot, filePath } = body;
+    const { filePath, recursive = false } = body;
 
     // Validate required fields
-    if (!projectRoot || !filePath) {
+    if (!filePath) {
       const errorResponse = createErrorResponse(
         {
           code: 'VALIDATION_ERROR',
-          message: 'Missing required fields: projectRoot, filePath',
+          message: 'Missing required field: filePath',
         },
         { received: Object.keys(body) }
       );
       return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
     }
 
-    // Validate delete path (reuse write validation)
-    const validation = validateWritePath(projectRoot, filePath);
-    if (!validation.valid) {
+    // Validate path is absolute
+    if (!path.isAbsolute(filePath)) {
       const errorResponse = createErrorResponse(
         {
           code: 'INVALID_PATH',
-          message: validation.error!,
+          message: 'Path must be absolute',
         },
-        { projectRoot, filePath }
+        { filePath }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Check if path is protected
+    if (isProtectedPath(filePath)) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'FORBIDDEN',
+          message: 'Cannot delete protected path',
+        },
+        { path: filePath, protected: true }
       );
       return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
     }
 
-    const resolvedPath = validation.resolvedPath!;
-
-    // Check if file exists
+    // Check if file/directory exists
+    let stats;
     try {
-      const stats = await fs.stat(resolvedPath);
-      if (!stats.isFile()) {
-        const errorResponse = createErrorResponse(
-          {
-            code: 'INVALID_PATH',
-            message: 'Path is not a file',
-          },
-          { path: resolvedPath }
-        );
-        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
-      }
+      stats = await fs.stat(filePath);
     } catch (error: any) {
       if (error.code === 'ENOENT') {
         const errorResponse = createErrorResponse(
           {
             code: 'FILE_NOT_FOUND',
-            message: 'File not found',
+            message: 'File or directory not found',
           },
-          { path: resolvedPath }
+          { path: filePath }
         );
         return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
       }
       if (error.code === 'EACCES' || error.code === 'EPERM') {
         const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
-          path: resolvedPath,
+          path: filePath,
         });
         return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
       }
       throw error;
     }
 
-    // Delete file
+    const isDirectory = stats.isDirectory();
+
+    // If directory and not recursive, reject
+    if (isDirectory && !recursive) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Cannot delete directory without recursive flag',
+        },
+        { path: filePath, isDirectory: true }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Delete file or directory
     try {
-      await fs.unlink(resolvedPath);
+      if (isDirectory) {
+        await fs.rm(filePath, { recursive: true, force: true });
+      } else {
+        await fs.unlink(filePath);
+      }
     } catch (error: any) {
       if (error.code === 'EACCES' || error.code === 'EPERM') {
         const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
-          path: resolvedPath,
+          path: filePath,
           operation: 'delete',
         });
         return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
@@ -478,7 +522,8 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
 
     const response = createSuccessResponse({
       success: true,
-      deleted: resolvedPath,
+      deleted: filePath,
+      type: isDirectory ? 'directory' : 'file',
     });
 
     return NextResponse.json(response, { status: HttpStatus.OK });

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { TreeNode, Project } from '@/lib/coderef/types';
 import type { FavoritesData } from '@/lib/coderef/favorites-types';
 import { ContextMenu } from './ContextMenu';
+import { CodeRefApi } from '@/lib/coderef/api-access';
 import {
   ChevronRight,
   ChevronDown,
@@ -28,6 +29,7 @@ interface FavoritesListProps {
   onToggleFavorite?: (path: string) => void;
   onAssignToGroup?: (path: string, groupName?: string) => void;
   availableGroups?: { id: string; name: string }[];
+  onTreeRefresh?: () => void;
 }
 
 export function FavoritesList({
@@ -41,6 +43,7 @@ export function FavoritesList({
   onToggleFavorite,
   onAssignToGroup,
   availableGroups = [],
+  onTreeRefresh,
 }: FavoritesListProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [creatingGroup, setCreatingGroup] = useState(false);
@@ -137,6 +140,49 @@ export function FavoritesList({
     } catch (error) {
       console.error('Failed to copy path:', error);
       alert('Failed to copy path to clipboard');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!contextMenu || !project) return;
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1); // Remove '[Directory: ' and ']'
+      }
+
+      // Construct full absolute path
+      const fullPath = `${projectPath}/${contextMenu.path}`;
+      const fileName = contextMenu.path.split('/').pop() || contextMenu.path;
+
+      // Confirmation dialog (favorites are always files, not directories)
+      const confirmMessage = `Are you sure you want to delete this file?\n\n${fileName}\n\nThis action cannot be undone.`;
+
+      if (!window.confirm(confirmMessage)) {
+        setContextMenu(null);
+        return;
+      }
+
+      // Delete via API
+      const result = await CodeRefApi.file.delete(fullPath, {
+        recursive: false, // Favorites are always files
+      });
+
+      console.log(`Deleted ${result.type}: ${result.deleted}`);
+
+      // Close context menu
+      setContextMenu(null);
+
+      // Refresh tree to reflect deletion
+      if (onTreeRefresh) {
+        onTreeRefresh();
+      }
+    } catch (error) {
+      console.error('Failed to delete:', error);
+      alert(`Failed to delete ${contextMenu.path}: ${(error as Error).message}`);
+      setContextMenu(null);
     }
   };
 
@@ -361,6 +407,17 @@ export function FavoritesList({
                     icon: copiedPath ? Check : FolderTree,
                     onClick: handleCopyPath,
                     iconClassName: copiedPath ? 'text-green-500' : '',
+                  },
+                ]
+              : []),
+            // Delete - works for favorited files
+            ...(project
+              ? [
+                  {
+                    label: 'Delete',
+                    icon: Trash2,
+                    onClick: handleDelete,
+                    iconClassName: 'text-red-500',
                   },
                 ]
               : []),
