@@ -65,9 +65,10 @@ export interface ScanProgress {
 }
 
 /**
- * Project selection for scan/populate operations
+ * Project selection for directories/scan/populate operations
  */
 export interface ProjectSelection {
+  directories: boolean;
   scan: boolean;
   populate: boolean;
 }

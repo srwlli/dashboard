@@ -15,9 +15,10 @@ import type { ScanProgress, ScanStatus } from '../types';
 import { scanCurrentElements, type ElementData } from '@coderef/core';
 
 /**
- * Project selection for scan/populate operations
+ * Project selection for directories/scan/populate operations
  */
 interface ProjectSelection {
+  directories: boolean;
   scan: boolean;
   populate: boolean;
 }
@@ -104,6 +105,25 @@ export class ScanExecutor extends EventEmitter {
         const projectId = this.projectIds.get(projectPath);
         const selection = projectId && this.selections ? this.selections[projectId] : undefined;
 
+        // Phase 0: Create Directories (if selected)
+        const shouldCreateDirs = selection && selection.directories;
+        if (shouldCreateDirs) {
+          try {
+            await this.runDirectoriesForProject(projectPath);
+          } catch (dirError: any) {
+            // Log error but continue to next phases (don't fail)
+            this.emitOutput(`[ERROR] Directory creation failed for ${projectPath}: ${dirError.message}\n`);
+          }
+        }
+
+        // Check cancellation after Phase 0
+        if (this.status !== 'running') {
+          this.completedAt = new Date().toISOString();
+          this.emitProgress();
+          this.emit('complete', this.getScanStatus());
+          return;
+        }
+
         // Phase 1: Scan (if selected or no selections provided - backward compatibility)
         const shouldScan = !selection || selection.scan;
         if (shouldScan) {
@@ -115,6 +135,14 @@ export class ScanExecutor extends EventEmitter {
             this.emitOutput(`[Scanner] Skipping populate phase for ${projectPath}\n`);
             continue; // Move to next project
           }
+        }
+
+        // Check cancellation after Phase 1
+        if (this.status !== 'running') {
+          this.completedAt = new Date().toISOString();
+          this.emitProgress();
+          this.emit('complete', this.getScanStatus());
+          return;
         }
 
         // Phase 2: Populate (if selected AND scan succeeded)
@@ -141,6 +169,53 @@ export class ScanExecutor extends EventEmitter {
       this.emitProgress();
       this.emit('error', error.message);
     }
+  }
+
+  /**
+   * Run setup_coderef_dirs.py for a single project
+   * Creates .coderef/ and coderef/ directory structure only
+   */
+  private async runDirectoriesForProject(projectPath: string): Promise<void> {
+    const dirsScriptPath = process.env.DIRS_SCRIPT_PATH ||
+      path.join(process.cwd(), 'packages/coderef-core/scripts/setup-coderef-dir/setup_coderef_dirs.py');
+
+    const pythonCmd = await this.findPythonCommand();
+
+    this.emitOutput(`\n[Directories] Creating structure for: ${projectPath}`);
+    this.emitOutput(`[Directories] Using Python: ${pythonCmd}`);
+    this.emitOutput(`[Directories] Using script: ${dirsScriptPath}\n`);
+
+    return new Promise((resolve, reject) => {
+      const childProcess = spawn(pythonCmd, [dirsScriptPath, projectPath], {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        cwd: path.dirname(dirsScriptPath),
+      });
+
+      childProcess.stdout?.on('data', (data) => {
+        this.emitOutput(data.toString());
+      });
+
+      childProcess.stderr?.on('data', (data) => {
+        this.emitOutput(`[ERROR] ${data.toString()}`);
+      });
+
+      childProcess.on('close', (code) => {
+        if (code === 0) {
+          this.emitOutput(`[Directories] Completed: ${projectPath}\n`);
+          resolve();
+        } else if (code === null) {
+          this.emitOutput(`[Directories] Cancelled: ${projectPath}\n`);
+          resolve();
+        } else {
+          reject(new Error(`Directory creation failed with exit code ${code}`));
+        }
+      });
+
+      childProcess.on('error', (error) => {
+        this.emitOutput(`[ERROR] Failed to start Python: ${error.message}\n`);
+        reject(error);
+      });
+    });
   }
 
   /**
@@ -232,7 +307,7 @@ export class ScanExecutor extends EventEmitter {
   private async runPopulateForProject(projectPath: string): Promise<void> {
     // Locate generate-coderef-directories.py script (now in dashboard monorepo)
     const populateScriptPath = process.env.POPULATE_SCRIPT_PATH ||
-      path.resolve(__dirname, '../../../../../coderef-core/scripts/generate-coderef-directories.py');
+      path.join(process.cwd(), 'packages/coderef-core/scripts/generate-coderef-directories.py');
 
     // Find Python command with full path
     const pythonCmd = await this.findPythonCommand();

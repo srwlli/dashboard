@@ -13,6 +13,7 @@ const breadcrumbMap: Record<string, { label: string; href: string }> = {
   '/assistant': { label: 'Assistant', href: '/assistant' },
   '/explorer': { label: 'Explorer', href: '/explorer' },
   '/notes': { label: 'Notes', href: '/notes' },
+  '/metrics': { label: 'Metrics', href: '/metrics' },
   '/scanner': { label: 'Scanner', href: '/scanner' },
   '/resources': { label: 'Resources', href: '/resources' },
 };

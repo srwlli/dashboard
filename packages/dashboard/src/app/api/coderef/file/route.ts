@@ -534,3 +534,288 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(errorResponse, { status: HttpStatus.INTERNAL_ERROR });
   }
 }
+
+/**
+ * Validate file name for rename operations
+ */
+function isValidFileName(name: string): boolean {
+  // No slashes, no directory traversal
+  if (name.includes('/') || name.includes('\\') || name.includes('..')) {
+    return false;
+  }
+  // No empty names
+  if (name.trim() === '') {
+    return false;
+  }
+  // No reserved names on Windows
+  const reserved = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'LPT1', 'LPT2', 'LPT3'];
+  if (reserved.includes(name.toUpperCase())) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * PATCH /api/coderef/file
+ * Rename or move a file/directory
+ * Body: { sourcePath: string, operation: 'rename' | 'move', newName?: string, destinationDir?: string }
+ */
+export async function PATCH(request: NextRequest): Promise<NextResponse> {
+  try {
+    const body = await request.json();
+    const { sourcePath, operation, newName, destinationDir } = body;
+
+    // Validate required fields
+    if (!sourcePath || !operation) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Missing required fields: sourcePath, operation',
+        },
+        { received: Object.keys(body) }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Validate operation type
+    if (operation !== 'rename' && operation !== 'move') {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid operation. Must be "rename" or "move"',
+        },
+        { operation }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Validate operation-specific parameters
+    if (operation === 'rename' && !newName) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Missing required field for rename: newName',
+        },
+        { operation }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    if (operation === 'move' && !destinationDir) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'VALIDATION_ERROR',
+          message: 'Missing required field for move: destinationDir',
+        },
+        { operation }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Validate source path is absolute
+    if (!path.isAbsolute(sourcePath)) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'INVALID_PATH',
+          message: 'Source path must be absolute',
+        },
+        { sourcePath }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+    }
+
+    // Check if source is protected
+    if (isProtectedPath(sourcePath)) {
+      const errorResponse = createErrorResponse(
+        {
+          code: 'FORBIDDEN',
+          message: 'Cannot rename or move protected path',
+        },
+        { path: sourcePath, protected: true }
+      );
+      return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+    }
+
+    // Verify source exists
+    let sourceStats;
+    try {
+      sourceStats = await fs.stat(sourcePath);
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'FILE_NOT_FOUND',
+            message: 'Source file or directory not found',
+          },
+          { path: sourcePath }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
+      }
+      if (error.code === 'EACCES' || error.code === 'EPERM') {
+        const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
+          path: sourcePath,
+        });
+        return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+      }
+      throw error;
+    }
+
+    let destinationPath: string;
+
+    if (operation === 'rename') {
+      // Validate new name
+      if (!isValidFileName(newName!)) {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid file name. Cannot contain slashes, "..", or be empty',
+          },
+          { newName }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      }
+
+      // Build destination path (same directory, new name)
+      const sourceDir = path.dirname(sourcePath);
+      destinationPath = path.join(sourceDir, newName!);
+
+      // Check if renaming to same name
+      if (sourcePath === destinationPath) {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'VALIDATION_ERROR',
+            message: 'New name is the same as current name',
+          },
+          { sourcePath, newName }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      }
+    } else {
+      // Move operation
+      // Validate destination directory is absolute
+      if (!path.isAbsolute(destinationDir!)) {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'INVALID_PATH',
+            message: 'Destination directory must be absolute',
+          },
+          { destinationDir }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      }
+
+      // Verify destination directory exists
+      try {
+        const destStats = await fs.stat(destinationDir!);
+        if (!destStats.isDirectory()) {
+          const errorResponse = createErrorResponse(
+            {
+              code: 'INVALID_PATH',
+              message: 'Destination must be a directory',
+            },
+            { destinationDir }
+          );
+          return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+        }
+      } catch (error: any) {
+        if (error.code === 'ENOENT') {
+          const errorResponse = createErrorResponse(
+            {
+              code: 'FILE_NOT_FOUND',
+              message: 'Destination directory not found',
+            },
+            { path: destinationDir }
+          );
+          return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
+        }
+        throw error;
+      }
+
+      // Build destination path (new directory, same name)
+      const sourceName = path.basename(sourcePath);
+      destinationPath = path.join(destinationDir!, sourceName);
+
+      // Check if moving to same location
+      if (path.dirname(sourcePath) === destinationDir) {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'VALIDATION_ERROR',
+            message: 'Source is already in destination directory',
+          },
+          { sourcePath, destinationDir }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      }
+
+      // Check if trying to move into itself (for directories)
+      if (sourceStats.isDirectory() && destinationDir!.startsWith(sourcePath + path.sep)) {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'VALIDATION_ERROR',
+            message: 'Cannot move directory into itself',
+          },
+          { sourcePath, destinationDir }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      }
+    }
+
+    // Check if destination already exists
+    try {
+      await fs.access(destinationPath);
+      const errorResponse = createErrorResponse(
+        {
+          code: 'FILE_EXISTS',
+          message: 'Destination already exists',
+        },
+        { destinationPath }
+      );
+      return NextResponse.json(errorResponse, { status: 409 }); // Conflict
+    } catch (error: any) {
+      // ENOENT is expected - destination should not exist
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
+    }
+
+    // Perform rename/move operation
+    try {
+      await fs.rename(sourcePath, destinationPath);
+    } catch (error: any) {
+      if (error.code === 'EACCES' || error.code === 'EPERM') {
+        const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
+          path: sourcePath,
+          operation,
+        });
+        return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
+      }
+      // Handle cross-device move (different filesystems)
+      if (error.code === 'EXDEV') {
+        const errorResponse = createErrorResponse(
+          {
+            code: 'CROSS_DEVICE_MOVE',
+            message: 'Cannot move across different filesystems. Use copy instead.',
+          },
+          { sourcePath, destinationPath }
+        );
+        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      }
+      throw error;
+    }
+
+    const response = createSuccessResponse({
+      success: true,
+      operation,
+      oldPath: sourcePath,
+      newPath: destinationPath,
+      type: sourceStats.isDirectory() ? 'directory' : 'file',
+    });
+
+    return NextResponse.json(response, { status: HttpStatus.OK });
+  } catch (error) {
+    const errorResponse = createErrorResponse(ErrorCodes.INTERNAL_ERROR, {
+      reason: (error as Error).message,
+    });
+    return NextResponse.json(errorResponse, { status: HttpStatus.INTERNAL_ERROR });
+  }
+}

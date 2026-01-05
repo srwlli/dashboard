@@ -1,4 +1,11 @@
-﻿import unittest
+﻿"""
+---
+resource_sheet: coderef/reference/Setup-Coderef-Dir-RESOURCE-SHEET.md
+related_script: scripts/setup-coderef-dir/setup_coderef_dirs.py
+---
+"""
+
+import unittest
 import tempfile
 import shutil
 import os

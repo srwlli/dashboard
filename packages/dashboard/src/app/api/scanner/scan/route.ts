@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const body: StartScanRequest = await request.json();
     const { projectIds, selections } = body;
 
-    // Validate request
+    // Validate request - projectIds
     if (!projectIds || !Array.isArray(projectIds) || projectIds.length === 0) {
       return NextResponse.json(
         createErrorResponse(
@@ -50,6 +50,39 @@ export async function POST(request: NextRequest) {
         ),
         { status: 400 }
       );
+    }
+
+    // Validate request - selections structure (if provided)
+    if (selections) {
+      for (const [projectId, selection] of Object.entries(selections)) {
+        // Ensure selection has all required fields
+        if (typeof selection.directories !== 'boolean' ||
+            typeof selection.scan !== 'boolean' ||
+            typeof selection.populate !== 'boolean') {
+          return NextResponse.json(
+            createErrorResponse(
+              {
+                code: 'INVALID_SELECTION',
+                message: `Invalid selection format for project "${projectId}". Missing required fields: directories, scan, populate`
+              }
+            ),
+            { status: 400 }
+          );
+        }
+
+        // Ensure at least one phase is selected
+        if (!selection.directories && !selection.scan && !selection.populate) {
+          return NextResponse.json(
+            createErrorResponse(
+              {
+                code: 'NO_PHASES_SELECTED',
+                message: `No operations selected for project "${projectId}". At least one phase (directories, scan, populate) must be selected.`
+              }
+            ),
+            { status: 400 }
+          );
+        }
+      }
     }
 
     // Load all projects

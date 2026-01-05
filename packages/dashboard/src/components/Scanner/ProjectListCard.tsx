@@ -18,6 +18,7 @@ interface ScannerProject {
  * Shows empty state when no projects configured
  */
 interface ProjectSelection {
+  directories: boolean;
   scan: boolean;
   populate: boolean;
 }
@@ -127,10 +128,19 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
     }
   }
 
+  function handleDirectoriesCheckboxChange(id: string, checked: boolean) {
+    setSelections((prev) => {
+      const newSelections = new Map(prev);
+      const current = newSelections.get(id) || { directories: false, scan: false, populate: false };
+      newSelections.set(id, { ...current, directories: checked });
+      return newSelections;
+    });
+  }
+
   function handleScanCheckboxChange(id: string, checked: boolean) {
     setSelections((prev) => {
       const newSelections = new Map(prev);
-      const current = newSelections.get(id) || { scan: false, populate: false };
+      const current = newSelections.get(id) || { directories: false, scan: false, populate: false };
       newSelections.set(id, { ...current, scan: checked });
       return newSelections;
     });
@@ -139,7 +149,7 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
   function handlePopulateCheckboxChange(id: string, checked: boolean) {
     setSelections((prev) => {
       const newSelections = new Map(prev);
-      const current = newSelections.get(id) || { scan: false, populate: false };
+      const current = newSelections.get(id) || { directories: false, scan: false, populate: false };
       newSelections.set(id, { ...current, populate: checked });
       return newSelections;
     });
@@ -202,23 +212,23 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
         ) : (
           <div className="space-y-2">
             {projects.map((project) => {
-              const selection = selections.get(project.id) || { scan: false, populate: false };
+              const selection = selections.get(project.id) || { directories: false, scan: false, populate: false };
 
               return (
                 <div
                   key={project.id}
                   className="flex items-center gap-3 p-3 bg-ind-bg border border-ind-border hover:border-ind-accent transition-colors group"
                 >
-                  {/* Populate Checkbox */}
+                  {/* Directories Checkbox */}
                   <div className="flex flex-col items-center gap-1">
                     <input
                       type="checkbox"
-                      checked={selection.populate}
-                      onChange={(e) => handlePopulateCheckboxChange(project.id, e.target.checked)}
+                      checked={selection.directories}
+                      onChange={(e) => handleDirectoriesCheckboxChange(project.id, e.target.checked)}
                       className="w-4 h-4 border-ind-border text-ind-accent focus:ring-2 focus:ring-ind-accent/50"
-                      title="Populate"
+                      title="Directories"
                     />
-                    <span className="text-[10px] text-ind-text-muted">Populate</span>
+                    <span className="text-[10px] text-ind-text-muted">Directories</span>
                   </div>
 
                   {/* Scan Checkbox */}
@@ -231,6 +241,18 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
                       title="Scan"
                     />
                     <span className="text-[10px] text-ind-text-muted">Scan</span>
+                  </div>
+
+                  {/* Populate Checkbox */}
+                  <div className="flex flex-col items-center gap-1">
+                    <input
+                      type="checkbox"
+                      checked={selection.populate}
+                      onChange={(e) => handlePopulateCheckboxChange(project.id, e.target.checked)}
+                      className="w-4 h-4 border-ind-border text-ind-accent focus:ring-2 focus:ring-ind-accent/50"
+                      title="Populate"
+                    />
+                    <span className="text-[10px] text-ind-text-muted">Populate</span>
                   </div>
 
                   <div className="flex-1 min-w-0">

@@ -165,6 +165,60 @@ export const FileApi = {
       }),
     });
   },
+
+  /**
+   * Rename a file or directory
+   *
+   * @param filePath - Absolute path to file or directory to rename
+   * @param newName - New name (filename only, not path)
+   * @returns Rename result with old and new paths
+   */
+  async rename(
+    filePath: string,
+    newName: string
+  ): Promise<{
+    success: boolean;
+    operation: 'rename';
+    oldPath: string;
+    newPath: string;
+    type: 'file' | 'directory';
+  }> {
+    return apiFetch('/api/coderef/file', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        sourcePath: filePath,
+        operation: 'rename',
+        newName,
+      }),
+    });
+  },
+
+  /**
+   * Move a file or directory to a new location
+   *
+   * @param filePath - Absolute path to file or directory to move
+   * @param destinationDir - Absolute path to destination directory
+   * @returns Move result with old and new paths
+   */
+  async move(
+    filePath: string,
+    destinationDir: string
+  ): Promise<{
+    success: boolean;
+    operation: 'move';
+    oldPath: string;
+    newPath: string;
+    type: 'file' | 'directory';
+  }> {
+    return apiFetch('/api/coderef/file', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        sourcePath: filePath,
+        operation: 'move',
+        destinationDir,
+      }),
+    });
+  },
 };
 
 /**

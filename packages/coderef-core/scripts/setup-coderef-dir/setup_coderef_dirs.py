@@ -1,5 +1,10 @@
 ﻿#!/usr/bin/env python3
 """
+---
+resource_sheet: coderef/reference/Setup-Coderef-Dir-RESOURCE-SHEET.md
+related_test: scripts/setup-coderef-dir/test_setup_coderef_dirs.py
+---
+
 setup-coderef-dirs.py - Directory Structure Initializer
 
 Purpose:
@@ -53,7 +58,7 @@ def create_structure(project_path: str, dry_run: bool = False) -> dict:
             'archived',
             'standards',
             'documents',
-            'reference',
+            'resource',
             'user',
             'notes'
         ])

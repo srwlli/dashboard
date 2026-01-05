@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ConfirmationDialog } from './ConfirmationDialog';
 
 interface ProjectSelection {
+  directories: boolean;
   scan: boolean;
   populate: boolean;
 }
@@ -24,24 +25,77 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // Count how many projects have each option checked
+  let directoriesCount = 0;
   let scanCount = 0;
   let populateCount = 0;
   const selectedProjectIds: string[] = [];
 
   selections.forEach((selection, projectId) => {
-    if (selection.scan || selection.populate) {
+    if (selection.directories || selection.scan || selection.populate) {
       selectedProjectIds.push(projectId);
     }
+    if (selection.directories) directoriesCount++;
     if (selection.scan) scanCount++;
     if (selection.populate) populateCount++;
   });
 
-  const hasSelections = scanCount > 0 || populateCount > 0;
+  const hasSelections = directoriesCount > 0 || scanCount > 0 || populateCount > 0;
 
   // Open confirmation dialog
   function handleExecuteClick() {
     if (!hasSelections || scanning) return;
     setShowConfirmDialog(true);
+  }
+
+  /**
+   * Validate selections before sending to backend
+   * Prevents silent errors by catching invalid state at UI boundary
+   */
+  function validateSelections(): { valid: boolean; error?: string } {
+    // Validation 1: At least one project must be selected
+    if (selectedProjectIds.length === 0) {
+      return { valid: false, error: 'No projects selected' };
+    }
+
+    // Validation 2: At least one phase must be selected across all projects
+    if (!hasSelections) {
+      return { valid: false, error: 'No operations selected. Check at least one: Directories, Scan, or Populate' };
+    }
+
+    // Validation 3: Each selection must have all required fields
+    for (const [projectId, selection] of selections.entries()) {
+      if (typeof selection.directories !== 'boolean' ||
+          typeof selection.scan !== 'boolean' ||
+          typeof selection.populate !== 'boolean') {
+        const project = projects.find(p => p.id === projectId);
+        return {
+          valid: false,
+          error: `Invalid selection format for project "${project?.name || projectId}". Missing phase fields.`
+        };
+      }
+
+      // Validation 4: At least one phase must be selected per project
+      if (!selection.directories && !selection.scan && !selection.populate) {
+        const project = projects.find(p => p.id === projectId);
+        return {
+          valid: false,
+          error: `No operations selected for project "${project?.name || projectId}"`
+        };
+      }
+    }
+
+    // Validation 5: Project IDs must exist in projects list
+    for (const projectId of selectedProjectIds) {
+      const project = projects.find(p => p.id === projectId);
+      if (!project) {
+        return {
+          valid: false,
+          error: `Invalid project ID: ${projectId}. Project not found.`
+        };
+      }
+    }
+
+    return { valid: true };
   }
 
   // Execute scan after confirmation
@@ -50,6 +104,13 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
 
     try {
       setScanning(true);
+
+      // Validate selections before sending to backend (fail-fast)
+      const validation = validateSelections();
+      if (!validation.valid) {
+        alert(`❌ Validation Error\n\n${validation.error}\n\nPlease check your selections and try again.`);
+        return;
+      }
 
       // Convert Map to Record for JSON serialization
       const selectionsRecord: Record<string, ProjectSelection> = {};
@@ -84,6 +145,7 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
   // Build selection count text
   const buildSelectionText = () => {
     const parts: string[] = [];
+    if (directoriesCount > 0) parts.push(`${directoriesCount} directories`);
     if (scanCount > 0) parts.push(`${scanCount} scan${scanCount > 1 ? 's' : ''}`);
     if (populateCount > 0) parts.push(`${populateCount} populate`);
 

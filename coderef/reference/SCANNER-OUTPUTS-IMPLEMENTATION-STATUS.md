@@ -1,0 +1,304 @@
+# Scanner Outputs - Implementation Status Analysis
+
+**Date:** 2026-01-03
+**Analysis:** Cross-reference of proposed scanner outputs vs current implementation
+
+---
+
+## 1. Core Structural Outputs (Foundational)
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| `.coderef/index.json` | JSON | `@coderef/cli` - `index-cmd.ts` | ✅ **IMPLEMENTED** | Created by `coderef index` command, canonical element index |
+| `.coderef/context.md` | Markdown | `@coderef/cli` - `context.ts` → `CONTEXT.md` | ✅ **IMPLEMENTED** | Output name differs: generates `CONTEXT.md` not `context.md` |
+| `.coderef/context.json` | JSON | `@coderef/cli` - `context.ts` | ✅ **IMPLEMENTED** | Generated alongside CONTEXT.md by context command |
+| `.coderef/metadata.json` | JSON | N/A | ❌ **NOT IMPLEMENTED** | No scan metadata tracking currently exists |
+
+**Status:** 3/4 implemented (75%)
+
+**Missing:**
+- `metadata.json` - Would track scan timestamp, version, git commit, configuration
+- Minor naming inconsistency (`CONTEXT.md` vs `context.md`)
+
+---
+
+## 2. Intelligence & Analysis Outputs
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| `.coderef/reports/metrics.json` | JSON | N/A | ❌ **NOT IMPLEMENTED** | No consolidated metrics file |
+| `.coderef/reports/complexity.json` | JSON | `@coderef/core` - `ComplexityScorer` | ⚠️ **PARTIAL** | Capability exists, not persisted to file |
+| `.coderef/reports/patterns.json` | JSON | `@coderef/cli` - `patterns.ts` | ⚠️ **PARTIAL** | Command exists, output format TBD |
+| `.coderef/reports/coverage.json` | JSON | `@coderef/cli` - `coverage.ts` | ⚠️ **PARTIAL** | Command exists, output format TBD |
+| `.coderef/reports/impact.json` | JSON | `@coderef/core` - `ImpactSimulator` | ⚠️ **PARTIAL** | Capability exists, not persisted to file |
+| `.coderef/reports/summary.md` | Markdown | N/A | ❌ **NOT IMPLEMENTED** | No unified intelligence summary |
+
+**Status:** 0/6 fully implemented (0% complete, 67% partial)
+
+**Notes:**
+- Core capabilities exist in `@coderef/core` (ComplexityScorer, ImpactSimulator, TestPatternAnalyzer)
+- CLI commands exist for some (`patterns`, `coverage`, `complexity`, `impact`)
+- **Missing:** Standardized file persistence to `.coderef/reports/` directory
+- **Missing:** Unified `reports` directory structure (defined in `paths.ts` but not actively used)
+
+---
+
+## 3. Validation & Freshness Outputs
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| `.coderef/reports/validation.json` | JSON | `@coderef/cli` - `validate.ts` | ⚠️ **PARTIAL** | Command exists, file persistence TBD |
+| `.coderef/reports/drift.json` | JSON | `@coderef/cli` - `drift.ts` | ⚠️ **PARTIAL** | Command outputs JSON with `--json`, not persisted to file |
+| `.coderef/reports/errors.json` | JSON | N/A | ❌ **NOT IMPLEMENTED** | No structured error tracking |
+| `.coderef/reports/warnings.json` | JSON | N/A | ❌ **NOT IMPLEMENTED** | No structured warning tracking |
+
+**Status:** 0/4 fully implemented (0% complete, 50% partial)
+
+**Notes:**
+- `drift` command can output JSON via `--json` flag, but doesn't auto-save to file
+- `validate` command exists but file output format unclear
+- **Missing:** Persistent error/warning logs from scans
+
+---
+
+## 4. Diagram Outputs
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| `.coderef/diagrams/architecture.mmd` | Mermaid | `@coderef/cli` - `diagram.ts` | ⚠️ **PARTIAL** | `diagram` command generates Mermaid, but output path is user-specified |
+| `.coderef/diagrams/dependencies.mmd` | Mermaid | `@coderef/cli` - `export.ts` | ⚠️ **PARTIAL** | `export --format mermaid` generates, but path is user-specified |
+| `.coderef/diagrams/callgraph.mmd` | Mermaid | `@coderef/cli` - `diagram.ts` | ⚠️ **PARTIAL** | Can generate via `diagram` but no automatic call graph mode |
+| `.coderef/diagrams/*.dot` | DOT | `@coderef/cli` - `export.ts` | ⚠️ **PARTIAL** | `export --format dot` supported, but path is user-specified |
+| `.coderef/diagrams/README.md` | Markdown | N/A | ❌ **NOT IMPLEMENTED** | No diagram index/legend |
+
+**Status:** 0/5 fully implemented (0% complete, 80% partial)
+
+**Notes:**
+- Core capabilities exist: `formatAsMermaid()`, `formatAsGraphviz()` in `formatters/`
+- CLI commands: `diagram`, `export --format mermaid/dot`
+- **Missing:** Automatic persistence to `.coderef/diagrams/` directory
+- **Missing:** Standard output file naming convention
+- **Current behavior:** User specifies output path via `-o` flag or stdout
+
+---
+
+## 5. Documentation Outputs (Derived)
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| `README.md` | Markdown | `scripts/parse_coderef_data.py` | ✅ **IMPLEMENTED** | Generated by Python doc generator |
+| `ARCHITECTURE.md` | Markdown | `scripts/parse_coderef_data.py` | ✅ **IMPLEMENTED** | Generated by Python doc generator |
+| `API.md` | Markdown | `scripts/parse_coderef_data.py` | ✅ **IMPLEMENTED** | Generated by Python doc generator |
+| `SCHEMA.md` | Markdown | `scripts/parse_coderef_data.py` | ✅ **IMPLEMENTED** | Generated by Python doc generator |
+| `COMPONENTS.md` | Markdown | `scripts/parse_coderef_data.py` | ✅ **IMPLEMENTED** | Generated by Python doc generator (UI projects only) |
+| `coderef/standards/*.md` | Markdown | `coderef-workflow` MCP | ✅ **IMPLEMENTED** | Via `establish_standards` tool |
+
+**Status:** 6/6 implemented (100%)
+
+**Notes:**
+- Handled by **external scripts** (`scripts/parse_coderef_data.py`), not core scanner
+- Also supported by `coderef-workflow` MCP server (`coderef_foundation_docs` tool)
+- **Not part of core scanner output** - these are derived/generated artifacts
+
+---
+
+## 6. Export & Interop Outputs
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| `.coderef/exports/index.jsonld` | JSON-LD | `@coderef/cli` - `export.ts` → `formatAsJsonLd()` | ⚠️ **PARTIAL** | Command exists, but path is user-specified |
+| `.coderef/exports/graph.json` | JSON | `@coderef/core` - `GraphExporter` | ✅ **IMPLEMENTED** | Used by core for graph persistence |
+| `.coderef/exports/metrics.csv` | CSV | N/A | ❌ **NOT IMPLEMENTED** | No CSV export capability |
+| `.coderef/exports/*.html` | HTML | N/A | ⚠️ **PARTIAL** | HTML dashboard exists (`cli/dashboard/`) but not auto-generated |
+| `.coderef/exports/openapi.json` | JSON | N/A | ❌ **NOT IMPLEMENTED** | No OpenAPI export |
+
+**Status:** 1/5 fully implemented (20% complete, 40% partial)
+
+**Notes:**
+- `graph.json` is the only actively-used export file
+- `export` command supports JSON-LD, Mermaid, DOT but output path is user-controlled
+- **Missing:** Automatic export directory creation and standard naming
+
+---
+
+## 7. Workflow & Planning Outputs (When Enabled)
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| `coderef/workorder/*/context.json` | JSON | `coderef-workflow` MCP - `gather_context` | ✅ **IMPLEMENTED** | Workflow MCP server tool |
+| `coderef/workorder/*/plan.json` | JSON | `coderef-workflow` MCP - `create_plan` | ✅ **IMPLEMENTED** | Workflow MCP server tool |
+| `coderef/workorder/*/communication.json` | JSON | `coderef-workflow` MCP - `generate_agent_communication` | ✅ **IMPLEMENTED** | Workflow MCP server tool |
+| `coderef/workorder/*/DELIVERABLES.md` | Markdown | `coderef-workflow` MCP - `generate_deliverables_template` | ✅ **IMPLEMENTED** | Workflow MCP server tool |
+| `coderef/workorder-log.txt` | Text | `coderef-workflow` MCP - `log_workorder` | ✅ **IMPLEMENTED** | Workflow MCP server tool |
+
+**Status:** 5/5 implemented (100%)
+
+**Notes:**
+- **Not part of scanner** - handled by `coderef-workflow` MCP server
+- Fully implemented workflow artifact generation
+- Scanner may update but workflows own lifecycle
+
+---
+
+## 8. Runtime / Ephemeral Outputs (Not Stored)
+
+| Output | Format | Origin | Implementation Status | Notes |
+|--------|--------|--------|----------------------|-------|
+| Structured events | JSON | N/A | ❌ **NOT IMPLEMENTED** | No event emission system |
+| Logs (stdout/stderr) | Text | All CLI commands | ✅ **IMPLEMENTED** | Standard console logging |
+| Preview payloads | JSON | N/A | ❌ **NOT IMPLEMENTED** | No preview/streaming API |
+
+**Status:** 1/3 implemented (33%)
+
+**Notes:**
+- Basic logging exists
+- No structured event system for progress tracking
+- No preview/streaming capabilities
+
+---
+
+## Summary Statistics
+
+| Category | Fully Implemented | Partial | Not Implemented | Total | % Complete |
+|----------|------------------|---------|-----------------|-------|-----------|
+| **Core Structural** | 3 | 0 | 1 | 4 | 75% |
+| **Intelligence & Analysis** | 0 | 4 | 2 | 6 | 0% (67% partial) |
+| **Validation & Freshness** | 0 | 2 | 2 | 4 | 0% (50% partial) |
+| **Diagram Outputs** | 0 | 4 | 1 | 5 | 0% (80% partial) |
+| **Documentation** | 6 | 0 | 0 | 6 | 100% |
+| **Export & Interop** | 1 | 2 | 2 | 5 | 20% (40% partial) |
+| **Workflow & Planning** | 5 | 0 | 0 | 5 | 100% |
+| **Runtime / Ephemeral** | 1 | 0 | 2 | 3 | 33% |
+| **TOTAL** | **16** | **12** | **10** | **38** | **42%** |
+
+---
+
+## Core Contract v1 Readiness
+
+### ✅ Ready for Locking (Implemented)
+
+1. `.coderef/index.json` - ✅ `@coderef/cli` - `index-cmd.ts`
+2. `.coderef/context.json` - ✅ `@coderef/cli` - `context.ts`
+3. `.coderef/graph.json` - ✅ `@coderef/core` - `GraphExporter`
+4. Workflow artifacts (`plan.json`, `context.json`, etc.) - ✅ `coderef-workflow` MCP
+5. Foundation docs (README, ARCHITECTURE, etc.) - ✅ `scripts/parse_coderef_data.py`
+
+### ⚠️ Needs Standardization (Partial)
+
+1. **Diagram outputs** - Commands exist, need standard paths
+2. **Validation/drift outputs** - Commands exist, need file persistence
+3. **Intelligence outputs** - Core capabilities exist, need file persistence
+4. **Export formats** - Capabilities exist, need standard paths
+
+### ❌ Missing (Not Implemented)
+
+1. `.coderef/metadata.json` - Scan metadata tracking
+2. `.coderef/reports/metrics.json` - Consolidated metrics
+3. `.coderef/reports/errors.json` - Error tracking
+4. `.coderef/reports/warnings.json` - Warning tracking
+5. Structured event system - Progress/phase tracking
+6. CSV export - `metrics.csv`
+7. OpenAPI export - `openapi.json`
+
+---
+
+## Key Findings
+
+### 1. **Gap: File Persistence Layer**
+
+Many outputs exist as **capabilities** or **CLI commands** but lack automatic persistence:
+- `complexity`, `impact`, `patterns`, `coverage` commands exist but don't save to `.coderef/reports/`
+- `diagram`, `export` commands generate output but require user to specify paths
+- No standardized `.coderef/` directory population
+
+### 2. **Gap: Standard Directory Structure**
+
+`.coderef/` paths are defined in `cli/src/config/paths.ts` but not actively used:
+```typescript
+// Defined but unused:
+- getReportsDir()
+- getReportPath()
+- getCacheDir()
+```
+
+### 3. **Ownership Clarity**
+
+| Component | Owns |
+|-----------|------|
+| `@coderef/core` | Analysis logic, data structures |
+| `@coderef/cli` | Commands, user interaction, **should own** file persistence |
+| `coderef-workflow` | Workflow artifacts (`coderef/workorder/*`) |
+| `scripts/` | Foundation doc generation (external) |
+
+**Problem:** CLI commands output to stdout/user-specified paths instead of standard `.coderef/` structure
+
+### 4. **Implementation Pattern**
+
+**Current (Ad-hoc):**
+```bash
+coderef complexity foo > my-complexity.json  # User controls output
+coderef diagram bar -o my-diagram.mmd        # User controls output
+```
+
+**Proposed (Standardized):**
+```bash
+coderef complexity foo --save                # Auto-saves to .coderef/reports/complexity-YYYY-MM-DD.json
+coderef diagram bar --save                   # Auto-saves to .coderef/diagrams/bar.mmd
+coderef scan --save                          # Auto-saves to .coderef/index.json (already does this)
+```
+
+---
+
+## Recommendations
+
+### Priority 1: Lock Core Contract v1
+
+**Files to standardize immediately:**
+1. `.coderef/index.json` ✅ (already standard)
+2. `.coderef/context.json` ✅ (already standard)
+3. `.coderef/context.md` → rename to `CONTEXT.md` ✅ (already implemented)
+4. `.coderef/graph.json` ✅ (already standard)
+5. `.coderef/metadata.json` ❌ (add scan metadata)
+
+### Priority 2: Add Persistence Layer
+
+Add `--save` flag to commands that lack it:
+- `complexity --save` → `.coderef/reports/complexity-{date}.json`
+- `impact --save` → `.coderef/reports/impact-{date}.json`
+- `patterns --save` → `.coderef/reports/patterns-{date}.json`
+- `coverage --save` → `.coderef/reports/coverage-{date}.json`
+- `validate --save` → `.coderef/reports/validation-{date}.json`
+- `drift --save` → `.coderef/reports/drift-{date}.json`
+- `diagram --save` → `.coderef/diagrams/{target}.mmd`
+- `export --save` → `.coderef/exports/graph.{format}`
+
+### Priority 3: Implement Missing Outputs
+
+1. `metadata.json` - Track scan timestamp, version, commit
+2. `reports/metrics.json` - Consolidated metrics summary
+3. `reports/errors.json` - Non-fatal scan issues
+4. `reports/warnings.json` - Quality warnings
+
+### Priority 4: Structured Events (Deferred)
+
+- Event emission system for progress tracking
+- Preview/streaming API for UI consumption
+
+---
+
+## Origin Mapping Table
+
+| Output Category | Primary Origin | Implementation File(s) |
+|-----------------|----------------|------------------------|
+| **Core index/context** | `@coderef/cli` | `cli/src/commands/index-cmd.ts`, `cli/src/commands/context.ts` |
+| **Graph** | `@coderef/core` | `core/src/export/graph-exporter.ts`, `cli/src/config/paths.ts` |
+| **Intelligence** | `@coderef/core` + `@coderef/cli` | `core/src/context/`, `cli/src/commands/{complexity,patterns,coverage,impact}.ts` |
+| **Validation** | `@coderef/cli` | `cli/src/commands/validate.ts`, `cli/src/drift-detector.ts` |
+| **Diagrams** | `@coderef/cli` | `cli/src/formatters/{mermaid,graphviz}.ts`, `cli/src/commands/{diagram,export}.ts` |
+| **Documentation** | External scripts | `scripts/parse_coderef_data.py`, `coderef-workflow` MCP |
+| **Exports** | `@coderef/core` + `@coderef/cli` | `core/src/export/graph-exporter.ts`, `cli/src/formatters/` |
+| **Workflow** | `coderef-workflow` MCP | `.mcp-servers/coderef-workflow/tools.py` |
+
+---
+
+**Conclusion:** 42% fully implemented, 32% partial, 26% missing. Most gaps are **file persistence** and **standardization** rather than missing capabilities.

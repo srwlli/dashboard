@@ -17,12 +17,16 @@ import {
   FolderTree,
   Check,
   Trash2,
+  Edit3,
+  FolderInput,
 } from 'lucide-react';
 import { ContextMenu } from './ContextMenu';
 import { useWorkflow } from '@/contexts/WorkflowContext';
-import { loadFileContent } from '@/lib/coderef/hybrid-router';
+import { useProjects } from '@/contexts/ProjectsContext';
+import { loadFileContent, loadProjectTree } from '@/lib/coderef/hybrid-router';
 import { CodeRefApi } from '@/lib/coderef/api-access';
 import type { Attachment } from '@/components/PromptingWorkflow/types';
+import type { ContextMenuItem } from './ContextMenu';
 
 /**
  * FileTreeNode Component Props
@@ -232,7 +236,11 @@ export function FileTreeNode({
   const [isExpanded, setIsExpanded] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [copiedPath, setCopiedPath] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [moveSubmenu, setMoveSubmenu] = useState<ContextMenuItem[] | null>(null);
   const { addAttachments } = useWorkflow();
+  const { projects } = useProjects();
 
   const isDirectory = node.type === 'directory';
   const isSelected = selectedPath === node.path;
@@ -368,6 +376,188 @@ export function FileTreeNode({
     }
   };
 
+  const handleRename = async () => {
+    if (!project || !newName.trim()) {
+      setRenaming(false);
+      setNewName('');
+      return;
+    }
+
+    // Check if name actually changed
+    if (newName.trim() === node.name) {
+      setRenaming(false);
+      setNewName('');
+      return;
+    }
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1); // Remove '[Directory: ' and ']'
+      }
+
+      // Construct full absolute path
+      const fullPath = `${projectPath}/${node.path}`;
+
+      // Rename via API
+      const result = await CodeRefApi.file.rename(fullPath, newName.trim());
+
+      console.log(`Renamed ${result.type}: ${result.oldPath} → ${result.newPath}`);
+
+      // Reset rename state
+      setRenaming(false);
+      setNewName('');
+
+      // Refresh tree to reflect rename
+      if (onTreeRefresh) {
+        onTreeRefresh();
+      }
+    } catch (error) {
+      console.error('Failed to rename:', error);
+      alert(`Failed to rename ${node.name}: ${(error as Error).message}`);
+      setRenaming(false);
+      setNewName('');
+    }
+  };
+
+  const handleRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleRename();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setRenaming(false);
+      setNewName('');
+    }
+  };
+
+  const handleMove = async (destinationDir: string) => {
+    if (!project) return;
+
+    try {
+      // Clean project path - remove [Directory: ...] wrapper if present
+      let projectPath = project.path;
+      if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+        projectPath = projectPath.slice(12, -1);
+      }
+
+      // Construct full absolute source path
+      const sourcePath = `${projectPath}/${node.path}`;
+
+      // Check if moving to different project
+      const sourceProjectId = project.id;
+      const destProject = projects.find(p => {
+        let pPath = p.path;
+        if (pPath.startsWith('[Directory: ') && pPath.endsWith(']')) {
+          pPath = pPath.slice(12, -1);
+        }
+        return destinationDir.startsWith(pPath);
+      });
+
+      const crossProject = destProject && destProject.id !== sourceProjectId;
+
+      if (crossProject) {
+        const confirmMessage = `Move ${node.name} to a different project (${destProject.name})?\n\nThis will move the file/directory from:\n${project.name}\n\nTo:\n${destProject.name}`;
+        if (!window.confirm(confirmMessage)) {
+          setContextMenu(null);
+          return;
+        }
+      }
+
+      // Move via API
+      const result = await CodeRefApi.file.move(sourcePath, destinationDir);
+
+      console.log(`Moved ${result.type}: ${result.oldPath} → ${result.newPath}`);
+
+      // Close context menu
+      setContextMenu(null);
+
+      // Refresh tree to reflect move
+      if (onTreeRefresh) {
+        onTreeRefresh();
+      }
+    } catch (error) {
+      console.error('Failed to move:', error);
+      alert(`Failed to move ${node.name}: ${(error as Error).message}`);
+      setContextMenu(null);
+    }
+  };
+
+  const buildDirectorySubmenu = (
+    treeNodes: TreeNode[],
+    projectPath: string,
+    depth: number = 0
+  ): ContextMenuItem[] => {
+    if (depth > 5) return []; // Prevent infinite recursion
+
+    return treeNodes
+      .filter(n => n.type === 'directory') // Only directories
+      .filter(n => {
+        // Don't show the source node as a destination
+        const currentNodeFullPath = project ? `${project.path}/${node.path}` : '';
+        const candidateFullPath = `${projectPath}/${n.path}`;
+        return candidateFullPath !== currentNodeFullPath;
+      })
+      .map(dir => {
+        const fullDirPath = `${projectPath}/${dir.path}`;
+
+        return {
+          label: dir.name,
+          icon: Folder,
+          onClick: () => handleMove(fullDirPath),
+          submenu: dir.children ? buildDirectorySubmenu(dir.children, projectPath, depth + 1) : undefined,
+        };
+      });
+  };
+
+  const buildMoveSubmenu = async (): Promise<ContextMenuItem[]> => {
+    const items: ContextMenuItem[] = [];
+
+    for (const proj of projects) {
+      try {
+        // Load project tree
+        const result = await loadProjectTree(proj);
+        const tree = result.data;
+
+        // Clean project path
+        let projPath = proj.path;
+        if (projPath.startsWith('[Directory: ') && projPath.endsWith(']')) {
+          projPath = projPath.slice(12, -1);
+        }
+
+        // Build submenu for this project
+        const projectSubmenu: ContextMenuItem[] = [
+          // Option to move to project root
+          {
+            label: '(Root)',
+            icon: FolderOpen,
+            onClick: () => handleMove(projPath),
+          },
+          // Directory tree
+          ...buildDirectorySubmenu(tree, projPath),
+        ];
+
+        items.push({
+          label: proj.name,
+          icon: FolderOpen,
+          submenu: projectSubmenu,
+        });
+      } catch (error) {
+        console.error(`Failed to load tree for project ${proj.name}:`, error);
+      }
+    }
+
+    return items;
+  };
+
+  const handleMoveMenuOpen = async () => {
+    if (!moveSubmenu) {
+      const submenu = await buildMoveSubmenu();
+      setMoveSubmenu(submenu);
+    }
+  };
+
   const paddingLeft = `${depth * 12 + 8}px`;
 
   return (
@@ -414,11 +604,24 @@ export function FileTreeNode({
           )}
         </div>
 
-        {/* Name */}
-        <span className="text-sm truncate">{node.name}</span>
+        {/* Name or rename input */}
+        {renaming ? (
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={handleRenameKeyDown}
+            onBlur={handleRename}
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 px-2 py-0.5 text-sm bg-ind-bg border border-ind-accent rounded text-ind-text focus:outline-none focus:border-ind-accent"
+            autoFocus
+          />
+        ) : (
+          <span className="text-sm truncate">{node.name}</span>
+        )}
 
         {/* Favorite indicator */}
-        {favorited && (
+        {favorited && !renaming && (
           <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 flex-shrink-0" />
         )}
 
@@ -506,6 +709,33 @@ export function FileTreeNode({
                     icon: copiedPath ? Check : FolderTree,
                     onClick: handleCopyPath,
                     iconClassName: copiedPath ? 'text-green-500' : '',
+                  },
+                ]
+              : []),
+            // Rename - works for both files and directories
+            ...(project
+              ? [
+                  {
+                    label: 'Rename',
+                    icon: Edit3,
+                    onClick: () => {
+                      setRenaming(true);
+                      setNewName(node.name);
+                      setContextMenu(null);
+                    },
+                    iconClassName: '',
+                  },
+                ]
+              : []),
+            // Move - works for both files and directories
+            ...(project && projects.length > 0
+              ? [
+                  {
+                    label: 'Move',
+                    icon: FolderInput,
+                    onHover: handleMoveMenuOpen,
+                    submenu: moveSubmenu || undefined,
+                    iconClassName: '',
                   },
                 ]
               : []),

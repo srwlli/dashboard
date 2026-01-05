@@ -1,6 +1,7 @@
 'use client';
 
 interface ProjectSelection {
+  directories: boolean;
   scan: boolean;
   populate: boolean;
 }
@@ -31,9 +32,10 @@ export function ConfirmationDialog({
   const operations = Array.from(selections.entries())
     .map(([projectId, selection]) => {
       const project = projects.find((p) => p.id === projectId);
-      if (!project || (!selection.scan && !selection.populate)) return null;
+      if (!project || (!selection.directories && !selection.scan && !selection.populate)) return null;
 
       const steps: string[] = [];
+      if (selection.directories) steps.push('Directories');
       if (selection.scan) steps.push('Scan');
       if (selection.populate) steps.push('Populate');
 
@@ -116,9 +118,8 @@ export function ConfirmationDialog({
               <div className="text-sm text-ind-text">
                 <p className="font-medium">Execution Order</p>
                 <p className="text-xs mt-1 text-ind-text-muted">
-                  For each project, <strong>Scan</strong> runs first. If scan succeeds and{' '}
-                  <strong>Populate</strong> is selected, it will run automatically. If scan
-                  fails, populate is skipped.
+                  Phases execute in order: <strong>Directories</strong> → <strong>Scan</strong> → <strong>Populate</strong>.
+                  Directory creation errors do not block subsequent phases. Scan failures skip populate for that project.
                 </p>
               </div>
             </div>
