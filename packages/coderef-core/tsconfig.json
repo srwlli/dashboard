@@ -20,8 +20,6 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "demo-all-modules.ts",
-    "parser.ts",
-    "types.ts"
+    "demo-all-modules.ts"
   ]
 }
