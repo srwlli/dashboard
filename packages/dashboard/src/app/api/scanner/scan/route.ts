@@ -120,11 +120,14 @@ export async function POST(request: NextRequest) {
     executor.setProjectIdMapping(pathToIdMapping);
 
     // Register executor globally
+    console.log(`[Scanner API] Registering executor for scan ${scanId}`);
     registerScanExecutor(scanId, executor);
+    console.log(`[Scanner API] Executor registered successfully`);
 
     // Start scan asynchronously (don't await)
     executor.startScan().catch((error) => {
       console.error(`[Scanner] Scan ${scanId} failed:`, error);
+      console.error(`[Scanner] Error stack:`, error.stack);
     });
 
     // Return scan ID immediately

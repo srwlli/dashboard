@@ -133,6 +133,7 @@ export function ProjectListCard({ onSelectionChange, onProjectsChange, onProject
       const newSelections = new Map(prev);
       const current = newSelections.get(id) || { directories: false, scan: false, populate: false };
       newSelections.set(id, { ...current, directories: checked });
+      console.log('[ProjectListCard] Directories checkbox changed:', id, checked, newSelections);
       return newSelections;
     });
   }

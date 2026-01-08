@@ -30,7 +30,9 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
   let populateCount = 0;
   const selectedProjectIds: string[] = [];
 
+  console.log('[ActionBar] Selections Map size:', selections.size);
   selections.forEach((selection, projectId) => {
+    console.log('[ActionBar] Project selection:', projectId, selection);
     if (selection.directories || selection.scan || selection.populate) {
       selectedProjectIds.push(projectId);
     }
@@ -40,6 +42,7 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
   });
 
   const hasSelections = directoriesCount > 0 || scanCount > 0 || populateCount > 0;
+  console.log('[ActionBar] Counts - directories:', directoriesCount, 'scan:', scanCount, 'populate:', populateCount, 'hasSelections:', hasSelections);
 
   // Open confirmation dialog
   function handleExecuteClick() {
@@ -74,14 +77,8 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
         };
       }
 
-      // Validation 4: At least one phase must be selected per project
-      if (!selection.directories && !selection.scan && !selection.populate) {
-        const project = projects.find(p => p.id === projectId);
-        return {
-          valid: false,
-          error: `No operations selected for project "${project?.name || projectId}"`
-        };
-      }
+      // Validation 4: Skip projects with no operations selected (they won't be sent to backend)
+      // This is OK - user may have added project to Map but not checked any boxes yet
     }
 
     // Validation 5: Project IDs must exist in projects list

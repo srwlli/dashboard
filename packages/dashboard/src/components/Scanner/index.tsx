@@ -7,6 +7,7 @@ import { ConsoleTabs } from './ConsoleTabs';
 import { ActionBar } from './ActionBar';
 
 interface ProjectSelection {
+  directories: boolean;
   scan: boolean;
   populate: boolean;
 }

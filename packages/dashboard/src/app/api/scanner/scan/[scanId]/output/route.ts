@@ -16,10 +16,13 @@ export async function GET(
   { params }: { params: Promise<{ scanId: string }> }
 ) {
   const { scanId } = await params;
+  console.log(`[SSE] Client connecting for scan ${scanId}`);
 
   const executor = getScanExecutor(scanId);
+  console.log(`[SSE] Executor found:`, executor ? 'YES' : 'NO');
 
   if (!executor) {
+    console.log(`[SSE] Scan ${scanId} not found in registry`);
     return new Response(
       JSON.stringify({ error: 'Scan not found or expired' }),
       {
