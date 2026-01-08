@@ -13,7 +13,7 @@ export * from './context/index.js';
 export * from './export/index.js';
 
 // Phase 5: Integration module
-export * from './integration/index.js';
+// export * from './integration/index.js'; // Temporarily disabled - missing AI dependencies
 
 // Parser module
 export * from './parser/parser.js';

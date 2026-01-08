@@ -14,7 +14,7 @@ export * from './src/query/query-executor.js';
 // Context & AI integration
 export * from './src/context/index.js';
 export * from './src/export/index.js';
-export * from './src/integration/index.js';
+// export * from './src/integration/index.js'; // Temporarily disabled - missing AI dependencies
 
 // Adapters
 export { convertGraphToElements, getConversionStats } from './src/adapter/graph-to-elements.js';
