@@ -1,13 +1,21 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(mv:*)",
+      "Bash(python test_setup_coderef_dirs.py:*)",
+      "Bash(python:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git rm:*)",
+      "Bash(git reset:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  },
   "enabledMcpjsonServers": [
     "coderef-personas",
     "coderef-context",
     "coderef-docs",
     "coderef-workflow"
-  ],
-  "permissions": {
-    "allow": [
-      "Bash(mv:*)"
-    ]
-  }
+  ]
 }

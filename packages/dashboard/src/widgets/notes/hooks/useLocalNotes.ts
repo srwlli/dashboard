@@ -98,6 +98,10 @@ export function useLocalNotes() {
 
   /**
    * Update a note's title or content
+   * 
+   * TEXT EDITING FUNCTION: Core function that handles text editing updates
+   * This is the main function called when users type in the textarea or title input.
+   * It updates the note's content/title in state and persists to localStorage.
    */
   const updateNote = useCallback((id: string, updates: Partial<Pick<LocalNote, 'title' | 'content'>>) => {
     setNotes(prev =>

@@ -2,12 +2,12 @@
 
 import { usePathname } from 'next/navigation';
 import { useSidebar } from '@/contexts/SidebarContext';
-import { ChevronLeft, ChevronRight, Home, BookOpen, Zap, Settings, FolderTree, Radar, Network, FileText, BarChart3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, Layers, Zap, Settings, FolderTree, Radar, Network, FileText, BarChart3 } from 'lucide-react';
 import NavItem from './NavItem';
 
 const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
-  { label: 'Prompts', href: '/prompts', icon: BookOpen },
+  { label: 'Session', href: '/session', icon: Layers },
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },
   { label: 'Notes', href: '/notes', icon: FileText },

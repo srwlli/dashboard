@@ -225,58 +225,54 @@ export const PromptingWorkflow: React.FC = () => {
   );
 
   return (
-    <div className="w-full space-y-6">
-      <PageCard>
-        <div className="space-y-6">
-          {/* Prompt Selection */}
-          <PromptSelector
-            prompts={prompts}
-            selectedPromptKey={workflow.selectedPrompt?.key}
-            selectedTags={workflow.selectedTags}
-            onSelectPrompt={setSelectedPrompt}
-            onToggleTag={toggleTag}
-          />
+    <>
+      {/* Prompt Selection */}
+      <PromptSelector
+        prompts={prompts}
+        selectedPromptKey={workflow.selectedPrompt?.key}
+        selectedTags={workflow.selectedTags}
+        onSelectPrompt={setSelectedPrompt}
+        onToggleTag={toggleTag}
+      />
 
-          {/* Attachment Management */}
-          <AttachmentManager
-            attachments={workflow.attachments}
-            onAddAttachments={addAttachments}
-            onRemoveAttachment={removeAttachment}
-            onClearAll={clearAttachments}
-          />
+      {/* Attachment Management */}
+      <AttachmentManager
+        attachments={workflow.attachments}
+        onAddAttachments={addAttachments}
+        onRemoveAttachment={removeAttachment}
+        onClearAll={clearAttachments}
+      />
 
-          {/* Workflow Metadata */}
-          <WorkflowMeta prompt={workflow.selectedPrompt} attachments={workflow.attachments} />
+      {/* Workflow Metadata */}
+      <WorkflowMeta prompt={workflow.selectedPrompt} attachments={workflow.attachments} />
 
-          {/* Export Actions */}
-          <div className="border-t border-ind-border pt-6">
-            <h3 className="text-sm uppercase tracking-widest text-ind-text-muted font-mono mb-4 font-bold">
-              Export
-            </h3>
-            <ExportMenu
-              onCopyJSON={handleCopyJSON}
-              onExportJSON={handleExportJSON}
-              onExportMarkdown={handleExportMarkdown}
-              disabled={!isReadyForExport}
-            />
+      {/* Export Actions */}
+      <div className="border-t border-ind-border pt-6">
+        <h3 className="text-sm uppercase tracking-widest text-ind-text-muted font-mono mb-4 font-bold">
+          Export
+        </h3>
+        <ExportMenu
+          onCopyJSON={handleCopyJSON}
+          onExportJSON={handleExportJSON}
+          onExportMarkdown={handleExportMarkdown}
+          disabled={!isReadyForExport}
+        />
 
-            {!isReadyForExport && (
-              <p className="mt-4 px-4 py-3 bg-ind-bg border border-ind-border border-dashed rounded text-ind-text-muted text-xs">
-                ⚠️ Select a prompt and add at least one attachment to enable export
-              </p>
-            )}
+        {!isReadyForExport && (
+          <p className="mt-4 px-4 py-3 bg-ind-bg border border-ind-border border-dashed rounded text-ind-text-muted text-xs">
+            ⚠️ Select a prompt and add at least one attachment to enable export
+          </p>
+        )}
 
-            {isReadyForExport && (
-              <button
-                className="mt-4 px-4 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider text-sm hover:bg-ind-accent-hover transition-colors active:translate-y-0.5"
-                onClick={() => setShowPasteFinalResult(true)}
-              >
-                📝 Paste Final LLM Result
-              </button>
-            )}
-          </div>
-        </div>
-      </PageCard>
+        {isReadyForExport && (
+          <button
+            className="mt-4 px-4 py-2 bg-ind-accent text-black font-bold uppercase tracking-wider text-sm hover:bg-ind-accent-hover transition-colors active:translate-y-0.5"
+            onClick={() => setShowPasteFinalResult(true)}
+          >
+            📝 Paste Final LLM Result
+          </button>
+        )}
+      </div>
 
       {/* Paste Final Result Modal */}
       <PasteFinalResultModal
@@ -294,6 +290,6 @@ export const PromptingWorkflow: React.FC = () => {
           setPendingExportAction(null);
         }}
       />
-    </div>
+    </>
   );
 };

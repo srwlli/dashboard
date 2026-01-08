@@ -135,7 +135,8 @@ export default function NotesWidget() {
             key={note.id}
             className="flex-1 bg-ind-panel border-2 border-ind-border rounded-lg p-4 flex flex-col"
           >
-            {/* Title Input */}
+            {/* Title Input - TEXT EDITING FUNCTION: Title editing interface */}
+            {/* This input allows users to edit note titles. Changes are handled by updateNote function */}
             <input
               type="text"
               placeholder="Untitled"
@@ -144,7 +145,8 @@ export default function NotesWidget() {
               className="bg-transparent border-b border-ind-border px-2 py-1 mb-3 text-ind-text font-semibold focus:outline-none focus:border-ind-accent"
             />
 
-            {/* Content Textarea */}
+            {/* Content Textarea - TEXT EDITING FUNCTION: Main text editing interface */}
+            {/* This textarea allows users to edit note content. Changes are handled by updateNote function */}
             <textarea
               placeholder="Start writing..."
               value={note.content}

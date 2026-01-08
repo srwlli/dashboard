@@ -206,7 +206,28 @@ Resource sheets are comprehensive documentation files that provide deep technica
 
 ---
 
-### 11. Hybrid Router
+### 11. Notes Widget Text Editing
+
+**File:** [NOTES-WIDGET-TEXT-EDITING.md](./NOTES-WIDGET-TEXT-EDITING.md)
+**Component:** `packages/dashboard/src/widgets/notes/NotesWidget.tsx`
+**Complexity:** Medium-High
+
+**Topics Covered:**
+- Text editing functions (textarea and input handlers)
+- localStorage persistence for notes
+- Multi-card note interface (always 3 cards)
+- File system save operations
+- State management via useLocalNotes hook
+
+**When to Reference:**
+- Working on text editing features
+- Understanding note persistence patterns
+- Debugging localStorage issues
+- Implementing similar text editing functionality
+
+---
+
+### 12. Hybrid Router
 
 **File:** [HYBRID-ROUTER.md](./HYBRID-ROUTER.md)
 **Module:** `packages/dashboard/src/lib/coderef/hybrid-router.ts`
@@ -245,6 +266,7 @@ Resource sheets are comprehensive documentation files that provide deep technica
 - [FileTree](./FILE-TREE.md) - Recursive tree rendering
 - [PromptingWorkflow](./PROMPTING-WORKFLOW.md) - Workflow orchestration
 - [Assistant Page](./assistant-page.md) - AI-powered interface design
+- [Notes Widget Text Editing](./NOTES-WIDGET-TEXT-EDITING.md) - Text editing with localStorage persistence
 
 ---
 
@@ -271,8 +293,9 @@ Resource sheets are comprehensive documentation files that provide deep technica
 ---
 
 **Generated:** 2026-01-04
-**Total Resource Sheets:** 14
-**Total Lines Documented:** 3,500+ lines of code
+**Last Updated:** 2026-01-08
+**Total Resource Sheets:** 15
+**Total Lines Documented:** 3,700+ lines of code
 
 ---
 
