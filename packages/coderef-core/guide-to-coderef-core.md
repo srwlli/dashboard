@@ -37,17 +37,19 @@ export interface ElementData {
 }
 ```
 
-#### **ParsedCoderef Interface**
+#### **ParsedCodeRef Interface**
 Structured representation of Coderef2 tags:
 ```typescript
-export interface ParsedCoderef {
+export interface ParsedCodeRef {
   type: string;              // @Fn, @Cl, @C, etc.
   path: string;             // auth/login
   element: string | null;   // authenticateUser
-  line: number | null;      // 42
+  line: string | null;      // "42" (string format)
   metadata?: Record<string, any>; // Optional metadata
 }
 ```
+
+**Note:** Uses EBNF-based parser from `src/parser/parser.ts` (CodeRef2 spec-compliant).
 
 #### **IndexedCoderef Type**
 Enhanced tracking for indexed references:
@@ -86,18 +88,20 @@ The parser handles Coderef2 tag processing with the core format: `@Type/Path#Ele
 
 #### **Tag Parsing**
 ```typescript
-export function parseCoderefTag(tag: string): ParsedCoderef {
-  // Regex breakdown:
-  // @([A-Z][A-Za-z0-9]*) - Type (starts with uppercase)
-  // \/([^#:{}]+)         - Path (any char except #:{}})
-  // (?:#([^:{}]+))?      - Optional element
-  // (?::(\d+))?          - Optional line number
-  // (?:{(.+)})?          - Optional metadata
+export function parseCodeRef(tag: string): ParsedCodeRef {
+  // EBNF-based parser (CodeRef2 specification compliant)
+  // Handles:
+  // - Type validation (TypeDesignator enum: 26 types + 3 extended)
+  // - Path parsing with proper tokenization
+  // - Element and line number extraction
+  // - Metadata parsing (JSON format)
+  // - Character position tracking for error reporting
 
-  const regex = /@([A-Z][A-Za-z0-9]*)\/([^#:{}]+)(?:#([^:{}]+))?(?::(\d+))?(?:{(.+)})?/;
-  // ... parsing logic
+  // See src/parser/parser.ts for full implementation
 }
 ```
+
+**Migration Note:** Old `parseCoderefTag` (regex-based) replaced with `parseCodeRef` (EBNF-based).
 
 #### **Advanced Features**
 - **Metadata Support**: JSON or key=value pairs
@@ -107,12 +111,14 @@ export function parseCoderefTag(tag: string): ParsedCoderef {
 
 #### **Example Usage**
 ```typescript
+import { parseCodeRef, generateCodeRef } from '@coderef/core';
+
 // Parse existing tag
-const parsed = parseCoderefTag("@Fn/auth/login#authenticateUser:42{status=\"active\"}");
-// Returns: { type: "Fn", path: "auth/login", element: "authenticateUser", line: 42, metadata: {status: "active"} }
+const parsed = parseCodeRef("@Fn/auth/login#authenticateUser:42{\"status\":\"active\"}");
+// Returns: { type: "Fn", path: "auth/login", element: "authenticateUser", line: "42", metadata: {status: "active"} }
 
 // Generate new tag
-const generated = generateCoderefTag({
+const generated = generateCodeRef({
   type: "Cl",
   path: "models/User",
   element: "validateCredentials",
@@ -550,36 +556,39 @@ elements.forEach(el => {
 
 ### **Tag Processing Workflow**
 ```typescript
-import { parseCoderefTag, generateCoderefTag, extractCoderefTags } from 'coderef-core/parser';
+import { parseCodeRef, generateCodeRef, extractCodeRefs } from '@coderef/core';
 
 // Extract all tags from file content
 const fileContent = fs.readFileSync('auth/login.ts', 'utf-8');
-const existingTags = extractCoderefTags(fileContent);
+const existingTags = extractCodeRefs(fileContent);
 
 // Process each tag
 existingTags.forEach(tag => {
   console.log(`Found: @${tag.type}/${tag.path}#${tag.element}:${tag.line}`);
 
   // Validate tag
-  if (parseCoderefTag(`@${tag.type}/${tag.path}#${tag.element}:${tag.line}`)) {
+  try {
+    parseCodeRef(`@${tag.type}/${tag.path}#${tag.element}:${tag.line}`);
     console.log('✅ Valid tag');
+  } catch (error) {
+    console.error('❌ Invalid tag:', error.message);
   }
 });
 
 // Generate new tag
-const newTag = generateCoderefTag({
+const newTag = generateCodeRef({
   type: 'Fn',
   path: 'auth/login',
   element: 'authenticateUser',
-  line: 42,
+  line: '42',
   metadata: { status: 'active', complexity: 'low' }
 });
 ```
 
 ### **Drift Detection Integration**
 ```typescript
-import { scanCurrentElements } from 'coderef-core/scanner';
-import { parseCoderefTag } from 'coderef-core/parser';
+import { scanCurrentElements } from '@coderef/core';
+import { parseCodeRef } from '@coderef/core';
 
 // Load existing index
 const index = JSON.parse(fs.readFileSync('coderef-index.json', 'utf-8'));
@@ -589,7 +598,7 @@ const currentElements = await scanCurrentElements('./src', 'ts');
 
 // Compare indexed vs current
 for (const [tagString, indexInfo] of Object.entries(index)) {
-  const parsedTag = parseCoderefTag(tagString);
+  const parsedTag = parseCodeRef(tagString);
   const matchingElements = currentElements.filter(
     el => el.name === parsedTag.element && el.file.includes(parsedTag.path)
   );
@@ -625,15 +634,15 @@ The coderef-cli uses coderef-core for all its operations:
 ```typescript
 // Drift detection
 import { detectDrift } from 'coderef-cli/drift-detector';
-// Uses: scanCurrentElements, parseCoderefTag
+// Uses: scanCurrentElements, parseCodeRef
 
 // Indexing
 import { buildIndex } from 'coderef-cli/indexer';
-// Uses: extractCoderefTags, scanCurrentElements
+// Uses: extractCodeRefs, scanCurrentElements
 
 // Tagging
 import { tagFile } from 'coderef-cli/tagger';
-// Uses: scanCurrentElements, generateCoderefTag
+// Uses: scanCurrentElements, generateCodeRef
 ```
 
 ### **Enterprise Features**
@@ -990,10 +999,10 @@ try {
 
 #### **2. Preserve Error Context**
 ```typescript
-import { ParseError } from '@coderef/core';
+import { ParseError, parseCodeRef } from '@coderef/core';
 
 try {
-  const parsed = parseCoderefTag(tag);
+  const parsed = parseCodeRef(tag);
 } catch (error) {
   // Include original tag for debugging
   throw new ParseError('Invalid tag format', {

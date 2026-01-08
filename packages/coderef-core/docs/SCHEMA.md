@@ -56,12 +56,12 @@ interface ElementData {
 }
 ```
 
-### ParsedCoderef Interface
+### ParsedCodeRef Interface
 
 Structured representation of Coderef2 tags after parsing.
 
 ```typescript
-interface ParsedCoderef {
+interface ParsedCodeRef {
   type: string;              // Tag type (@Fn, @Cl, @C, etc.)
   path: string;             // File path without extension
   element: string | null;   // Element name (optional)
@@ -132,7 +132,7 @@ type IndexedCoderef = {
 ```
 
 **Relationships:**
-- Extends `ParsedCoderef` with tracking information
+- Extends `ParsedCodeRef` with tracking information
 - `file` ≠ `path` (source vs target distinction)
 - `indexLine` ≠ `line` (tag location vs target location)
 
@@ -311,7 +311,7 @@ function normalizeCoderefPath(filePath: string): string {
 
 ```
 ElementData 1:N ScanOptions
-ParsedCoderef 1:1 IndexedCoderef
+ParsedCodeRef 1:1 IndexedCoderef
 IndexedCoderef 1:1 DriftReport
 DriftReport N:1 DriftStatus
 ```
@@ -324,9 +324,9 @@ DriftReport N:1 DriftStatus
    - `ElementData.name` must be found at specified line
 
 2. **Tag-Element Relationship:**
-   - `ParsedCoderef.path` should resolve to existing file
-   - `ParsedCoderef.element` should exist in target file
-   - `ParsedCoderef.line` should match element location
+   - `ParsedCodeRef.path` should resolve to existing file
+   - `ParsedCodeRef.element` should exist in target file
+   - `ParsedCodeRef.line` should match element location
 
 3. **Index-Source Relationship:**
    - `IndexedCoderef.file` must be valid source file
@@ -395,7 +395,7 @@ function validateElement(element: ElementData): string[] {
 const tagString = '@Fn/auth/login#authenticateUser:42{status:"active",version:2}';
 
 // Parsed result
-const parsed: ParsedCoderef = {
+const parsed: ParsedCodeRef = {
   type: 'Fn',
   path: 'auth/login',
   element: 'authenticateUser',

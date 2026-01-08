@@ -18,7 +18,7 @@ This document provides a comprehensive inventory of all reusable components, uti
 
 ### 1. Parser Components
 
-#### parseCoderefTag Function
+#### parseCodeRef Function
 
 **Purpose:** Converts Coderef2 tag strings into structured data objects
 
@@ -45,27 +45,27 @@ interface ParseResult {
 
 **Copy-Paste Example:**
 ```typescript
-import { parseCoderefTag } from 'coderef-core';
+import { parseCodeRef } from 'coderef-core';
 
 // Basic usage
-const result = parseCoderefTag('@Fn/auth/login#authenticateUser:42');
+const result = parseCodeRef('@Fn/auth/login#authenticateUser:42');
 console.log(result);
 // Output: { type: "Fn", path: "auth/login", element: "authenticateUser", line: 42 }
 
 // With metadata
-const withMeta = parseCoderefTag('@Fn/utils/math#calculate:25{version:2,stable:true}');
+const withMeta = parseCodeRef('@Fn/utils/math#calculate:25{version:2,stable:true}');
 console.log(withMeta.metadata);
 // Output: { version: 2, stable: true }
 
 // Error handling
 try {
-  const invalid = parseCoderefTag('@invalid-format');
+  const invalid = parseCodeRef('@invalid-format');
 } catch (error) {
   console.error('Parse failed:', error.message);
 }
 ```
 
-#### generateCoderefTag Function
+#### generateCodeRef Function
 
 **Purpose:** Creates formatted tag strings from structured data
 
@@ -82,17 +82,17 @@ interface GenerateParams {
 
 **Copy-Paste Example:**
 ```typescript
-import { generateCoderefTag } from 'coderef-core';
+import { generateCodeRef } from 'coderef-core';
 
 // Minimal tag
-const basic = generateCoderefTag({
+const basic = generateCodeRef({
   type: 'Fn',
   path: 'auth/login'
 });
 // Result: "@Fn/auth/login"
 
 // Complete tag with all components
-const complete = generateCoderefTag({
+const complete = generateCodeRef({
   type: 'Cl',
   path: 'models/User',
   element: 'validateCredentials',
@@ -102,7 +102,7 @@ const complete = generateCoderefTag({
 // Result: "@Cl/models/User#validateCredentials:15{\"async\":true,\"version\":\"2.0\"}"
 ```
 
-#### extractCoderefTags Function
+#### extractCodeRefs Function
 
 **Purpose:** Finds and parses all tags within text content
 
@@ -112,12 +112,12 @@ interface ExtractParams {
   content: string;  // Text content to search
 }
 
-type ExtractResult = ParsedCoderef[];  // Array of parsed tags
+type ExtractResult = ParsedCodeRef[];  // Array of parsed tags
 ```
 
 **Copy-Paste Example:**
 ```typescript
-import { extractCoderefTags } from 'coderef-core';
+import { extractCodeRefs } from 'coderef-core';
 
 const documentContent = `
 # API Documentation
@@ -129,7 +129,7 @@ The main auth function: @Fn/auth/login#authenticateUser:42
 User model definition: @Cl/models/User#constructor:8{version:2}
 `;
 
-const foundTags = extractCoderefTags(documentContent);
+const foundTags = extractCodeRefs(documentContent);
 console.log(`Found ${foundTags.length} tags:`, foundTags);
 // Output: Found 2 tags: [{ type: "Fn", path: "auth/login", ... }, { type: "Cl", path: "models/User", ... }]
 ```
@@ -435,12 +435,12 @@ manager.addElement({
 
 **Copy-Paste Example:**
 ```typescript
-import { ParsedCoderef } from 'coderef-core';
+import { ParsedCodeRef } from 'coderef-core';
 
 // Tag processing state machine
 type TagState =
   | { status: 'pending'; tag: string }
-  | { status: 'parsed'; tag: string; result: ParsedCoderef }
+  | { status: 'parsed'; tag: string; result: ParsedCodeRef }
   | { status: 'error'; tag: string; error: string };
 
 class TagProcessor {
@@ -451,7 +451,7 @@ class TagProcessor {
     this.states.set(tag, { status: 'pending', tag });
 
     try {
-      const result = parseCoderefTag(tag);
+      const result = parseCodeRef(tag);
       this.states.set(tag, { status: 'parsed', tag, result });
     } catch (error) {
       this.states.set(tag, { status: 'error', tag, error: error.message });
@@ -462,9 +462,9 @@ class TagProcessor {
     return this.states.get(tag);
   }
 
-  getSuccessfulTags(): ParsedCoderef[] {
+  getSuccessfulTags(): ParsedCodeRef[] {
     return Array.from(this.states.values())
-      .filter((state): state is { status: 'parsed'; tag: string; result: ParsedCoderef } =>
+      .filter((state): state is { status: 'parsed'; tag: string; result: ParsedCodeRef } =>
         state.status === 'parsed'
       )
       .map(state => state.result);
@@ -480,7 +480,7 @@ class TagProcessor {
 
 **Copy-Paste Example:**
 ```typescript
-import { isValidCoderefTag, parseCoderefTag } from 'coderef-core';
+import { isValidCoderefTag, parseCodeRef } from 'coderef-core';
 
 // Validation utility class
 class TagValidator {
@@ -494,7 +494,7 @@ class TagValidator {
     }
 
     try {
-      const parsed = parseCoderefTag(tag);
+      const parsed = parseCodeRef(tag);
 
       // Type validation
       if (!/^[A-Z][A-Za-z0-9]*$/.test(parsed.type)) {
@@ -550,7 +550,7 @@ if (!validation.valid) {
 
 **Copy-Paste Example:**
 ```typescript
-import { scanCurrentElements, parseCoderefTag } from 'coderef-core';
+import { scanCurrentElements, parseCodeRef } from 'coderef-core';
 
 // Batch processor for large codebases
 class BatchProcessor {
@@ -586,15 +586,15 @@ class BatchProcessor {
     });
   }
 
-  parsTagsBatch(tags: string[]): ParsedCoderef[] {
-    const results: ParsedCoderef[] = [];
+  parsTagsBatch(tags: string[]): ParsedCodeRef[] {
+    const results: ParsedCodeRef[] = [];
 
     for (let i = 0; i < tags.length; i += this.batchSize) {
       const batch = tags.slice(i, i + this.batchSize);
 
       for (const tag of batch) {
         try {
-          results.push(parseCoderefTag(tag));
+          results.push(parseCodeRef(tag));
         } catch (error) {
           console.warn(`Skipping invalid tag: ${tag}`);
         }
@@ -618,16 +618,16 @@ const elements = await processor.scanDirectoriesBatch(['./src', './lib', './comp
 ```typescript
 // Cache manager for expensive operations
 class CacheManager {
-  private parseCache = new Map<string, ParsedCoderef>();
+  private parseCache = new Map<string, ParsedCodeRef>();
   private scanCache = new Map<string, ElementData[]>();
   private pathCache = new Map<string, string>();
 
-  parseWithCache(tag: string): ParsedCoderef {
+  parseWithCache(tag: string): ParsedCodeRef {
     if (this.parseCache.has(tag)) {
       return this.parseCache.get(tag)!;
     }
 
-    const result = parseCoderefTag(tag);
+    const result = parseCodeRef(tag);
     this.parseCache.set(tag, result);
     return result;
   }
@@ -730,7 +730,7 @@ function useCodeElements(directory: string, language: string) {
 ```typescript
 // Command-line interface wrapper
 import { Command } from 'commander';
-import { scanCurrentElements, parseCoderefTag, generateCoderefTag } from 'coderef-core';
+import { scanCurrentElements, parseCodeRef, generateCodeRef } from 'coderef-core';
 
 const program = new Command();
 
@@ -757,7 +757,7 @@ program
   .command('parse <tag>')
   .action((tag) => {
     try {
-      const result = parseCoderefTag(tag);
+      const result = parseCodeRef(tag);
       console.log(JSON.stringify(result, null, 2));
     } catch (error) {
       console.error('Parse failed:', error.message);

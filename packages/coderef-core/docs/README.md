@@ -34,7 +34,7 @@ added 15 packages from 8 contributors
 ### Basic Usage
 
 ```typescript
-import { scanCurrentElements, parseCoderefTag, generateCoderefTag } from 'coderef-core';
+import { scanCurrentElements, parseCodeRef, generateCodeRef } from 'coderef-core';
 
 // Scan TypeScript files for code elements
 const elements = await scanCurrentElements('./src', ['ts', 'tsx'], {
@@ -46,12 +46,12 @@ console.log(`Found ${elements.length} code elements`);
 // Output: Found 127 code elements
 
 // Parse a Coderef2 tag
-const parsed = parseCoderefTag('@Fn/auth/login#authenticateUser:42');
+const parsed = parseCodeRef('@Fn/auth/login#authenticateUser:42');
 console.log(parsed);
 // Output: { type: "Fn", path: "auth/login", element: "authenticateUser", line: 42 }
 
 // Generate a new tag
-const tag = generateCoderefTag({
+const tag = generateCodeRef({
   type: 'Cl',
   path: 'models/User',
   element: 'validateCredentials',
@@ -120,10 +120,10 @@ Parse and generate Coderef2 tags with metadata support:
 
 ```typescript
 // Parse complex tag with metadata
-const complexTag = parseCoderefTag('@Fn/utils/math#calculateSum:25{version:2,stable:true}');
+const complexTag = parseCodeRef('@Fn/utils/math#calculateSum:25{version:2,stable:true}');
 
 // Generate tag with metadata
-const tagWithMeta = generateCoderefTag({
+const tagWithMeta = generateCodeRef({
   type: 'Fn',
   path: 'services/api',
   element: 'fetchUserData',
@@ -157,8 +157,8 @@ const config = loadJsonFile('./coderef.json', { version: '1.0.0' });
 ```typescript
 import {
   scanCurrentElements,
-  extractCoderefTags,
-  parseCoderefTag,
+  extractCodeRefs,
+  parseCodeRef,
   normalizeCoderefPath
 } from 'coderef-core';
 
@@ -168,11 +168,11 @@ async function analyzeCodebase() {
 
   // 2. Extract existing tags from documentation
   const docContent = fs.readFileSync('./API.md', 'utf-8');
-  const existingTags = extractCoderefTags(docContent);
+  const existingTags = extractCodeRefs(docContent);
 
   // 3. Analyze drift
   for (const tagString of existingTags) {
-    const parsed = parseCoderefTag(tagString);
+    const parsed = parseCodeRef(tagString);
     const matchingElements = currentElements.filter(
       el => el.name === parsed.element &&
             normalizeCoderefPath(el.file) === parsed.path
@@ -289,7 +289,7 @@ coderef-core/
 
 ### Processing Pipeline
 ```
-Source Code → Scanner → ElementData[] → Parser → ParsedCoderef → Analysis
+Source Code → Scanner → ElementData[] → Parser → ParsedCodeRef → Analysis
 ```
 
 ## API Reference Summary
@@ -299,15 +299,15 @@ Source Code → Scanner → ElementData[] → Parser → ParsedCoderef → Analy
 | Function | Purpose | Returns |
 |----------|---------|---------|
 | `scanCurrentElements()` | Discover code elements | `Promise<ElementData[]>` |
-| `parseCoderefTag()` | Parse tag string | `ParsedCoderef` |
-| `generateCoderefTag()` | Create tag string | `string` |
-| `extractCoderefTags()` | Find tags in content | `ParsedCoderef[]` |
+| `parseCodeRef()` | Parse tag string | `ParsedCodeRef` |
+| `generateCodeRef()` | Create tag string | `string` |
+| `extractCodeRefs()` | Find tags in content | `ParsedCodeRef[]` |
 | `normalizeCoderefPath()` | Normalize file paths | `string` |
 
 ### Type Definitions
 
 - **ElementData**: Represents discovered code elements
-- **ParsedCoderef**: Structured tag representation
+- **ParsedCodeRef**: Structured tag representation
 - **ScanOptions**: Configuration for scanning
 - **DriftStatus**: Change detection results
 

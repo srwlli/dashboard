@@ -17,20 +17,20 @@ This document provides comprehensive API documentation for the Coderef Core libr
 
 ### Parser Functions
 
-#### `parseCoderefTag(tag: string): ParsedCoderef`
+#### `parseCodeRef(tag: string): ParsedCodeRef`
 
 Parses a Coderef2 tag string into structured components.
 
 **Parameters:**
 - `tag` (string): Coderef2 tag in format `@Type/path#element:line{metadata}`
 
-**Returns:** `ParsedCoderef` object with structured tag components
+**Returns:** `ParsedCodeRef` object with structured tag components
 
 **Example Request:**
 ```typescript
-import { parseCoderefTag } from 'coderef-core';
+import { parseCodeRef } from 'coderef-core';
 
-const result = parseCoderefTag('@Fn/auth/login#authenticateUser:42{status:"active"}');
+const result = parseCodeRef('@Fn/auth/login#authenticateUser:42{status:"active"}');
 ```
 
 **Example Response:**
@@ -61,20 +61,20 @@ const result = parseCoderefTag('@Fn/auth/login#authenticateUser:42{status:"activ
 }
 ```
 
-#### `generateCoderefTag(parts: ParsedCoderef): string`
+#### `generateCodeRef(parts: ParsedCodeRef): string`
 
 Generates a properly formatted Coderef2 tag string from components.
 
 **Parameters:**
-- `parts` (ParsedCoderef): Object containing tag components
+- `parts` (ParsedCodeRef): Object containing tag components
 
 **Returns:** Formatted tag string
 
 **Example Request:**
 ```typescript
-import { generateCoderefTag } from 'coderef-core';
+import { generateCodeRef } from 'coderef-core';
 
-const tag = generateCoderefTag({
+const tag = generateCodeRef({
   type: 'Cl',
   path: 'models/User',
   element: 'validateCredentials',
@@ -88,7 +88,7 @@ const tag = generateCoderefTag({
 "@Cl/models/User#validateCredentials:15{\"async\":true,\"deprecated\":false}"
 ```
 
-#### `extractCoderefTags(content: string): ParsedCoderef[]`
+#### `extractCodeRefs(content: string): ParsedCodeRef[]`
 
 Extracts and parses all Coderef2 tags from text content.
 
@@ -105,7 +105,7 @@ Check the user authentication: @Fn/auth/login#authenticateUser:42
 The User model: @Cl/models/User#constructor:8
 `;
 
-const tags = extractCoderefTags(content);
+const tags = extractCodeRefs(content);
 ```
 
 **Example Response:**
@@ -451,8 +451,8 @@ console.log(JSON.stringify(elements, null, 2));
 
 # Parse tag
 node -e "
-import { parseCoderefTag } from 'coderef-core';
-const parsed = parseCoderefTag('@Fn/auth/login#authenticateUser:42');
+import { parseCodeRef } from 'coderef-core';
+const parsed = parseCodeRef('@Fn/auth/login#authenticateUser:42');
 console.log(JSON.stringify(parsed, null, 2));
 "
 ```
@@ -460,7 +460,7 @@ console.log(JSON.stringify(parsed, null, 2));
 ### Batch Processing Example
 
 ```typescript
-import { scanCurrentElements, parseCoderefTag, generateCoderefTag } from 'coderef-core';
+import { scanCurrentElements, parseCodeRef, generateCodeRef } from 'coderef-core';
 
 async function processCodebase(rootDir: string) {
   try {
@@ -472,7 +472,7 @@ async function processCodebase(rootDir: string) {
 
     // 2. Generate tags for each element
     const tags = elements.map(element =>
-      generateCoderefTag({
+      generateCodeRef({
         type: element.type === 'function' ? 'Fn' :
               element.type === 'class' ? 'Cl' : 'C',
         path: element.file.replace(/^src\//, '').replace(/\.(ts|tsx)$/, ''),
@@ -484,7 +484,7 @@ async function processCodebase(rootDir: string) {
     // 3. Validate all generated tags
     const validTags = tags.filter(tag => {
       try {
-        parseCoderefTag(tag);
+        parseCodeRef(tag);
         return true;
       } catch (error) {
         console.warn(`Invalid generated tag: ${tag}`);
@@ -513,7 +513,7 @@ async function processCodebase(rootDir: string) {
 ### Error Handling Example
 
 ```typescript
-import { scanCurrentElements, parseCoderefTag } from 'coderef-core';
+import { scanCurrentElements, parseCodeRef } from 'coderef-core';
 
 async function safeCodeAnalysis(dir: string, tags: string[]) {
   const results = {
@@ -536,7 +536,7 @@ async function safeCodeAnalysis(dir: string, tags: string[]) {
   // Safe tag parsing with individual error handling
   for (const tag of tags) {
     try {
-      const parsed = parseCoderefTag(tag);
+      const parsed = parseCodeRef(tag);
       results.parsedTags.push(parsed);
     } catch (error) {
       results.errors.push({
@@ -558,9 +558,9 @@ async function safeCodeAnalysis(dir: string, tags: string[]) {
 
 | Operation | Input Size | Average Time | Memory Usage |
 |-----------|------------|--------------|--------------|
-| `parseCoderefTag()` | Single tag | <1ms | <1KB |
-| `generateCoderefTag()` | Single object | <1ms | <1KB |
-| `extractCoderefTags()` | 1KB text | <5ms | <10KB |
+| `parseCodeRef()` | Single tag | <1ms | <1KB |
+| `generateCodeRef()` | Single object | <1ms | <1KB |
+| `extractCodeRefs()` | 1KB text | <5ms | <10KB |
 | `scanCurrentElements()` | 100 files | <200ms | <10MB |
 | `scanCurrentElements()` | 1000 files | <2s | <50MB |
 

@@ -79,9 +79,9 @@ As documented in README.md, Coderef Core serves as the foundational library for 
 **Interface:**
 ```typescript
 // Public API
-export function parseCoderefTag(tag: string): ParsedCoderef
-export function generateCoderefTag(parts: ParsedCoderef): string
-export function extractCoderefTags(content: string): ParsedCoderef[]
+export function parseCodeRef(tag: string): ParsedCodeRef
+export function generateCodeRef(parts: ParsedCodeRef): string
+export function extractCodeRefs(content: string): ParsedCodeRef[]
 export function isValidCoderefTag(tag: string): boolean
 
 // Internal boundaries
@@ -91,7 +91,7 @@ export function isValidCoderefTag(tag: string): boolean
 ```
 
 **Dependencies:**
-- `types.ts` → ParsedCoderef interface
+- `types.ts` → ParsedCodeRef interface
 - No external dependencies
 
 ### 2. Scanner Module (`scanner.ts`)
@@ -180,7 +180,7 @@ export function getRelativePath(from: string, to: string): string
 ```typescript
 // Core data models
 export interface ElementData
-export interface ParsedCoderef
+export interface ParsedCodeRef
 export type IndexedCoderef
 export type DriftStatus
 export type DriftReport
@@ -273,7 +273,7 @@ export const ScannerRegistry = {
 ```typescript
 // Parser level
 try {
-  return parseCoderefTag(tag);
+  return parseCodeRef(tag);
 } catch (error) {
   console.warn(`Skipping invalid tag: ${tag}`);
   continue; // Continue processing other tags
@@ -326,7 +326,7 @@ process.on('uncaughtException', (error) => {
 
 3. Output Products
    ├── Structured Element Data (ElementData[])
-   ├── Parsed Tag References (ParsedCoderef[])
+   ├── Parsed Tag References (ParsedCodeRef[])
    └── Analysis Reports (DriftReport[])
 ```
 
@@ -355,7 +355,7 @@ Input Tag String
        │
        ▼
 ┌─────────────────┐
-│ ParsedCoderef   │
+│ ParsedCodeRef   │
 │    Object       │
 └─────────────────┘
 ```
@@ -471,7 +471,7 @@ Source Directory
 
 3. **API Server Integration:**
    ```typescript
-   import { parseCoderefTag, scanCurrentElements } from 'coderef-core';
+   import { parseCodeRef, scanCurrentElements } from 'coderef-core';
    // REST endpoints using core functions
    ```
 
