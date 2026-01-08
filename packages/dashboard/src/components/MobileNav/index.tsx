@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { X, Home, BookOpen, Zap, Settings, FolderTree, Radar, Network } from 'lucide-react';
+import { X, Home, Layers, Zap, Settings, FolderTree, Radar, Network } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
-  { label: 'Prompts', href: '/prompts', icon: BookOpen },
+  { label: 'Session', href: '/session', icon: Layers },
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },
   { label: 'Scanner', href: '/scanner', icon: Radar },
