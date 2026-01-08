@@ -1,4 +1,4 @@
-import { ElementData, ScanOptions } from './types';
+import { ElementData, ScanOptions } from './src/types/types.js';
 /**
  * Pattern configurations by language
  */

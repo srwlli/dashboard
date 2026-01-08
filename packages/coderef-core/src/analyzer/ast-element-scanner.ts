@@ -16,7 +16,7 @@
 
 import * as fs from 'fs';
 import * as ts from 'typescript';
-import { ElementData } from '../../types.js';
+import { ElementData } from '../types/types.js';
 
 /**
  * Result from AST element scanning

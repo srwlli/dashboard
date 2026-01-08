@@ -5,7 +5,7 @@
  * Part of WO-CONTEXT-GENERATION-001
  */
 
-import type { ElementData } from '../../types.js';
+import type { ElementData } from '../types/types.js';
 import * as path from 'path';
 
 /**

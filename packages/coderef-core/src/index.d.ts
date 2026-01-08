@@ -40,5 +40,5 @@ export { scanCurrentElements, LANGUAGE_PATTERNS } from '../scanner.js';
  * @see {@link ScanOptions} - Configuration options for scanning
  * @see {@link ElementData} - Scanned element data structure
  */
-export type { ScanOptions, ElementData } from '../types.js';
+export type { ScanOptions, ElementData } from './types/types.js';
 //# sourceMappingURL=index.d.ts.map

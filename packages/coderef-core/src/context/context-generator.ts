@@ -9,7 +9,7 @@ import { scanCurrentElements } from '../../scanner.js';
 import { AnalyzerService } from '../analyzer/analyzer-service.js';
 import { EntryPointDetector } from './entry-point-detector.js';
 import { MarkdownFormatter, type ContextData } from './markdown-formatter.js';
-import type { ElementData, ScanOptions } from '../../types.js';
+import type { ElementData, ScanOptions } from '../types/types.js';
 
 /**
  * Options for context generation

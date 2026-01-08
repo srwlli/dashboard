@@ -5,7 +5,7 @@
  * @Fn/core/adapter#convertGraphToElements
  */
 import { DependencyGraph } from '../analyzer/graph-builder.js';
-import { ElementData } from '../../types.js';
+import { ElementData } from '../types/types.js';
 export interface ConversionOptions {
     includeFileNodes?: boolean;
     includeOrphans?: boolean;

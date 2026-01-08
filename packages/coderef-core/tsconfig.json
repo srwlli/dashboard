@@ -21,6 +21,8 @@
     "coderef-core-updates",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "demo-all-modules.ts"
+    "demo-all-modules.ts",
+    "parser.ts",
+    "types.ts"
   ]
 }
