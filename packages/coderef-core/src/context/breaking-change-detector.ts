@@ -24,7 +24,7 @@
 
 import { AnalyzerService } from '../analyzer/analyzer-service.js';
 import { ImpactSimulator } from './impact-simulator.js';
-import { scanCurrentElements } from '../../scanner.js';
+import { scanCurrentElements } from '../scanner/scanner.js';
 import * as ts from 'typescript';
 
 /**

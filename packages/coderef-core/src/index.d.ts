@@ -34,7 +34,7 @@ export { convertGraphToElements, getConversionStats } from './adapter/graph-to-e
  * @see {@link scanCurrentElements} - Main scanning function
  * @see {@link LANGUAGE_PATTERNS} - Pattern definitions by language
  */
-export { scanCurrentElements, LANGUAGE_PATTERNS } from '../scanner.js';
+export { scanCurrentElements, LANGUAGE_PATTERNS } from './scanner/scanner.js';
 /**
  * Scanner type definitions
  * @see {@link ScanOptions} - Configuration options for scanning

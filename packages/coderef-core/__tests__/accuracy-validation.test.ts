@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import GraphBuilder from '../src/analyzer/graph-builder.js';
-import { scanCurrentElements } from '../scanner.js';
+import { scanCurrentElements } from '../src/scanner/scanner.js';
 
 describe('Scanner Accuracy Validation', () => {
   let tempDir: string;

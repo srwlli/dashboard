@@ -1,7 +1,7 @@
 // @coderef/core - Main entry point
 // Phase 2: Original scanner (kept for compatibility)
 // Note: Root parser.js REMOVED - use src/parser/parser.js (line 10)
-export * from './scanner.js';
+export * from './src/scanner/scanner.js';
 // Note: ElementData and ScanOptions migrated to ./src/types/types.js (line 13)
 export * from './utils/fs.js';
 
