@@ -305,9 +305,9 @@ export class ScanExecutor extends EventEmitter {
    * Uses child_process.spawn() to execute Python script
    */
   private async runPopulateForProject(projectPath: string): Promise<void> {
-    // Locate generate-coderef-directories.py script (now in dashboard monorepo)
+    // Locate generate-coderef-directories.py script from coderef-system
     const populateScriptPath = process.env.POPULATE_SCRIPT_PATH ||
-      path.join(process.cwd(), 'packages/coderef-core/scripts/generate-coderef-directories.py');
+      'C:\\Users\\willh\\Desktop\\projects\\coderef-system\\scripts\\generate-coderef-directories.py';
 
     // Find Python command with full path
     const pythonCmd = await this.findPythonCommand();

@@ -45,7 +45,7 @@ class TestSetupCoderefDirs(unittest.TestCase):
             'coderef/archived',
             'coderef/standards',
             'coderef/documents',
-            'coderef/reference',
+            'coderef/resource',
             'coderef/user',
             'coderef/notes'
         ]
