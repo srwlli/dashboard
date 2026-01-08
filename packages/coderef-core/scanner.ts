@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { glob } from 'glob';
 import { minimatch } from 'minimatch';
-import { ElementData, ScanOptions } from './types';
+import { ElementData, ScanOptions } from './src/types/types.js';
 
 /**
  * Pattern configurations by language

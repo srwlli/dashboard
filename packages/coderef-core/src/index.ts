@@ -57,9 +57,4 @@ export { convertGraphToElements, getConversionStats } from './adapter/graph-to-e
  */
 export { scanCurrentElements, LANGUAGE_PATTERNS } from '../scanner.js';
 
-/**
- * Scanner type definitions
- * @see {@link ScanOptions} - Configuration options for scanning
- * @see {@link ElementData} - Scanned element data structure
- */
-export type { ScanOptions, ElementData } from '../types.js';
+// Note: ScanOptions and ElementData are exported from ./types/types.js on line 28

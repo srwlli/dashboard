@@ -6,7 +6,7 @@
  */
 
 import { DependencyGraph } from '../analyzer/graph-builder.js';
-import { ElementData } from '../../types.js';
+import { ElementData } from '../types/types.js';
 // import { ConversionOptions } from './types.js';
 
 // Temporary: Define ConversionOptions inline until types.js is created

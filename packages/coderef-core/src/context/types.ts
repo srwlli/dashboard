@@ -12,7 +12,7 @@
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001
  */
 
-import type { ElementData } from '../../types.js';
+import type { ElementData } from '../types/types.js';
 
 // ============================================================================
 // PHASE 1: COMPLEXITY SCORING

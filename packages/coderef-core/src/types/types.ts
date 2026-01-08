@@ -219,3 +219,46 @@ export function getTypesByPriority(priority: TypePriority): string[] {
     .filter(([_, meta]) => meta.priority === priority)
     .map(([type, _]) => type);
 }
+
+/**
+ * Represents a code element (function, class, etc.) found in the codebase
+ * MIGRATED FROM ROOT types.ts - Phase 1 Type Migration
+ */
+export interface ElementData {
+  type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'constant' | 'unknown';
+  name: string;
+  file: string;
+  line: number;
+  /** Optional: Whether the element is exported */
+  exported?: boolean;
+  /** Optional: Function/method parameters (from AST analysis) */
+  parameters?: string[];
+  /** Optional: Functions/methods called by this element (from AST analysis) */
+  calls?: string[];
+}
+
+/**
+ * Options for scanning code elements
+ * MIGRATED FROM ROOT types.ts - Phase 1 Type Migration
+ */
+export interface ScanOptions {
+  /** Glob pattern for file inclusion */
+  include?: string | string[];
+  /** Glob pattern for file exclusion */
+  exclude?: string | string[];
+  /** Scan recursively into subdirectories */
+  recursive?: boolean;
+  /** Languages to scan (file extensions) */
+  langs?: string[];
+  /** Custom patterns to use for scanning */
+  customPatterns?: Array<{
+    type: ElementData['type'];
+    pattern: RegExp;
+    nameGroup: number;
+    lang: string;
+  }>;
+  /** Whether to include comments in the scan */
+  includeComments?: boolean;
+  /** Whether to show verbose output */
+  verbose?: boolean;
+}

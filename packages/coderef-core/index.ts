@@ -2,7 +2,7 @@
 // Phase 2: Original scanner (deprecated but kept for compatibility)
 export * from './parser.js';
 export * from './scanner.js';
-export * from './types.js';
+// Note: ElementData and ScanOptions migrated to ./src/types/types.js (line 13)
 export * from './utils/fs.js';
 
 // Phase 3+: New modular architecture
