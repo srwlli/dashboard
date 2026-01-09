@@ -19,57 +19,109 @@ export function ConsoleTabs({ scanId }: ConsoleTabsProps) {
   const [scanStatus, setScanStatus] = useState<string>('Idle');
   const consoleRef = useRef<HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const retryCountRef = useRef<number>(0);
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Connect to SSE stream when scanId changes
+  // Connect to SSE stream when scanId changes (with retry logic)
   useEffect(() => {
     if (!scanId) {
       setConsoleOutput([]);
       setScanStatus('Idle');
+      retryCountRef.current = 0;
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
       return;
     }
 
-    setScanStatus('Connecting...');
+    // Exponential backoff delays: 0ms, 100ms, 300ms, 500ms
+    const retryDelays = [0, 100, 300, 500];
+    const maxRetries = 3;
 
-    // Create EventSource for SSE
-    const eventSource = new EventSource(`/api/scanner/scan/${scanId}/output`);
-    eventSourceRef.current = eventSource;
+    const connectToSSE = () => {
+      const retryCount = retryCountRef.current;
+      const timestamp = new Date().toISOString();
 
-    eventSource.onopen = () => {
-      setScanStatus('Running');
-    };
+      console.log(`[ConsoleTabs] [${timestamp}] Connecting to SSE for scanId: ${scanId} (attempt ${retryCount + 1}/${maxRetries + 1})`);
 
-    eventSource.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-
-        if (message.type === 'output') {
-          setConsoleOutput((prev) => [...prev, message.data]);
-        } else if (message.type === 'progress') {
-          const progress = message.data;
-          setScanStatus(
-            `Scanning ${progress.currentProjectIndex + 1}/${progress.totalProjects}`
-          );
-        } else if (message.type === 'complete') {
-          setScanStatus('Completed');
-          eventSource.close();
-        } else if (message.type === 'error') {
-          setConsoleOutput((prev) => [...prev, `[ERROR] ${message.data}`]);
-          setScanStatus('Error');
-          eventSource.close();
-        }
-      } catch (error) {
-        console.error('Failed to parse SSE message:', error);
+      if (retryCount === 0) {
+        setScanStatus('Connecting...');
+      } else {
+        setScanStatus(`Retrying... (${retryCount}/${maxRetries})`);
       }
+
+      // Create EventSource for SSE
+      const eventSource = new EventSource(`/api/scanner/scan/${scanId}/output`);
+      eventSourceRef.current = eventSource;
+
+      eventSource.onopen = () => {
+        console.log(`[ConsoleTabs] SSE connection opened for scanId: ${scanId}`);
+        setScanStatus('Running');
+        retryCountRef.current = 0; // Reset retry count on successful connection
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+
+          if (message.type === 'output') {
+            setConsoleOutput((prev) => [...prev, message.data]);
+          } else if (message.type === 'progress') {
+            const progress = message.data;
+            setScanStatus(
+              `Scanning ${progress.currentProjectIndex + 1}/${progress.totalProjects}`
+            );
+          } else if (message.type === 'complete') {
+            setScanStatus('Completed');
+            eventSource.close();
+          } else if (message.type === 'error') {
+            setConsoleOutput((prev) => [...prev, `[ERROR] ${message.data}`]);
+            setScanStatus('Error');
+            eventSource.close();
+          }
+        } catch (error) {
+          console.error('[ConsoleTabs] Failed to parse SSE message:', error);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error(`[ConsoleTabs] SSE error for scanId: ${scanId}`, error);
+        eventSource.close();
+
+        // Retry logic for 404 or connection errors
+        if (retryCount < maxRetries) {
+          const delay = retryDelays[retryCount];
+          console.log(`[ConsoleTabs] Retrying SSE connection in ${delay}ms...`);
+
+          retryCountRef.current = retryCount + 1;
+          retryTimeoutRef.current = setTimeout(() => {
+            connectToSSE();
+          }, delay);
+        } else {
+          console.error(`[ConsoleTabs] Max retries (${maxRetries}) reached for scanId: ${scanId}`);
+          setScanStatus('Connection Failed');
+          setConsoleOutput((prev) => [
+            ...prev,
+            `[ERROR] Failed to connect to scan stream after ${maxRetries} retries`,
+            `[ERROR] Scan may not be registered. Check server logs.`
+          ]);
+        }
+      };
     };
 
-    eventSource.onerror = () => {
-      setScanStatus('Error');
-      eventSource.close();
-    };
+    // Initial connection attempt
+    connectToSSE();
 
     return () => {
-      eventSource.close();
-      eventSourceRef.current = null;
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+        retryTimeoutRef.current = null;
+      }
+      retryCountRef.current = 0;
     };
   }, [scanId]);
 

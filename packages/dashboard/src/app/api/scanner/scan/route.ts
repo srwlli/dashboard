@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as os from 'os';
 import type { StartScanRequest, StartScanResponse, ScannerProject, ProjectsStorage } from '../types';
 import { createErrorResponse, createSuccessResponse } from '@/types/api';
-import { ScanExecutor, registerScanExecutor } from '../lib/scanExecutor';
+import { ScanExecutor, registerScanExecutor, getScanExecutor } from '../lib/scanExecutor';
 
 /**
  * Load projects from storage
@@ -123,6 +123,20 @@ export async function POST(request: NextRequest) {
     console.log(`[Scanner API] Registering executor for scan ${scanId}`);
     registerScanExecutor(scanId, executor);
     console.log(`[Scanner API] Executor registered successfully`);
+
+    // Health check: Verify registration worked
+    const registeredExecutor = getScanExecutor(scanId);
+    if (!registeredExecutor) {
+      console.error(`[Scanner API] HEALTH CHECK FAILED: Executor not found immediately after registration for ${scanId}`);
+      return NextResponse.json(
+        createErrorResponse(
+          { code: 'REGISTRATION_FAILED', message: 'Failed to register scan executor' },
+          { details: 'Executor not found in registry immediately after registration. This indicates a module resolution issue.' }
+        ),
+        { status: 500 }
+      );
+    }
+    console.log(`[Scanner API] Health check PASSED: Executor found in registry for ${scanId}`);
 
     // Start scan asynchronously (don't await)
     executor.startScan().catch((error) => {

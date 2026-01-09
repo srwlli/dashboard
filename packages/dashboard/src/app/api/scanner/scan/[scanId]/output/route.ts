@@ -16,15 +16,35 @@ export async function GET(
   { params }: { params: Promise<{ scanId: string }> }
 ) {
   const { scanId } = await params;
-  console.log(`[SSE] Client connecting for scan ${scanId}`);
+  const timestamp = new Date().toISOString();
+  console.log(`[SSE] [${timestamp}] Client connecting for scan ${scanId}`);
 
   const executor = getScanExecutor(scanId);
   console.log(`[SSE] Executor found:`, executor ? 'YES' : 'NO');
 
   if (!executor) {
-    console.log(`[SSE] Scan ${scanId} not found in registry`);
+    console.error(`[SSE] Scan ${scanId} not found in registry`);
+
+    // Include debug information in 404 response
     return new Response(
-      JSON.stringify({ error: 'Scan not found or expired' }),
+      JSON.stringify({
+        error: 'Scan not found or expired',
+        scanId,
+        timestamp,
+        help: {
+          message: 'The scan executor was not found in the registry.',
+          possibleCauses: [
+            'Scan may have expired (1 hour retention)',
+            'Scan may have failed during startup',
+            'Module reload issue (check server logs for HEALTH CHECK FAILED)',
+          ],
+          troubleshooting: [
+            'Check server logs for registration messages',
+            'Try the /api/scanner/debug/registry endpoint to inspect active scans',
+            'Retry the scan operation',
+          ],
+        },
+      }),
       {
         status: 404,
         headers: { 'Content-Type': 'application/json' },

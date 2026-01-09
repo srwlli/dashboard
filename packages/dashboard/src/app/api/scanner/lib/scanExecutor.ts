@@ -429,32 +429,99 @@ export class ScanExecutor extends EventEmitter {
 /**
  * Global registry of active scans
  * Maps scanId -> ScanExecutor instance
+ *
+ * IMPORTANT: Use globalThis to survive Next.js module reloads (HMR)
+ * Without this, scan/route.ts and output/route.ts get separate Map instances
  */
-const activeScans = new Map<string, ScanExecutor>();
+const globalForScans = globalThis as unknown as {
+  scanExecutors: Map<string, ScanExecutor> | undefined;
+};
+
+const activeScans = globalForScans.scanExecutors ?? new Map<string, ScanExecutor>();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForScans.scanExecutors = activeScans;
+}
 
 /**
  * Get or create a scan executor
  */
 export function getScanExecutor(scanId: string): ScanExecutor | undefined {
-  return activeScans.get(scanId);
+  const timestamp = new Date().toISOString();
+  const mapSize = activeScans.size;
+  const mapKeys = Array.from(activeScans.keys());
+  const executor = activeScans.get(scanId);
+
+  console.log(`[ScanRegistry] [${timestamp}] GET executor for scanId: ${scanId}`);
+  console.log(`[ScanRegistry] Map state: size=${mapSize}, keys=[${mapKeys.join(', ')}]`);
+  console.log(`[ScanRegistry] Result: ${executor ? 'FOUND' : 'NOT FOUND'}`);
+
+  return executor;
 }
 
 /**
  * Register a new scan executor
  */
 export function registerScanExecutor(scanId: string, executor: ScanExecutor): void {
+  const timestamp = new Date().toISOString();
+  const mapSizeBefore = activeScans.size;
+  const mapKeysBefore = Array.from(activeScans.keys());
+
+  console.log(`[ScanRegistry] [${timestamp}] REGISTERING scanId: ${scanId}`);
+  console.log(`[ScanRegistry] Map state BEFORE: size=${mapSizeBefore}, keys=[${mapKeysBefore.join(', ')}]`);
+
   activeScans.set(scanId, executor);
+
+  const mapSizeAfter = activeScans.size;
+  const mapKeysAfter = Array.from(activeScans.keys());
+
+  console.log(`[ScanRegistry] Map state AFTER: size=${mapSizeAfter}, keys=[${mapKeysAfter.join(', ')}]`);
+  console.log(`[ScanRegistry] Registration SUCCESS for ${scanId}`);
 
   // Auto-cleanup after scan completes (1 hour retention)
   executor.once('complete', () => {
     setTimeout(() => {
+      console.log(`[ScanRegistry] Auto-cleanup: Removing completed scan ${scanId}`);
       activeScans.delete(scanId);
     }, 60 * 60 * 1000); // 1 hour
   });
 
   executor.once('error', () => {
     setTimeout(() => {
+      console.log(`[ScanRegistry] Auto-cleanup: Removing failed scan ${scanId}`);
       activeScans.delete(scanId);
     }, 60 * 60 * 1000); // 1 hour
   });
+}
+
+/**
+ * Inspect the scan registry for debugging
+ * Returns current state of all active scans
+ */
+export function inspectScanRegistry() {
+  const timestamp = new Date().toISOString();
+  const registrySize = activeScans.size;
+  const scanIds = Array.from(activeScans.keys());
+
+  const scans = Array.from(activeScans.entries()).map(([scanId, executor]) => {
+    const status = executor.getScanStatus();
+    return {
+      scanId,
+      status: status.status,
+      projectCount: status.totalProjects,
+      currentProject: status.currentProjectIndex,
+      startedAt: status.startedAt,
+      completedAt: status.completedAt,
+      errorMessage: status.errorMessage,
+    };
+  });
+
+  console.log(`[ScanRegistry] Inspection at ${timestamp}: size=${registrySize}, ids=[${scanIds.join(', ')}]`);
+
+  return {
+    timestamp,
+    registrySize,
+    scanIds,
+    scans,
+  };
 }
