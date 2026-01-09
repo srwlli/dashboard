@@ -259,7 +259,7 @@ export class ScanExecutor extends EventEmitter {
   }
 
   /**
-   * Find available Python command with full path resolution
+   * Find available Python command (returns command name for PATH resolution)
    */
   private async findPythonCommand(): Promise<string> {
     const { execSync } = require('child_process');
@@ -269,16 +269,15 @@ export class ScanExecutor extends EventEmitter {
       return process.env.PYTHON_COMMAND;
     }
 
-    // On Windows, try to find Python using 'where' command
+    // On Windows, try 'python' command (rely on PATH, not full path)
     if (process.platform === 'win32') {
       try {
-        const result = execSync('where python', { encoding: 'utf-8' }).trim();
-        const firstPath = result.split('\n')[0].trim();
-        if (firstPath) {
-          return firstPath;
-        }
+        execSync('python --version', { encoding: 'utf-8' });
+        // If python --version succeeds, just use 'python' (not full path)
+        // spawn() on Windows works better with command names in PATH
+        return 'python';
       } catch {
-        // If 'where python' fails, try 'py' launcher
+        // If 'python' doesn't work, try 'py' launcher
         try {
           execSync('py --version', { encoding: 'utf-8' });
           return 'py';
