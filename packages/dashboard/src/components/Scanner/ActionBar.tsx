@@ -110,9 +110,13 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
       }
 
       // Convert Map to Record for JSON serialization
+      // Only include projects that have at least one checkbox checked
       const selectionsRecord: Record<string, ProjectSelection> = {};
-      selections.forEach((selection, projectId) => {
-        selectionsRecord[projectId] = selection;
+      selectedProjectIds.forEach((projectId) => {
+        const selection = selections.get(projectId);
+        if (selection) {
+          selectionsRecord[projectId] = selection;
+        }
       });
 
       const response = await fetch('/api/scanner/scan', {
