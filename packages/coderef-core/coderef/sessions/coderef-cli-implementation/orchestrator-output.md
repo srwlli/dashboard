@@ -648,14 +648,16 @@ describe('File Generation', () => {
 
 **Next Steps for Implementor:**
 
-1. **Implement Phase 1 functions** in `packages/coderef-core/src/fileGeneration/`:
+**Agent Working Directory:** `C:\Users\willh\Desktop\coderef-dashboard\packages\coderef-core`
+
+1. **Implement Phase 1 functions** in `src/fileGeneration/`:
    - `saveIndex.ts`
    - `generateContext.ts`
    - `buildDependencyGraph.ts`
 
 2. **Export from `@coderef/core`** (`src/index.ts`)
 
-3. **Modify `scanExecutor.ts`** (3 changes):
+3. **Modify `scanExecutor.ts`** in `../dashboard/src/app/api/scanner/lib/` (3 changes):
    - Add `private scanResults = new Map<string, ElementData[]>()` property
    - Add `this.scanResults.set(projectPath, elements)` to `runScanForProject()` (1 line)
    - Replace `runPopulateForProject()` → `runGenerateForProject()` (68 lines deleted, 40 new lines)
@@ -666,6 +668,6 @@ describe('File Generation', () => {
    - Verify parallel generation (faster than sequential)
    - Verify all 16 files generated
 
-5. **Add automated tests** in `@coderef/core`
+5. **Add automated tests** in `src/__tests__/`
 
 6. **Verify performance improvement** (should be 3-5x faster than Python subprocess)

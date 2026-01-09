@@ -61,8 +61,9 @@
     "goal": "After clicking Scan + Generate in dashboard: cache results, generate 16 files in parallel, 3-5x faster than Python",
     "target_files": 16,
     "target_structure": ".coderef/ with 4 subdirectories (base, reports/, diagrams/, exports/)",
-    "integration_point": "packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts (3 changes: add cache property, cache in scan phase, replace populate function)",
-    "implementation_location": "packages/coderef-core/src/fileGeneration/ (functions exported and called by scanExecutor)",
+    "agent_working_directory": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core",
+    "integration_point": "../dashboard/src/app/api/scanner/lib/scanExecutor.ts (relative to agent working directory)",
+    "implementation_location": "src/fileGeneration/ (functions in this package, exported and called by scanExecutor)",
     "cli_reference": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core\\coderef\\workorder\\coderef-cli-typescript-implementation\\FULL-CLI-INTEGRATION.md (documentation reference only)"
   }
 }

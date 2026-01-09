@@ -17,8 +17,8 @@
 
   "agents": [
     {
-      "agent_id": "coderef-dashboard-implementor",
-      "agent_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+      "agent_id": "coderef-core-implementor",
+      "agent_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core",
       "output_file": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core\\coderef\\sessions\\coderef-cli-implementation\\implementor-output.md",
       "status": "not_started",
       "notes": ""
