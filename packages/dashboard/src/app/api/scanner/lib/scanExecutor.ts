@@ -270,21 +270,20 @@ export class ScanExecutor extends EventEmitter {
       return process.env.PYTHON_COMMAND;
     }
 
-    // On Windows, try 'python' command (rely on PATH, not full path)
+    // On Windows, use 'py' launcher (most reliable, system-wide)
     if (process.platform === 'win32') {
       try {
-        execSync('python --version', { encoding: 'utf-8' });
-        // If python --version succeeds, just use 'python' (not full path)
-        // spawn() on Windows works better with command names in PATH
-        return 'python';
+        execSync('py --version', { encoding: 'utf-8' });
+        // 'py' is the Python launcher, installed system-wide, always in PATH
+        return 'py';
       } catch {
-        // If 'python' doesn't work, try 'py' launcher
+        // If 'py' doesn't work, try 'python'
         try {
-          execSync('py --version', { encoding: 'utf-8' });
-          return 'py';
-        } catch {
-          // Fall back to 'python' and let it fail with helpful error
+          execSync('python --version', { encoding: 'utf-8' });
           return 'python';
+        } catch {
+          // Last resort: return 'py' and let it fail with helpful error
+          return 'py';
         }
       }
     }
