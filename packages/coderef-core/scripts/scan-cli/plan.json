@@ -25,7 +25,8 @@
   "architecture": {
     "files_to_create": [
       "packages/coderef-core/scripts/scan-cli/scan.js",
-      "packages/coderef-core/scripts/scan-cli/USAGE.md"
+      "packages/coderef-core/scripts/scan-cli/USAGE.md",
+      "packages/coderef-core/scripts/scan-cli/REFERENCE.md"
     ],
     "implementation": "Node.js script that imports scanner, accepts CLI args, runs scan, prints results"
   },
@@ -79,6 +80,21 @@
             "Matches tone/style of setup-coderef-dir/USAGE.md"
           ],
           "files": ["packages/coderef-core/scripts/scan-cli/USAGE.md"]
+        },
+        {
+          "task_id": "SCAN-CLI-004",
+          "title": "Create REFERENCE.md quick reference sheet",
+          "description": "One-page quick reference for command syntax, options, and output format",
+          "acceptance_criteria": [
+            "Command syntax section (with placeholders)",
+            "Options/flags table (if any added)",
+            "Output format reference (what each line means)",
+            "Common use cases (3-4 examples)",
+            "Exit codes table (0=success, 1=error)",
+            "Under 40 lines total",
+            "Scannable/glanceable format (tables, bullet points)"
+          ],
+          "files": ["packages/coderef-core/scripts/scan-cli/REFERENCE.md"]
         }
       ]
     },
@@ -87,7 +103,7 @@
       "title": "Testing & Validation",
       "tasks": [
         {
-          "task_id": "SCAN-CLI-004",
+          "task_id": "SCAN-CLI-005",
           "title": "Test CLI with real projects",
           "description": "Manual testing with dashboard project and games project",
           "acceptance_criteria": [
@@ -122,7 +138,8 @@
 
   "deliverables": [
     "scan.js - Node.js CLI wrapper (~40 lines)",
-    "USAGE.md - Documentation (~45 lines)",
+    "USAGE.md - Usage instructions (~45 lines)",
+    "REFERENCE.md - Quick reference sheet (~35 lines)",
     "Tested with 2+ real projects"
   ]
 }
