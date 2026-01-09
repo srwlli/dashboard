@@ -186,13 +186,19 @@ export class ScanExecutor extends EventEmitter {
     this.emitOutput(`[Directories] Using script: ${dirsScriptPath}\n`);
 
     return new Promise((resolve, reject) => {
-      // Use shell on Windows for PATH resolution
-      const childProcess = spawn(pythonCmd, [dirsScriptPath, projectPath], {
+      // Use shell on Windows for PATH resolution with explicit shell path
+      const spawnOptions: any = {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: path.dirname(dirsScriptPath),
-        shell: process.platform === 'win32', // Shell needed for Windows PATH
         windowsHide: true, // Hide console window on Windows
-      });
+      };
+
+      // On Windows, explicitly set shell to COMSPEC (avoids hardcoded paths)
+      if (process.platform === 'win32') {
+        spawnOptions.shell = process.env.COMSPEC || process.env.ComSpec || 'cmd.exe';
+      }
+
+      const childProcess = spawn(pythonCmd, [dirsScriptPath, projectPath], spawnOptions);
 
       childProcess.stdout?.on('data', (data) => {
         this.emitOutput(data.toString());
@@ -319,13 +325,19 @@ export class ScanExecutor extends EventEmitter {
 
     return new Promise((resolve, reject) => {
 
-      // Use shell on Windows for PATH resolution
-      this.currentProcess = spawn(pythonCmd, [populateScriptPath, projectPath], {
+      // Use shell on Windows for PATH resolution with explicit shell path
+      const spawnOptions: any = {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: path.dirname(populateScriptPath),
-        shell: process.platform === 'win32', // Shell needed for Windows PATH
         windowsHide: true, // Hide console window on Windows
-      });
+      };
+
+      // On Windows, explicitly set shell to COMSPEC (avoids hardcoded paths)
+      if (process.platform === 'win32') {
+        spawnOptions.shell = process.env.COMSPEC || process.env.ComSpec || 'cmd.exe';
+      }
+
+      this.currentProcess = spawn(pythonCmd, [populateScriptPath, projectPath], spawnOptions);
 
       // Handle stdout
       this.currentProcess.stdout?.on('data', (data) => {
