@@ -189,7 +189,8 @@ export class ScanExecutor extends EventEmitter {
       const childProcess = spawn(pythonCmd, [dirsScriptPath, projectPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: path.dirname(dirsScriptPath),
-        shell: true, // Required on Windows for Python execution
+        // Use ComSpec env var on Windows for reliable shell access
+        shell: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : true,
       });
 
       childProcess.stdout?.on('data', (data) => {
@@ -323,7 +324,8 @@ export class ScanExecutor extends EventEmitter {
       this.currentProcess = spawn(pythonCmd, [populateScriptPath, projectPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: path.dirname(populateScriptPath),
-        shell: true, // Required on Windows for Python execution
+        // Use ComSpec env var on Windows for reliable shell access
+        shell: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : true,
       });
 
       // Handle stdout
