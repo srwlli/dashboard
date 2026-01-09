@@ -186,11 +186,11 @@ export class ScanExecutor extends EventEmitter {
     this.emitOutput(`[Directories] Using script: ${dirsScriptPath}\n`);
 
     return new Promise((resolve, reject) => {
+      // Don't use shell - call Python directly for better reliability on Windows
       const childProcess = spawn(pythonCmd, [dirsScriptPath, projectPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: path.dirname(dirsScriptPath),
-        // Use ComSpec env var on Windows for reliable shell access
-        shell: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : true,
+        windowsHide: true, // Hide console window on Windows
       });
 
       childProcess.stdout?.on('data', (data) => {
@@ -320,12 +320,11 @@ export class ScanExecutor extends EventEmitter {
 
     return new Promise((resolve, reject) => {
 
-      // Spawn Python subprocess
+      // Don't use shell - call Python directly for better reliability on Windows
       this.currentProcess = spawn(pythonCmd, [populateScriptPath, projectPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: path.dirname(populateScriptPath),
-        // Use ComSpec env var on Windows for reliable shell access
-        shell: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : true,
+        windowsHide: true, // Hide console window on Windows
       });
 
       // Handle stdout
