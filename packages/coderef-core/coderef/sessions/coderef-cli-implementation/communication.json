@@ -1,0 +1,34 @@
+{
+  "workorder_id": "WO-CODEREF-CLI-IMPLEMENTATION-001",
+  "feature_name": "coderef-cli-implementation",
+  "created": "2026-01-09",
+  "status": "in_progress",
+  "description": "Implement optimized file generation in @coderef/core for dashboard scanner. Optimizations: (1) Cache scan results (no re-scan), (2) Parallel file generation (3-5x faster), (3) Replace Python subprocess with TypeScript. When user clicks Scan + Generate, all 16 files created from cached data. CLI docs are reference only.",
+  "instructions_file": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core\\coderef\\sessions\\coderef-cli-implementation\\instructions.json",
+
+  "orchestrator": {
+    "agent_id": "coderef-assistant",
+    "agent_path": "C:\\Users\\willh\\Desktop\\assistant",
+    "role": "Dashboard implementation planning and coordination",
+    "output_file": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core\\coderef\\sessions\\coderef-cli-implementation\\orchestrator-output.md",
+    "status": "complete",
+    "notes": "Created optimized implementation plan with 3 key improvements: (1) Cache scan results in Phase 1 to avoid re-scanning in Phase 2, (2) Parallel file generation using Promise.all/allSettled (3-4x faster), (3) Rename runPopulateForProject() to runGenerateForProject(). Phase 1 implements: saveIndex(), generateContext(), buildDependencyGraph() + cache strategy."
+  },
+
+  "agents": [
+    {
+      "agent_id": "coderef-dashboard-implementor",
+      "agent_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+      "output_file": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core\\coderef\\sessions\\coderef-cli-implementation\\implementor-output.md",
+      "status": "not_started",
+      "notes": ""
+    }
+  ],
+
+  "aggregation": {
+    "total_agents": 1,
+    "completed": 0,
+    "pending": 0,
+    "not_started": 1
+  }
+}

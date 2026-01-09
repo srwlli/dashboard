@@ -1,19 +1,39 @@
-# CodeRef CLI - Complete Capabilities Reference
+# CodeRef Dashboard Scanner - File Generation Implementation Plan
 **Created:** 2026-01-04
-**Purpose:** Full documentation of CodeRef CLI commands to replicate in TypeScript
-**Source:** Analysis of `generate-coderef-directories.py` and scanner scripts
+**Updated:** 2026-01-09 (Clarified dashboard implementation goal)
+**Purpose:** Implement file generation functions in coderef-dashboard scanner
+**Reference Source:** CodeRef CLI capabilities (for guidance only)
+
+---
+
+## ⚠️ IMPORTANT: Implementation Target Clarification
+
+**WE ARE IMPLEMENTING:** File generation functions into the coderef-dashboard scanner UI
+**WE ARE NOT BUILDING:** A new CLI tool
+
+**Goal:** When a user clicks "Scan" in the dashboard, the scanner should:
+1. ✅ Scan codebase (already works)
+2. ✅ Create `.coderef/` directory structure (already works)
+3. ❌ **Generate all 16 output files** (THIS IS WHAT WE'RE IMPLEMENTING)
+
+**Access Method:** Dashboard UI → Scanner Page → Scan Button
+**Implementation Location:** `packages/coderef-core/src/` (TypeScript functions called by dashboard)
+**CLI Tool Reference:** Used only as documentation of capabilities to replicate, NOT a build target
 
 ---
 
 ## Overview
 
-The CodeRef CLI provides 9 commands that generate 16 output files across 4 directories (.coderef/, reports/, diagrams/, exports/). This document catalogs every command, parameter, and output format for TypeScript replication.
+The CodeRef CLI demonstrates 9 capabilities that generate 16 output files across 4 directories. We are implementing these capabilities as TypeScript functions in `@coderef/core` that the dashboard scanner will call directly.
 
 ---
 
-## CLI Commands
+## Capabilities to Implement (Reference: CLI Commands)
 
-### **1. coderef scan**
+**Note:** The sections below document CLI command capabilities as reference. We are implementing these as TypeScript functions in `@coderef/core`, NOT building CLI commands.
+
+### **1. Capability: Scan & Save Index**
+**CLI Reference:** `coderef scan`
 **Purpose:** Scan codebase and generate element index
 
 **Usage:**
@@ -35,11 +55,15 @@ coderef scan "{project_path}" -l {languages} --json
 coderef scan "C:/Users/project" -l ts,tsx,js,jsx --json > .coderef/index.json
 ```
 
-**TypeScript Equivalent:** `scanCurrentElements()` from `@coderef/core`
+**Dashboard Implementation:**
+- ✅ `scanCurrentElements()` exists in `@coderef/core`
+- ❌ `saveIndex()` needs to be implemented to persist results to `.coderef/index.json`
+- **Integration Point:** `scanExecutor.ts` calls these functions when user clicks Scan
 
 ---
 
-### **2. coderef context**
+### **2. Capability: Generate Project Context**
+**CLI Reference:** `coderef context`
 **Purpose:** Generate project context summary
 
 **Usage:**
@@ -65,11 +89,15 @@ coderef context "C:/Users/project" -f json > .coderef/context.json
 coderef context "C:/Users/project" > .coderef/context.md
 ```
 
-**TypeScript Equivalent:** `generateContext()` - **TO BE IMPLEMENTED**
+**Dashboard Implementation:**
+- ❌ `generateContext()` needs to be implemented
+- **Creates:** `.coderef/context.json` and `.coderef/context.md`
+- **Integration Point:** `scanExecutor.ts` calls after `scanCurrentElements()`
 
 ---
 
-### **3. coderef export**
+### **3. Capability: Export Dependency Graphs**
+**CLI Reference:** `coderef export`
 **Purpose:** Export dependency graph in various formats
 
 **Usage:**
@@ -409,20 +437,73 @@ coderef diagram -f mermaid -t imports -l ts,tsx,js,jsx "" "C:/Users/project" > .
 
 ## Integration Points
 
-### Current Scanner Integration
+### Dashboard Scanner Integration (PRIMARY TARGET)
+
+**File:** `packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts`
+
+**Current Flow (Two Phases):**
+1. **Phase 1 (Scan):** User clicks "Scan" button
+   - Calls `runScanForProject()`
+   - Scans codebase via `scanCurrentElements()`
+   - Shows stats in UI
+   - **Problem:** Discards scan results ❌
+
+2. **Phase 2 (Populate - optional):** User checks "Generate Files"
+   - Calls `runPopulateForProject()`
+   - Spawns Python subprocess
+   - **Problem:** Re-scans entire codebase ❌
+   - **Problem:** Sequential file generation ❌
+
+**Optimized Flow (What We're Building):**
+
+**Phase 1 (Scan) - ADD CACHING:**
 ```typescript
-// packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts
+class ScanExecutor {
+  private scanResults = new Map<string, ElementData[]>();  // ✅ ADD
 
-private async runScanForProject(projectPath: string): Promise<void> {
-  const elements = await scanCurrentElements(projectPath, ...);
+  private async runScanForProject(projectPath: string): Promise<void> {
+    const elements = await scanCurrentElements(projectPath, ['ts', 'tsx', 'js', 'jsx']);
 
-  // TODO: Add file generation here
-  await saveIndex(projectPath, elements);
-  await generateContext(projectPath, elements);
-  const graph = await buildDependencyGraph(projectPath, elements);
-  // ... etc
+    this.scanResults.set(projectPath, elements);  // ✅ CACHE IT
+
+    // Show stats (already works)
+  }
 }
 ```
+
+**Phase 2 (Generate) - USE CACHE + PARALLEL:**
+```typescript
+private async runGenerateForProject(projectPath: string): Promise<void> {
+  // Get cached results (NO re-scan!)
+  const elements = this.scanResults.get(projectPath);
+
+  // Critical file
+  await saveIndex(projectPath, elements);
+
+  // Core files (parallel)
+  await Promise.all([
+    generateContext(projectPath, elements),
+    buildDependencyGraph(projectPath, elements),
+  ]);
+
+  // Analysis files (parallel + fault-tolerant)
+  await Promise.allSettled([
+    detectPatterns(projectPath, elements),
+    analyzeCoverage(projectPath, elements),
+    validateReferences(projectPath, elements),
+    detectDrift(projectPath, elements),
+  ]);
+
+  // Diagrams (parallel + fault-tolerant)
+  await generateDiagrams(projectPath, elements);
+}
+```
+
+**Result:**
+- ✅ Scan once, use cached data (no re-scan)
+- ✅ Parallel file generation (3-4x faster)
+- ✅ Fault-tolerant (one failure doesn't kill everything)
+- ✅ All 16 files generated in `.coderef/` directory
 
 ### Package Exports
 ```typescript
@@ -477,6 +558,69 @@ describe('CLI Equivalents', () => {
 
 ---
 
+## CURRENT STATUS (as of 2026-01-09)
+
+### ✅ What's Implemented
+
+**1. Directory Structure Creation** (`scripts/setup-coderef-dir/`)
+- ✅ Python script creates all 10 directories
+- ✅ CLI works manually
+- ❌ UI integration blocked (Windows spawn issue)
+- **Status:** Structure exists but is EMPTY (no files generated)
+
+**2. Code Scanning** (`scripts/scan-cli/`)
+- ✅ JavaScript CLI wrapper for TypeScript scanner
+- ✅ `scanCurrentElements()` function works in `@coderef/core`
+- ✅ Returns element statistics (count, files, duration)
+- ❌ Results NOT SAVED (ephemeral, not persisted to disk)
+- **Status:** Scanning works but NO file output
+
+### ❌ What's Missing: File Generation Functions
+
+**CRITICAL GAP:** Zero file generation functions exist. The `.coderef/` directory structure is created but remains empty.
+
+**Missing Functions (8 total):**
+1. ❌ `saveIndex()` - Save scan results to `.coderef/index.json`
+2. ❌ `generateContext()` - Create `.coderef/context.json` + `context.md`
+3. ❌ `buildDependencyGraph()` - Create `.coderef/graph.json` + exports
+4. ❌ `detectPatterns()` - Create `.coderef/reports/patterns.json`
+5. ❌ `analyzeCoverage()` - Create `.coderef/reports/coverage.json`
+6. ❌ `validateReferences()` - Create `.coderef/reports/validation.json`
+7. ❌ `detectDrift()` - Create `.coderef/reports/drift.json`
+8. ❌ `generateDiagrams()` - Create 4 diagram files (`.mmd`, `.dot`)
+
+**Missing Output Files (16 total):**
+- 0 of 16 files are currently generated by TypeScript code
+- Directory structure exists but contains no data files
+- Scan results exist in memory but are never written to disk
+
+### 🎯 Next Focus: Optimized File Generation
+
+**Critical Optimizations:**
+1. **Cache scan results** - Phase 1 stores, Phase 2 re-uses (no re-scan)
+2. **Parallel generation** - Use Promise.all/Promise.allSettled (3-4x faster)
+3. **Rename function** - `runPopulateForProject()` → `runGenerateForProject()` (clearer)
+4. **Fault-tolerant** - One file failure doesn't kill everything
+
+**Phase 1 Priority (Immediate):**
+1. Add `scanResults = new Map<string, ElementData[]>()` to ScanExecutor class
+2. Cache elements in `runScanForProject()`: `this.scanResults.set(projectPath, elements)`
+3. Implement `saveIndex()` to persist scan results
+4. Implement `generateContext()` for AI/MCP integration
+5. Implement `buildDependencyGraph()` for dependency analysis
+6. Replace `runPopulateForProject()` with `runGenerateForProject()` using cached data + parallel generation
+
+**Deliverable:** After Phase 1, scanning a project should:
+- Cache scan results (no re-scan in Phase 2)
+- Generate 4 files in parallel:
+  - `.coderef/index.json`
+  - `.coderef/context.json`
+  - `.coderef/context.md`
+  - `.coderef/graph.json`
+- Complete 3-5x faster than Python subprocess
+
+---
+
 ## Performance Considerations
 
 **CLI Approach (Current - External):**
@@ -497,13 +641,36 @@ describe('CLI Equivalents', () => {
 
 ---
 
-## Migration Strategy
+## Implementation Strategy (Dashboard Focus)
 
-1. **Phase 0 (Current):** Directories script works ✅
-2. **Phase 1 (Next):** Implement saveIndex() + generateContext()
-3. **Phase 2:** Implement remaining 7 functions
-4. **Phase 3:** Remove Python populate script dependency
-5. **Phase 4:** Optimize and add on-demand features
+**Current State:**
+- ✅ Dashboard scanner page exists
+- ✅ Scan button triggers `scanCurrentElements()`
+- ✅ Directory structure created
+- ❌ No file generation (`.coderef/` remains empty)
+
+**Implementation Phases:**
+
+1. **Phase 1 (Immediate):** Core File Generation
+   - Implement `saveIndex()` to save scan results
+   - Implement `generateContext()` to create context files
+   - **Deliverable:** Dashboard scan produces 4 files (index.json, context.json, context.md, graph.json)
+   - **Integration:** Add function calls to `scanExecutor.ts`
+
+2. **Phase 2:** Reports & Analysis
+   - Implement `detectPatterns()`, `analyzeCoverage()`, `validateReferences()`, `detectDrift()`
+   - **Deliverable:** Dashboard scan produces 8 additional report files
+   - **Integration:** Add to `scanExecutor.ts` workflow
+
+3. **Phase 3:** Diagrams & Visual Exports
+   - Implement `generateDiagrams()` for Mermaid and DOT formats
+   - **Deliverable:** Dashboard scan produces 4 diagram files
+   - **Integration:** Add to `scanExecutor.ts` post-processing
+
+4. **Phase 4:** Polish & Optimization
+   - Add progress indicators in dashboard UI
+   - Optimize parallel file generation
+   - Add error handling and retry logic
 
 ---
 
@@ -512,4 +679,4 @@ describe('CLI Equivalents', () => {
 - `SCANNER-SYSTEM.md` - Current architecture
 - `generate-coderef-directories.py` - Python reference implementation
 
-**Last Updated:** 2026-01-04
+**Last Updated:** 2026-01-09 (Added current status section, clarified focus on populating directory structure)
