@@ -2,7 +2,7 @@
   "workorder_id": "WO-SCANNER-CLI-001",
   "feature_name": "CLI Scanner Wrapper",
   "created_at": "2026-01-09T18:00:00Z",
-  "status": "planned",
+  "status": "in_progress",
 
   "goal": "Create a simple Node.js CLI tool that wraps the TypeScript scanner for command-line usage, allowing users to scan projects without opening the Dashboard UI.",
 
@@ -114,6 +114,22 @@
             "Error handling works: Invalid path shows clear error"
           ],
           "files": []
+        },
+        {
+          "task_id": "SCAN-CLI-006",
+          "title": "Create automated test suite",
+          "description": "Create comprehensive test suite using Vitest following project patterns",
+          "acceptance_criteria": [
+            "Test file created: scripts/scan-cli/test_scan_cli.test.ts",
+            "Tests help/usage display",
+            "Tests path validation (exists, is directory)",
+            "Tests successful scan execution",
+            "Tests output format",
+            "Tests error handling",
+            "Tests edge cases (empty dir, spaces in path, etc.)",
+            "All tests pass with npm test"
+          ],
+          "files": ["scripts/scan-cli/test_scan_cli.test.ts"]
         }
       ]
     }
@@ -137,9 +153,11 @@
   "estimated_effort": "30-45 minutes (simple wrapper, minimal code)",
 
   "deliverables": [
-    "scan.js - Node.js CLI wrapper (~40 lines)",
-    "USAGE.md - Usage instructions (~45 lines)",
-    "REFERENCE.md - Quick reference sheet (~35 lines)",
-    "Tested with 2+ real projects"
+    "scan.js - Node.js CLI wrapper (~88 lines)",
+    "USAGE.md - Usage instructions (~59 lines)",
+    "REFERENCE.md - Quick reference sheet (~64 lines)",
+    "test_scan_cli.test.ts - Comprehensive test suite (~400+ lines)",
+    "Tested with 2+ real projects",
+    "All automated tests passing"
   ]
 }
