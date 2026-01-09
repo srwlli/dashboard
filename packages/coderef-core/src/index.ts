@@ -58,3 +58,30 @@ export { convertGraphToElements, getConversionStats } from './adapter/graph-to-e
 export { scanCurrentElements, LANGUAGE_PATTERNS } from './scanner/scanner.js';
 
 // Note: ScanOptions and ElementData are exported from ./types/types.js on line 28
+
+/**
+ * File Generation module - Generate .coderef output files
+ *
+ * @example
+ * ```typescript
+ * import { saveIndex, generateContext, buildDependencyGraph } from '@coderef/core';
+ *
+ * // Scan and save
+ * const elements = await scanCurrentElements('./src', ['ts', 'tsx']);
+ * await saveIndex('./my-project', elements);
+ *
+ * // Generate context files
+ * await generateContext('./my-project', elements);
+ *
+ * // Build dependency graph
+ * const graph = await buildDependencyGraph('./my-project', elements);
+ * ```
+ *
+ * @see {@link saveIndex} - Save scan results to index.json
+ * @see {@link generateContext} - Generate context.json and context.md
+ * @see {@link buildDependencyGraph} - Build dependency graph
+ */
+export { saveIndex } from './fileGeneration/saveIndex.js';
+export { generateContext } from './fileGeneration/generateContext.js';
+export { buildDependencyGraph } from './fileGeneration/buildDependencyGraph.js';
+export type { DependencyGraph, GraphNode, GraphEdge } from './fileGeneration/buildDependencyGraph.js';
