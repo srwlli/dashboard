@@ -36,3 +36,6 @@ export { detectPatterns } from './src/fileGeneration/detectPatterns.js';
 export { analyzeCoverage } from './src/fileGeneration/analyzeCoverage.js';
 export { validateReferences } from './src/fileGeneration/validateReferences.js';
 export { detectDrift } from './src/fileGeneration/detectDrift.js';
+
+// File generation - Phase 3
+export { generateDiagrams } from './src/fileGeneration/generateDiagrams.js';

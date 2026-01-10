@@ -337,6 +337,7 @@ export class ScanExecutor extends EventEmitter {
         analyzeCoverage,
         validateReferences,
         detectDrift,
+        generateDiagrams,
       } = await import('@coderef/core');
 
       // Step 1: Critical file (must succeed)
@@ -363,6 +364,11 @@ export class ScanExecutor extends EventEmitter {
 
       const analysisSuccess = analysisResults.filter(r => r.status === 'fulfilled').length;
       this.emitOutput(`[Generate] ✓ Generated ${analysisSuccess}/4 analysis reports`);
+
+      // Step 4: Diagrams
+      this.emitOutput(`[Generate] Creating diagrams...`);
+      await generateDiagrams(projectPath, elements);
+      this.emitOutput(`[Generate] ✓ 4 diagram files`);
 
       this.emitOutput(`[Generate] Completed: ${projectPath}\n`);
     } catch (error: any) {

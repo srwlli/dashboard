@@ -92,3 +92,6 @@ export { detectPatterns } from './fileGeneration/detectPatterns.js';
 export { analyzeCoverage } from './fileGeneration/analyzeCoverage.js';
 export { validateReferences } from './fileGeneration/validateReferences.js';
 export { detectDrift } from './fileGeneration/detectDrift.js';
+
+// Phase 3: Diagrams
+export { generateDiagrams } from './fileGeneration/generateDiagrams.js';
