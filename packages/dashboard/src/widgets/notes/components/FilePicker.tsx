@@ -137,24 +137,35 @@ async function saveFile(options: {
 
         return { success: true, filePath: fileHandle.name };
       } catch (error) {
-        if ((error as Error).name === 'AbortError') {
+        const errorName = (error as Error).name;
+
+        // User cancelled or permission denied - return null
+        if (errorName === 'AbortError') {
           return null; // User cancelled
         }
-        console.error('File System Access API error:', error);
-        throw error;
-      }
-    } else {
-      // Fallback: Download file
-      const blob = new Blob([options.content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = options.suggestedName || 'untitled.txt';
-      a.click();
-      URL.revokeObjectURL(url);
 
-      return { success: true }; // Can't get file path in fallback mode
+        // NotAllowedError: Permission denied or blocked by browser
+        // Fall through to download fallback instead of throwing
+        if (errorName === 'NotAllowedError') {
+          console.warn('File System Access API not allowed, using download fallback');
+          // Fall through to download fallback below
+        } else {
+          console.error('File System Access API error:', error);
+          throw error;
+        }
+      }
     }
+
+    // Fallback: Download file (also used when NotAllowedError occurs)
+    const blob = new Blob([options.content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = options.suggestedName || 'untitled.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    return { success: true }; // Can't get file path in fallback mode
   }
 }
 
