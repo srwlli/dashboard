@@ -1,0 +1,264 @@
+{
+  "workorder_id": "WO-NOTEPAD-CLONE-001",
+  "feature_name": "notepad-clone-transformation",
+  "created": "2026-01-08",
+  "status": "planning",
+  "project": "coderef-dashboard",
+  "description": "Transform Notes Widget from 3-card multi-note interface into Microsoft Notepad clone with multi-tab interface, menu bar, and file operations",
+  "requirements": [
+    "Multi-tab interface (multiple files open simultaneously)",
+    "Menu bar with File and Edit menus",
+    "File operations: New, Open, Save, Save As (anywhere in project)",
+    "Edit operations: Undo, Cut, Copy, Paste, Select All",
+    "Unsaved changes tracking per tab",
+    "Syntax highlighting for 30+ file types using react-syntax-highlighter",
+    "Default new files to .md format",
+    "File size warning dialog for files > 1MB",
+    "Open in New Window button for Electron pop-out"
+  ],
+  "user_requirements": [
+    "Multi-tab interface (not single document)",
+    "Core features only (File menu + basic Edit menu)",
+    "Allow opening/saving files anywhere in the project (not restricted to coderef/notes/)"
+  ],
+  "constraints": [
+    "Path validation - ensure all file paths within project root",
+    "Directory traversal prevention - prevent ../ in paths",
+    "File size limits - 1MB write limit, 10MB read limit, show warning for files > 1MB before opening",
+    "Extension validation - allowlist text/code file extensions (.md, .txt, .html, .css, .scss, .sass, .js, .jsx, .ts, .tsx, .py, .json, .yaml, .yml, .toml, .ini, .env, .xml, .svg, .sql, .sh, .bash)",
+    "Permission checks - verify file system permissions before write"
+  ],
+  "technical_context": {
+    "current_implementation": {
+      "widget": "packages/dashboard/src/widgets/notes/NotesWidget.tsx (194 lines, 3-card layout)",
+      "state_management": "packages/dashboard/src/widgets/notes/hooks/useLocalNotes.ts (150 lines)",
+      "api_client": "packages/dashboard/src/lib/coderef/api-access.ts (NotesApi.save() restricted to coderef/notes/)",
+      "api_route": "packages/dashboard/src/app/api/coderef/file/route.ts (PUT handler restricted to coderef/notes/)",
+      "limitations": [
+        "3-card layout (always shows 3 cards)",
+        "Files restricted to coderef/notes/ directory only",
+        "No menu bar or standard Notepad UI",
+        "No file picker for Open/Save As",
+        "No edit operations (Cut/Copy/Paste/Select All)",
+        "Uses localStorage for persistence (not file-based)"
+      ]
+    },
+    "new_architecture": {
+      "component_structure": "NotepadWidget > MenuBar (File/Edit) + TabBar (horizontal tabs) + EditorArea (textarea)",
+      "state_management": "useNotepadTabs hook (replaces useLocalNotes)",
+      "tab_object": "{ id, filePath, content, isDirty, lastSaved, fileExtension }",
+      "file_access": "Project-wide (not restricted to coderef/notes/)",
+      "default_format": ".md for new files"
+    },
+    "syntax_highlighting": {
+      "library": "react-syntax-highlighter v16.1.0 (already installed)",
+      "theme": "vscDarkPlus (VS Code Dark Plus)",
+      "language_map": "packages/dashboard/src/components/PromptingWorkflow/utils/languageMap.ts",
+      "reference_implementation": "packages/dashboard/src/components/coderef/FileViewer.tsx (lines 454-467)",
+      "supported_languages": "30+ file types"
+    },
+    "electron_integration": {
+      "pop_out_window": "Add 'Open in New Window' button in MenuBar or toolbar",
+      "ipc_handler": "Create handler in packages/electron-app/src/main.ts",
+      "window_route": "Open /notes route in new BrowserWindow",
+      "state_sync": "Optional - maintain sync between dashboard and pop-out"
+    },
+    "new_files_to_create": [
+      "packages/dashboard/src/widgets/notes/components/MenuBar.tsx",
+      "packages/dashboard/src/widgets/notes/components/TabBar.tsx",
+      "packages/dashboard/src/widgets/notes/components/FilePicker.tsx",
+      "packages/dashboard/src/widgets/notes/hooks/useNotepadTabs.ts",
+      "packages/dashboard/src/widgets/notes/types/notepad.ts"
+    ],
+    "files_to_modify": [
+      "packages/dashboard/src/widgets/notes/NotesWidget.tsx (complete rewrite)",
+      "packages/dashboard/src/lib/coderef/api-access.ts (add FileApi.save(), FileApi.open())",
+      "packages/dashboard/src/app/api/coderef/file/route.ts (extend PUT for project-wide writes)"
+    ]
+  },
+  "implementation_phases": [
+    {
+      "phase": 1,
+      "name": "API Extensions",
+      "tasks": [
+        "Extend File API PUT handler to allow writes anywhere in project (not just coderef/notes/)",
+        "Add FileApi.save() and FileApi.open() methods to api-access.ts",
+        "Update path validation to allow project-wide access while maintaining security"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "UI Components",
+      "tasks": [
+        "Create MenuBar component (File/Edit menus)",
+        "Create TabBar component (horizontal tabs with close buttons)",
+        "Create FilePicker component (for Open/Save As dialogs)"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "State Management",
+      "tasks": [
+        "Create useNotepadTabs hook",
+        "Update NotesWidget to use new tab-based architecture",
+        "Remove 3-card layout"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "File Operations",
+      "tasks": [
+        "Implement New, Open, Save, Save As",
+        "Handle unsaved changes tracking",
+        "File picker integration"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Edit Operations",
+      "tasks": [
+        "Implement Cut, Copy, Paste (Clipboard API)",
+        "Implement Select All",
+        "Undo/Redo (browser native)"
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Unsaved Changes Handling",
+      "tasks": [
+        "Dirty state tracking per tab",
+        "Close tab warning for unsaved changes",
+        "Window close warning"
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Syntax Highlighting Integration",
+      "tasks": [
+        "Integrate react-syntax-highlighter (already installed)",
+        "Import vscDarkPlus theme from existing FileViewer pattern",
+        "Reuse languageMap.ts from PromptingWorkflow for file extension mapping",
+        "Apply syntax highlighting to editor area based on file extension",
+        "Auto-detect language from file extension or allow manual selection",
+        "Add file size warning dialog for files > 1MB before opening"
+      ]
+    },
+    {
+      "phase": 8,
+      "name": "Electron Window Pop-out",
+      "tasks": [
+        "Add 'Open in New Window' button to MenuBar or toolbar",
+        "Create IPC handler in Electron main process (packages/electron-app/src/main.ts)",
+        "Open /notes route in new BrowserWindow",
+        "Configure window properties (size, title, icon)",
+        "Handle window close events",
+        "Optional: Maintain state sync between dashboard and pop-out window"
+      ]
+    }
+  ],
+  "testing_checklist": [
+    "Create new file (Ctrl+N) - defaults to .md",
+    "Open existing file (Ctrl+O)",
+    "Save file (Ctrl+S)",
+    "Save As (Ctrl+Shift+S)",
+    "Close tab with unsaved changes (prompt)",
+    "Cut/Copy/Paste operations",
+    "Select All (Ctrl+A)",
+    "Multiple tabs open simultaneously",
+    "Switch between tabs",
+    "Unsaved indicator shows correctly",
+    "File picker works in Electron and Web",
+    "Syntax highlighting displays correctly for different file types (.js, .ts, .py, .html, .css, .md, etc.)",
+    "File size warning appears for files > 1MB",
+    "Open in New Window button works in Electron",
+    "Pop-out window displays notepad correctly",
+    "Language auto-detection from file extension"
+  ],
+  "migration_notes": [
+    "Existing notes in coderef/notes/ can still be opened via Open menu",
+    "localStorage notes from old widget won't migrate automatically",
+    "Users can manually open old notes if needed",
+    "Old useLocalNotes hook can be deprecated after migration"
+  ],
+  "resources": {
+    "session_log": "sessions/notepad-clone-transformation-2026-01-08-session.md",
+    "resource_index": "sessions/notepad-clone-resources-index.md (546 lines)",
+    "original_plan": "c:\\Users\\willh\\.cursor\\plans\\notepad_clone_transformation_fac592d1.plan.md"
+  },
+  "planning_session_summary": {
+    "session_date": "2026-01-08",
+    "problem_statement": "Transform Notes Widget from 3-card layout (restricted to coderef/notes/) into Microsoft Notepad clone with multi-tab interface, menu bar, and project-wide file operations",
+    "architecture_changes": {
+      "component_structure": "NotepadWidget > MenuBar (File/Edit) + TabBar (horizontal tabs) + EditorArea (textarea)",
+      "state_object": "{ id, filePath, content, isDirty, lastSaved, fileExtension }",
+      "hook_replacement": "useNotepadTabs replaces useLocalNotes"
+    },
+    "technical_decisions": {
+      "file_access": "Project-wide (not restricted to coderef/notes/)",
+      "file_picker": "Use fileHandlers.ts for Electron/Web compatibility + File System Access API",
+      "clipboard": "navigator.clipboard API with execCommand() fallback",
+      "undo_redo": "Browser native (no custom implementation needed)",
+      "syntax_highlighting": "react-syntax-highlighter v16.1.0 with vscDarkPlus theme"
+    },
+    "migration_notes": "Existing notes in coderef/notes/ can still be opened. localStorage notes won't auto-migrate. Old useLocalNotes hook deprecated after migration."
+  },
+  "implementation_reference": {
+    "existing_patterns": {
+      "file_viewer": "packages/dashboard/src/components/coderef/FileViewer.tsx - syntax highlighting reference (lines 454-467)",
+      "language_map": "packages/dashboard/src/components/PromptingWorkflow/utils/languageMap.ts - 30+ file type mappings",
+      "console_tabs": "packages/dashboard/src/components/console/ConsoleTabs.tsx - tab styling reference",
+      "file_handlers": "packages/core/src/utils/fileHandlers.ts - openFile() exists, need saveFile()",
+      "electron_ipc": "packages/electron-app/src/main.ts - fs:selectDirectory, fs:stat handlers"
+    },
+    "api_endpoints": {
+      "GET_file": "GET /api/coderef/file?path=<path> - read file (lines 283-393, ready to use)",
+      "PUT_file": "PUT /api/coderef/file - write file (lines 178-277, needs project-wide access)",
+      "DELETE_file": "DELETE /api/coderef/file - delete file (lines 426-536, ready to use)",
+      "PATCH_file": "PATCH /api/coderef/file - rename/move (lines 563-821, ready for Save As)"
+    },
+    "keyboard_shortcuts": {
+      "file_operations": "Ctrl+N (New), Ctrl+O (Open), Ctrl+S (Save), Ctrl+Shift+S (Save As)",
+      "edit_operations": "Ctrl+Z (Undo), Ctrl+X (Cut), Ctrl+C (Copy), Ctrl+V (Paste), Ctrl+A (Select All)"
+    }
+  },
+  "phase_7_implementation": {
+    "library": "react-syntax-highlighter v16.1.0 (already installed)",
+    "theme": "vscDarkPlus (VS Code Dark Plus)",
+    "import_pattern": "import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'; import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';",
+    "language_detection": "Use getLanguage() from languageMap.ts (auto-detect from file extension)",
+    "custom_styles": "{ margin: 0, padding: '1rem', borderRadius: '0.5rem', fontSize: '0.875rem', lineHeight: '1.5', height: '100%', overflow: 'auto' }",
+    "line_numbers": true,
+    "file_size_warning": "Modal dialog for files > 1MB with user confirmation",
+    "default_new_file_extension": ".md",
+    "edit_mode_toggle": "Optional: Add Preview/Edit toggle button in MenuBar"
+  },
+  "critical_gaps": {
+    "phase_1_blockers": [
+      "FileApi.save() does not exist - must create in api-access.ts",
+      "FileApi.open() does not exist - create as alias for FileApi.load()",
+      "fileHandlers.saveFile() does not exist - needed for Save As dialog",
+      "WRITE_ALLOWED_EXTENSIONS in route.ts limited to [.md, .txt, .json] - must expand to 30+ types",
+      "validateWritePath() enforces coderef/notes/ restriction - must allow project-wide writes"
+    ],
+    "implementation_notes": [
+      "FileApi.load() exists at line 133 in api-access.ts (reuse for open())",
+      "NotesApi.save() exists but restricted to coderef/notes/ (use as reference)",
+      "ConsoleTabs.tsx exists for tab styling reference",
+      "languageMap.ts covers all 30+ file types for syntax highlighting",
+      "File size warning should be modal dialog (blocking, requires confirmation)"
+    ],
+    "security_requirements": [
+      "Prevent absolute paths in validateWritePath()",
+      "Prevent directory traversal (../ patterns)",
+      "Verify all paths resolve within project root",
+      "Maintain extension allowlist validation",
+      "Test edge cases: symlinks, special chars, traversal attempts"
+    ],
+    "cross_platform_considerations": [
+      "File picker must work in both Electron and Web",
+      "Electron: Use IPC handler fs:saveFileDialog",
+      "Web: Use File System Access API showSaveFilePicker()",
+      "Fallback: HTML input type=file for compatibility"
+    ]
+  }
+}

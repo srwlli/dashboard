@@ -1,6 +1,6 @@
 # Behavior Standards
 
-**Generated**: 2026-01-03
+**Generated**: 2026-01-10
 **Project**: coderef-dashboard
 **Pattern Discovery**: standard
 
@@ -12,8 +12,8 @@ This document defines the behavior standards discovered in the coderef-dashboard
 
 ## Component Architecture
 
-**Server Components**: 44
-**Client Components**: 277
+**Server Components**: 212
+**Client Components**: 469
 
 **Pattern**: Uses `'use client'` directive for client-side components
 
@@ -36,15 +36,15 @@ This document defines the behavior standards discovered in the coderef-dashboard
 - `useAccentColor must be used within AccentColorProvider`
 - `useExplorer must be used within an ExplorerProvider`
 - `useProjects must be used within a ProjectsProvider`
+- `useSearch must be used within SearchProvider`
 - `useTheme must be used within ThemeProvider`
 - `useWorkflow must be used within WorkflowProvider`
 - `Failed to copy to clipboard`
 - `Failed to load project`
 - `Main window not available`
 - `Wrong value`
-- `First`
 
-*...and 219 more*
+*...and 287 more*
 
 ## Notifications
 

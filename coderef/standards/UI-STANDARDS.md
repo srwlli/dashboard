@@ -1,6 +1,6 @@
 # UI Standards
 
-**Generated**: 2026-01-03
+**Generated**: 2026-01-10
 **Project**: coderef-dashboard
 **Pattern Discovery**: standard
 
@@ -40,6 +40,7 @@ This document defines the UI standards discovered in the coderef-dashboard codeb
 - `padding-utilities`
 - `sm:gap-0`
 - `sm:gap-2`
+- `sm:gap-3`
 - `sm:gap-4`
 - `sm:gap-6`
 

@@ -1,6 +1,6 @@
 # UX Patterns
 
-**Generated**: 2026-01-03
+**Generated**: 2026-01-10
 **Project**: coderef-dashboard
 **Pattern Discovery**: standard
 
@@ -23,6 +23,7 @@ This document defines the UX patterns discovered in the coderef-dashboard codeba
 - `components/ComingSoon.tsx/`
 - `components/ErrorBoundary.tsx/`
 - `components/FilterBar/`
+- `components/GlobalSearchBar.tsx/`
 - `components/Header/`
 - `components/MobileNav/`
 - `components/PWAInitializer.tsx/`
@@ -31,6 +32,7 @@ This document defines the UX patterns discovered in the coderef-dashboard codeba
 - `components/PromptingWorkflow/`
 - `components/RootClientWrapper.tsx/`
 - `components/Scanner/`
+- `components/SessionManager/`
 - `components/Sidebar/`
 - `components/StatsCard/`
 - `components/StubCard/`
@@ -45,6 +47,7 @@ This document defines the UX patterns discovered in the coderef-dashboard codeba
 - `components/WorkorderList/`
 - `components/coderef/`
 - `components/notifications/`
+- `components/resources/`
 
 **Layout Files**: 4 layouts detected
 

@@ -1,8 +1,8 @@
 # Component Index
 
-**Generated**: 2026-01-03
+**Generated**: 2026-01-10
 **Project**: coderef-dashboard
-**Total Components**: 70
+**Total Components**: 72
 
 ---
 
@@ -14,13 +14,14 @@
 | AccentColorContext | ui | active | packages\dashboard\src\contexts\AccentColorContext.tsx |
 | ExplorerContext | ui | active | packages\dashboard\src\contexts\ExplorerContext.tsx |
 | ProjectsContext | ui | active | packages\dashboard\src\contexts\ProjectsContext.tsx |
+| SearchContext | ui | active | packages\dashboard\src\contexts\SearchContext.tsx |
 | SidebarContext | ui | active | packages\dashboard\src\contexts\SidebarContext.tsx |
 | ThemeContext | ui | active | packages\dashboard\src\contexts\ThemeContext.tsx |
 | WorkflowContext | ui | active | packages\dashboard\src\contexts\WorkflowContext.tsx |
 | STORAGE_KEY | ui | active | packages\dashboard\src\contexts\WorkflowContext.tsx |
 | EXPECTED_KEY | ui | active | packages\dashboard\src\widgets\coderef-explorer\__tests__\persistence-debug.test.tsx |
-| Icon | ui | active | packages\dashboard\src\components\coderef\ContextMenu.tsx |
 | SubIcon | ui | active | packages\dashboard\src\components\coderef\ContextMenu.tsx |
+| Icon | ui | active | packages\dashboard\src\components\coderef\ContextMenu.tsx |
 | FILE_TYPE_OPTIONS | ui | active | packages\dashboard\src\components\coderef\FileTypeFilter.tsx |
 | Icon | ui | active | packages\dashboard\src\components\coderef\FileTypeFilter.tsx |
 | ComingSoon | ui | active | packages\dashboard\src\components\ComingSoon\index.tsx |
@@ -49,13 +50,14 @@
 | AccentColorContext | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\AccentColorContext.tsx |
 | ExplorerContext | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\ExplorerContext.tsx |
 | ProjectsContext | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\ProjectsContext.tsx |
+| SearchContext | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\SearchContext.tsx |
 | SidebarContext | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\SidebarContext.tsx |
 | ThemeContext | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\ThemeContext.tsx |
 | WorkflowContext | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\WorkflowContext.tsx |
 | STORAGE_KEY | ui | active | node_modules\@coderef-dashboard\dashboard\src\contexts\WorkflowContext.tsx |
 | EXPECTED_KEY | ui | active | node_modules\@coderef-dashboard\dashboard\src\widgets\coderef-explorer\__tests__\persistence-debug.test.tsx |
-| Icon | ui | active | node_modules\@coderef-dashboard\dashboard\src\components\coderef\ContextMenu.tsx |
 | SubIcon | ui | active | node_modules\@coderef-dashboard\dashboard\src\components\coderef\ContextMenu.tsx |
+| Icon | ui | active | node_modules\@coderef-dashboard\dashboard\src\components\coderef\ContextMenu.tsx |
 | FILE_TYPE_OPTIONS | ui | active | node_modules\@coderef-dashboard\dashboard\src\components\coderef\FileTypeFilter.tsx |
 | Icon | ui | active | node_modules\@coderef-dashboard\dashboard\src\components\coderef\FileTypeFilter.tsx |
 | ComingSoon | ui | active | node_modules\@coderef-dashboard\dashboard\src\components\ComingSoon\index.tsx |
