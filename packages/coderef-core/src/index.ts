@@ -37,12 +37,11 @@ export { convertGraphToElements, getConversionStats } from './adapter/graph-to-e
  *
  * @example
  * ```typescript
- * import { scanCurrentElements, LANGUAGE_PATTERNS } from '@coderef/core';
+ * import { scanCurrentElements, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS } from '@coderef/core';
  *
- * // Scan TypeScript files
+ * // Scan TypeScript files (uses DEFAULT_EXCLUDE_PATTERNS automatically)
  * const elements = await scanCurrentElements('./src', 'ts', {
- *   recursive: true,
- *   exclude: ['**\/node_modules/**']
+ *   recursive: true
  * });
  *
  * // Scan multiple languages
@@ -50,12 +49,17 @@ export { convertGraphToElements, getConversionStats } from './adapter/graph-to-e
  *
  * // Access language patterns
  * const tsPatterns = LANGUAGE_PATTERNS.ts;
+ *
+ * // View default exclusions
+ * console.log(DEFAULT_EXCLUDE_PATTERNS);
+ * // Output: Array of glob patterns for excluded directories
  * ```
  *
  * @see {@link scanCurrentElements} - Main scanning function
  * @see {@link LANGUAGE_PATTERNS} - Pattern definitions by language
+ * @see {@link DEFAULT_EXCLUDE_PATTERNS} - Default directory exclusions
  */
-export { scanCurrentElements, LANGUAGE_PATTERNS } from './scanner/scanner.js';
+export { scanCurrentElements, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS } from './scanner/scanner.js';
 
 // Note: ScanOptions and ElementData are exported from ./types/types.js on line 28
 

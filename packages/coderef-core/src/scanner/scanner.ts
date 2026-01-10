@@ -139,6 +139,26 @@ export const LANGUAGE_PATTERNS: Record<string, Array<{
 const DEFAULT_SUPPORTED_LANGS = ['ts', 'js', 'tsx', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'];
 
 /**
+ * Default exclusion patterns to prevent scanning:
+ * - Dependencies: node_modules
+ * - Build outputs: dist, build, .next, .nuxt
+ * - Python virtual environments: .venv, venv, env, __pycache__
+ * - Version control: .git
+ */
+export const DEFAULT_EXCLUDE_PATTERNS = [
+  '**/node_modules/**',
+  '**/dist/**',
+  '**/build/**',
+  '**/.venv/**',
+  '**/venv/**',
+  '**/env/**',
+  '**/__pycache__/**',
+  '**/.git/**',
+  '**/.next/**',
+  '**/.nuxt/**'
+] as const;
+
+/**
  * Cache entry for storing scan results
  */
 interface CacheEntry {
@@ -308,7 +328,7 @@ export async function scanCurrentElements(
   // Default options
   const {
     include = undefined,
-    exclude: excludeOption = ['**/node_modules/**', '**/dist/**', '**/build/**'],
+    exclude: excludeOption = DEFAULT_EXCLUDE_PATTERNS as readonly string[] as string[],
     recursive = true,
     langs: optionLangs = [],
     customPatterns = [],
