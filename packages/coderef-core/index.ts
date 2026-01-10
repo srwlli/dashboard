@@ -24,3 +24,9 @@ export * from './utils/fs.js';
 
 // Error classes
 export * from './src/errors/index.js';
+
+// File generation
+export { saveIndex } from './src/fileGeneration/saveIndex.js';
+export { generateContext } from './src/fileGeneration/generateContext.js';
+export { buildDependencyGraph } from './src/fileGeneration/buildDependencyGraph.js';
+export type { DependencyGraph, GraphNode, GraphEdge } from './src/fileGeneration/buildDependencyGraph.js';
