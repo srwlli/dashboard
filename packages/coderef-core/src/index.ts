@@ -81,7 +81,14 @@ export { scanCurrentElements, LANGUAGE_PATTERNS } from './scanner/scanner.js';
  * @see {@link generateContext} - Generate context.json and context.md
  * @see {@link buildDependencyGraph} - Build dependency graph
  */
+// Phase 1: Core file generation
 export { saveIndex } from './fileGeneration/saveIndex.js';
 export { generateContext } from './fileGeneration/generateContext.js';
 export { buildDependencyGraph } from './fileGeneration/buildDependencyGraph.js';
 export type { DependencyGraph, GraphNode, GraphEdge } from './fileGeneration/buildDependencyGraph.js';
+
+// Phase 2: Analysis reports
+export { detectPatterns } from './fileGeneration/detectPatterns.js';
+export { analyzeCoverage } from './fileGeneration/analyzeCoverage.js';
+export { validateReferences } from './fileGeneration/validateReferences.js';
+export { detectDrift } from './fileGeneration/detectDrift.js';

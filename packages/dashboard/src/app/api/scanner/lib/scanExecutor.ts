@@ -329,7 +329,15 @@ export class ScanExecutor extends EventEmitter {
       this.emitOutput(`[Generate] Using cached scan data (${elements.length} elements)\n`);
 
       // Import file generation functions (dynamic import for type safety)
-      const { saveIndex, generateContext, buildDependencyGraph } = await import('@coderef/core');
+      const {
+        saveIndex,
+        generateContext,
+        buildDependencyGraph,
+        detectPatterns,
+        analyzeCoverage,
+        validateReferences,
+        detectDrift,
+      } = await import('@coderef/core');
 
       // Step 1: Critical file (must succeed)
       this.emitOutput(`[Generate] Saving index...`);
@@ -343,6 +351,18 @@ export class ScanExecutor extends EventEmitter {
         buildDependencyGraph(projectPath, elements),
       ]);
       this.emitOutput(`[Generate] ✓ context.json, context.md, graph.json`);
+
+      // Step 3: Analysis reports (parallel + fault-tolerant)
+      this.emitOutput(`[Generate] Running analysis...`);
+      const analysisResults = await Promise.allSettled([
+        detectPatterns(projectPath, elements),
+        analyzeCoverage(projectPath, elements),
+        validateReferences(projectPath, elements),
+        detectDrift(projectPath, elements),
+      ]);
+
+      const analysisSuccess = analysisResults.filter(r => r.status === 'fulfilled').length;
+      this.emitOutput(`[Generate] ✓ Generated ${analysisSuccess}/4 analysis reports`);
 
       this.emitOutput(`[Generate] Completed: ${projectPath}\n`);
     } catch (error: any) {
