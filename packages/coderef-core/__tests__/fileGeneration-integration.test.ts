@@ -12,9 +12,11 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { scanCurrentElements } from '../src/index.js';
-import { saveIndex, generateContext, buildDependencyGraph } from '../src/index.js';
-import type { ElementData } from '../src/index.js';
+import { scanCurrentElements } from '../src/scanner/scanner.js';
+import { saveIndex } from '../src/fileGeneration/saveIndex.js';
+import { generateContext } from '../src/fileGeneration/generateContext.js';
+import { buildDependencyGraph } from '../src/fileGeneration/buildDependencyGraph.js';
+import type { ElementData } from '../src/types/types.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { mkdir, rm, readFile, access } from 'fs/promises';
