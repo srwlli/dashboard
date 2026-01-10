@@ -148,44 +148,86 @@ const WRITE_ALLOWED_EXTENSIONS = new Set([
 const MAX_WRITE_SIZE = 1024 * 1024; // 1MB
 
 /**
- * Validate write path to ensure it's within project root
- * Prevents directory traversal and unauthorized writes
- * Supports project-wide file access for Notepad clone
+ * Unified path validation for all file operations
+ * Ensures paths are within project root and prevents directory traversal
+ *
+ * @param projectRoot - Absolute path to project root directory
+ * @param targetPath - Path to validate (can be absolute or relative)
+ * @param options - Validation options
+ * @returns Validation result with resolved absolute path
+ */
+function validateFilePath(
+  projectRoot: string,
+  targetPath: string,
+  options: {
+    requireExtension?: boolean;
+    allowedExtensions?: Set<string>;
+  } = {}
+): {
+  valid: boolean;
+  error?: string;
+  resolvedPath?: string;
+} {
+  // Normalize project root to ensure consistent comparison
+  const normalizedRoot = path.resolve(projectRoot);
+
+  // Handle both absolute and relative paths
+  let resolvedPath: string;
+
+  if (path.isAbsolute(targetPath)) {
+    // For absolute paths, use directly
+    resolvedPath = path.resolve(targetPath);
+  } else {
+    // For relative paths, join with project root
+    // First check for directory traversal attempts
+    if (targetPath.includes('..')) {
+      return { valid: false, error: 'Directory traversal not allowed (..)' };
+    }
+
+    resolvedPath = path.resolve(normalizedRoot, targetPath);
+  }
+
+  // Critical security check: Verify the resolved path is within project root
+  // Use path.relative to detect if path escapes project root
+  const relativePath = path.relative(normalizedRoot, resolvedPath);
+  const isWithinRoot =
+    !relativePath.startsWith('..') &&
+    !path.isAbsolute(relativePath);
+
+  if (!isWithinRoot) {
+    return {
+      valid: false,
+      error: 'Path must be within project root directory'
+    };
+  }
+
+  // Validate file extension if required
+  if (options.requireExtension && options.allowedExtensions) {
+    const ext = path.extname(resolvedPath).toLowerCase();
+    if (!options.allowedExtensions.has(ext)) {
+      return {
+        valid: false,
+        error: `Invalid file extension. Allowed: ${Array.from(options.allowedExtensions).join(', ')}`,
+      };
+    }
+  }
+
+  return { valid: true, resolvedPath };
+}
+
+/**
+ * Validate write path (wrapper for backward compatibility)
+ * @deprecated Use validateFilePath instead
  */
 function validateWritePath(projectRoot: string, relativePath: string): {
   valid: boolean;
   error?: string;
   resolvedPath?: string;
 } {
-  // Reject absolute paths
-  if (path.isAbsolute(relativePath)) {
-    return { valid: false, error: 'Relative path required (absolute paths not allowed)' };
-  }
-
-  // Reject paths with directory traversal attempts
-  if (relativePath.includes('..')) {
-    return { valid: false, error: 'Directory traversal not allowed (..)' };
-  }
-
-  // Normalize and join paths to prevent traversal
-  const normalizedRelative = path.normalize(relativePath);
-  const resolvedPath = path.join(projectRoot, normalizedRelative);
-
-  // Verify the resolved path is still within project root (security boundary)
-  if (!resolvedPath.startsWith(projectRoot)) {
-    return { valid: false, error: 'Path must be within project root directory' };
-  }
-
-  // Validate file extension
-  const ext = path.extname(normalizedRelative).toLowerCase();
-  if (!WRITE_ALLOWED_EXTENSIONS.has(ext)) {
-    return {
-      valid: false,
-      error: `Invalid file extension. Allowed: ${Array.from(WRITE_ALLOWED_EXTENSIONS).join(', ')}`,
-    };
-  }
-
-  return { valid: true, resolvedPath };
+  return validateFilePath(projectRoot, relativePath, {
+    requireExtension: true,
+    allowedExtensions: WRITE_ALLOWED_EXTENSIONS,
+  });
 }
 
 /**
@@ -438,46 +480,49 @@ function isProtectedPath(filePath: string): boolean {
 
 /**
  * DELETE /api/coderef/file
- * Deletes a file or directory
- * Body: { filePath: string, recursive?: boolean }
+ * Deletes a file or directory within project root
+ * Body: { projectRoot: string, filePath: string, recursive?: boolean }
  */
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const { filePath, recursive = false } = body;
+    const { projectRoot, filePath, recursive = false } = body;
 
     // Validate required fields
-    if (!filePath) {
+    if (!projectRoot || !filePath) {
       const errorResponse = createErrorResponse(
         {
           code: 'VALIDATION_ERROR',
-          message: 'Missing required field: filePath',
+          message: 'Missing required fields: projectRoot, filePath',
         },
         { received: Object.keys(body) }
       );
       return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
     }
 
-    // Validate path is absolute
-    if (!path.isAbsolute(filePath)) {
+    // Validate path using unified validation
+    const validation = validateFilePath(projectRoot, filePath);
+    if (!validation.valid) {
       const errorResponse = createErrorResponse(
         {
           code: 'INVALID_PATH',
-          message: 'Path must be absolute',
+          message: validation.error!,
         },
-        { filePath }
+        { projectRoot, filePath }
       );
-      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
     }
 
+    const resolvedPath = validation.resolvedPath!;
+
     // Check if path is protected
-    if (isProtectedPath(filePath)) {
+    if (isProtectedPath(resolvedPath)) {
       const errorResponse = createErrorResponse(
         {
           code: 'FORBIDDEN',
           message: 'Cannot delete protected path',
         },
-        { path: filePath, protected: true }
+        { path: resolvedPath, protected: true }
       );
       return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
     }
@@ -485,7 +530,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
     // Check if file/directory exists
     let stats;
     try {
-      stats = await fs.stat(filePath);
+      stats = await fs.stat(resolvedPath);
     } catch (error: any) {
       if (error.code === 'ENOENT') {
         const errorResponse = createErrorResponse(
@@ -493,13 +538,13 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
             code: 'FILE_NOT_FOUND',
             message: 'File or directory not found',
           },
-          { path: filePath }
+          { path: resolvedPath }
         );
         return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
       }
       if (error.code === 'EACCES' || error.code === 'EPERM') {
         const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
-          path: filePath,
+          path: resolvedPath,
         });
         return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
       }
@@ -515,7 +560,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
           code: 'VALIDATION_ERROR',
           message: 'Cannot delete directory without recursive flag',
         },
-        { path: filePath, isDirectory: true }
+        { path: resolvedPath, isDirectory: true }
       );
       return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
     }
@@ -523,14 +568,14 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
     // Delete file or directory
     try {
       if (isDirectory) {
-        await fs.rm(filePath, { recursive: true, force: true });
+        await fs.rm(resolvedPath, { recursive: true, force: true });
       } else {
-        await fs.unlink(filePath);
+        await fs.unlink(resolvedPath);
       }
     } catch (error: any) {
       if (error.code === 'EACCES' || error.code === 'EPERM') {
         const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
-          path: filePath,
+          path: resolvedPath,
           operation: 'delete',
         });
         return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
@@ -540,7 +585,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
 
     const response = createSuccessResponse({
       success: true,
-      deleted: filePath,
+      deleted: resolvedPath,
       type: isDirectory ? 'directory' : 'file',
     });
 
@@ -575,20 +620,20 @@ function isValidFileName(name: string): boolean {
 
 /**
  * PATCH /api/coderef/file
- * Rename or move a file/directory
- * Body: { sourcePath: string, operation: 'rename' | 'move', newName?: string, destinationDir?: string }
+ * Rename or move a file/directory within project root
+ * Body: { projectRoot: string, sourcePath: string, operation: 'rename' | 'move', newName?: string, destinationDir?: string }
  */
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const { sourcePath, operation, newName, destinationDir } = body;
+    const { projectRoot, sourcePath, operation, newName, destinationDir } = body;
 
     // Validate required fields
-    if (!sourcePath || !operation) {
+    if (!projectRoot || !sourcePath || !operation) {
       const errorResponse = createErrorResponse(
         {
           code: 'VALIDATION_ERROR',
-          message: 'Missing required fields: sourcePath, operation',
+          message: 'Missing required fields: projectRoot, sourcePath, operation',
         },
         { received: Object.keys(body) }
       );
@@ -630,26 +675,29 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
     }
 
-    // Validate source path is absolute
-    if (!path.isAbsolute(sourcePath)) {
+    // Validate source path using unified validation
+    const sourceValidation = validateFilePath(projectRoot, sourcePath);
+    if (!sourceValidation.valid) {
       const errorResponse = createErrorResponse(
         {
           code: 'INVALID_PATH',
-          message: 'Source path must be absolute',
+          message: sourceValidation.error!,
         },
-        { sourcePath }
+        { projectRoot, sourcePath }
       );
-      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+      return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
     }
 
+    const resolvedSourcePath = sourceValidation.resolvedPath!;
+
     // Check if source is protected
-    if (isProtectedPath(sourcePath)) {
+    if (isProtectedPath(resolvedSourcePath)) {
       const errorResponse = createErrorResponse(
         {
           code: 'FORBIDDEN',
           message: 'Cannot rename or move protected path',
         },
-        { path: sourcePath, protected: true }
+        { path: resolvedSourcePath, protected: true }
       );
       return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
     }
@@ -657,7 +705,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     // Verify source exists
     let sourceStats;
     try {
-      sourceStats = await fs.stat(sourcePath);
+      sourceStats = await fs.stat(resolvedSourcePath);
     } catch (error: any) {
       if (error.code === 'ENOENT') {
         const errorResponse = createErrorResponse(
@@ -665,13 +713,13 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
             code: 'FILE_NOT_FOUND',
             message: 'Source file or directory not found',
           },
-          { path: sourcePath }
+          { path: resolvedSourcePath }
         );
         return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
       }
       if (error.code === 'EACCES' || error.code === 'EPERM') {
         const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
-          path: sourcePath,
+          path: resolvedSourcePath,
         });
         return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
       }
@@ -694,44 +742,47 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       }
 
       // Build destination path (same directory, new name)
-      const sourceDir = path.dirname(sourcePath);
+      const sourceDir = path.dirname(resolvedSourcePath);
       destinationPath = path.join(sourceDir, newName!);
 
       // Check if renaming to same name
-      if (sourcePath === destinationPath) {
+      if (resolvedSourcePath === destinationPath) {
         const errorResponse = createErrorResponse(
           {
             code: 'VALIDATION_ERROR',
             message: 'New name is the same as current name',
           },
-          { sourcePath, newName }
+          { sourcePath: resolvedSourcePath, newName }
         );
         return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
       }
     } else {
       // Move operation
-      // Validate destination directory is absolute
-      if (!path.isAbsolute(destinationDir!)) {
+      // Validate destination directory using unified validation
+      const destValidation = validateFilePath(projectRoot, destinationDir!);
+      if (!destValidation.valid) {
         const errorResponse = createErrorResponse(
           {
             code: 'INVALID_PATH',
-            message: 'Destination directory must be absolute',
+            message: destValidation.error!,
           },
-          { destinationDir }
+          { projectRoot, destinationDir }
         );
-        return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
+        return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
       }
 
-      // Verify destination directory exists
+      const resolvedDestDir = destValidation.resolvedPath!;
+
+      // Verify destination directory exists and is a directory
       try {
-        const destStats = await fs.stat(destinationDir!);
+        const destStats = await fs.stat(resolvedDestDir);
         if (!destStats.isDirectory()) {
           const errorResponse = createErrorResponse(
             {
               code: 'INVALID_PATH',
               message: 'Destination must be a directory',
             },
-            { destinationDir }
+            { destinationDir: resolvedDestDir }
           );
           return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
         }
@@ -742,7 +793,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
               code: 'FILE_NOT_FOUND',
               message: 'Destination directory not found',
             },
-            { path: destinationDir }
+            { path: resolvedDestDir }
           );
           return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
         }
@@ -750,29 +801,29 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       }
 
       // Build destination path (new directory, same name)
-      const sourceName = path.basename(sourcePath);
-      destinationPath = path.join(destinationDir!, sourceName);
+      const sourceName = path.basename(resolvedSourcePath);
+      destinationPath = path.join(resolvedDestDir, sourceName);
 
       // Check if moving to same location
-      if (path.dirname(sourcePath) === destinationDir) {
+      if (path.dirname(resolvedSourcePath) === resolvedDestDir) {
         const errorResponse = createErrorResponse(
           {
             code: 'VALIDATION_ERROR',
             message: 'Source is already in destination directory',
           },
-          { sourcePath, destinationDir }
+          { sourcePath: resolvedSourcePath, destinationDir: resolvedDestDir }
         );
         return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
       }
 
       // Check if trying to move into itself (for directories)
-      if (sourceStats.isDirectory() && destinationDir!.startsWith(sourcePath + path.sep)) {
+      if (sourceStats.isDirectory() && resolvedDestDir.startsWith(resolvedSourcePath + path.sep)) {
         const errorResponse = createErrorResponse(
           {
             code: 'VALIDATION_ERROR',
             message: 'Cannot move directory into itself',
           },
-          { sourcePath, destinationDir }
+          { sourcePath: resolvedSourcePath, destinationDir: resolvedDestDir }
         );
         return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
       }
@@ -798,11 +849,11 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 
     // Perform rename/move operation
     try {
-      await fs.rename(sourcePath, destinationPath);
+      await fs.rename(resolvedSourcePath, destinationPath);
     } catch (error: any) {
       if (error.code === 'EACCES' || error.code === 'EPERM') {
         const errorResponse = createErrorResponse(ErrorCodes.PERMISSION_DENIED, {
-          path: sourcePath,
+          path: resolvedSourcePath,
           operation,
         });
         return NextResponse.json(errorResponse, { status: HttpStatus.FORBIDDEN });
@@ -814,7 +865,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
             code: 'CROSS_DEVICE_MOVE',
             message: 'Cannot move across different filesystems. Use copy instead.',
           },
-          { sourcePath, destinationPath }
+          { sourcePath: resolvedSourcePath, destinationPath }
         );
         return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
       }
@@ -824,7 +875,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     const response = createSuccessResponse({
       success: true,
       operation,
-      oldPath: sourcePath,
+      oldPath: resolvedSourcePath,
       newPath: destinationPath,
       type: sourceStats.isDirectory() ? 'directory' : 'file',
     });
