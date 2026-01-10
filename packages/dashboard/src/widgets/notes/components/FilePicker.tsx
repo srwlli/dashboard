@@ -116,14 +116,19 @@ async function saveFile(options: {
     // Web File System Access API (if available)
     if ('showSaveFilePicker' in window) {
       try {
-        const fileHandle = await (window as any).showSaveFilePicker({
-          suggestedName: options.suggestedName || 'untitled.txt',
-          types: options.filters?.map(filter => ({
+        // Filter out wildcard extensions (not supported by File System Access API)
+        const webFilters = options.filters
+          ?.filter(filter => !filter.extensions.includes('*'))
+          .map(filter => ({
             description: filter.name,
             accept: {
               'text/plain': filter.extensions.map(ext => `.${ext}`)
             }
-          }))
+          }));
+
+        const fileHandle = await (window as any).showSaveFilePicker({
+          suggestedName: options.suggestedName || 'untitled.txt',
+          types: webFilters && webFilters.length > 0 ? webFilters : undefined
         });
 
         const writable = await fileHandle.createWritable();
