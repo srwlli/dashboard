@@ -120,9 +120,27 @@ function isTextFile(ext: string): boolean {
 
 /**
  * Allowlisted file extensions for writing
- * Restricted to safe text formats for notes
+ * Supports 30+ text/code file formats for Notepad clone
  */
-const WRITE_ALLOWED_EXTENSIONS = new Set(['.md', '.txt', '.json']);
+const WRITE_ALLOWED_EXTENSIONS = new Set([
+  // Markdown and text
+  '.md', '.txt',
+
+  // Web development
+  '.html', '.htm', '.css', '.scss', '.sass', '.js', '.jsx', '.ts', '.tsx',
+
+  // Programming languages
+  '.py', '.java', '.c', '.cpp', '.rs', '.go', '.rb', '.php',
+
+  // Data and config
+  '.json', '.yaml', '.yml', '.toml', '.ini', '.env',
+
+  // Markup and data
+  '.xml', '.svg',
+
+  // Database and scripts
+  '.sql', '.sh', '.bash',
+]);
 
 /**
  * Maximum file size for writes (1MB)
@@ -130,8 +148,9 @@ const WRITE_ALLOWED_EXTENSIONS = new Set(['.md', '.txt', '.json']);
 const MAX_WRITE_SIZE = 1024 * 1024; // 1MB
 
 /**
- * Validate write path to ensure it's within coderef/notes/
+ * Validate write path to ensure it's within project root
  * Prevents directory traversal and unauthorized writes
+ * Supports project-wide file access for Notepad clone
  */
 function validateWritePath(projectRoot: string, relativePath: string): {
   valid: boolean;
@@ -150,12 +169,11 @@ function validateWritePath(projectRoot: string, relativePath: string): {
 
   // Normalize and join paths to prevent traversal
   const normalizedRelative = path.normalize(relativePath);
-  const resolvedPath = path.join(projectRoot, 'coderef', 'notes', normalizedRelative);
+  const resolvedPath = path.join(projectRoot, normalizedRelative);
 
-  // Verify the resolved path is still within coderef/notes/
-  const notesDir = path.join(projectRoot, 'coderef', 'notes');
-  if (!resolvedPath.startsWith(notesDir)) {
-    return { valid: false, error: 'Path must be within coderef/notes/ directory' };
+  // Verify the resolved path is still within project root (security boundary)
+  if (!resolvedPath.startsWith(projectRoot)) {
+    return { valid: false, error: 'Path must be within project root directory' };
   }
 
   // Validate file extension
@@ -172,7 +190,7 @@ function validateWritePath(projectRoot: string, relativePath: string): {
 
 /**
  * PUT /api/coderef/file
- * Writes content to a file in coderef/notes/ directory
+ * Writes content to a file anywhere within project root
  * Body: { projectRoot: string, filePath: string, content: string }
  */
 export async function PUT(request: NextRequest): Promise<NextResponse> {

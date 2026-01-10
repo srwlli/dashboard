@@ -19,6 +19,28 @@ contextBridge.exposeInMainWorld('electronAPI', {
     validatePath: (pathToValidate: string) => ipcRenderer.invoke('fs:validatePath', pathToValidate),
   },
 
+  // File dialog operations for Notepad clone
+  saveFileDialog: (options: {
+    title?: string;
+    defaultPath?: string;
+    filters?: Array<{ name: string; extensions: string[] }>;
+  }) => ipcRenderer.invoke('fs:saveFileDialog', options),
+
+  writeFile: (options: {
+    filePath: string;
+    content: string;
+  }) => ipcRenderer.invoke('fs:writeFile', options),
+
+  openFileDialog: (options: {
+    title?: string;
+    filters?: Array<{ name: string; extensions: string[] }>;
+  }) => ipcRenderer.invoke('fs:openFileDialog', options),
+
+  readFile: (filePath: string) => ipcRenderer.invoke('fs:readFile', filePath),
+
+  // Window operations
+  openNotesWindow: () => ipcRenderer.invoke('window:openNotes'),
+
   // IPC communication
   send: (channel: string, ...args: any[]) => {
     if (['log'].includes(channel)) {
@@ -54,6 +76,21 @@ declare global {
         readFile: (filePath: string) => Promise<string>;
         validatePath: (pathToValidate: string) => Promise<{ valid: boolean; reason?: string }>;
       };
+      saveFileDialog: (options: {
+        title?: string;
+        defaultPath?: string;
+        filters?: Array<{ name: string; extensions: string[] }>;
+      }) => Promise<{ filePath?: string; canceled: boolean }>;
+      writeFile: (options: {
+        filePath: string;
+        content: string;
+      }) => Promise<{ success?: boolean; error?: string }>;
+      openFileDialog: (options: {
+        title?: string;
+        filters?: Array<{ name: string; extensions: string[] }>;
+      }) => Promise<{ filePath?: string; canceled: boolean }>;
+      readFile: (filePath: string) => Promise<{ content?: string; filename?: string; error?: string }>;
+      openNotesWindow: () => Promise<{ success: boolean }>;
       send: (channel: string, ...args: any[]) => void;
       receive: (channel: string, func: (...args: any[]) => void) => () => void;
     };

@@ -219,6 +219,37 @@ export const FileApi = {
       }),
     });
   },
+
+  /**
+   * Save file content anywhere in project
+   * Supports project-wide file operations for Notepad clone
+   *
+   * @param projectRoot - Project root directory path
+   * @param filePath - Relative path from project root (e.g., "src/App.tsx", "coderef/notes/todo.md")
+   * @param content - File content to write
+   * @returns Saved file path and size
+   */
+  async save(
+    projectRoot: string,
+    filePath: string,
+    content: string
+  ): Promise<{ path: string; size: number }> {
+    return apiFetch('/api/coderef/file', {
+      method: 'PUT',
+      body: JSON.stringify({ projectRoot, filePath, content }),
+    });
+  },
+
+  /**
+   * Open file content from anywhere in project
+   * Alias for load() with clearer naming for Notepad clone
+   *
+   * @param filePath - Absolute path to file
+   * @returns File data with content and metadata
+   */
+  async open(filePath: string): Promise<FileData> {
+    return this.load(filePath);
+  },
 };
 
 /**

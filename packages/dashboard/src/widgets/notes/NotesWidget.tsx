@@ -1,195 +1,426 @@
 'use client';
 
 /**
- * NotesWidget - Main container component
+ * NotesWidget - Notepad Clone
  *
- * Smart container that manages notes state, editor mode, and auto-save
- * Provides overall layout (2-column: list + editor) with industrial theme
+ * Multi-tab text editor with syntax highlighting
+ * Supports project-wide file operations (Open, Save, Save As)
+ * Features: File/Edit menus, keyboard shortcuts, unsaved changes tracking
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { Save, Trash2 } from 'lucide-react';
-import { useLocalNotes } from './hooks/useLocalNotes';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useProjects } from '@/contexts/ProjectsContext';
 import { CodeRefApi } from '@/lib/coderef/api-access';
+import { MenuBar } from './components/MenuBar';
+import { TabBar } from './components/TabBar';
+import { FilePicker } from './components/FilePicker';
+import { useNotepadTabs } from './hooks/useNotepadTabs';
+import type { FileMenuAction, EditMenuAction } from './types/notepad';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { getLanguage } from '@/components/PromptingWorkflow/utils/languageMap';
+import { Eye, Edit3, ExternalLink } from 'lucide-react';
 
-/**
- * NotesWidget Component
- *
- * Main widget component that orchestrates notes functionality
- * Two-column layout: NotesList (30%) + Editor (70%)
- * Responsive: stacks on mobile (<768px)
- */
 export default function NotesWidget() {
   const { projects } = useProjects();
-  const { notes, loading, createNote, updateNote, markAsSaved, deleteNote } = useLocalNotes();
-  const [savingNotes, setSavingNotes] = useState<Set<string>>(new Set());
+  const {
+    tabs,
+    activeTabId,
+    activeTab,
+    createTab,
+    switchTab,
+    updateContent,
+    markAsSaved,
+    closeTab,
+    hasUnsavedChanges,
+  } = useNotepadTabs();
+
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const [saving, setSaving] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
 
   // Get project root (use first project for MVP)
   const projectRoot = projects[0]?.path || '';
 
   /**
-   * Handle creating a new note card
+   * Handle File menu actions
    */
-  const handleCreateNote = useCallback(() => {
-    createNote();
-  }, [createNote]);
+  const handleFileAction = useCallback(async (action: FileMenuAction) => {
+    switch (action) {
+      case 'new':
+        createTab(undefined, '', '.md');
+        break;
+
+      case 'open':
+        try {
+          const result = await FilePicker.openFile();
+          if (result) {
+            const extension = FilePicker.getExtension(result.filename);
+            createTab(result.filename, result.content, extension);
+          }
+        } catch (error) {
+          console.error('Failed to open file:', error);
+          alert('Failed to open file');
+        }
+        break;
+
+      case 'save':
+        if (activeTab) {
+          await handleSave(activeTab.id);
+        }
+        break;
+
+      case 'save-as':
+        if (activeTab) {
+          await handleSaveAs(activeTab.id);
+        }
+        break;
+
+      case 'close-tab':
+        if (activeTabId) {
+          handleCloseTab(activeTabId);
+        }
+        break;
+    }
+  }, [activeTab, activeTabId, createTab]);
 
   /**
-   * Handle saving a note to file system
+   * Handle Edit menu actions
    */
-  const handleSaveNote = useCallback(async (id: string, title: string, content: string) => {
+  const handleEditAction = useCallback((action: EditMenuAction) => {
+    if (!editorRef.current) return;
+
+    const textarea = editorRef.current;
+
+    switch (action) {
+      case 'undo':
+        document.execCommand('undo');
+        break;
+
+      case 'redo':
+        document.execCommand('redo');
+        break;
+
+      case 'cut':
+        navigator.clipboard.writeText(
+          textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)
+        );
+        const cutValue = textarea.value.substring(0, textarea.selectionStart) +
+          textarea.value.substring(textarea.selectionEnd);
+        if (activeTab) {
+          updateContent(activeTab.id, cutValue);
+        }
+        break;
+
+      case 'copy':
+        navigator.clipboard.writeText(
+          textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)
+        );
+        break;
+
+      case 'paste':
+        navigator.clipboard.readText().then(text => {
+          const pasteValue = textarea.value.substring(0, textarea.selectionStart) +
+            text +
+            textarea.value.substring(textarea.selectionEnd);
+          if (activeTab) {
+            updateContent(activeTab.id, pasteValue);
+          }
+        });
+        break;
+
+      case 'select-all':
+        textarea.select();
+        break;
+    }
+  }, [activeTab, updateContent]);
+
+  /**
+   * Save active tab to file system
+   */
+  const handleSave = useCallback(async (tabId: string) => {
+    const tab = tabs.find(t => t.id === tabId);
+    if (!tab) return;
+
+    // If no filePath, use Save As
+    if (!tab.filePath) {
+      await handleSaveAs(tabId);
+      return;
+    }
+
     if (!projectRoot) {
       alert('No project selected');
       return;
     }
 
-    if (!title.trim()) {
-      alert('Please enter a title');
-      return;
-    }
-
     try {
-      setSavingNotes(prev => new Set(prev).add(id));
+      setSaving(true);
 
-      // Ensure filename has extension
-      const filename = title.endsWith('.md') || title.endsWith('.txt')
-        ? title
-        : `${title}.md`;
-
-      // Save to file system
-      await CodeRefApi.notes.save(projectRoot, filename, content);
+      // Save using FileApi
+      await CodeRefApi.file.save(projectRoot, tab.filePath, tab.content);
 
       // Mark as saved
-      markAsSaved(id, filename);
-
-      console.log(`Saved note to coderef/notes/${filename}`);
-    } catch (err) {
-      console.error('Failed to save note:', err);
-      alert('Failed to save note to file system');
+      markAsSaved(tabId, tab.filePath);
+    } catch (error) {
+      console.error('Failed to save file:', error);
+      alert('Failed to save file');
     } finally {
-      setSavingNotes(prev => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
+      setSaving(false);
     }
-  }, [projectRoot, markAsSaved]);
+  }, [tabs, projectRoot, markAsSaved]);
 
   /**
-   * Handle deleting a note
+   * Save As - prompt for file path
    */
-  const handleDeleteNote = useCallback((id: string) => {
-    if (confirm('Delete this note?')) {
-      deleteNote(id);
+  const handleSaveAs = useCallback(async (tabId: string) => {
+    const tab = tabs.find(t => t.id === tabId);
+    if (!tab) return;
+
+    try {
+      setSaving(true);
+
+      const suggestedName = tab.title !== 'Untitled' ? tab.title : `untitled${tab.fileExtension}`;
+      const result = await FilePicker.saveFile(tab.content, suggestedName);
+
+      if (result && result.success && result.filePath) {
+        // Mark as saved with new path
+        markAsSaved(tabId, result.filePath);
+      }
+    } catch (error) {
+      console.error('Failed to save file:', error);
+      alert('Failed to save file');
+    } finally {
+      setSaving(false);
     }
-  }, [deleteNote]);
+  }, [tabs, markAsSaved]);
 
   /**
-   * Keyboard shortcuts
-   * Cmd/Ctrl+N: New note
+   * Handle tab close with unsaved changes confirmation
+   */
+  const handleCloseTab = useCallback((tabId: string) => {
+    const tab = tabs.find(t => t.id === tabId);
+    if (!tab) return;
+
+    if (tab.isDirty) {
+      setShowCloseConfirm(tabId);
+    } else {
+      closeTab(tabId);
+    }
+  }, [tabs, closeTab]);
+
+  /**
+   * Confirm close tab without saving
+   */
+  const confirmCloseTab = useCallback(() => {
+    if (showCloseConfirm) {
+      closeTab(showCloseConfirm);
+      setShowCloseConfirm(null);
+    }
+  }, [showCloseConfirm, closeTab]);
+
+  /**
+   * Save before closing tab
+   */
+  const saveBeforeClose = useCallback(async () => {
+    if (showCloseConfirm) {
+      await handleSave(showCloseConfirm);
+      closeTab(showCloseConfirm);
+      setShowCloseConfirm(null);
+    }
+  }, [showCloseConfirm, handleSave, closeTab]);
+
+  /**
+   * Handle content change
+   */
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (activeTab) {
+      updateContent(activeTab.id, e.target.value);
+    }
+  }, [activeTab, updateContent]);
+
+  /**
+   * Open notepad in new Electron window
+   */
+  const handleOpenInNewWindow = useCallback(() => {
+    if (typeof window !== 'undefined' && (window as any).electronAPI) {
+      // Electron IPC call to open new window
+      (window as any).electronAPI.openNotesWindow?.();
+    } else {
+      // Web fallback: open in new browser tab
+      window.open('/notes', '_blank');
+    }
+  }, []);
+
+  /**
+   * Warn before closing window with unsaved changes
    */
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isMod = e.metaKey || e.ctrlKey;
-
-      // Cmd/Ctrl+N: New note
-      if (isMod && e.key === 'n') {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges()) {
         e.preventDefault();
-        handleCreateNote();
+        e.returnValue = '';
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleCreateNote]);
-
-  if (loading) {
-    return (
-      <div className="h-full flex items-center justify-center text-ind-text-muted">
-        Loading notes...
-      </div>
-    );
-  }
-
-  // Always show exactly 3 cards
-  const displayNotes = notes.slice(0, 3);
-  while (displayNotes.length < 3) {
-    displayNotes.push({
-      id: `temp-${displayNotes.length}`,
-      title: '',
-      content: '',
-      savedToFile: false,
-      lastModified: new Date().toISOString(),
-    });
-  }
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
   return (
-    <div className="h-full flex gap-4 bg-ind-bg">
-      {/* 3 Note Cards - Inline, Full Height */}
-      {displayNotes.map((note, index) => {
-        const isSaving = savingNotes.has(note.id);
+    <div className="h-full flex flex-col bg-ind-bg">
+      {/* Menu Bar */}
+      <MenuBar
+        onFileAction={handleFileAction}
+        onEditAction={handleEditAction}
+        canSave={activeTab?.isDirty || false}
+        canClose={tabs.length > 0}
+      />
 
-        return (
-          <div
-            key={note.id}
-            className="flex-1 bg-ind-panel border-2 border-ind-border rounded-lg p-4 flex flex-col"
+      {/* Tab Bar */}
+      <TabBar
+        tabs={tabs}
+        activeTabId={activeTabId}
+        onSelectTab={switchTab}
+        onCloseTab={handleCloseTab}
+      />
+
+      {/* Preview Toggle & Actions */}
+      {activeTab && (
+        <div className="flex items-center justify-between px-3 py-1.5 bg-ind-panel border-b border-ind-border">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPreviewMode(false)}
+              className={`flex items-center gap-1 px-3 py-1 rounded text-xs transition-colors ${
+                !previewMode
+                  ? 'bg-ind-accent text-white'
+                  : 'text-ind-text-muted hover:bg-ind-bg'
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Edit</span>
+            </button>
+            <button
+              onClick={() => setPreviewMode(true)}
+              className={`flex items-center gap-1 px-3 py-1 rounded text-xs transition-colors ${
+                previewMode
+                  ? 'bg-ind-accent text-white'
+                  : 'text-ind-text-muted hover:bg-ind-bg'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Preview</span>
+            </button>
+          </div>
+
+          {/* Open in New Window button */}
+          <button
+            onClick={handleOpenInNewWindow}
+            className="flex items-center gap-1 px-3 py-1 rounded text-xs text-ind-text-muted hover:bg-ind-bg hover:text-ind-text transition-colors"
+            title="Open in new window"
           >
-            {/* Title Input - TEXT EDITING FUNCTION: Title editing interface */}
-            {/* This input allows users to edit note titles. Changes are handled by updateNote function */}
-            <input
-              type="text"
-              placeholder="Untitled"
-              value={note.title}
-              onChange={e => updateNote(note.id, { title: e.target.value })}
-              className="bg-transparent border-b border-ind-border px-2 py-1 mb-3 text-ind-text font-semibold focus:outline-none focus:border-ind-accent"
-            />
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>New Window</span>
+          </button>
+        </div>
+      )}
 
-            {/* Content Textarea - TEXT EDITING FUNCTION: Main text editing interface */}
-            {/* This textarea allows users to edit note content. Changes are handled by updateNote function */}
+      {/* Editor Area */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab ? (
+          previewMode ? (
+            <div className="w-full h-full overflow-auto p-4 bg-ind-bg">
+              <SyntaxHighlighter
+                language={getLanguage(activeTab.fileExtension)}
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  padding: '1rem',
+                  borderRadius: '0.5rem',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.5',
+                  height: '100%',
+                }}
+                showLineNumbers
+              >
+                {activeTab.content || '// Empty file'}
+              </SyntaxHighlighter>
+            </div>
+          ) : (
             <textarea
-              placeholder="Start writing..."
-              value={note.content}
-              onChange={e => updateNote(note.id, { content: e.target.value })}
-              className="flex-1 resize-none bg-transparent text-ind-text text-sm focus:outline-none mb-3"
+              ref={editorRef}
+              value={activeTab.content}
+              onChange={handleContentChange}
+              className="w-full h-full p-4 bg-ind-bg text-ind-text font-mono text-sm resize-none focus:outline-none"
+              placeholder="Start typing..."
+              spellCheck={false}
             />
+          )
+        ) : (
+          <div className="h-full flex items-center justify-center text-ind-text-muted">
+            <p>No file open. Press Ctrl+N to create a new file or Ctrl+O to open an existing file.</p>
+          </div>
+        )}
+      </div>
 
-            {/* Footer: Status + Actions */}
-            <div className="flex items-center justify-between">
-              <div className="text-xs text-ind-text-muted">
-                {note.savedToFile ? (
-                  <span className="text-green-500">✓ Saved to {note.filename}</span>
-                ) : (
-                  <span>Local draft</span>
-                )}
-              </div>
+      {/* Status Bar */}
+      {activeTab && (
+        <div className="px-4 py-2 bg-ind-panel border-t border-ind-border text-xs text-ind-text-muted flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <span>{activeTab.filePath || 'Untitled'}</span>
+            <span>•</span>
+            <span>{activeTab.fileExtension.toUpperCase().replace('.', '')}</span>
+            {activeTab.isDirty && (
+              <>
+                <span>•</span>
+                <span className="text-amber-500">Unsaved changes</span>
+              </>
+            )}
+            {saving && (
+              <>
+                <span>•</span>
+                <span className="text-blue-500">Saving...</span>
+              </>
+            )}
+          </div>
+          <div>
+            Lines: {activeTab.content.split('\n').length} |
+            Characters: {activeTab.content.length}
+          </div>
+        </div>
+      )}
 
-              <div className="flex items-center gap-2">
-                {/* Save Button */}
-                {!note.savedToFile && (
-                  <button
-                    onClick={() => handleSaveNote(note.id, note.title, note.content)}
-                    disabled={isSaving}
-                    className="p-1.5 hover:bg-ind-bg rounded transition-colors disabled:opacity-50"
-                    title="Save to file system"
-                  >
-                    <Save className="w-4 h-4 text-ind-text-muted hover:text-ind-accent" />
-                  </button>
-                )}
-
-                {/* Delete Button */}
-                <button
-                  onClick={() => handleDeleteNote(note.id)}
-                  className="p-1.5 hover:bg-ind-bg rounded transition-colors"
-                  title="Delete note"
-                >
-                  <Trash2 className="w-4 h-4 text-ind-text-muted hover:text-red-500" />
-                </button>
-              </div>
+      {/* Close Confirmation Dialog */}
+      {showCloseConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-ind-panel border border-ind-border rounded-lg p-6 max-w-md">
+            <h3 className="text-lg font-semibold text-ind-text mb-2">Unsaved Changes</h3>
+            <p className="text-sm text-ind-text-muted mb-6">
+              Do you want to save changes to this file before closing?
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowCloseConfirm(null)}
+                className="px-4 py-2 rounded bg-ind-bg text-ind-text hover:bg-ind-border transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmCloseTab}
+                className="px-4 py-2 rounded bg-red-500/20 text-red-500 hover:bg-red-500/30 transition-colors"
+              >
+                Don't Save
+              </button>
+              <button
+                onClick={saveBeforeClose}
+                className="px-4 py-2 rounded bg-ind-accent text-white hover:bg-ind-accent/80 transition-colors"
+              >
+                Save
+              </button>
             </div>
           </div>
-        );
-      })}
+        </div>
+      )}
     </div>
   );
 }

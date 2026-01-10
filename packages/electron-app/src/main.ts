@@ -149,6 +149,90 @@ ipcMain.handle('fs:readFile', async (_event, filePath: string) => {
   return await fs.readFile(filePath, 'utf-8');
 });
 
+// File dialog handlers for Notepad clone
+ipcMain.handle('fs:saveFileDialog', async (_event, options: {
+  title?: string;
+  defaultPath?: string;
+  filters?: Array<{ name: string; extensions: string[] }>;
+}) => {
+  if (!mainWindow) {
+    throw new Error('Main window not available');
+  }
+
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: options.title || 'Save file',
+    defaultPath: options.defaultPath,
+    filters: options.filters || [{ name: 'All files', extensions: ['*'] }],
+  });
+
+  if (result.canceled) {
+    return { canceled: true };
+  }
+
+  return { filePath: result.filePath, canceled: false };
+});
+
+ipcMain.handle('fs:writeFile', async (_event, options: {
+  filePath: string;
+  content: string;
+}) => {
+  try {
+    await fs.writeFile(options.filePath, options.content, 'utf-8');
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+});
+
+ipcMain.handle('fs:openFileDialog', async (_event, options: {
+  title?: string;
+  filters?: Array<{ name: string; extensions: string[] }>;
+}) => {
+  if (!mainWindow) {
+    throw new Error('Main window not available');
+  }
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: options.title || 'Open file',
+    properties: ['openFile'],
+    filters: options.filters || [{ name: 'All files', extensions: ['*'] }],
+  });
+
+  if (result.canceled) {
+    return { canceled: true };
+  }
+
+  return { filePath: result.filePaths[0], canceled: false };
+});
+
+// Open notes in new window
+ipcMain.handle('window:openNotes', () => {
+  const notesWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+    icon: path.join(__dirname, '../assets/icon.png'),
+  });
+
+  const startUrl = isDev
+    ? 'http://localhost:3004/notes'
+    : `http://localhost:${PORT}/notes`;
+
+  notesWindow.loadURL(startUrl);
+
+  if (isDev) {
+    notesWindow.webContents.openDevTools();
+  }
+
+  return { success: true };
+});
+
 // Filesystem validation - no permission dialogs
 ipcMain.handle('fs:validatePath', async (_event, pathToValidate: string) => {
   try {
