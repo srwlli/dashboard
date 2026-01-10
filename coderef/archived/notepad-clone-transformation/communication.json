@@ -1,0 +1,94 @@
+{
+  "workorder_id": "WO-NOTEPAD-CLONE-001",
+  "status": "pending_plan",
+  "created_at": "2026-01-08T00:00:00Z",
+  "updated_at": "2026-01-10T02:30:00Z",
+  "handoff": {
+    "orchestrator_to_agent": "Transform Notes Widget into Notepad clone with multi-tab interface, menu bar (File/Edit), and project-wide file operations",
+    "status": "pending_plan",
+    "date": "2026-01-08"
+  },
+  "communication_log": [
+    {
+      "timestamp": "2026-01-08T00:00:00Z",
+      "source": "orchestrator",
+      "message": "Workorder created: WO-NOTEPAD-CLONE-001 - Notepad Clone Transformation",
+      "action": "workorder_created"
+    },
+    {
+      "timestamp": "2026-01-08T00:00:00Z",
+      "source": "agent",
+      "message": "Planning session completed - comprehensive 6-phase plan created",
+      "action": "planning_complete",
+      "details": {
+        "phases": 6,
+        "new_files": 5,
+        "files_to_modify": 3,
+        "session_log": "sessions/notepad-clone-transformation-2026-01-08-session.md",
+        "resource_index": "sessions/notepad-clone-resources-index.md"
+      }
+    },
+    {
+      "timestamp": "2026-01-10T02:30:00Z",
+      "source": "orchestrator",
+      "message": "Migrating workorder from sessions/ to coderef/workorder/ structure",
+      "action": "workorder_migration"
+    },
+    {
+      "timestamp": "2026-01-10T03:00:00Z",
+      "source": "orchestrator",
+      "message": "Requirements updated: Added Phase 7 (Syntax Highlighting) and Phase 8 (Electron Pop-out). Expanded file extension support to 30+ types. Default new files to .md format. Added file size warning for files > 1MB.",
+      "action": "requirements_update",
+      "details": {
+        "phases_added": 2,
+        "total_phases": 8,
+        "new_requirements": [
+          "Syntax highlighting for 30+ file types using react-syntax-highlighter",
+          "Default new files to .md format",
+          "File size warning dialog for files > 1MB",
+          "Open in New Window button for Electron pop-out"
+        ],
+        "expanded_extensions": ".md, .txt, .html, .css, .scss, .sass, .js, .jsx, .ts, .tsx, .py, .json, .yaml, .yml, .toml, .ini, .env, .xml, .svg, .sql, .sh, .bash"
+      }
+    }
+  ],
+  "current_phase": {
+    "phase": 1,
+    "name": "API Extensions",
+    "status": "pending",
+    "next_steps": [
+      "CRITICAL: Expand WRITE_ALLOWED_EXTENSIONS in route.ts to 30+ file types",
+      "CRITICAL: Create FileApi.save() method in api-access.ts",
+      "CRITICAL: Create FileApi.open() method (alias for load())",
+      "CRITICAL: Create fileHandlers.saveFile() utility",
+      "CRITICAL: Add Electron IPC handler fs:saveFileDialog",
+      "Modify validateWritePath() to allow project-wide writes (remove coderef/notes/ restriction)",
+      "Test path validation security (prevent traversal, verify project root boundary)"
+    ]
+  },
+  "blockers": [
+    {
+      "id": "BLOCK-001",
+      "description": "FileApi.save() does not exist",
+      "impact": "Cannot save files project-wide (Phase 4 blocked)",
+      "resolution": "Create method in packages/dashboard/src/lib/coderef/api-access.ts"
+    },
+    {
+      "id": "BLOCK-002",
+      "description": "fileHandlers.saveFile() does not exist",
+      "impact": "No Save As file picker (Phase 4 blocked)",
+      "resolution": "Add to packages/core/src/utils/fileHandlers.ts + Electron IPC handler"
+    },
+    {
+      "id": "BLOCK-003",
+      "description": "Extension allowlist too restrictive (.md, .txt, .json only)",
+      "impact": "Cannot edit .js, .ts, .py, .html, .css files",
+      "resolution": "Expand WRITE_ALLOWED_EXTENSIONS in route.ts line 125"
+    }
+  ],
+  "notes": [
+    "Plan created and documented in sessions/",
+    "Ready for implementation - awaiting agent to begin Phase 1",
+    "All planning resources available in sessions/ directory"
+  ]
+}
