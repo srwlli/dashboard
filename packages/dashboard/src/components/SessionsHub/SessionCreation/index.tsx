@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { AlertCircle, ChevronRight } from 'lucide-react';
 import { StubSelector } from './StubSelector';
 import { InstructionEditor } from './InstructionEditor';
+import { AttachmentManager } from '@/components/PromptingWorkflow/components/AttachmentManager';
+import type { Attachment } from '@/components/PromptingWorkflow/types';
 import type { Stub, InstructionBlock, BlockType, SessionBuilderState } from './types';
 
 export const SessionCreation: React.FC = () => {
@@ -46,6 +48,28 @@ export const SessionCreation: React.FC = () => {
     setState(prev => ({
       ...prev,
       instructionBlocks: prev.instructionBlocks.filter(block => block.id !== id)
+    }));
+  };
+
+  // Attachment handlers
+  const handleAddAttachments = (newAttachments: Attachment[]) => {
+    setState(prev => ({
+      ...prev,
+      attachments: [...prev.attachments, ...newAttachments]
+    }));
+  };
+
+  const handleRemoveAttachment = (id: string) => {
+    setState(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter(att => att.id !== id)
+    }));
+  };
+
+  const handleClearAttachments = () => {
+    setState(prev => ({
+      ...prev,
+      attachments: []
     }));
   };
 
@@ -132,6 +156,18 @@ export const SessionCreation: React.FC = () => {
             onAddBlock={handleAddBlock}
             onUpdateBlock={handleUpdateBlock}
             onRemoveBlock={handleRemoveBlock}
+          />
+        </div>
+      )}
+
+      {/* Step 3: Attachments (Sprint 2) */}
+      {state.selectedStub && state.instructionBlocks.length > 0 && (
+        <div className="border border-ind-border rounded-lg p-6 bg-ind-panel">
+          <AttachmentManager
+            attachments={state.attachments}
+            onAddAttachments={handleAddAttachments}
+            onRemoveAttachment={handleRemoveAttachment}
+            onClearAll={handleClearAttachments}
           />
         </div>
       )}

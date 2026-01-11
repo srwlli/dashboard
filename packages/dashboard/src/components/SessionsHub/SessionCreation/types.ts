@@ -30,9 +30,15 @@ export interface AgentAssignment {
   dependsOn?: string[];          // Other agent IDs
 }
 
+// Import Attachment type from PromptingWorkflow
+import type { Attachment } from '@/components/PromptingWorkflow/types';
+
 export interface SessionBuilderState {
   selectedStub: Stub | null;
   instructionBlocks: InstructionBlock[];
-  attachments: any[];            // Reusing Attachment type from PromptingWorkflow
+  attachments: Attachment[];
   agents: AgentAssignment[];
 }
+
+// Re-export Attachment for convenience
+export type { Attachment };
