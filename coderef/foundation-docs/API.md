@@ -512,6 +512,179 @@ All error responses follow a consistent schema with predefined error codes:
 
 ---
 
+### Context Discovery (Sessions)
+
+#### GET /api/sessions/context-discovery
+
+**NEW in v0.8.0** - Discover relevant context files for a stub description using CodeRef-powered semantic scoring.
+
+**Implementation:** `packages/dashboard/src/app/api/sessions/context-discovery/route.ts`
+
+**Query Parameters:**
+- `stubDescription` (required) - Description text from selected stub
+- `projectPath` (optional) - Path to target project (defaults to current working directory)
+
+**Request:**
+```bash
+curl "http://localhost:3000/api/sessions/context-discovery?stubDescription=build%20authentication%20system&projectPath=C:\\project"
+```
+
+**Response:** `200 OK`
+```json
+{
+  "files": [
+    {
+      "id": "code-component-AuthButton",
+      "filename": "AuthButton.tsx",
+      "path": "C:\\project\\src\\components\\AuthButton.tsx",
+      "type": "component",
+      "size": 0,
+      "relevanceScore": 85,
+      "excerpt": "component: AuthButton (line 10)",
+      "scoringBreakdown": {
+        "patternSimilarity": 35,
+        "dependencies": 20,
+        "complexity": 20,
+        "coverage": 10
+      }
+    },
+    {
+      "id": "foundation-ARCHITECTURE.md",
+      "filename": "ARCHITECTURE.md",
+      "path": "C:\\project\\coderef\\foundation-docs\\ARCHITECTURE.md",
+      "type": "foundation",
+      "size": 15234,
+      "relevanceScore": 75,
+      "excerpt": "# Architecture - Authentication system design..."
+    }
+  ],
+  "autoSelected": ["code-component-AuthButton"],
+  "keywords": ["build", "authentication", "system"],
+  "statsByType": {
+    "component": 15,
+    "hook": 8,
+    "api": 5,
+    "util": 12,
+    "test": 20,
+    "foundation": 4,
+    "archived": 2,
+    "resource": 3
+  },
+  "codeRefAvailable": {
+    "index": true,
+    "graph": true,
+    "patterns": false,
+    "coverage": false
+  },
+  "timestamp": "2026-01-11T21:30:00.000Z"
+}
+```
+
+**Response Fields:**
+
+**File Object:**
+- `id` - Unique identifier for the file
+- `filename` - File name only
+- `path` - Full absolute path to file
+- `type` - File category: `component`, `hook`, `api`, `util`, `test`, `foundation`, `archived`, `resource`
+- `size` - File size in bytes (0 for code elements from index)
+- `relevanceScore` - Semantic relevance score (0-100)
+- `excerpt` - Preview text from file
+- `scoringBreakdown` (optional) - Breakdown of semantic score by dimension
+
+**Scoring Breakdown Dimensions:**
+- `patternSimilarity` (0-40 pts) - Matches from `.coderef/reports/patterns.json`
+- `dependencies` (0-30 pts) - Relationship count from `.coderef/graph.json`
+- `complexity` (0-20 pts) - Element count from `.coderef/index.json` (sweet spot: 1-49 elements)
+- `coverage` (0-10 pts) - Test coverage from `.coderef/reports/coverage.json`
+
+**Top-Level Fields:**
+- `files` - Array of discovered context files, sorted by relevanceScore (descending)
+- `autoSelected` - Array of file IDs with score >= 90 (pre-selected for user)
+- `keywords` - Extracted keywords from stub description
+- `statsByType` - Count of files by type
+- `codeRefAvailable` - Flags indicating which `.coderef/` data sources are available
+- `timestamp` - ISO 8601 timestamp
+
+**Semantic Scoring System:**
+
+The endpoint uses a 4-dimension scoring system powered by CodeRef data:
+
+1. **Pattern Similarity (40 points max)**
+   - Matches patterns from `.coderef/reports/patterns.json`
+   - Each keyword-pattern match adds 5 points
+   - Capped at 40 points maximum
+
+2. **Dependencies (30 points max)**
+   - Uses relationship graph from `.coderef/graph.json`
+   - Each relationship (import/call) adds 2 points
+   - More central files score higher
+   - Capped at 30 points maximum
+
+3. **Complexity (20 points max)**
+   - Based on element count from `.coderef/index.json`
+   - Sweet spot (1-49 elements): 20 points
+   - Too complex (50+ elements): 10 points
+   - Too simple (0 elements): 5 points
+
+4. **Test Coverage (10 points max)**
+   - From `.coderef/reports/coverage.json`
+   - High coverage (>80%): 10 points
+   - Medium coverage (50-80%): 5 points
+   - Low coverage (<50%): 0 points
+
+**File Type Categories:**
+
+**Code Elements** (from `.coderef/index.json`):
+- `component` - React/Vue components
+- `hook` - React hooks
+- `api` - API route handlers
+- `util` - Utility functions
+- `test` - Test files
+
+**Legacy Sources** (keyword-based):
+- `foundation` - Foundation docs from `coderef/foundation-docs/`
+- `archived` - Archived features from `coderef/archived/`
+- `resource` - Resource sheets from `coderef/resources-sheets/`
+
+**Error Responses:**
+
+`400 Bad Request` - Missing required parameter
+```json
+{
+  "error": "stubDescription parameter is required"
+}
+```
+
+`500 Internal Server Error` - Failed to discover context
+```json
+{
+  "error": "Failed to discover context files",
+  "details": "Error reading .coderef/index.json"
+}
+```
+
+**Prerequisites:**
+
+For semantic scoring to work, run CodeRef scan before using this endpoint:
+```bash
+coderef scan /path/to/project
+```
+
+This generates:
+- `.coderef/index.json` (required for code element discovery)
+- `.coderef/graph.json` (required for dependency scoring)
+- `.coderef/reports/patterns.json` (optional for pattern matching)
+- `.coderef/reports/coverage.json` (optional for coverage scoring)
+
+**Fallback Behavior:**
+
+If `.coderef/` data is unavailable, the endpoint falls back to keyword-based scoring for foundation docs, archived features, and resource sheets only.
+
+**Workorder:** WO-FILE-ID-ENHANCEMENTS-001
+
+---
+
 ## Rate Limiting
 
 **Status:** Not implemented
