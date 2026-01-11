@@ -17,7 +17,9 @@
       "Bash(git push)",
       "Bash(cat:*)",
       "Bash(rd /s /q \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\dashboard\\src\\app\\notes-standalone\")",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "mcp__coderef-workflow__create_plan",
+      "mcp__coderef-workflow__gather_context"
     ],
     "deny": [],
     "ask": []

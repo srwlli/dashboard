@@ -1,0 +1,23 @@
+{
+  "session_id": "sessions-workflow-documentation",
+  "created": "2026-01-10",
+  "purpose": "Document the multi-agent session workflow pattern used in Papertrail UDS alignment for integration with coderef-dashboard /session route",
+
+  "orchestrator_instructions": {
+    "task": "Create session-flow.md with ordered list documenting replicable multi-phase session pattern",
+    "deliverable": "session-flow.md - Step-by-step workflow guide",
+    "steps": [
+      "Document Phase 1: Inventory (agents self-audit outputs)",
+      "Document Phase 2: Gap Analysis (agents assess complexity, estimate effort, prioritize P0/P1/P2/P3)",
+      "Document Orchestrator Aggregation (create master alignment plan with workorder specs)",
+      "Document Phase 3: Implementation (agents run /create-workorder and /execute-plan)",
+      "Include one-liner pattern for agent coordination",
+      "Include validation coverage target pattern (12% → 100%)",
+      "Keep format as ordered list for easy replication"
+    ],
+    "reference_sessions": [
+      "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\papertrail-uds-alignment",
+      "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\papertrail-uds-alignment-phase2"
+    ]
+  }
+}

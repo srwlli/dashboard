@@ -99,3 +99,7 @@ export { detectDrift } from './fileGeneration/detectDrift.js';
 
 // Phase 3: Diagrams
 export { generateDiagrams } from './fileGeneration/generateDiagrams.js';
+
+// Search module NOT exported from main index
+// Import explicitly from '@coderef/core/search-client' (client-side)
+// This prevents accidental imports that pull in the entire core package

@@ -39,6 +39,7 @@ export default function NotesWidget() {
   const [saving, setSaving] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const [alwaysOnTop, setAlwaysOnTop] = useState(false);
 
   // Get project root (use first project for MVP)
   const projectRoot = projects[0]?.path || '';
@@ -242,15 +243,36 @@ export default function NotesWidget() {
   /**
    * Open notepad in new Electron window
    */
-  const handleOpenInNewWindow = useCallback(() => {
+  const handleOpenInNewWindow = useCallback(async () => {
     if (typeof window !== 'undefined' && (window as any).electronAPI) {
-      // Electron IPC call to open new window
-      (window as any).electronAPI.openNotesWindow?.();
+      try {
+        // Electron IPC call to open new window
+        const result = await (window as any).electronAPI.openNotesWindow?.();
+        console.log('Open notes window result:', result);
+      } catch (error) {
+        console.error('Failed to open notes window:', error);
+        alert('Failed to open new window');
+      }
     } else {
-      // Web fallback: open in new browser tab
-      window.open('/notes', '_blank');
+      // Web fallback: open in new browser tab (standalone route)
+      window.open('/notes-standalone', '_blank');
     }
   }, []);
+
+  /**
+   * Toggle always on top for current window
+   */
+  const handleToggleAlwaysOnTop = useCallback(async () => {
+    if (typeof window !== 'undefined' && (window as any).electronAPI?.setAlwaysOnTop) {
+      try {
+        const newValue = !alwaysOnTop;
+        await (window as any).electronAPI.setAlwaysOnTop(newValue);
+        setAlwaysOnTop(newValue);
+      } catch (error) {
+        console.error('Failed to set always on top:', error);
+      }
+    }
+  }, [alwaysOnTop]);
 
   /**
    * Warn before closing window with unsaved changes
@@ -383,9 +405,23 @@ export default function NotesWidget() {
               </>
             )}
           </div>
-          <div>
-            Lines: {activeTab.content.split('\n').length} |
-            Characters: {activeTab.content.length}
+          <div className="flex items-center gap-4">
+            {/* Always on Top checkbox (Electron only) */}
+            {typeof window !== 'undefined' && (window as any).electronAPI?.setAlwaysOnTop && (
+              <label className="flex items-center gap-2 cursor-pointer hover:text-ind-text transition-colors">
+                <input
+                  type="checkbox"
+                  checked={alwaysOnTop}
+                  onChange={handleToggleAlwaysOnTop}
+                  className="w-3 h-3 cursor-pointer accent-ind-accent"
+                />
+                <span>Always on Top</span>
+              </label>
+            )}
+            <div>
+              Lines: {activeTab.content.split('\n').length} |
+              Characters: {activeTab.content.length}
+            </div>
           </div>
         </div>
       )}

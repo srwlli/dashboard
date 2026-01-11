@@ -221,8 +221,8 @@ ipcMain.handle('window:openNotes', () => {
   });
 
   const startUrl = isDev
-    ? 'http://localhost:3004/notes'
-    : `http://localhost:${PORT}/notes`;
+    ? 'http://localhost:3004/notes-standalone'
+    : `http://localhost:${PORT}/notes-standalone`;
 
   notesWindow.loadURL(startUrl);
 
@@ -231,6 +231,16 @@ ipcMain.handle('window:openNotes', () => {
   }
 
   return { success: true };
+});
+
+// Set always on top for focused window
+ipcMain.handle('window:setAlwaysOnTop', (event, alwaysOnTop: boolean) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    win.setAlwaysOnTop(alwaysOnTop);
+    return { success: true };
+  }
+  return { success: false };
 });
 
 // Filesystem validation - no permission dialogs

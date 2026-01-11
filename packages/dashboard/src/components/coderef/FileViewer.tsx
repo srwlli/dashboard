@@ -22,6 +22,50 @@ interface FileViewerProps {
   className?: string;
 }
 
+/**
+ * Extract valid Mermaid code from .mmd files by removing metadata blocks
+ * 
+ * Removes everything after the last valid Mermaid syntax (classDef blocks)
+ * to prevent parsing errors from metadata like "Diagram Summary:", "Tip:", etc.
+ * 
+ * @param content - Raw file content from .mmd file
+ * @returns Clean Mermaid code without metadata
+ */
+function extractMermaidCode(content: string): string {
+  if (!content) return '';
+  
+  const lines = content.split('\n');
+  const validLines: string[] = [];
+  let foundClassDef = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    
+    // Track when we've seen classDef (indicates end of diagram syntax)
+    if (trimmed.includes('classDef')) {
+      foundClassDef = true;
+      validLines.push(line);
+      continue;
+    }
+    
+    // Stop at metadata markers (only after classDef blocks)
+    if (foundClassDef) {
+      if (trimmed.startsWith('Diagram Summary:') ||
+          trimmed.startsWith('Tip:') ||
+          trimmed.startsWith('Format:') ||
+          (trimmed === '' && i > 0 && lines[i - 1]?.trim() === '')) {
+        // Double blank line or metadata marker = end of diagram
+        break;
+      }
+    }
+    
+    validLines.push(line);
+  }
+  
+  return validLines.join('\n').trim();
+}
+
 export function FileViewer({ project, filePath, className = '' }: FileViewerProps) {
   const router = useRouter();
   const [fileData, setFileData] = useState<FileInfo | null>(null);
@@ -393,7 +437,7 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
           </div>
         ) : isMermaid ? (
           // Render Mermaid diagrams (architecture diagrams, dependency graphs, flowcharts)
-          <MermaidViewer chart={displayContent} />
+          <MermaidViewer chart={extractMermaidCode(displayContent)} />
         ) : isHtml ? (
           // Render HTML files in sandboxed iframe for live preview
           <div className="w-full h-full bg-white">

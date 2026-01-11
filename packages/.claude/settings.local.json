@@ -1,0 +1,8 @@
+{
+  "enabledMcpjsonServers": [
+    "coderef-personas",
+    "coderef-context",
+    "coderef-docs",
+    "coderef-workflow"
+  ]
+}

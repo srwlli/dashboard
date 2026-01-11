@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import PWAInitializer from './PWAInitializer';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -16,11 +17,20 @@ import { WorkflowProvider } from '@/contexts/WorkflowContext';
  * - Page content with responsive padding and container constraints
  * - PWA initialization
  *
+ * Standalone Routes:
+ * - Routes matching STANDALONE_ROUTES will render children directly without layout
+ * - Used for popup windows, embeds, or minimal UI contexts
+ *
  * Responsive Layout:
  * - Mobile (< md): vertical flex layout, sidebar hidden, mobile nav drawer
  * - Desktop (md+): horizontal flex layout, sidebar visible
  */
+
+// Routes that should not have the global layout (sidebar, header)
+const STANDALONE_ROUTES = ['/notes-standalone'];
+
 export function RootClientWrapper({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -37,6 +47,20 @@ export function RootClientWrapper({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Check if current route is a standalone route
+  const isStandalone = STANDALONE_ROUTES.includes(pathname);
+
+  // Standalone routes: render children directly without layout
+  if (isStandalone) {
+    return (
+      <WorkflowProvider>
+        <PWAInitializer />
+        {children}
+      </WorkflowProvider>
+    );
+  }
+
+  // Normal routes: render full layout with sidebar and header
   return (
     <WorkflowProvider>
       <PWAInitializer />

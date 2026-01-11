@@ -6,6 +6,7 @@ import { AccentColorProvider } from '@/contexts/AccentColorContext';
 import { SidebarProvider } from '@/contexts/SidebarContext';
 import { ProjectsProvider } from '@/contexts/ProjectsContext';
 import { ExplorerProvider } from '@/contexts/ExplorerContext';
+import { SearchProvider } from '@/contexts/SearchContext';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -70,9 +71,11 @@ export default function RootLayout({
               <SidebarProvider>
                 <ProjectsProvider>
                   <ExplorerProvider>
-                    <RootClientWrapper>
-                      {children}
-                    </RootClientWrapper>
+                    <SearchProvider>
+                      <RootClientWrapper>
+                        {children}
+                      </RootClientWrapper>
+                    </SearchProvider>
                   </ExplorerProvider>
                 </ProjectsProvider>
               </SidebarProvider>

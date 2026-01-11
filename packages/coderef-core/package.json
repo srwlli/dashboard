@@ -4,6 +4,16 @@
   "description": "Core scanning and parsing library for CodeRef system",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./search-client": {
+      "types": "./dist/src/search-client.d.ts",
+      "default": "./dist/src/search-client.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -16,7 +26,8 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "rimraf": "^5.0.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
   },
   "dependencies": {
     "acorn": "^8.15.0",

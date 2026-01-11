@@ -1,0 +1,41 @@
+{
+  "feature_name": "sessions-hub-creator",
+  "description": "Build Session Creation system (Sprints 1-4): Interactive wizard for creating multi-agent sessions from stubs with freeform instructions, context attachments, agent assignment, and session file generation including context-backbone.md",
+  "goal": "Enable users to create multi-agent sessions through a UI wizard that generates comprehensive context packages (15,000+ line context-backbone.md) ensuring agents have perfect context on first try",
+  "requirements": [
+    "Stub selection interface with search/filter (hardcoded stubs: STUB-082, 054, 055, 056, 057)",
+    "Multi-block instruction editor with type tags (task/guideline/example/constraint) and markdown support",
+    "Attachment manager for foundation docs and archived features (reuse PromptingWorkflow AttachmentManager)",
+    "Context discovery algorithm with keyword matching and relevance scoring (suggest files >= 90%)",
+    "Agent assignment with drag-and-drop for splitting instructions/attachments across multiple agents",
+    "Session file generation: context-backbone.md (15K+ lines), context-index.json, communication.json (DRAFT), instructions.json (DRAFT), agent-prompts/*.md"
+  ],
+  "out_of_scope": [],
+  "constraints": [
+    "Cannot modify SessionMonitoring/ directory (Agent 2's territory)",
+    "Cannot modify packages/dashboard/src/lib/api/sessions.ts (Agent 2's file)",
+    "Must follow Phase 1 design specs from dashboard-audit-v2.md",
+    "Must reuse AttachmentManager from PromptingWorkflow/ (proven code reuse)",
+    "Must use Next.js 16 App Router conventions with 'use client' directive",
+    "Must use Tailwind CSS with ind-* design tokens",
+    "Must save session files to .coderef/sessions/{feature-name}/ directory",
+    "Context backbone generation must handle 15,000-20,000 line files (progressive generation with streaming)"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-SESSIONS-HUB-CREATOR-001",
+    "workorder_assigned_at": "2026-01-11T19:47:06.537920+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-SESSIONS-HUB-CREATOR-001",
+    "feature_id": "sessions-hub-creator",
+    "last_updated": "2026-01-11",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-10"
+  }
+}

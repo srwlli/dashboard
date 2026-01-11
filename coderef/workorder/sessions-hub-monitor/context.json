@@ -1,0 +1,42 @@
+{
+  "feature_name": "sessions-hub-monitor",
+  "description": "Build Session Monitoring system (Sprint 5) that allows users to view list of all active sessions, monitor agent progress in real-time, view session details with orchestrator + agents, and preview agent output files",
+  "goal": "Enable users to monitor multi-agent session progress in real-time through a comprehensive UI that displays session status, agent coordination, and output files",
+  "requirements": [
+    "SessionReader API to scan session directories and parse communication.json files",
+    "SessionsList component with real-time status updates and filtering",
+    "SessionDetail component showing orchestrator + agents + status",
+    "AgentCard component for individual agent status with phases and output links",
+    "OutputViewer modal for displaying agent output files (JSON/Markdown/Text)",
+    "Real-time polling with SWR (10-second refresh interval)",
+    "Status badges for not_started, in_progress, complete, blocked",
+    "Security validation to prevent directory traversal attacks"
+  ],
+  "out_of_scope": [],
+  "constraints": [
+    "Cannot modify SessionCreation/ directory (Agent 1's territory)",
+    "Cannot modify packages/dashboard/src/api/sessions/create/**",
+    "Must follow Phase 1 design specifications from dashboard-audit-v2.md",
+    "Must use SWR for real-time polling",
+    "Must leverage existing WorkorderReader pattern",
+    "Must use Tailwind CSS with ind-* design tokens",
+    "Must support mobile responsive design"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-SESSIONS-HUB-MONITOR-001",
+    "workorder_assigned_at": "2026-01-11T19:47:31.747760+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-SESSIONS-HUB-MONITOR-001",
+    "feature_id": "sessions-hub-monitor",
+    "last_updated": "2026-01-11",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-10"
+  }
+}
