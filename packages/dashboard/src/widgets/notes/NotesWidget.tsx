@@ -21,6 +21,37 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { getLanguage } from '@/components/PromptingWorkflow/utils/languageMap';
 import { Eye, Edit3, ExternalLink } from 'lucide-react';
 
+/**
+ * Constants
+ */
+const NOTES_DIR = 'coderef/notes/';
+
+/**
+ * Helper: Normalize file path to ensure it's within coderef/notes/
+ *
+ * In web mode, File System Access API returns only filenames (e.g., "myfile.md")
+ * for security reasons. This helper ensures all paths include the notes directory prefix.
+ *
+ * @param filePath - The file path from FilePicker (may be filename-only or full path)
+ * @returns Normalized path with coderef/notes/ prefix
+ */
+function getNotePath(filePath: string): string {
+  // Already has correct prefix
+  if (filePath.startsWith(NOTES_DIR)) {
+    return filePath;
+  }
+
+  // Already has coderef/ prefix but not notes/
+  if (filePath.startsWith('coderef/')) {
+    return filePath;
+  }
+
+  // Extract basename and prepend notes directory
+  // Remove leading slashes to avoid coderef/notes//file.md
+  const basename = filePath.replace(/^[\\/]+/, '').split(/[\\/]/).pop() || filePath;
+  return `${NOTES_DIR}${basename}`;
+}
+
 export default function NotesWidget() {
   const { projects } = useProjects();
   const {
@@ -158,11 +189,14 @@ export default function NotesWidget() {
     try {
       setSaving(true);
 
-      // Save using FileApi
-      await CodeRefApi.file.save(projectRoot, tab.filePath, tab.content);
+      // Normalize path to ensure it's within coderef/notes/
+      const normalizedPath = getNotePath(tab.filePath);
 
-      // Mark as saved
-      markAsSaved(tabId, tab.filePath);
+      // Save using FileApi
+      await CodeRefApi.file.save(projectRoot, normalizedPath, tab.content);
+
+      // Mark as saved with normalized path
+      markAsSaved(tabId, normalizedPath);
     } catch (error) {
       console.error('Failed to save file:', error);
       alert('Failed to save file');
@@ -185,8 +219,11 @@ export default function NotesWidget() {
       const result = await FilePicker.saveFile(tab.content, suggestedName);
 
       if (result && result.success && result.filePath) {
-        // Mark as saved with new path
-        markAsSaved(tabId, result.filePath);
+        // Normalize path to ensure it's within coderef/notes/
+        const normalizedPath = getNotePath(result.filePath);
+
+        // Mark as saved with normalized path
+        markAsSaved(tabId, normalizedPath);
       }
     } catch (error) {
       console.error('Failed to save file:', error);
