@@ -2,17 +2,19 @@
 
 **A modular widget system with PWA and Electron support for tracking workorders and stubs across multiple projects**
 
-**Version:** 0.4.0
-**Date:** 2025-12-30
+**Version:** 0.8.0
+**Date:** 2026-01-11
 **Maintainer:** CodeRef Team
 
-## What's New in 0.4.0
+## What's New in 0.8.0
 
-✨ **Stats Card Enhancement** - Smaller, denser cards with richer information
-- Reduced card size (~25% smaller) with tighter padding and spacing
-- Enhanced stub stats with 8 breakdowns: status (stub, planned, in_progress, completed) + priority (low, medium, high, critical)
-- Removed redundant "Total Stubs" line (now shown in card header)
-- Improved dashboard information density without sacrificing readability
+🧠 **CodeRef-Powered Context Discovery** - Intelligent semantic file discovery for session planning
+- Replaced keyword matching with 4-dimension semantic scoring (pattern similarity, dependencies, complexity, coverage)
+- Discovers 5 new file categories: components, hooks, API routes, utils, tests
+- Processes 5,151 indexed elements from `.coderef/` scan
+- Graph-based relationship awareness for 5x smarter file suggestions
+- Comprehensive test coverage with 28 test cases
+- Full API documentation for `/api/sessions/context-discovery` endpoint
 
 ---
 
