@@ -1,0 +1,40 @@
+{
+  "feature_name": "file-id-enhancements",
+  "description": "Replace simple keyword-based file discovery with intelligent CodeRef-powered context discovery using relationship graphs, pattern matching, and semantic scoring",
+  "goal": "Enable graph-based, relationship-aware context discovery instead of simple keyword matching to provide more relevant file suggestions during stub planning",
+  "requirements": [
+    "Integrate CodeRef MCP tools (coderef_scan, coderef_patterns, coderef_context, coderef_query) into context discovery API route",
+    "Implement semantic scoring system (pattern similarity 40pts, dependencies 30pts, complexity 20pts, coverage 10pts)",
+    "Add new file categories: Components, Hooks, API Routes, Utils, Tests",
+    "Build calculateSemanticRelevance() function to replace keyword frequency scoring",
+    "Update UI to display new file categories"
+  ],
+  "out_of_scope": [
+    "Changes to other session workflow components",
+    "Modifications to existing scanner functionality",
+    "Database or persistent storage changes"
+  ],
+  "constraints": [
+    "Must maintain compatibility with existing session creation workflow",
+    "Use existing .coderef/ directory structure",
+    "Keep current API route interface for backward compatibility",
+    "No breaking changes to UI components"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-FILE-ID-ENHANCEMENTS-001",
+    "workorder_assigned_at": "2026-01-11T21:25:06.456705+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-FILE-ID-ENHANCEMENTS-001",
+    "feature_id": "file-id-enhancements",
+    "last_updated": "2026-01-11",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-10"
+  }
+}
