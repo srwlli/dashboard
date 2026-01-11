@@ -4,9 +4,20 @@ import React, { useState } from 'react';
 import { AlertCircle, ChevronRight } from 'lucide-react';
 import { StubSelector } from './StubSelector';
 import { InstructionEditor } from './InstructionEditor';
+import { ContextDiscovery } from './ContextDiscovery';
 import { AttachmentManager } from '@/components/PromptingWorkflow/components/AttachmentManager';
 import type { Attachment } from '@/components/PromptingWorkflow/types';
 import type { Stub, InstructionBlock, BlockType, SessionBuilderState } from './types';
+
+interface ContextFile {
+  id: string;
+  filename: string;
+  path: string;
+  type: 'foundation' | 'archived' | 'resource';
+  size: number;
+  relevanceScore: number;
+  excerpt: string;
+}
 
 export const SessionCreation: React.FC = () => {
   const [state, setState] = useState<SessionBuilderState>({
@@ -15,6 +26,7 @@ export const SessionCreation: React.FC = () => {
     attachments: [],
     agents: []
   });
+  const [contextFiles, setContextFiles] = useState<ContextFile[]>([]);
 
   // Stub selection handler
   const handleSelectStub = (stub: Stub) => {
@@ -71,6 +83,11 @@ export const SessionCreation: React.FC = () => {
       ...prev,
       attachments: []
     }));
+  };
+
+  // Context file selection handler
+  const handleContextSelection = (selectedFiles: ContextFile[]) => {
+    setContextFiles(selectedFiles);
   };
 
   // Form validation
@@ -160,6 +177,16 @@ export const SessionCreation: React.FC = () => {
         </div>
       )}
 
+      {/* Step 2.5: Context Discovery */}
+      {state.selectedStub && state.instructionBlocks.length > 0 && (
+        <div className="border border-ind-border rounded-lg p-6 bg-ind-panel">
+          <ContextDiscovery
+            stubDescription={state.selectedStub.description}
+            onSelectionChange={handleContextSelection}
+          />
+        </div>
+      )}
+
       {/* Step 3: Attachments (Sprint 2) */}
       {state.selectedStub && state.instructionBlocks.length > 0 && (
         <div className="border border-ind-border rounded-lg p-6 bg-ind-panel">
@@ -222,7 +249,7 @@ export const SessionCreation: React.FC = () => {
         <details className="text-xs text-ind-text-muted font-mono bg-ind-bg p-4 rounded border border-ind-border">
           <summary className="cursor-pointer font-bold mb-2">Debug State</summary>
           <pre className="overflow-x-auto">
-            {JSON.stringify(state, null, 2)}
+            {JSON.stringify({ ...state, contextFiles }, null, 2)}
           </pre>
         </details>
       )}
