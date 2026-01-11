@@ -1,16 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, FileText, Archive, BookOpen, CheckCircle2, Circle, Loader2 } from 'lucide-react';
+import { Search, FileText, Archive, BookOpen, CheckCircle2, Circle, Loader2, Component, Zap, Code, Wrench, TestTube2 } from 'lucide-react';
 
 interface ContextFile {
   id: string;
   filename: string;
   path: string;
-  type: 'foundation' | 'archived' | 'resource';
+  type: 'foundation' | 'archived' | 'resource' | 'component' | 'hook' | 'api' | 'util' | 'test';
   size: number;
   relevanceScore: number;
   excerpt: string;
+  scoringBreakdown?: {
+    patternSimilarity: number;
+    dependencies: number;
+    complexity: number;
+    coverage: number;
+  };
 }
 
 interface ContextDiscoveryProps {
@@ -27,7 +33,7 @@ export const ContextDiscovery: React.FC<ContextDiscoveryProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [keywords, setKeywords] = useState<string[]>([]);
-  const [filterType, setFilterType] = useState<'all' | 'foundation' | 'archived' | 'resource'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'foundation' | 'archived' | 'resource' | 'component' | 'hook' | 'api' | 'util' | 'test'>('all');
 
   // Fetch context files when stub description changes
   useEffect(() => {
@@ -107,6 +113,16 @@ export const ContextDiscovery: React.FC<ContextDiscoveryProps> = ({
         return Archive;
       case 'resource':
         return BookOpen;
+      case 'component':
+        return Component;
+      case 'hook':
+        return Zap;
+      case 'api':
+        return Code;
+      case 'util':
+        return Wrench;
+      case 'test':
+        return TestTube2;
     }
   };
 
@@ -119,6 +135,16 @@ export const ContextDiscovery: React.FC<ContextDiscoveryProps> = ({
         return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
       case 'resource':
         return 'bg-green-500/10 text-green-400 border-green-500/30';
+      case 'component':
+        return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30';
+      case 'hook':
+        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
+      case 'api':
+        return 'bg-red-500/10 text-red-400 border-red-500/30';
+      case 'util':
+        return 'bg-gray-500/10 text-gray-400 border-gray-500/30';
+      case 'test':
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
     }
   };
 
