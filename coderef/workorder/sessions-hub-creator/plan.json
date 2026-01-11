@@ -128,51 +128,196 @@
       "phases": [
         {
           "phase": 1,
-          "name": "Phase 1: Foundation",
-          "description": "Setup and scaffolding - create initial structure, install dependencies, configure environment",
+          "name": "Sprint 1: Stub Selection + Instruction Editor",
+          "description": "Implement stub selection UI with search/filter and multi-block instruction editor with type tags",
           "tasks": [
-            "SETUP-001"
+            {
+              "id": "SPRINT1-001",
+              "title": "Create SessionCreation types and interfaces",
+              "description": "Create types.ts with Stub, InstructionBlock, BlockType, AgentAssignment, SessionBuilderState interfaces. Import Attachment type from PromptingWorkflow.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/types.ts"],
+              "status": "completed"
+            },
+            {
+              "id": "SPRINT1-002",
+              "title": "Create StubSelector component",
+              "description": "Create StubSelector.tsx with 5 hardcoded stubs (STUB-082, 054, 055, 056, 057). Implement search/filter by ID, name, description. Card-based UI with priority colors and category icons. Selection state management.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/StubSelector.tsx"],
+              "status": "completed"
+            },
+            {
+              "id": "SPRINT1-003",
+              "title": "Create InstructionBlock component",
+              "description": "Create InstructionBlock.tsx for individual blocks. Type selector (task/guideline/example/constraint) with color-coded borders (green/blue/purple/orange). Drag handle, character count, remove button.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/InstructionBlock.tsx"],
+              "status": "completed"
+            },
+            {
+              "id": "SPRINT1-004",
+              "title": "Create InstructionEditor component",
+              "description": "Create InstructionEditor.tsx for managing multiple instruction blocks. Add/update/remove/reorder functionality. Markdown preview toggle. Token estimation (chars/4). Stats footer.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/InstructionEditor.tsx"],
+              "status": "completed"
+            },
+            {
+              "id": "SPRINT1-005",
+              "title": "Create SessionCreation container component",
+              "description": "Create SessionCreation/index.tsx container. State management for stub, blocks, attachments, agents. Form validation (stub required, >=1 block, no empty blocks). Progress indicator (4 steps). Error display.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx"],
+              "status": "completed"
+            },
+            {
+              "id": "SPRINT1-006",
+              "title": "Create /sessions/create page route",
+              "description": "Create packages/dashboard/src/app/sessions/create/page.tsx that renders SessionCreation component.",
+              "files": ["packages/dashboard/src/app/sessions/create/page.tsx"],
+              "status": "completed"
+            }
           ],
           "deliverables": [
-            "All files exist",
-            "Dependencies installed",
-            "Environment configured"
+            "StubSelector with search and 5 hardcoded stubs",
+            "InstructionEditor with multi-block support",
+            "InstructionBlock with type tags and color coding",
+            "SessionCreation container with validation",
+            "/sessions/create page route"
           ]
         },
         {
           "phase": 2,
-          "name": "Phase 2: Core Implementation",
-          "description": "Implement primary features and business logic following existing patterns",
+          "name": "Sprint 2: Attachment System + Context Discovery",
+          "description": "Integrate AttachmentManager from PromptingWorkflow and implement context discovery API with keyword matching",
           "tasks": [
-            "LOGIC-001"
+            {
+              "id": "SPRINT2-001",
+              "title": "Integrate AttachmentManager component",
+              "description": "Import AttachmentManager from PromptingWorkflow. Add attachment handlers (add, remove, clear). Integrate into SessionCreation with conditional rendering after stub + instructions.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx", "packages/dashboard/src/components/SessionsHub/SessionCreation/types.ts"],
+              "status": "completed"
+            },
+            {
+              "id": "SPRINT2-002",
+              "title": "Create /api/sessions/context-discovery route",
+              "description": "Create API route for context discovery. Scan project for foundation docs (ARCHITECTURE.md, SCHEMA.md, etc.) and archived features. Implement keyword matching algorithm with relevance scoring (0-100). Return files with scores >= 90%.",
+              "files": ["packages/dashboard/src/app/api/sessions/context-discovery/route.ts"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT2-003",
+              "title": "Create ContextDiscovery UI component",
+              "description": "Create ContextDiscovery.tsx component. Display suggested files with relevance scores. Auto-select files >= 90%. Allow user to accept/reject suggestions. Preview file content in modal.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx"],
+              "status": "pending"
+            }
           ],
           "deliverables": [
-            "Happy path works end-to-end",
-            "Core functionality complete"
+            "AttachmentManager integrated and functional",
+            "Context discovery API with keyword matching",
+            "Context discovery UI with relevance scores"
           ]
         },
         {
           "phase": 3,
-          "name": "Phase 3: Testing",
-          "description": "Comprehensive testing at unit, integration, and end-to-end levels",
+          "name": "Sprint 3: Agent Assignment System",
+          "description": "Implement agent assignment interface with instruction/attachment splitting and dependency management",
           "tasks": [
-            "TEST-001"
+            {
+              "id": "SPRINT3-001",
+              "title": "Create AgentCard component",
+              "description": "Create AgentCard.tsx to display individual agent info (agent_id, role, status). Drop zone for blocks/attachments. List assigned items. Remove assignment button.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/AgentCard.tsx"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT3-002",
+              "title": "Create AgentAssigner component",
+              "description": "Create AgentAssigner.tsx with checkbox interface for assigning instruction blocks to agents. Assign attachments to agents (context filtering). Specify output files per agent. Orchestrator auto-assignment (receives ALL context).",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT3-003",
+              "title": "Implement agent assignment validation",
+              "description": "Add validation logic to ensure all instruction blocks are assigned to at least one agent. Display validation errors. Disable Next button until validation passes.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT3-004",
+              "title": "Create DependencyManager component",
+              "description": "Create DependencyManager.tsx for defining agent dependencies (Agent B waits for Agent A). Visual graph of dependencies. Cycle detection to prevent circular dependencies. Export to communication.json format.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/DependencyManager.tsx"],
+              "status": "pending"
+            }
           ],
           "deliverables": [
-            "All tests passing",
-            "Coverage meets requirements"
+            "AgentAssigner with checkbox interface",
+            "Agent assignment validation",
+            "DependencyManager with cycle detection"
           ]
         },
         {
           "phase": 4,
-          "name": "Phase 4: Documentation",
-          "description": "Complete documentation for users and developers",
+          "name": "Sprint 4: Session Generation",
+          "description": "Implement session file generation with context-backbone.md (15K+ lines) and supporting files",
           "tasks": [
-            "DOC-001"
+            {
+              "id": "SPRINT4-001",
+              "title": "Create SessionGenerator component",
+              "description": "Create SessionGenerator.tsx with file preview before creation. Edit generated files (advanced users). Display progress during generation.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT4-002",
+              "title": "Create /api/sessions/create route",
+              "description": "Create API route for session generation. Accept stub, instructions, attachments, agents, dependencies. Generate all session files. Save to .coderef/sessions/{feature-name}/. Return success with file paths.",
+              "files": ["packages/dashboard/src/app/api/sessions/create/route.ts"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT4-003",
+              "title": "Implement context-backbone.md generation",
+              "description": "Generate comprehensive context-backbone.md (15,000-20,000 lines). Combine: original stub + all instructions + all attachments. Progressive generation with streaming. Include: Session Overview, Original Stub, Agent Instructions, Context Attachments, Agent Assignment Map.",
+              "files": ["packages/dashboard/src/app/api/sessions/create/lib/generateContextBackbone.ts"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT4-004",
+              "title": "Implement communication.json generation",
+              "description": "Generate communication.json (DRAFT) with stub reference, agent roster, assignments, dependencies. Use template structure from Phase 1 design.",
+              "files": ["packages/dashboard/src/app/api/sessions/create/lib/generateCommunication.ts"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT4-005",
+              "title": "Implement instructions.json generation",
+              "description": "Generate instructions.json (DRAFT) with per-agent instructions. Include orchestrator instructions. Format matches Phase 1 design spec.",
+              "files": ["packages/dashboard/src/app/api/sessions/create/lib/generateInstructions.ts"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT4-006",
+              "title": "Implement agent-prompts generation",
+              "description": "Generate agent-prompts/*.md files (one-liner prompts). One file per agent. Copy-to-clipboard functionality.",
+              "files": ["packages/dashboard/src/app/api/sessions/create/lib/generateAgentPrompts.ts"],
+              "status": "pending"
+            },
+            {
+              "id": "SPRINT4-007",
+              "title": "Create SessionCreationComplete component",
+              "description": "Create SessionCreationComplete.tsx success screen. Display session directory path, files created. 'Open Session Monitor' button (navigate to Agent 2's component). 'Create Another Session' button (reset form). Copy-to-clipboard for agent prompts.",
+              "files": ["packages/dashboard/src/components/SessionsHub/SessionCreation/SessionCreationComplete.tsx"],
+              "status": "pending"
+            }
           ],
           "deliverables": [
-            "All documentation complete",
-            "Examples provided"
+            "SessionGenerator with file preview",
+            "Session creation API with progressive generation",
+            "context-backbone.md (15K+ lines)",
+            "communication.json (DRAFT)",
+            "instructions.json (DRAFT)",
+            "agent-prompts/*.md",
+            "SessionCreationComplete success screen"
           ]
         }
       ]
