@@ -171,7 +171,21 @@ export const SessionCreationComplete: React.FC<SessionCreationCompleteProps> = (
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* View in Monitor */}
+        <button
+          onClick={() => {
+            // Navigate to Monitor tab with session ID in URL
+            if (typeof window !== 'undefined') {
+              window.location.href = `/sessions?tab=monitor`;
+            }
+          }}
+          className="px-6 py-3 font-bold uppercase tracking-wider text-sm bg-ind-accent text-black hover:bg-ind-accent/90 transition-all flex items-center justify-center gap-2"
+        >
+          <ExternalLink className="w-4 h-4" />
+          View in Monitor
+        </button>
+
         {/* View Session */}
         <button
           onClick={() => {
@@ -187,16 +201,16 @@ export const SessionCreationComplete: React.FC<SessionCreationCompleteProps> = (
           }}
           className="px-6 py-3 font-bold uppercase tracking-wider text-sm bg-ind-panel border border-ind-border text-ind-text hover:bg-ind-bg transition-all flex items-center justify-center gap-2"
         >
-          <ExternalLink className="w-4 h-4" />
-          Open Session Folder
+          <Folder className="w-4 h-4" />
+          Open Folder
         </button>
 
         {/* Create Another */}
         <button
           onClick={onCreateAnother}
-          className="px-6 py-3 font-bold uppercase tracking-wider text-sm bg-ind-accent text-black hover:bg-ind-accent/90 transition-all"
+          className="px-6 py-3 font-bold uppercase tracking-wider text-sm bg-ind-panel border border-ind-border text-ind-text hover:bg-ind-bg transition-all"
         >
-          Create Another Session
+          Create Another
         </button>
       </div>
 

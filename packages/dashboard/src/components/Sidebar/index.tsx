@@ -8,7 +8,7 @@ import NavItem from './NavItem';
 const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
   { label: 'Session', href: '/session', icon: Layers },
-  { label: 'Sessions Hub', href: '/sessions/create', icon: Users },
+  { label: 'Sessions Hub', href: '/sessions', icon: Users },
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },
   { label: 'Notes', href: '/notes', icon: FileText },
