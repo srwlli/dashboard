@@ -1,0 +1,55 @@
+[
+  {
+    "timestamp": "2026-01-12T11:22:23.658775",
+    "workorder_id": "WO-PROMPTS-REFACTOR-001",
+    "feature_name": "prompts-refactor",
+    "task_count": 9,
+    "tasks": [
+      {
+        "content": "BEFORE-S-001: Review page",
+        "activeForm": "BEFORE-S-001: Reviewing page",
+        "status": "pending"
+      },
+      {
+        "content": "BEFORE-S-002: Create branch",
+        "activeForm": "BEFORE-S-002: Creating branch",
+        "status": "pending"
+      },
+      {
+        "content": "DURING-I-001: Complete Phase 1",
+        "activeForm": "DURING-I-001: Completeing Phase 1",
+        "status": "pending"
+      },
+      {
+        "content": "DURING-I-002: Complete Phase 2",
+        "activeForm": "DURING-I-002: Completeing Phase 2",
+        "status": "pending"
+      },
+      {
+        "content": "DURING-I-003: Complete Phase 3",
+        "activeForm": "DURING-I-003: Completeing Phase 3",
+        "status": "pending"
+      },
+      {
+        "content": "DURING-I-004: Complete Phase 4",
+        "activeForm": "DURING-I-004: Completeing Phase 4",
+        "status": "pending"
+      },
+      {
+        "content": "BEFORE-C-001: Type check",
+        "activeForm": "BEFORE-C-001: Typeing check",
+        "status": "pending"
+      },
+      {
+        "content": "BEFORE-C-002: Lint",
+        "activeForm": "BEFORE-C-002: Linting",
+        "status": "pending"
+      },
+      {
+        "content": "BEFORE-C-003: Test all",
+        "activeForm": "BEFORE-C-003: Testing all",
+        "status": "pending"
+      }
+    ]
+  }
+]

@@ -1,0 +1,92 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "prompts-refactor",
+    "workorder_id": "WO-PROMPTS-REFACTOR-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "AI Agent",
+    "generated_at": "2026-01-12T04:00:00Z",
+    "has_context": true,
+    "has_analysis": true,
+    "planning_standard_version": "2.0.0"
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "architecture_md": {
+          "exists": true,
+          "path": "coderef/foundation-docs/ARCHITECTURE.md",
+          "key_patterns": ["Next.js 16 App Router with file-based routing", "Monorepo architecture with packages/core and packages/dashboard", "Client components marked with 'use client' directive", "Tailwind CSS with ind-* custom tokens for theming"]
+        }
+      }
+    },
+    "1_executive_summary": {
+      "what": "Refactor the session management page to focus exclusively on prompting workflow by removing SessionManager component and renaming the route from /session to /prompts",
+      "why": "After creating dedicated SessionsHub at /sessions, the session page contains duplicate session management UI",
+      "how": "Remove SessionManager import/usage, rename app/session directory to app/prompts, update all navigation references",
+      "impact": "Cleaner codebase with single-responsibility pages, improved user navigation clarity",
+      "scope": "Frontend refactoring only - 1 page component, 1 directory rename, navigation updates"
+    },
+    "2_risk_assessment": {
+      "breaking_changes": {
+        "user_facing": [{"change": "URL route changes from /session to /prompts", "impact": "HIGH", "affected_users": "Users with bookmarks", "mitigation": "Add redirect"}]
+      },
+      "technical_risks": [{"risk": "SessionManager used elsewhere", "probability": "LOW", "impact": "MEDIUM", "mitigation": "Search all imports"}],
+      "rollback_plan": {"complexity": "LOW", "steps": ["Revert rename", "Restore SessionManager"]}
+    },
+    "3_current_state_analysis": {
+      "existing_implementation": {
+        "files": [{"path": "packages/dashboard/src/app/session/page.tsx", "purpose": "Page with SessionManager and PromptingWorkflow"}]
+      }
+    },
+    "4_key_features": {
+      "features": [
+        {"id": "F-001", "name": "Remove SessionManager", "priority": "HIGH", "complexity": "LOW"},
+        {"id": "F-002", "name": "Rename route", "priority": "HIGH", "complexity": "LOW"}
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Search codebase for all SessionManager component imports",
+        "SETUP-002: Search codebase for all /session route references",
+        "SETUP-003: Identify Sidebar component file path",
+        "IMPL-001: Remove SessionManager import from page.tsx",
+        "IMPL-002: Remove SessionManager JSX usage from page.tsx",
+        "IMPL-003: Update page metadata to reflect prompts focus",
+        "IMPL-004: Rename directory from session to prompts",
+        "IMPL-005: Update navigation links to /prompts",
+        "IMPL-006: Update navigation label text",
+        "IMPL-007: Replace remaining /session references",
+        "IMPL-008: Add redirect from /session to /prompts",
+        "TEST-001: Test /prompts displays correctly",
+        "TEST-002: Test redirect works",
+        "TEST-003: Test navigation link",
+        "TEST-004: Test PromptingWorkflow intact",
+        "TEST-005: Test page metadata"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {"phase": 1, "name": "Discovery", "tasks": ["SETUP-001", "SETUP-002", "SETUP-003"], "deliverables": ["Import list", "Route references"], "dependencies": "Parallel", "rationale": "Understand scope first"},
+        {"phase": 2, "name": "Page Refactoring", "tasks": ["IMPL-001", "IMPL-002", "IMPL-003"], "deliverables": ["Updated page"], "dependencies": "Phase 1 complete", "rationale": "Modify before rename"},
+        {"phase": 3, "name": "Route Rename", "tasks": ["IMPL-004", "IMPL-005", "IMPL-006", "IMPL-007"], "deliverables": ["Renamed directory"], "dependencies": "Phase 2 complete", "rationale": "Rename then fix refs"},
+        {"phase": 4, "name": "Testing", "tasks": ["IMPL-008", "TEST-001", "TEST-002", "TEST-003", "TEST-004", "TEST-005"], "deliverables": ["All verified"], "dependencies": "Phase 3 complete", "rationale": "Verify all works"}
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": {"new_tests": [], "rationale": "No unit tests needed for page refactor"},
+      "manual_tests": [{"test_id": "MT-001", "description": "Verify workflow", "steps": ["Navigate", "Test features"], "expected_result": "Functional"}]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {"requirement": "SessionManager removed", "measurement": "No imports", "target": "Zero"},
+        {"requirement": "Route renamed", "measurement": "Directory exists", "target": "app/prompts"}
+      ]
+    },
+    "9_implementation_checklist": {
+      "before_start": ["Review page", "Create branch"],
+      "during_implementation": ["Complete Phase 1", "Complete Phase 2", "Complete Phase 3", "Complete Phase 4"],
+      "before_commit": ["Type check", "Lint", "Test all"]
+    }
+  }
+}

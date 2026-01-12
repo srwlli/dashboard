@@ -1,0 +1,36 @@
+{
+  "feature_name": "prompts-refactor",
+  "description": "Remove SessionManager from /session page and rename the page to /prompts. The page should only contain PromptingWorkflow since we now have a dedicated SessionsHub at /sessions for session management.",
+  "goal": "Clean up after creating SessionsHub - eliminate duplicate session management UI and make the prompts page dedicated to prompting workflow only",
+  "requirements": [
+    "Remove SessionManager component import and usage from the page",
+    "Rename /app/session directory to /app/prompts",
+    "Update navigation links in sidebar to point to /prompts",
+    "Keep all PromptingWorkflow functionality intact",
+    "Update page title, description, and metadata to reflect prompts focus",
+    "Update any route references from /session to /prompts"
+  ],
+  "out_of_scope": [],
+  "constraints": [
+    "Don't delete SessionManager component file (might be used elsewhere)",
+    "No breaking changes to PromptingWorkflow functionality",
+    "Preserve all prompting workflow sub-components"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-PROMPTS-REFACTOR-001",
+    "workorder_assigned_at": "2026-01-12T04:51:21.990679+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-PROMPTS-REFACTOR-001",
+    "feature_id": "prompts-refactor",
+    "last_updated": "2026-01-12",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-11"
+  }
+}

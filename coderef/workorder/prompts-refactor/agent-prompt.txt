@@ -1,0 +1,184 @@
+You are an expert implementation planner. Generate a detailed, executable plan for this feature:
+
+**FEATURE:** prompts-refactor
+
+**DESCRIPTION:** Remove SessionManager from /session page and rename the page to /prompts. The page should only contain PromptingWorkflow since we now have a dedicated SessionsHub at /sessions for session management.
+
+**GOAL:** Clean up after creating SessionsHub - eliminate duplicate session management UI and make the prompts page dedicated to prompting workflow only
+
+**REQUIREMENTS (6 total):**
+- Remove SessionManager component import and usage from the page
+- Rename /app/session directory to /app/prompts
+- Update navigation links in sidebar to point to /prompts
+- Keep all PromptingWorkflow functionality intact
+- Update page title, description, and metadata to reflect prompts focus
+- Update any route references from /session to /prompts
+
+**CONSTRAINTS (3 total):**
+- Don't delete SessionManager component file (might be used elsewhere)
+- No breaking changes to PromptingWorkflow functionality
+- Preserve all prompting workflow sub-components
+
+---
+
+**CRITICAL: You have COMPLETE codebase context. USE IT EXPLICITLY.**
+
+**CODE INVENTORY (.coderef/index.json):**
+- Total elements: 6
+- Available: Functions, classes, components with exact file paths and line numbers
+
+**CODING PATTERNS (.coderef/reports/patterns.json):**
+- 5 patterns identified
+- Includes: Error handling patterns, naming conventions, code organization rules
+
+**DEPENDENCY GRAPH (.coderef/graph.json):**
+- 5559 nodes in dependency graph
+- Use for: Dependency analysis, impact assessment, task ordering
+
+**TEST COVERAGE (.coderef/reports/coverage.json):**
+- Overall coverage: unknown%
+- Use for: Identifying test gaps, planning test strategy
+
+**ARCHITECTURE (ARCHITECTURE.md preview):**
+# System Architecture
+
+**Date:** 2025-12-28
+**Version:** 0.1.0
+
+---
+
+## Overview
+
+The CodeRef Dashboard is a modular widget system with PWA and Electron support, designed to aggregate and visualize workorder and stub data from multiple project directories. The system follows a monorepo architecture with three primary packages.
+
+**Core Purpose:** Provide a unified dashboard interface for tracking workorders (active work) and stubs (backlog items) across multiple software projects.
+
+---
+
+## System...
+
+**API REFERENCE (API.md preview):**
+# API Reference
+
+**Framework:** POWER
+**Date:** 2025-12-28
+**Version:** 0.1.0
+
+---
+
+## Overview
+
+This document provides comprehensive API reference for the CodeRef Dashboard backend. The dashboard aggregates workorder and stub data from multiple projects using Next.js API Routes.
+
+**Key Architecture:**
+- Next.js 14 API Routes (App Router)
+- File-based API endpoints in `packages/dashboard/src/app/api/`
+- Reads data from multiple project directories via `projects.config.json`
+- RESTful JSON respon...
+
+---
+
+**YOUR TASK - Generate Implementation Plan**
+
+You MUST create a plan.json following the 10-section structure below.
+
+**MANDATORY REQUIREMENTS:**
+
+1. **DEPENDENCY ANALYSIS** (use coderef data):
+   - Check which existing functions/classes this feature depends on (use index.json)
+   - Identify which files will be modified (check code inventory for exact paths)
+   - Analyze dependency chains (use graph.json if available)
+
+2. **PATTERN ADHERENCE** (use patterns.json):
+   - Follow existing coding patterns from patterns.json
+   - Match error handling approaches
+   - Use established naming conventions
+
+3. **TASK BREAKDOWN** (be SPECIFIC - most important):
+   - Break each requirement into FILE-LEVEL tasks
+   - Example: "IMPL-001: Modify src/auth/jwt.service.ts lines 45-60 - add generateRefreshToken() method"
+   - NOT: "IMPL-001: Implement JWT tokens"
+   - Include exact file paths from code inventory
+   - Reference specific line numbers where changes occur
+
+4. **PHASE PLANNING** (use dependencies):
+   - Order tasks by dependency (what must happen first?)
+   - Identify parallel vs sequential work
+   - Create realistic phases (not always 4!)
+   - Add "dependencies" and "rationale" fields to each phase
+
+5. **TESTING STRATEGY** (use coverage.json):
+   - Address current test coverage gaps
+   - Specify which test files to create/modify
+   - Include edge cases and integration tests
+
+---
+
+**OUTPUT FORMAT:**
+
+Return a JSON object with this structure:
+
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "prompts-refactor",
+    "workorder_id": "WO-PROMPTS-REFACTOR-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "AI Agent",
+    "has_context": true,
+    "has_analysis": true
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": { ... },
+    "1_executive_summary": { ... },
+    "2_risk_assessment": { ... },
+    "3_current_state_analysis": { ... },
+    "4_key_features": { ... },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Specific setup task with file paths",
+        "IMPL-001: Modify path/to/file.py lines X-Y - add specific method/function",
+        "IMPL-002: Create path/to/new_file.py - implement specific component",
+        ...
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Descriptive Phase Name",
+          "description": "What this phase accomplishes",
+          "tasks": ["SETUP-001", "IMPL-001"],
+          "deliverables": ["Specific deliverable 1", "Specific deliverable 2"],
+          "dependencies": "Sequential - SETUP-001 must complete before IMPL-001",
+          "rationale": "Why this phase grouping makes sense"
+        }
+      ]
+    },
+    "7_testing_strategy": { ... },
+    "8_success_criteria": { ... },
+    "9_implementation_checklist": { ... }
+  }
+}
+
+---
+
+**VALIDATION RULES:**
+
+- ✅ Every task MUST reference specific files from code inventory
+- ✅ Every task MUST consider existing patterns from patterns.json
+- ✅ Every phase MUST have dependency-ordered tasks with rationale
+- ✅ Risk assessment MUST address breaking changes and dependencies
+- ✅ Testing strategy MUST address gaps from coverage.json
+- ✅ NO time estimates (hours/minutes) - use complexity levels instead
+- ✅ NO questions in plan - answer everything
+
+**EXAMPLE TASK (GOOD):**
+"IMPL-003: Modify generators/planning_generator.py lines 232-285 - Replace _generate_plan_internal() with _generate_plan_with_agent() async method that launches Task agent with coderef context"
+
+**EXAMPLE TASK (BAD):**
+"IMPL-003: Implement AI agent integration following existing patterns"
+
+---
+
+Generate the complete plan now. Be specific, reference actual files, and use the codebase intelligence provided.
