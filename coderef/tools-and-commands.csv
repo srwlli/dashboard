@@ -1,0 +1,160 @@
+Type,Server,Category,Name,Description,Status
+Tool,coderef-context,Code Intelligence,coderef_scan,Scan project and discover code elements,active
+Tool,coderef-context,Code Intelligence,coderef_query,Query code relationships,active
+Tool,coderef-context,Code Intelligence,coderef_impact,Analyze modification impact,active
+Tool,coderef-context,Code Intelligence,coderef_complexity,Get complexity metrics,active
+Tool,coderef-context,Code Intelligence,coderef_patterns,Discover code patterns,active
+Tool,coderef-context,Code Intelligence,coderef_coverage,Analyze test coverage,active
+Tool,coderef-context,Code Intelligence,coderef_context,Generate codebase context,active
+Tool,coderef-context,Code Intelligence,coderef_validate,Validate CodeRef2 references,active
+Tool,coderef-context,Code Intelligence,coderef_drift,Detect index drift,active
+Tool,coderef-context,Code Intelligence,coderef_diagram,Generate dependency diagrams,active
+Tool,coderef-context,Code Intelligence,coderef_tag,Add CodeRef2 tags to source files,active
+Tool,coderef-context,Code Intelligence,coderef_export,Export coderef data,active
+Tool,coderef-workflow,Documentation Templates,list_templates,List all documentation templates,active
+Tool,coderef-workflow,Documentation Templates,get_template,Retrieve specific template,active
+Tool,coderef-workflow,Documentation Templates,generate_foundation_docs,Generate foundation documentation,active
+Tool,coderef-workflow,Documentation Templates,generate_individual_doc,Generate single doc file,active
+Tool,coderef-workflow,Changelog Management,get_changelog,Get project changelog,active
+Tool,coderef-workflow,Changelog Management,add_changelog_entry,Add changelog entry,active
+Tool,coderef-workflow,Changelog Management,update_changelog,Agentic changelog update,active
+Tool,coderef-workflow,Standards & Quality,generate_quickref_interactive,Generate universal quickref,active
+Tool,coderef-workflow,Standards & Quality,establish_standards,Scan and generate standards,active
+Tool,coderef-workflow,Standards & Quality,audit_codebase,Audit for standards violations,active
+Tool,coderef-workflow,Standards & Quality,check_consistency,Pre-commit consistency check,active
+Tool,coderef-workflow,Planning,get_planning_template,Get planning template,active
+Tool,coderef-workflow,Planning,analyze_project_for_planning,Automate prep phase,active
+Tool,coderef-workflow,Planning,gather_context,Gather feature requirements,active
+Tool,coderef-workflow,Planning,validate_implementation_plan,Validate plan quality,active
+Tool,coderef-workflow,Planning,generate_plan_review_report,Generate review report,active
+Tool,coderef-workflow,Planning,create_plan,Create implementation plan,active
+Tool,coderef-workflow,Execution & Tracking,finalize_plan_from_agent,Finalize plan from Task agent,active
+Tool,coderef-workflow,Execution & Tracking,generate_deliverables_template,Generate deliverables template,active
+Tool,coderef-workflow,Execution & Tracking,update_deliverables,Update with git metrics,active
+Tool,coderef-workflow,Execution & Tracking,execute_plan,Generate TodoWrite task list,active
+Tool,coderef-workflow,Execution & Tracking,update_task_status,Update task progress,active
+Tool,coderef-workflow,Multi-Agent Coordination,generate_agent_communication,Generate communication.json,active
+Tool,coderef-workflow,Multi-Agent Coordination,assign_agent_task,Assign task to agent,active
+Tool,coderef-workflow,Multi-Agent Coordination,verify_agent_completion,Verify completion,active
+Tool,coderef-workflow,Multi-Agent Coordination,aggregate_agent_deliverables,Aggregate metrics,active
+Tool,coderef-workflow,Multi-Agent Coordination,track_agent_status,Track agent status,active
+Tool,coderef-workflow,Archival & Inventory,archive_feature,Archive completed features,active
+Tool,coderef-workflow,Archival & Inventory,audit_plans,Audit all plans,active
+Tool,coderef-workflow,Archival & Inventory,log_workorder,Log workorder entry,active
+Tool,coderef-workflow,Archival & Inventory,get_workorder_log,Query workorder log,active
+Tool,coderef-workflow,Advanced Tools,generate_handoff_context,Generate agent handoff,active
+Tool,coderef-workflow,Advanced Tools,assess_risk,AI-powered risk assessment,active
+Tool,coderef-workflow,Advanced Tools,coderef_foundation_docs,Unified foundation docs,active
+Tool,coderef-workflow,Advanced Tools,generate_features_inventory,Generate features inventory,active
+Tool,coderef-workflow,Advanced Tools,update_all_documentation,Agentic doc updates,active
+Tool,coderef-docs,Documentation Generation,list_templates,List documentation templates,active
+Tool,coderef-docs,Documentation Generation,get_template,Retrieve template content,active
+Tool,coderef-docs,Documentation Generation,generate_foundation_docs,Generate foundation docs,active
+Tool,coderef-docs,Documentation Generation,generate_individual_doc,Generate single doc with UDS,active
+Tool,coderef-docs,Documentation Generation,add_changelog_entry,Add changelog entry,active
+Tool,coderef-docs,Documentation Generation,record_changes,Smart changelog recording,active
+Tool,coderef-docs,Documentation Generation,generate_quickref_interactive,Generate quickref,active
+Tool,coderef-docs,Documentation Generation,generate_resource_sheet,Generate resource sheets,active
+Tool,coderef-docs,Documentation Generation,establish_standards,Discover patterns,active
+Tool,coderef-docs,Documentation Generation,audit_codebase,Audit violations,active
+Tool,coderef-docs,Documentation Generation,check_consistency,Consistency checking,active
+Tool,coderef-docs,Documentation Generation,validate_document,UDS validation,active
+Tool,coderef-docs,Documentation Generation,check_document_health,Health score calculation,active
+Tool,coderef-personas,Persona Management,use_persona,Activate expert persona,active
+Tool,coderef-personas,Persona Management,get_active_persona,Get current persona info,active
+Tool,coderef-personas,Persona Management,clear_persona,Deactivate persona,active
+Tool,coderef-personas,Persona Management,list_personas,List all personas,active
+Tool,coderef-personas,Persona Management,generate_todo_list,Convert plan to TodoWrite,active
+Tool,coderef-personas,Persona Management,track_plan_execution,Sync plan with todos,active
+Tool,coderef-personas,Persona Management,execute_plan_interactive,Execute plan guided,active
+Tool,coderef-personas,Persona Management,create_custom_persona,Create custom persona,active
+Tool,coderef-testing,Discovery,discover_tests,Find all tests,active
+Tool,coderef-testing,Discovery,list_test_frameworks,List frameworks,active
+Tool,coderef-testing,Execution,run_all_tests,Execute entire suite,active
+Tool,coderef-testing,Execution,run_test_file,Run specific file,active
+Tool,coderef-testing,Execution,run_test_category,Run by pattern,active
+Tool,coderef-testing,Execution,run_tests_in_parallel,Parallel execution,active
+Tool,coderef-testing,Management,get_test_results,Retrieve results,active
+Tool,coderef-testing,Management,aggregate_results,Aggregate runs,active
+Tool,coderef-testing,Management,generate_test_report,Generate reports,active
+Tool,coderef-testing,Management,compare_test_runs,Compare runs,active
+Tool,coderef-testing,Analysis,analyze_coverage,Coverage analysis,active
+Tool,coderef-testing,Analysis,detect_flaky_tests,Find flaky tests,active
+Tool,coderef-testing,Analysis,analyze_test_performance,Performance analysis,active
+Tool,coderef-testing,Analysis,validate_test_health,Health check,active
+Tool,papertrail,UDS Validation,validate_resource_sheet,Validate resource sheet,active
+Tool,papertrail,UDS Validation,check_all_resource_sheets,Validate all sheets,active
+Tool,papertrail,UDS Validation,validate_document,Validate any document,active
+Tool,papertrail,UDS Validation,check_all_docs,Validate all docs,active
+Command,coderef-workflow,Workflow,/aggregate-agent-deliverables,Aggregate agent deliverables,active
+Command,coderef-workflow,Workflow,/align-plan,Align plan with todos,active
+Command,coderef-workflow,Workflow,/analyze-for-planning,Analyze project for planning,active
+Command,coderef-workflow,Workflow,/archive-feature,Archive completed feature,active
+Command,coderef-workflow,Workflow,/assign-agent-task,Assign task to agent,active
+Command,coderef-workflow,Workflow,/audit-plans,Audit all plans,active
+Command,coderef-workflow,Workflow,/coderef-foundation-docs,Generate foundation docs,active
+Command,coderef-workflow,Workflow,/complete-workorder,Complete workorder,active
+Command,coderef-workflow,Workflow,/create-plan,Create implementation plan,active
+Command,coderef-workflow,Workflow,/create-session,Create multi-agent session,active
+Command,coderef-workflow,Workflow,/create-workorder,Create new workorder,active
+Command,coderef-workflow,Workflow,/features-inventory,Generate features inventory,active
+Command,coderef-workflow,Workflow,/gather-context,Gather feature context,active
+Command,coderef-workflow,Workflow,/generate-agent-communication,Generate agent communication file,active
+Command,coderef-workflow,Workflow,/generate-deliverables,Generate deliverables template,active
+Command,coderef-workflow,Workflow,/generate-handoff-context,Generate handoff context,active
+Command,coderef-workflow,Workflow,/generate-plan-review,Generate plan review report,active
+Command,coderef-workflow,Workflow,/get-planning-template,Get planning template,active
+Command,coderef-workflow,Workflow,/get-workorder-log,Query workorder log,active
+Command,coderef-workflow,Workflow,/git-release,Create git release,active
+Command,coderef-workflow,Workflow,/log-workorder,Log workorder entry,active
+Command,coderef-workflow,Workflow,/stub,Create feature stub,active
+Command,coderef-workflow,Workflow,/track-agent-status,Track agent status,active
+Command,coderef-workflow,Workflow,/update-deliverables,Update deliverables with metrics,active
+Command,coderef-workflow,Workflow,/update-task-status,Update task status,active
+Command,coderef-workflow,Workflow,/validate-plan,Validate implementation plan,active
+Command,coderef-workflow,Workflow,/verify-agent-completion,Verify agent completion,active
+Command,coderef-docs,Documentation,/audit-codebase,Audit codebase for violations,active
+Command,coderef-docs,Documentation,/check-consistency,Check consistency against standards,active
+Command,coderef-docs,Documentation,/create-resource-sheet,Create resource sheet,active
+Command,coderef-docs,Documentation,/establish-standards,Establish project standards,active
+Command,coderef-docs,Documentation,/generate-docs,Generate documentation,active
+Command,coderef-docs,Documentation,/generate-user-docs,Generate user documentation,active
+Command,coderef-docs,Documentation,/get-template,Get documentation template,active
+Command,coderef-docs,Documentation,/list-templates,List all templates,active
+Command,coderef-docs,Documentation,/record-changes,Record changelog changes,active
+Command,coderef-docs,Documentation,/resource-sheet-catalog,Show resource sheet catalog,active
+Command,coderef-docs,Documentation,/update-docs,Update documentation,active
+Command,coderef-docs,Documentation,/update-foundation-docs,Update foundation docs,active
+Command,coderef-personas,Personas,/ava,Activate Ava (frontend specialist),active
+Command,coderef-personas,Personas,/coderef-assistant,Activate CodeRef Assistant (orchestrator),active
+Command,coderef-personas,Personas,/coderef-context-agent,Activate context specialist,active
+Command,coderef-personas,Personas,/coderef-docs-agent,Activate docs specialist,active
+Command,coderef-personas,Personas,/coderef-mcp-lead,Activate MCP lead,active
+Command,coderef-personas,Personas,/coderef-personas-agent,Activate personas specialist,active
+Command,coderef-personas,Personas,/coderef-testing-agent,Activate testing specialist,active
+Command,coderef-personas,Personas,/lloyd,Activate Lloyd (general purpose),active
+Command,coderef-personas,Personas,/marcus,Activate Marcus (code architect),active
+Command,coderef-personas,Personas,/quinn,Activate Quinn (testing specialist),active
+Command,coderef-personas,Personas,/research-scout,Activate Research Scout,active
+Command,coderef-personas,Personas,/taylor,Activate Taylor (general purpose),active
+Command,coderef-personas,Management,/create-persona,Create custom persona,active
+Command,coderef-personas,Management,/debug-ui,Debug UI issues,active
+Command,coderef-personas,Management,/fix,Quick fixes,active
+Command,coderef-personas,Management,/use-persona,Use specific persona,active
+Command,coderef-testing,Testing,/compare-runs,Compare test runs,active
+Command,coderef-testing,Testing,/detect-flaky,Detect flaky tests,active
+Command,coderef-testing,Testing,/discover-tests,Discover tests,active
+Command,coderef-testing,Testing,/list-frameworks,List test frameworks,active
+Command,coderef-testing,Testing,/run-by-pattern,Run tests by pattern,active
+Command,coderef-testing,Testing,/run-parallel,Run tests in parallel,active
+Command,coderef-testing,Testing,/run-test-file,Run specific test file,active
+Command,coderef-testing,Testing,/run-tests,Run all tests,active
+Command,coderef-testing,Testing,/test-coverage,Analyze test coverage,active
+Command,coderef-testing,Testing,/test-health,Check test health,active
+Command,coderef-testing,Testing,/testing-proof,Generate testing proof,active
+Command,coderef-testing,Testing,/test-performance,Analyze test performance,active
+Command,coderef-testing,Testing,/test-report,Generate test report,active
+Command,coderef-testing,Testing,/test-results,Get test results,active
+Command,coderef-testing,Testing,/test-trends,Analyze test trends,active
+Command,assistant,Utility,/archive-file,Archive files by project,active
+Command,coderef-dashboard,Utility,/widget-architect,Widget architecture tool,active
