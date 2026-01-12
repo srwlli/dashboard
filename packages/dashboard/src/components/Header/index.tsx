@@ -7,7 +7,7 @@ import UserAvatar from '@/components/UserAvatar';
 
 const breadcrumbMap: Record<string, { label: string; href: string }> = {
   '/': { label: 'Dashboard', href: '/' },
-  '/session': { label: 'Session', href: '/session' },
+  '/prompts': { label: 'Prompts', href: '/prompts' },
   '/settings': { label: 'Settings', href: '/settings' },
   '/user': { label: 'User', href: '/user' },
   '/assistant': { label: 'Assistant', href: '/assistant' },

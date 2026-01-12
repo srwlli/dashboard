@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 
 const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
-  { label: 'Session', href: '/session', icon: Layers },
+  { label: 'Prompts', href: '/prompts', icon: Layers },
   { label: 'Assistant', href: '/assistant', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },
   { label: 'Scanner', href: '/scanner', icon: Radar },

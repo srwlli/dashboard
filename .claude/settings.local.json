@@ -19,7 +19,10 @@
       "Bash(rd /s /q \"C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\dashboard\\src\\app\\notes-standalone\")",
       "Bash(rm:*)",
       "mcp__coderef-workflow__create_plan",
-      "mcp__coderef-workflow__gather_context"
+      "mcp__coderef-workflow__gather_context",
+      "Bash(npm install:*)",
+      "Bash(python:*)",
+      "Bash(npm run type-check:*)"
     ],
     "deny": [],
     "ask": []

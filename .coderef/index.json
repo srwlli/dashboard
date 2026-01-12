@@ -1,13 +1,13 @@
 {
   "version": "2.0.0",
-  "generatedAt": "2026-01-11T19:30:49.950Z",
+  "generatedAt": "2026-01-12T01:37:53.821Z",
   "projectPath": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
-  "totalElements": 4982,
+  "totalElements": 5178,
   "elementsByType": {
-    "component": 214,
-    "method": 3941,
-    "constant": 158,
-    "function": 441,
+    "component": 231,
+    "method": 4051,
+    "constant": 160,
+    "function": 508,
     "class": 198,
     "hook": 30
   },
@@ -28321,6 +28321,475 @@
       "exported": false
     },
     {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.integration.test.ts",
+      "line": 39,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.integration.test.ts",
+      "line": 278,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "calculateSemanticRelevance",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 34,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 51,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 64,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 73,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 78,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 80,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 88,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 90,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.test.ts",
+      "line": 92,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "GET",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 33,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "extractKeywords",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 103,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "calculateRelevance",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 116,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "calculateSemanticRelevance",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 149,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "scanFoundationDocs",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 234,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "scanArchivedFeatures",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 273,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "scanResourceSheets",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 337,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "loadCodeRefData",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 376,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "scanCodeElements",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 428,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 39,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 90,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 165,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 181,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 193,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 199,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 201,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 209,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 211,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 213,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 241,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 262,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 280,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 303,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 321,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 326,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 344,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 365,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 390,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 399,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 408,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 417,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/context-discovery/route.ts",
+      "line": 435,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "POST",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 61,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "generateContextBackbone",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 118,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "generateCommunicationJson",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 164,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "generateInstructionsJson",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 201,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "generateAgentPrompts",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 232,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "calculateExecutionWave",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 294,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 67,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 102,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 145,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 152,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 241,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 249,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 258,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 272,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 277,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/create/route.ts",
+      "line": 295,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "GET",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/output/route.ts",
+      "line": 11,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/output/route.ts",
+      "line": 17,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/output/route.ts",
+      "line": 26,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/output/route.ts",
+      "line": 38,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "GET",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/route.ts",
+      "line": 11,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/route.ts",
+      "line": 16,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/route.ts",
+      "line": 20,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/sessions/route.ts",
+      "line": 37,
+      "exported": false
+    },
+    {
       "type": "component",
       "name": "GET",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/stubs/route.ts",
@@ -28514,6 +28983,20 @@
       "name": "SessionPage",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/session/page.tsx",
       "line": 12,
+      "exported": true
+    },
+    {
+      "type": "component",
+      "name": "SessionsCreatePage",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/sessions/create/page.tsx",
+      "line": 3,
+      "exported": true
+    },
+    {
+      "type": "component",
+      "name": "SessionsPage",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/sessions/page.tsx",
+      "line": 21,
       "exported": true
     },
     {
@@ -31072,24 +31555,745 @@
       "exported": false
     },
     {
+      "type": "function",
+      "name": "handleAddAgent",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 25,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleRemoveAgent",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 42,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleRoleChange",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 59,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleToggleInstruction",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 67,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleToggleAttachment",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 85,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleOutputFilesChange",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 103,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleToggleDependency",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 111,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentAssigner.tsx",
+      "line": 53,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getStatusColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentCard.tsx",
+      "line": 35,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getStatusText",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/AgentCard.tsx",
+      "line": 42,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "validateAgentAssignments",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 22,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "detectCircularDependencies",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 138,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "dfs",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 150,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "isAgentReady",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 187,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "getAgentReadiness",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 198,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "areAllAgentsReady",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 208,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "getValidationSummary",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 215,
+      "exported": true
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 30,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 51,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 62,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 108,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 119,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 157,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 218,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 222,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/agentValidation.ts",
+      "line": 226,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "fetchContextFiles",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 46,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleToggle",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 86,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getTypeIcon",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 108,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getTypeBadgeColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 130,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getScoreColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 152,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "TypeIcon",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 263,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 40,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 58,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 75,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 109,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/ContextDiscovery.tsx",
+      "line": 131,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "while",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/DependencyVisualizer.tsx",
+      "line": 29,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/DependencyVisualizer.tsx",
+      "line": 38,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/DependencyVisualizer.tsx",
+      "line": 44,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/DependencyVisualizer.tsx",
+      "line": 61,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleSelectStub",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 37,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleAddBlock",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 42,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleUpdateBlock",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 55,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleRemoveBlock",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 64,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleAddAttachments",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 72,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleRemoveAttachment",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 79,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleClearAttachments",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 86,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleContextSelection",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 94,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleNext",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 116,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleBack",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 121,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleComplete",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 125,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleCreateAnother",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 130,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 101,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 105,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx",
+      "line": 110,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "Icon",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/InstructionBlock.tsx",
+      "line": 52,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleCopyPath",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionCreationComplete.tsx",
+      "line": 22,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "Icon",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionCreationComplete.tsx",
+      "line": 122,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionCreationComplete.tsx",
+      "line": 179,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionCreationComplete.tsx",
+      "line": 193,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "updateStep",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx",
+      "line": 45,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleGenerate",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx",
+      "line": 52,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "Icon",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx",
+      "line": 234,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx",
+      "line": 53,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx",
+      "line": 77,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx",
+      "line": 103,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/SessionGenerator.tsx",
+      "line": 106,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "Icon",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionCreation/StubSelector.tsx",
+      "line": 122,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusStyle",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx",
+      "line": 29,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusLabel",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx",
+      "line": 47,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "AgentCard",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx",
+      "line": 53,
+      "exported": true
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx",
+      "line": 30,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "detectFileType",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/OutputViewer.tsx",
+      "line": 33,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "downloadContent",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/OutputViewer.tsx",
+      "line": 57,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "OutputViewer",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/OutputViewer.tsx",
+      "line": 69,
+      "exported": true
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/OutputViewer.tsx",
+      "line": 35,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/OutputViewer.tsx",
+      "line": 80,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusStyle",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx",
+      "line": 29,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusLabel",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx",
+      "line": 47,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "SessionDetail",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx",
+      "line": 53,
+      "exported": true
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx",
+      "line": 30,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "SessionMonitoringContainer",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 29,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "fetcher",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 27,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleSessionClick",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 85,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleBackToList",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 89,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleViewOutput",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 93,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleCloseOutputViewer",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 103,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleRefreshSessionDetail",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 111,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 94,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "line": 119,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusIcon",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 27,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 43,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusBgColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 59,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "getStatusLabel",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 75,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "SessionsList",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 88,
+      "exported": true
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 28,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 44,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 60,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionsList.tsx",
+      "line": 76,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "SessionsHub",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/index.tsx",
+      "line": 20,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "handleTabChange",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/index.tsx",
+      "line": 35,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/SessionsHub/index.tsx",
+      "line": 38,
+      "exported": false
+    },
+    {
       "type": "component",
       "name": "Sidebar",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
-      "line": 27,
+      "line": 28,
       "exported": true
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
-      "line": 67,
+      "line": 68,
       "exported": false
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
-      "line": 85,
+      "line": 86,
       "exported": false
     },
     {
@@ -32063,6 +33267,160 @@
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/projects.ts",
       "line": 120,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "calculateAggregation",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 103,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "calculateSessionStatus",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 135,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "safeJSONParse",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 148,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "directoryExists",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 161,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getAllSessions",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 181,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "getSessionById",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 246,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "getAgentOutput",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 295,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "refreshSessionStatus",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 343,
+      "exported": true
+    },
+    {
+      "type": "constant",
+      "name": "DEFAULT_SESSION_DIRS",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 92,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 113,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 152,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 184,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 193,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 208,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 229,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 247,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 256,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 301,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 308,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 314,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 329,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/api/sessions.ts",
+      "line": 348,
       "exported": false
     },
     {
@@ -34313,78 +35671,78 @@
       "exported": false
     },
     {
+      "type": "function",
+      "name": "getNotePath",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 38,
+      "exported": false
+    },
+    {
       "type": "component",
       "name": "NotesWidget",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 24,
+      "line": 55,
       "exported": true
     },
     {
       "type": "function",
       "name": "handleBeforeUnload",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 281,
+      "line": 318,
+      "exported": false
+    },
+    {
+      "type": "constant",
+      "name": "NOTES_DIR",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 27,
       "exported": false
     },
     {
       "type": "method",
       "name": "switch",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 51,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 59,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "catch",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 63,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 70,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 76,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
       "line": 82,
       "exported": false
     },
     {
       "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 90,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 94,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 101,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 107,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 113,
+      "exported": false
+    },
+    {
+      "type": "method",
       "name": "switch",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 97,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 112,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
       "line": 128,
       "exported": false
@@ -34393,77 +35751,91 @@
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 148,
+      "line": 143,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 153,
+      "line": 159,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 179,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
+      "line": 184,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 166,
+      "line": 200,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 187,
+      "line": 221,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 191,
+      "line": 228,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 206,
+      "line": 243,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 217,
+      "line": 254,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 227,
+      "line": 264,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 238,
+      "line": 275,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 252,
+      "line": 289,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/notes/NotesWidget.tsx",
-      "line": 271,
+      "line": 308,
       "exported": false
     },
     {

@@ -1,27 +1,27 @@
 # CodeRef Project Context
 
-**Generated:** 2026-01-11T19:30:49.968Z
+**Generated:** 2026-01-12T01:37:53.840Z
 **Version:** 2.0.0
 
 ## Project Statistics
 
-- **Total Elements:** 4982
-- **Total Files:** 356
+- **Total Elements:** 5178
+- **Total Files:** 381
 
 ### Elements by Type
 
-- **component:** 214
-- **method:** 3941
-- **constant:** 158
-- **function:** 441
+- **component:** 231
+- **method:** 4051
+- **constant:** 160
+- **function:** 508
 - **class:** 198
 - **hook:** 30
 
 ### Files by Extension
 
-- **.tsx:** 559
+- **.tsx:** 650
 - **.js:** 2129
-- **.ts:** 2294
+- **.ts:** 2399
 
 ## Top Files by Element Count
 

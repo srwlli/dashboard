@@ -54,6 +54,15 @@ const nextConfig = {
       },
     ];
   },
+  redirects: async () => {
+    return [
+      {
+        source: '/session',
+        destination: '/prompts',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

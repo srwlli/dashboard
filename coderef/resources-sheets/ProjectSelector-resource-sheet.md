@@ -1,7 +1,14 @@
 ---
-Agent: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
-Date: 2026-01-02
-Task: DOCUMENT
+agent: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
+date: "2026-01-02"
+task: DOCUMENT
+subject: ProjectSelector
+parent_project: coderef-dashboard
+category: component
+version: 1.0.0
+related_files:
+  - packages/dashboard/src/components/ProjectSelector/index.tsx
+status: APPROVED
 ---
 
 # ProjectSelector — Authoritative Documentation
