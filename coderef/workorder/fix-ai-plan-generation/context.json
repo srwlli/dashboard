@@ -1,0 +1,37 @@
+{
+  "feature_name": "fix-ai-plan-generation",
+  "description": "Fix the create_plan MCP tool to handle AI agent integration internally. The tool currently launches a Task agent and returns instructions for Claude Code to manually parse the JSON response and overwrite the template plan. Instead, the tool should: (1) launch Task agent, (2) parse agent JSON response, (3) write parsed JSON directly to plan.json, (4) auto-validate the plan, (5) return both plan and validation score - eliminating all manual file manipulation steps.",
+  "goal": "Make the create_plan tool fully autonomous so the /create-workorder workflow requires zero manual intervention from Claude Code for AI-powered planning",
+  "requirements": [
+    "Parse JSON from Task agent response (handle markdown code fences)",
+    "Write parsed JSON directly to plan.json using filesystem access",
+    "Auto-validate plan after writing",
+    "Return both plan content and validation score",
+    "Remove INSTRUCTIONS FOR CLAUDE CODE section from response",
+    "Handle errors gracefully with fallback to template mode"
+  ],
+  "out_of_scope": [],
+  "constraints": [
+    "Must maintain backward compatibility with template fallback mode",
+    "Must preserve all existing create_plan API parameters",
+    "No breaking changes to calling code",
+    "Keep agent prompt generation logic intact"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-FIX-AI-PLAN-GENERATION-001",
+    "workorder_assigned_at": "2026-01-12T16:28:18.435700+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-FIX-AI-PLAN-GENERATION-001",
+    "feature_id": "fix-ai-plan-generation",
+    "last_updated": "2026-01-12",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-11"
+  }
+}

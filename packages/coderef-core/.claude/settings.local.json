@@ -21,6 +21,8 @@
     "coderef-personas",
     "coderef-context",
     "coderef-docs",
-    "coderef-workflow"
+    "coderef-workflow",
+    "coderef-testing",
+    "papertrail"
   ]
 }
