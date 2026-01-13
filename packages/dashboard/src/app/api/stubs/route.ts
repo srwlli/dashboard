@@ -1,27 +1,27 @@
 /**
  * GET /api/stubs
  *
- * Fetch all stubs from the centralized orchestrator directory.
+ * Fetch all stubs from the centralized stubs directory.
  * Stubs are the backlog of pending work items.
+ * Uses unified storage: ~/.coderef-dashboard/projects.json
+ * Reads optional stubs_directory field (fallback: ~/Desktop/assistant/stubs)
  */
 
 import { NextResponse } from 'next/server';
-import { ProjectsConfig } from '@/lib/api/projects';
+import { createProjectsConfig } from '@/lib/api/projects';
 import { StubReader } from '@/lib/api/stubs';
 import { StubListResponse } from '@/types/stubs';
 import { createErrorResponse, ErrorCodes, HttpStatus } from '@/types/api';
 
 /**
  * GET /api/stubs
- * Returns all stubs with correct schema
+ * Returns all stubs from centralized directory (configured in unified storage)
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    // Load projects config
-    let projectsConfig: ProjectsConfig;
+    // Load projects from unified storage (~/.coderef-dashboard/projects.json)
+    const projectsConfig = createProjectsConfig();
     try {
-      const configPath = 'C:\\Users\\willh\\Desktop\\assistant\\projects.config.json';
-      projectsConfig = new ProjectsConfig(configPath);
       projectsConfig.load();
     } catch (error) {
       const errorResponse = createErrorResponse(ErrorCodes.CONFIG_MISSING, {

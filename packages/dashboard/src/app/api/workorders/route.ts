@@ -3,25 +3,24 @@
  *
  * Fetch all workorders from all tracked projects.
  * Aggregates workorders from multiple project directories.
+ * Uses unified storage: ~/.coderef-dashboard/projects.json
  */
 
 import { NextResponse } from 'next/server';
-import { ProjectsConfig } from '@/lib/api/projects';
+import { createProjectsConfig } from '@/lib/api/projects';
 import { WorkorderReader } from '@/lib/api/workorders';
 import { WorkorderListResponse } from '@/types/workorders';
 import { createErrorResponse, ErrorCodes, HttpStatus } from '@/types/api';
 
 /**
  * GET /api/workorders
- * Returns all workorders from all 6 tracked projects, aggregated
+ * Returns all workorders from all tracked projects (unified storage)
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    // Load projects config
-    let projectsConfig: ProjectsConfig;
+    // Load projects from unified storage (~/.coderef-dashboard/projects.json)
+    const projectsConfig = createProjectsConfig();
     try {
-      const configPath = 'C:\\Users\\willh\\Desktop\\assistant\\projects.config.json';
-      projectsConfig = new ProjectsConfig(configPath);
       projectsConfig.load();
     } catch (error) {
       const errorResponse = createErrorResponse(ErrorCodes.CONFIG_MISSING, {
