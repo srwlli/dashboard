@@ -163,7 +163,7 @@ export class ProjectsConfig {
       description: 'Auto-generated from unified storage',
       projects,
       centralized: {
-        stubs_dir: unified.stubs_directory || resolve(homedir(), 'Desktop', 'assistant', 'stubs'),
+        stubs_dir: unified.stubs_directory || resolve(homedir(), 'Desktop', 'assistant', 'coderef', 'working'),
       },
     };
   }
