@@ -12,22 +12,23 @@ import type { ScannerProject, ProjectsStorage } from '../../types';
 import { createErrorResponse, createSuccessResponse } from '@/types/api';
 
 /**
- * Get storage file path for scanner projects
+ * Get storage file path for CodeRef projects
+ * Uses unified storage: ~/.coderef-dashboard/projects.json
  */
 function getStoragePath(): string {
   const homeDir = os.homedir();
-  return path.join(homeDir, '.coderef-scanner-projects.json');
+  return path.join(homeDir, '.coderef-dashboard', 'projects.json');
 }
 
 /**
- * Load projects from storage file
+ * Load projects from unified CodeRef storage
  */
 async function loadProjects(): Promise<ScannerProject[]> {
   const storagePath = getStoragePath();
 
   try {
     const data = await fs.readFile(storagePath, 'utf-8');
-    const storage: ProjectsStorage = JSON.parse(data);
+    const storage: { projects: ScannerProject[]; updatedAt: string } = JSON.parse(data);
     return storage.projects || [];
   } catch (error: any) {
     if (error.code === 'ENOENT') {
@@ -38,7 +39,7 @@ async function loadProjects(): Promise<ScannerProject[]> {
 }
 
 /**
- * Save projects to storage file
+ * Save projects to unified CodeRef storage
  */
 async function saveProjects(projects: ScannerProject[]): Promise<void> {
   const storagePath = getStoragePath();
@@ -50,9 +51,9 @@ async function saveProjects(projects: ScannerProject[]): Promise<void> {
     await fs.mkdir(storageDir, { recursive: true });
   }
 
-  const storage: ProjectsStorage = {
+  const storage = {
     projects,
-    version: '1.0.0',
+    updatedAt: new Date().toISOString(),
   };
 
   await fs.writeFile(storagePath, JSON.stringify(storage, null, 2), 'utf-8');

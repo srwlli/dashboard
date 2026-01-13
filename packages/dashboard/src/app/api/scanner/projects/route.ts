@@ -14,16 +14,16 @@ import type { ScannerProject, ProjectsStorage } from '../types';
 import { createErrorResponse, createSuccessResponse } from '@/types/api';
 
 /**
- * Get storage file path for scanner projects
- * Stores in ~/.coderef-scanner-projects.json (matches Python GUI)
+ * Get storage file path for CodeRef projects
+ * Uses unified storage: ~/.coderef-dashboard/projects.json
  */
 function getStoragePath(): string {
   const homeDir = os.homedir();
-  return path.join(homeDir, '.coderef-scanner-projects.json');
+  return path.join(homeDir, '.coderef-dashboard', 'projects.json');
 }
 
 /**
- * Load projects from storage file
+ * Load projects from unified CodeRef storage
  * Returns empty array if file doesn't exist (graceful ENOENT handling)
  */
 async function loadProjects(): Promise<ScannerProject[]> {
@@ -31,7 +31,7 @@ async function loadProjects(): Promise<ScannerProject[]> {
 
   try {
     const data = await fs.readFile(storagePath, 'utf-8');
-    const storage: ProjectsStorage = JSON.parse(data);
+    const storage: { projects: ScannerProject[]; updatedAt: string } = JSON.parse(data);
     return storage.projects || [];
   } catch (error: any) {
     // File doesn't exist - return empty array
@@ -44,7 +44,7 @@ async function loadProjects(): Promise<ScannerProject[]> {
 }
 
 /**
- * Save projects to storage file
+ * Save projects to unified CodeRef storage
  * Creates directory if it doesn't exist
  */
 async function saveProjects(projects: ScannerProject[]): Promise<void> {
@@ -58,9 +58,9 @@ async function saveProjects(projects: ScannerProject[]): Promise<void> {
     await fs.mkdir(storageDir, { recursive: true });
   }
 
-  const storage: ProjectsStorage = {
+  const storage = {
     projects,
-    version: '1.0.0',
+    updatedAt: new Date().toISOString(),
   };
 
   await fs.writeFile(storagePath, JSON.stringify(storage, null, 2), 'utf-8');

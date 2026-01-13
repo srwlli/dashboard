@@ -9,19 +9,22 @@ import { randomUUID } from 'crypto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
-import type { StartScanRequest, StartScanResponse, ScannerProject, ProjectsStorage } from '../types';
+import type { StartScanRequest, StartScanResponse, ScannerProject } from '../types';
 import { createErrorResponse, createSuccessResponse } from '@/types/api';
 import { ScanExecutor, registerScanExecutor, getScanExecutor } from '../lib/scanExecutor';
+import type { CodeRefProject } from '@/app/api/coderef/projects/route';
 
 /**
- * Load projects from storage
+ * Load projects from unified CodeRef storage
+ * Uses the same storage as ProjectsContext (~/.coderef-dashboard/projects.json)
  */
 async function loadProjects(): Promise<ScannerProject[]> {
-  const storagePath = path.join(os.homedir(), '.coderef-scanner-projects.json');
+  const storagePath = path.join(os.homedir(), '.coderef-dashboard', 'projects.json');
 
   try {
     const data = await fs.readFile(storagePath, 'utf-8');
-    const storage: ProjectsStorage = JSON.parse(data);
+    const storage: { projects: CodeRefProject[]; updatedAt: string } = JSON.parse(data);
+    // Convert CodeRefProject to ScannerProject (they have the same structure)
     return storage.projects || [];
   } catch (error: any) {
     if (error.code === 'ENOENT') {

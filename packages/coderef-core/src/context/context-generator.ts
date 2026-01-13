@@ -15,7 +15,7 @@ import type { ElementData, ScanOptions } from '../types/types.js';
  * Options for context generation
  */
 export interface ContextOptions {
-  /** Languages to scan (default: ['ts', 'tsx', 'js', 'jsx']) */
+  /** Languages to scan (default: all 10 supported - ts, tsx, js, jsx, py, go, rs, java, cpp, c) */
   languages?: string[];
   /** Scan options */
   scanOptions?: ScanOptions;
@@ -67,8 +67,8 @@ export class ContextGenerator {
   ): Promise<ContextResult> {
     const startTime = Date.now();
 
-    // Default options
-    const languages = options.languages || ['ts', 'tsx', 'js', 'jsx'];
+    // Default options - scan all 10 supported languages
+    const languages = options.languages || ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'];
     const topN = options.topN || 20;
     const useAnalyzer = options.useAnalyzer !== false; // Default true
 

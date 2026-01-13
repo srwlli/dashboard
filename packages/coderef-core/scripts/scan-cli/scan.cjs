@@ -54,8 +54,8 @@ const fs = require('fs');
   const startTime = Date.now();
 
   try {
-    // Scan all JavaScript/TypeScript file types
-    const elements = await scanCurrentElements(projectPath, ['ts', 'tsx', 'js', 'jsx']);
+    // Scan all 10 supported languages
+    const elements = await scanCurrentElements(projectPath, ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c']);
     const duration = Date.now() - startTime;
 
     // Count unique files

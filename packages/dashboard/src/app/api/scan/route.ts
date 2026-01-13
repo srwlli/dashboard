@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
 
     // Set default options
     const scanOptions = {
-      lang: options.lang || ['ts', 'tsx', 'js', 'jsx'],
+      lang: options.lang || ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'],
       recursive: options.recursive !== undefined ? options.recursive : true,
       exclude: options.exclude || [],
     };

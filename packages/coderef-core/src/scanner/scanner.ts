@@ -313,13 +313,13 @@ function shouldExcludePath(filePath: string, excludePatterns: string[]): boolean
 /**
  * Scans the current codebase for code elements (functions, classes, components, hooks)
  * @param dir Directory to scan
- * @param lang File extension to scan (or array of extensions)
+ * @param lang File extension to scan (or array of extensions) - defaults to all 10 supported languages
  * @param options Additional scanning options
  * @returns Array of code elements with their type, name, file and line number
  */
 export async function scanCurrentElements(
-  dir: string, 
-  lang: string | string[] = 'ts',
+  dir: string,
+  lang: string | string[] = ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'],
   options: ScanOptions = {}
 ): Promise<ElementData[]> {
   const scanner = new Scanner();
