@@ -41,14 +41,20 @@ ProjectsProvider (Context Provider)
 │   └── remove() - Remove project
 └── useProjects() Hook
     └── Access context in components
+        ├── Settings ProjectsPanel (project CRUD)
+        ├── Scanner (read-only display)
+        ├── CodeRef Explorer (selection)
+        └── Other pages (consumption)
 ```
 
 ### Key Integration Points
 
 - **ProjectsApi:** Client-side API wrapper (`packages/dashboard/src/lib/coderef/api-access.ts`)
 - **API Route:** `/api/coderef/projects` for server-side persistence (`packages/dashboard/src/app/api/coderef/projects/route.ts`)
-- **Storage:** File system storage at `~/.coderef-dashboard/projects.json`
+- **Scanner API Routes:** Also use unified storage at `/api/scanner/projects` and `/api/scanner/scan`
+- **Storage:** Unified file system storage at `~/.coderef-dashboard/projects.json` (all systems)
 - **Components:** All components that need project data use `useProjects()` hook
+- **Settings Integration:** ProjectsPanel is the primary UI for project management (add/remove)
 
 ### Role in System
 
@@ -86,6 +92,16 @@ ProjectsContext serves as the **single source of truth** for project registratio
 ### Storage Location
 
 **File Path:** `~/.coderef-dashboard/projects.json` (user's home directory)
+
+**⚠️ IMPORTANT:** This is the **unified storage location** for ALL project systems:
+- Settings ProjectsPanel (add/remove UI)
+- Scanner (consumes for scan operations)
+- CodeRef Explorer (consumes for file browsing)
+- All other pages that need project data
+
+**Legacy Storage (Deprecated):**
+- `~/.coderef-scanner-projects.json` - No longer used (as of 2026-01-13)
+- Projects must be migrated manually by re-adding in Settings
 
 **Storage Schema:**
 ```typescript
