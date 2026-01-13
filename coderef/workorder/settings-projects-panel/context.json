@@ -1,0 +1,32 @@
+{
+  "feature_name": "settings-projects-panel",
+  "description": "Add Projects management panel to existing Settings page and refactor Scanner page to consume projects from ProjectsContext instead of managing its own project paths. The Settings page currently only has ThemePanel - we need to add ProjectsPanel alongside it for centralized project management.",
+  "goal": "Centralize project management in Settings page as the single source of truth. Scanner becomes a consumer of projects (read-only with checkboxes) rather than managing its own paths. Eliminate duplicate project management UI across the dashboard.",
+  "requirements": [
+    "Add ProjectsPanel component to Settings page alongside existing ThemePanel",
+    "Create project card UI components with add/remove/restore functionality",
+    "Integrate with existing ProjectsContext (useProjects hook)",
+    "Remove Scanner's Add Path tool and custom path management",
+    "Add checkbox list to Scanner using useProjects() hook",
+    "Add 'Manage projects in Settings' link to Scanner",
+    "Handle stale project detection and restoration UI",
+    "Project cards show: name, path, added date, status (active/stale)",
+    "Empty state for no projects"
+  ],
+  "out_of_scope": [
+    "Creating new global header/sidebar project selectors",
+    "Modifying ProjectsContext implementation (already exists and works)",
+    "Adding tab navigation to Settings (just add panel)",
+    "Changing how ProjectSelector works in CodeRef Explorer (keep as-is)",
+    "Multi-project scanning logic (Scanner already has this)"
+  ],
+  "constraints": [
+    "Settings page already exists at packages/dashboard/src/app/settings/page.tsx with ThemePanel",
+    "Must preserve existing ThemePanel functionality",
+    "ProjectsContext already provides addProject(), removeProject(), loadProjects() methods",
+    "Scanner should become read-only consumer - no project management",
+    "Use existing ProjectSelector component as reference (packages/dashboard/src/components/ProjectSelector/)",
+    "Follow existing design system (Tailwind with ind-* tokens)"
+  ],
+  "created_at": "2026-01-13T03:00:00Z"
+}

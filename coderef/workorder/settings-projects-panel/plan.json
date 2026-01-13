@@ -1,0 +1,478 @@
+{
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-SETTINGS-PROJECTS-001",
+    "feature_name": "settings-projects-panel",
+    "created_at": "2026-01-13T03:00:00Z",
+    "status": "pending_implementation",
+    "schema_version": "2.0.0",
+    "description": "Add Projects management panel to Settings page and refactor Scanner to use ProjectsContext",
+    "planning_notes": "Settings page exists with ThemePanel. Need to add ProjectsPanel alongside it. Scanner currently has Add Path tool that duplicates project management - remove and use ProjectsContext instead."
+  },
+
+  "FEATURE_OVERVIEW": {
+    "summary": "Centralize project management in Settings page by adding ProjectsPanel component, and refactor Scanner page to consume projects from ProjectsContext instead of managing its own paths",
+    "goals": [
+      "Single source of truth for project management (Settings page)",
+      "Eliminate duplicate Add Path UI in Scanner",
+      "Scanner becomes read-only consumer of projects",
+      "Consistent project management UX across dashboard"
+    ],
+    "success_criteria": [
+      "Settings page has functional ProjectsPanel with add/remove/restore",
+      "Scanner uses useProjects() hook and shows checkbox list",
+      "Scanner no longer has Add Path tool",
+      "Projects added in Settings appear in Scanner immediately",
+      "Stale projects can be restored from Settings",
+      "No regression in existing ThemePanel or Scanner scan functionality"
+    ]
+  },
+
+  "TECHNICAL_APPROACH": {
+    "architecture_decisions": [
+      {
+        "decision": "Add ProjectsPanel alongside ThemePanel in Settings",
+        "rationale": "Settings already exists, just needs new panel component. Preserves existing theme functionality.",
+        "alternatives_considered": "Create separate /projects page (rejected - Settings is more conventional for configuration)",
+        "trade_offs": "Settings page becomes larger, but more discoverable for users"
+      },
+      {
+        "decision": "Reuse ProjectSelector component patterns for ProjectsPanel",
+        "rationale": "ProjectSelector (packages/dashboard/src/components/ProjectSelector/) already implements project add/remove/restore with ProjectsContext integration. Can adapt its patterns.",
+        "alternatives_considered": "Build from scratch (rejected - duplicates working code)",
+        "trade_offs": "None - proven patterns reduce implementation risk"
+      },
+      {
+        "decision": "Remove Scanner's Add Path tool completely",
+        "rationale": "Duplicate of Settings functionality. Scanner should consume, not manage projects.",
+        "alternatives_considered": "Keep both (rejected - violates single source of truth principle)",
+        "trade_offs": "Scanner becomes simpler, users learn one workflow"
+      }
+    ],
+    "integration_points": [
+      {
+        "system": "ProjectsContext",
+        "interaction": "ProjectsPanel uses useProjects() hook for addProject(), removeProject(), loadProjects() methods",
+        "dependencies": ["packages/dashboard/src/contexts/ProjectsContext.tsx"]
+      },
+      {
+        "system": "Platform Abstraction Layer",
+        "interaction": "Use fileSystem.selectDirectory() for platform-appropriate directory picker (Web vs Electron)",
+        "dependencies": ["packages/dashboard/src/lib/platform/index.ts"]
+      },
+      {
+        "system": "Scanner ProjectListCard",
+        "interaction": "Replace Add Path button with checkbox list from useProjects()",
+        "dependencies": ["packages/dashboard/src/components/Scanner/ProjectListCard.tsx"]
+      }
+    ],
+    "implementation_patterns": [
+      "Use controlled component pattern for project selection",
+      "Implement optimistic updates (immediate UI feedback, rollback on error)",
+      "Use platform abstraction for Web vs Electron differences",
+      "Follow existing Tailwind design tokens (ind-* prefixes)",
+      "Reuse stale project detection from ProjectSelector"
+    ]
+  },
+
+  "IMPLEMENTATION_PHASES": {
+    "phase_1_setup": {
+      "description": "Create ProjectsPanel component structure",
+      "tasks": [
+        {
+          "id": "SETUP-001",
+          "description": "Create ProjectsPanel component file at packages/dashboard/src/components/Settings/ProjectsPanel.tsx",
+          "estimated_effort": "15 minutes",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "Component file exists with proper structure",
+            "Integrates with useProjects() hook",
+            "Shows loading/error states",
+            "Has add project button"
+          ]
+        },
+        {
+          "id": "SETUP-002",
+          "description": "Create ProjectCard component at packages/dashboard/src/components/Settings/ProjectCard.tsx",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "Card shows project name, path, added date",
+            "Has remove button with confirmation",
+            "Shows stale status indicator",
+            "Has restore button for stale projects",
+            "Uses Tailwind ind-* tokens for styling"
+          ]
+        },
+        {
+          "id": "SETUP-003",
+          "description": "Create EmptyState component at packages/dashboard/src/components/Settings/EmptyState.tsx for no projects view",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "Shows friendly empty state message",
+            "Has large Add Project button",
+            "Includes helpful description text"
+          ]
+        }
+      ]
+    },
+
+    "phase_2_implementation": {
+      "description": "Implement ProjectsPanel functionality",
+      "tasks": [
+        {
+          "id": "IMPL-001",
+          "description": "Implement add project functionality in ProjectsPanel using platform.fileSystem.selectDirectory() and ProjectsContext.addProject()",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "Add button opens platform-appropriate directory picker",
+            "Selected directory registered via ProjectsContext.addProject()",
+            "Optimistic update shows project immediately",
+            "Error handling with rollback on failure",
+            "Success feedback to user"
+          ],
+          "implementation_notes": "Reference packages/dashboard/src/components/ProjectSelector/index.tsx:handleAddProject for pattern"
+        },
+        {
+          "id": "IMPL-002",
+          "description": "Implement remove project functionality with confirmation dialog",
+          "estimated_effort": "15 minutes",
+          "dependencies": ["SETUP-002"],
+          "acceptance_criteria": [
+            "Remove button shows confirmation dialog",
+            "Calls ProjectsContext.removeProject() on confirm",
+            "Updates UI immediately (optimistic)",
+            "Error handling with rollback",
+            "Removes from both API and persistence layer"
+          ],
+          "implementation_notes": "Reference ProjectSelector:handleRemoveProject for pattern. Use window.confirm() for dialog."
+        },
+        {
+          "id": "IMPL-003",
+          "description": "Implement stale project detection and restoration UI",
+          "estimated_effort": "25 minutes",
+          "dependencies": ["SETUP-002"],
+          "acceptance_criteria": [
+            "Validates project access on mount using fileSystem.isProjectValid()",
+            "Shows warning indicator on stale project cards",
+            "Restore button triggers re-authorization flow",
+            "Updates stale status after successful restore",
+            "Displays reason for staleness (permission lost, path invalid)"
+          ],
+          "implementation_notes": "Reference ProjectSelector stale handling logic. Web: IndexedDB handle validation. Electron: IPC path validation."
+        },
+        {
+          "id": "IMPL-004",
+          "description": "Add ProjectsPanel to Settings page at packages/dashboard/src/app/settings/page.tsx",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["IMPL-001", "IMPL-002", "IMPL-003"],
+          "acceptance_criteria": [
+            "ProjectsPanel renders above or below ThemePanel",
+            "ThemePanel continues to work (no regression)",
+            "Proper spacing between panels",
+            "Responsive layout on mobile"
+          ],
+          "implementation_notes": "Add <ProjectsPanel /> component to existing PageLayout. Consider visual separator between panels."
+        }
+      ]
+    },
+
+    "phase_3_scanner_refactor": {
+      "description": "Refactor Scanner to use ProjectsContext",
+      "tasks": [
+        {
+          "id": "REFACTOR-001",
+          "description": "Remove Add Path UI from Scanner ProjectListCard component at packages/dashboard/src/components/Scanner/ProjectListCard.tsx",
+          "estimated_effort": "10 minutes",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "Add Path button removed",
+            "Custom path input fields removed",
+            "Directory picker logic removed",
+            "Component still renders project list"
+          ],
+          "implementation_notes": "Identify and remove all path management UI. Keep only the project list display logic."
+        },
+        {
+          "id": "REFACTOR-002",
+          "description": "Integrate useProjects() hook in Scanner container component",
+          "estimated_effort": "15 minutes",
+          "dependencies": ["REFACTOR-001"],
+          "acceptance_criteria": [
+            "Import useProjects from ProjectsContext",
+            "Replace local projects state with context projects",
+            "Handle loading state from context",
+            "Handle error state from context"
+          ],
+          "implementation_notes": "Replace any local project state management with const { projects, isLoading, error } = useProjects();"
+        },
+        {
+          "id": "REFACTOR-003",
+          "description": "Add checkbox list to Scanner for project selection",
+          "estimated_effort": "20 minutes",
+          "dependencies": ["REFACTOR-002"],
+          "acceptance_criteria": [
+            "Each project from useProjects() shows as checkbox",
+            "Checkbox state tracked (selected/unselected)",
+            "Scan button scans only selected projects",
+            "Select All / Deselect All functionality",
+            "Shows project count (X selected)"
+          ],
+          "implementation_notes": "Use controlled checkbox pattern. Store selected IDs in local state. Pass to scan function."
+        },
+        {
+          "id": "REFACTOR-004",
+          "description": "Add 'Manage projects in Settings' link to Scanner",
+          "estimated_effort": "5 minutes",
+          "dependencies": ["REFACTOR-003"],
+          "acceptance_criteria": [
+            "Link appears near project list (e.g., in footer or header)",
+            "Links to /settings route",
+            "Uses Next.js Link component",
+            "Has clear label text"
+          ],
+          "implementation_notes": "Place link prominently. Text: 'Add more projects in Settings →' or similar."
+        }
+      ]
+    },
+
+    "phase_4_testing": {
+      "description": "Test end-to-end project management workflow",
+      "tasks": [
+        {
+          "id": "TEST-001",
+          "description": "Test add project flow: Settings → Add → Appears in Scanner",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["IMPL-004", "REFACTOR-004"],
+          "acceptance_criteria": [
+            "User can add project in Settings",
+            "Project appears in Settings project list",
+            "Project appears in Scanner checkbox list immediately",
+            "No page refresh required"
+          ]
+        },
+        {
+          "id": "TEST-002",
+          "description": "Test remove project flow: Settings → Remove → Disappears from Scanner",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["TEST-001"],
+          "acceptance_criteria": [
+            "User can remove project from Settings with confirmation",
+            "Project removed from Settings list",
+            "Project removed from Scanner checkbox list immediately",
+            "If project was selected in Scanner, selection cleared"
+          ]
+        },
+        {
+          "id": "TEST-003",
+          "description": "Test stale project restoration: Permission lost → Settings → Restore",
+          "estimated_effort": "15 minutes",
+          "dependencies": ["TEST-001"],
+          "acceptance_criteria": [
+            "Stale project shows warning in Settings",
+            "Restore button triggers re-authorization",
+            "After restore, project usable in Scanner",
+            "Stale indicator removed after successful restore"
+          ],
+          "implementation_notes": "Test Web platform: Manually clear IndexedDB. Test Electron: Move/delete project folder."
+        },
+        {
+          "id": "TEST-004",
+          "description": "Test Scanner checkbox selection and scan with multiple projects",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["REFACTOR-003"],
+          "acceptance_criteria": [
+            "Can select/deselect individual projects",
+            "Select All works",
+            "Scan button only scans selected projects",
+            "Scan output shows correct project paths"
+          ]
+        },
+        {
+          "id": "TEST-005",
+          "description": "Test Settings link from Scanner navigates correctly",
+          "estimated_effort": "5 minutes",
+          "dependencies": ["REFACTOR-004"],
+          "acceptance_criteria": [
+            "Link visible in Scanner",
+            "Clicking link navigates to /settings",
+            "Settings page loads with ProjectsPanel visible"
+          ]
+        },
+        {
+          "id": "TEST-006",
+          "description": "Regression test: Verify ThemePanel still works in Settings",
+          "estimated_effort": "5 minutes",
+          "dependencies": ["IMPL-004"],
+          "acceptance_criteria": [
+            "ThemePanel renders without errors",
+            "Theme toggle still functional",
+            "Accent color picker still functional",
+            "No visual layout issues"
+          ]
+        }
+      ]
+    },
+
+    "phase_5_polish": {
+      "description": "UI polish and edge cases",
+      "tasks": [
+        {
+          "id": "POLISH-001",
+          "description": "Add empty state to ProjectsPanel when no projects exist",
+          "estimated_effort": "5 minutes",
+          "dependencies": ["IMPL-004"],
+          "acceptance_criteria": [
+            "EmptyState component shown when projects.length === 0",
+            "Friendly message and large Add button",
+            "Hides when projects added"
+          ]
+        },
+        {
+          "id": "POLISH-002",
+          "description": "Add loading states to ProjectsPanel and Scanner",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["IMPL-004", "REFACTOR-002"],
+          "acceptance_criteria": [
+            "Settings shows loading spinner while projects load",
+            "Scanner shows loading state during initial fetch",
+            "Error states display helpful messages"
+          ]
+        },
+        {
+          "id": "POLISH-003",
+          "description": "Add responsive layout for ProjectsPanel on mobile",
+          "estimated_effort": "10 minutes",
+          "dependencies": ["IMPL-004"],
+          "acceptance_criteria": [
+            "Project cards stack vertically on mobile",
+            "Add button accessible on mobile",
+            "No horizontal overflow",
+            "Touch-friendly button sizes"
+          ]
+        }
+      ]
+    }
+  },
+
+  "TESTING_STRATEGY": {
+    "unit_tests": [
+      "ProjectCard component renders correctly",
+      "ProjectCard remove button calls correct handler",
+      "EmptyState shows when projects array empty",
+      "Scanner checkbox selection state management"
+    ],
+    "integration_tests": [
+      "ProjectsPanel integrates with ProjectsContext",
+      "Add project flow: picker → context → UI update",
+      "Remove project flow: confirm → context → UI update",
+      "Scanner receives projects from useProjects() hook"
+    ],
+    "e2e_tests": [
+      "Full workflow: Settings add → Scanner sees → Select → Scan",
+      "Full workflow: Settings remove → Scanner updates",
+      "Stale project restoration flow",
+      "Browser restart: Projects persist (Web)",
+      "App restart: Projects persist (Electron)"
+    ]
+  },
+
+  "EDGE_CASES": {
+    "scenarios": [
+      {
+        "scenario": "User removes project that is selected in Scanner",
+        "expected_behavior": "Scanner checkbox unchecked automatically, scan continues with remaining selected projects",
+        "handling": "Scanner listens to projects array changes, clears selection if project ID no longer exists"
+      },
+      {
+        "scenario": "User adds duplicate project (same path)",
+        "expected_behavior": "ProjectsContext validation prevents duplicate, shows error message",
+        "handling": "Check existing projects before adding, show 'Project already exists' error"
+      },
+      {
+        "scenario": "All projects stale on mount",
+        "expected_behavior": "Settings shows restoration UI for all projects, Scanner shows empty state with link to Settings",
+        "handling": "Both components gracefully handle stale projects, Scanner disables scan until projects restored"
+      },
+      {
+        "scenario": "Network/API error during add/remove",
+        "expected_behavior": "Optimistic update rolls back, error message shown, user can retry",
+        "handling": "ProjectsContext already implements rollback logic, components display error state"
+      },
+      {
+        "scenario": "User cancels directory picker",
+        "expected_behavior": "No error, UI returns to previous state",
+        "handling": "Platform abstraction returns null on cancel, component handles gracefully"
+      }
+    ]
+  },
+
+  "SECURITY_CONSIDERATIONS": {
+    "authentication": "Not applicable - no user auth involved",
+    "authorization": "File system access controlled by browser/OS permissions via File System Access API (Web) or Electron IPC",
+    "data_validation": [
+      "Validate project paths before registration",
+      "Sanitize project names for display",
+      "Validate directory handle permissions before storing (Web)"
+    ],
+    "sensitive_data": [
+      "File system paths stored in IndexedDB (Web) or API layer (Electron)",
+      "Directory handles (Web) contain permission grants - must validate on use"
+    ]
+  },
+
+  "PERFORMANCE_CONSIDERATIONS": {
+    "scalability_limits": [
+      "50+ projects: UI may slow, consider virtualization",
+      "IndexedDB query performance (Web): Fast for <100 projects",
+      "Stale validation on mount: Serial validation, 50 projects × 50ms = 2.5s"
+    ],
+    "optimization_opportunities": [
+      "Parallelize stale project validation",
+      "Debounce stale checks during rapid state changes",
+      "Lazy load project cards (virtualization) if >50 projects"
+    ],
+    "bottlenecks": [
+      "Stale project validation on mount (serial)",
+      "IndexedDB writes during add (acceptable latency)"
+    ]
+  },
+
+  "ROLLBACK_PLAN": {
+    "revert_strategy": [
+      "Git revert the feature branch commits",
+      "ProjectsContext unchanged (already works)",
+      "Scanner reverts to previous version with Add Path tool",
+      "Settings reverts to ThemePanel only"
+    ],
+    "data_migration": "Not needed - ProjectsContext data persists unchanged",
+    "dependencies": "No external dependencies - only internal components"
+  },
+
+  "COMPLETION_CHECKLIST": {
+    "code_complete": [
+      "All components created and tested",
+      "Settings page updated with ProjectsPanel",
+      "Scanner refactored to use useProjects()",
+      "No console errors or warnings"
+    ],
+    "documentation_complete": [
+      "Component JSDoc comments added",
+      "Resource sheet for ProjectsPanel created (optional)",
+      "Update CLAUDE.md with new Settings feature"
+    ],
+    "testing_complete": [
+      "All TEST-* tasks pass",
+      "Manual testing on Web and Electron",
+      "Regression testing (ThemePanel, Scanner scan)",
+      "Stale project flows tested"
+    ],
+    "deployment_ready": [
+      "Build succeeds (npm run build)",
+      "Type checking passes (npm run type-check)",
+      "No runtime errors in dev mode",
+      "Feature works on Web and Electron"
+    ]
+  }
+}
