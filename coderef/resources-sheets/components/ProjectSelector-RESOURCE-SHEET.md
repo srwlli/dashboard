@@ -15,7 +15,9 @@ status: APPROVED
 
 ## Executive Summary
 
-ProjectSelector is a cross-platform project management component that provides unified directory selection, registration, and lifecycle management for both web (File System Access API + IndexedDB) and Electron (IPC-based native filesystem) environments. It serves as the **primary entry point** for project configuration in CodeRef Dashboard, managing persistent storage, permission restoration, stale handle detection, and batch re-authorization workflows. This document defines state ownership, persistence contracts, event flows, and platform-specific behaviors for safe refactoring and feature development.
+ProjectSelector is a cross-platform project selection component that provides a dropdown interface for choosing projects in CodeRef Explorer. **As of 2026-01-13**, this component is used **only for project selection**, not project management. Project CRUD operations (add/remove) have been moved to Settings ProjectsPanel. ProjectSelector consumes projects from ProjectsContext and provides a dropdown + batch restore UI for stale projects. It handles both web (File System Access API + IndexedDB) and Electron (IPC-based native filesystem) environments.
+
+**⚠️ IMPORTANT:** For adding/removing projects, use **Settings ProjectsPanel**. ProjectSelector is now a read-only consumer with selection capabilities.
 
 ## Audience & Intent
 
@@ -28,13 +30,20 @@ ProjectSelector is a cross-platform project management component that provides u
 
 ### Role in System
 
-ProjectSelector manages the **project registration lifecycle** for CodeRef Dashboard:
+**Current Role (as of 2026-01-13):**
+ProjectSelector provides **project selection UI** for CodeRef Explorer:
 
-1. **Project Discovery** → User selects directory via platform-appropriate picker
-2. **Registration** → Project metadata stored in API layer (in-memory store)
-3. **Persistence** → Platform-specific handle/path storage (IndexedDB for web, IPC for Electron)
-4. **Validation** → Automatic stale handle detection and re-authorization workflows
-5. **Selection** → Parent component receives project selection changes via callback
+1. **Selection** → User picks project from dropdown
+2. **Validation** → Automatic stale handle detection and re-authorization workflows
+3. **Batch Restore** → UI for re-authorizing stale projects (Web only)
+4. **Callback** → Parent component receives project selection changes
+
+**Removed Functionality (moved to Settings ProjectsPanel):**
+- ❌ Project Discovery (add new projects)
+- ❌ Project Registration (CRUD operations)
+- ❌ Direct persistence management (now via ProjectsContext)
+
+**⚠️ For adding/removing projects:** Use Settings page → ProjectsPanel component
 
 ### Component Hierarchy
 
@@ -867,9 +876,12 @@ This resource sheet defines the **authoritative contracts** for ProjectSelector 
 
 **Version History:**
 - v1.0.0 (2026-01-02): Initial authoritative documentation
+- v1.1.0 (2026-01-13): Role change - Project CRUD moved to Settings ProjectsPanel, ProjectSelector now selection-only
 
 ---
 
 **Maintained by:** CodeRef Dashboard Team
-**Last Validated:** 2026-01-02
+**Last Validated:** 2026-01-13
 **Next Review:** When File System Access API spec changes or platform support expands
+
+**⚠️ Important Note:** This component still has add/remove functionality in the code but it's **deprecated**. Use Settings ProjectsPanel for project management. ProjectSelector will be refactored in future to remove CRUD operations and become a pure selection component.
