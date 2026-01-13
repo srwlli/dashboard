@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "generatedAt": "2026-01-12T01:37:53.821Z",
+  "generatedAt": "2026-01-12T19:04:09.684Z",
   "projectPath": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
   "totalElements": 5178,
   "elementsByType": {
@@ -28966,6 +28966,13 @@
     },
     {
       "type": "component",
+      "name": "PromptsPage",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/prompts/page.tsx",
+      "line": 11,
+      "exported": true
+    },
+    {
+      "type": "component",
       "name": "ResourcesPage",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/page.tsx",
       "line": 19,
@@ -28976,13 +28983,6 @@
       "name": "ScannerPage",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/scanner/page.tsx",
       "line": 11,
-      "exported": true
-    },
-    {
-      "type": "component",
-      "name": "SessionPage",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/session/page.tsx",
-      "line": 12,
       "exported": true
     },
     {
@@ -30396,49 +30396,49 @@
       "type": "component",
       "name": "Header",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Header/index.tsx",
-      "line": 25,
+      "line": 26,
       "exported": true
     },
     {
       "type": "component",
       "name": "MobileNav",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 37,
+      "line": 40,
       "exported": true
     },
     {
       "type": "function",
       "name": "handleEscape",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 42,
+      "line": 45,
       "exported": false
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 92,
+      "line": 95,
       "exported": false
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 119,
+      "line": 122,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 43,
+      "line": 46,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 48,
+      "line": 51,
       "exported": false
     },
     {
@@ -34673,14 +34673,14 @@
       "type": "function",
       "name": "createErrorResponse",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/types/api.ts",
-      "line": 83,
+      "line": 84,
       "exported": true
     },
     {
       "type": "function",
       "name": "createSuccessResponse",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/types/api.ts",
-      "line": 101,
+      "line": 102,
       "exported": true
     },
     {

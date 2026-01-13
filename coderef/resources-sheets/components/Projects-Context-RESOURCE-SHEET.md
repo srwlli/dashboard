@@ -2,7 +2,7 @@
 agent: claude_sonnet_4_5
 date: "2026-01-08"
 task: DOCUMENT
-subject: ProjectsContext
+subject: Projects Context
 parent_project: coderef-dashboard
 category: component
 version: "1.0.0"

@@ -8,6 +8,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllSessions, getSessionById } from '@/lib/api/sessions';
 
+// Disable caching to ensure fresh data on every request
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -24,7 +28,13 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      return NextResponse.json({ session });
+      return NextResponse.json({ session }, {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
     } else {
       // Get all sessions
       const sessions = await getAllSessions();
@@ -32,6 +42,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         sessions,
         count: sessions.length
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       });
     }
   } catch (error) {

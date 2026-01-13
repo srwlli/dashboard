@@ -11,11 +11,13 @@ import { WorkflowProvider } from '@/contexts/WorkflowContext';
 /**
  * RootClientWrapper
  * Global layout wrapper providing consistent page structure:
- * - Client-side theme initialization
  * - Sidebar navigation (hidden on mobile, visible on md+)
  * - Sticky header with page title and user avatar
  * - Page content with responsive padding and container constraints
  * - PWA initialization
+ *
+ * Note: Theme initialization is handled by ThemeContext and AccentColorContext
+ * to prevent hydration mismatches.
  *
  * Standalone Routes:
  * - Routes matching STANDALONE_ROUTES will render children directly without layout
@@ -32,20 +34,6 @@ const STANDALONE_ROUTES = ['/notes-standalone'];
 export function RootClientWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    // Apply saved theme from localStorage
-    const savedTheme = localStorage.getItem('coderef-dashboard-theme') || 'dark';
-    const htmlElement = document.documentElement;
-
-    if (savedTheme === 'light') {
-      htmlElement.classList.add('light');
-      htmlElement.classList.remove('dark');
-    } else {
-      htmlElement.classList.add('dark');
-      htmlElement.classList.remove('light');
-    }
-  }, []);
 
   // Check if current route is a standalone route
   const isStandalone = STANDALONE_ROUTES.includes(pathname);

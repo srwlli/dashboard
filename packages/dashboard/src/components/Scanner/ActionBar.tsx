@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useProjects } from '@/contexts/ProjectsContext';
 import { ConfirmationDialog } from './ConfirmationDialog';
 
 interface ProjectSelection {
@@ -16,11 +17,11 @@ interface ProjectSelection {
  */
 interface ActionBarProps {
   selections: Map<string, ProjectSelection>;
-  projects: Array<{ id: string; name: string; path: string }>;
   onScanStart?: (scanId: string) => void;
 }
 
-export function ActionBar({ selections, projects, onScanStart }: ActionBarProps) {
+export function ActionBar({ selections, onScanStart }: ActionBarProps) {
+  const { projects } = useProjects();
   const [scanning, setScanning] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
@@ -206,7 +207,6 @@ export function ActionBar({ selections, projects, onScanStart }: ActionBarProps)
         onClose={() => setShowConfirmDialog(false)}
         onConfirm={handleConfirmedExecution}
         selections={selections}
-        projects={projects}
       />
     </>
   );

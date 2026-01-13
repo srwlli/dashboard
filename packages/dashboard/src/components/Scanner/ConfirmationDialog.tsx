@@ -1,5 +1,7 @@
 'use client';
 
+import { useProjects } from '@/contexts/ProjectsContext';
+
 interface ProjectSelection {
   directories: boolean;
   scan: boolean;
@@ -11,7 +13,6 @@ interface ConfirmationDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   selections: Map<string, ProjectSelection>;
-  projects: Array<{ id: string; name: string; path: string }>;
 }
 
 /**
@@ -24,8 +25,9 @@ export function ConfirmationDialog({
   onClose,
   onConfirm,
   selections,
-  projects,
 }: ConfirmationDialogProps) {
+  const { projects } = useProjects();
+
   if (!isOpen) return null;
 
   // Build operation list from selections

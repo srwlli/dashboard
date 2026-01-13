@@ -22,7 +22,17 @@
       "mcp__coderef-workflow__gather_context",
       "Bash(npm install:*)",
       "Bash(python:*)",
-      "Bash(npm run type-check:*)"
+      "Bash(npm run type-check:*)",
+      "mcp__coderef-workflow__coderef_foundation_docs",
+      "Bash(npm run build:*)",
+      "Bash(find:*)",
+      "Bash(for dir in \"C:\\Users\\willh\\Desktop\\assistant\\coderef\\working\"/*)",
+      "Bash(do if [ -f \"$dir/stub.json\" ])",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(for dir in */)",
+      "Bash(then dirname=\"$dir%/\")",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

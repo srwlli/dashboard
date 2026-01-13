@@ -85,15 +85,27 @@ function getStatusLabel(status: Session['status']) {
   }
 }
 
+type TabType = 'active' | 'completed';
+
 export default function SessionsList({
   sessions,
   onSessionClick,
   className = ''
 }: SessionsListProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<TabType>('active');
+
+  // Filter by tab: active (not_started + in_progress) or completed
+  const tabFilteredSessions = sessions.filter(session => {
+    if (activeTab === 'active') {
+      return session.status === 'not_started' || session.status === 'in_progress';
+    } else {
+      return session.status === 'complete';
+    }
+  });
 
   // Filter sessions based on search query
-  const filteredSessions = sessions.filter(session => {
+  const filteredSessions = tabFilteredSessions.filter(session => {
     const query = searchQuery.toLowerCase();
     return (
       session.workorder_id.toLowerCase().includes(query) ||
@@ -102,16 +114,16 @@ export default function SessionsList({
     );
   });
 
+  // Count sessions by tab
+  const activeSessions = sessions.filter(s => s.status === 'not_started' || s.status === 'in_progress');
+  const completedSessions = sessions.filter(s => s.status === 'complete');
+
   return (
     <div className={`flex flex-col h-full ${className}`}>
-      {/* Header */}
+      {/* Header with Search and Tabs */}
       <div className="p-4 border-b border-ind-border">
-        <h2 className="text-lg font-semibold text-ind-text mb-3">
-          Active Sessions ({sessions.length})
-        </h2>
-
         {/* Search Bar */}
-        <div className="relative">
+        <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ind-text-muted" />
           <input
             type="text"
@@ -120,6 +132,34 @@ export default function SessionsList({
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-ind-panel border border-ind-border rounded-md text-sm text-ind-text placeholder:text-ind-text-muted focus:outline-none focus:ring-2 focus:ring-ind-accent"
           />
+        </div>
+
+        {/* Active | Completed Tabs */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab('active')}
+            className={`
+              flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors
+              ${activeTab === 'active'
+                ? 'bg-ind-accent text-white'
+                : 'bg-ind-panel text-ind-text-muted border border-ind-border hover:border-ind-accent hover:text-ind-text'
+              }
+            `}
+          >
+            Active ({activeSessions.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('completed')}
+            className={`
+              flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors
+              ${activeTab === 'completed'
+                ? 'bg-ind-accent text-white'
+                : 'bg-ind-panel text-ind-text-muted border border-ind-border hover:border-ind-accent hover:text-ind-text'
+              }
+            `}
+          >
+            Completed ({completedSessions.length})
+          </button>
         </div>
       </div>
 
@@ -134,8 +174,12 @@ export default function SessionsList({
               </>
             ) : (
               <>
-                <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No sessions found</p>
+                {activeTab === 'active' ? (
+                  <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                ) : (
+                  <CheckCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                )}
+                <p>No {activeTab} sessions found</p>
               </>
             )}
           </div>

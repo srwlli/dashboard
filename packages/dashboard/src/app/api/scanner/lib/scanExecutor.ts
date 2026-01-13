@@ -240,9 +240,10 @@ export class ScanExecutor extends EventEmitter {
       const startTime = Date.now();
 
       // Call scanner directly (no HTTP, no subprocess)
+      // Scan all 10 supported languages: TypeScript, JavaScript, Python, Go, Rust, Java, C++, C
       const elements: ElementData[] = await scanCurrentElements(
         projectPath,
-        ['ts', 'tsx', 'js', 'jsx'],
+        ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'],
         {
           recursive: true,
           exclude: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.next/**'],

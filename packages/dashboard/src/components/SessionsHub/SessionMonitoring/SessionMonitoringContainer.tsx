@@ -59,7 +59,8 @@ export default function SessionMonitoringContainer({
   const {
     data: sessionDetailData,
     error: sessionDetailError,
-    mutate: mutateSessionDetail
+    mutate: mutateSessionDetail,
+    isValidating: isRefreshingSessionDetail
   } = useSWR<{ session: SessionDetailType }>(
     selectedSessionId ? `/api/sessions?id=${selectedSessionId}` : null,
     fetcher,
@@ -181,6 +182,7 @@ export default function SessionMonitoringContainer({
                 session={sessionDetailData.session}
                 onRefresh={handleRefreshSessionDetail}
                 onViewOutput={handleViewOutput}
+                isRefreshing={isRefreshingSessionDetail}
               />
             </>
           )}

@@ -22,14 +22,9 @@ interface ProjectSelection {
 export function Scanner() {
   const [selections, setSelections] = useState<Map<string, ProjectSelection>>(new Map());
   const [scanId, setScanId] = useState<string | null>(null);
-  const [projects, setProjects] = useState<Array<{ id: string; name: string; path: string }>>([]);
 
   function handleScanStart(newScanId: string) {
     setScanId(newScanId);
-  }
-
-  function handleProjectsChange(newProjects: Array<{ id: string; name: string; path: string }>) {
-    setProjects(newProjects);
   }
 
   return (
@@ -39,10 +34,7 @@ export function Scanner() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Left Panel: Project List (8 columns on desktop) */}
           <div className="lg:col-span-8 h-[500px]">
-            <ProjectListCard
-              onSelectionChange={setSelections}
-              onProjectsLoad={handleProjectsChange}
-            />
+            <ProjectListCard onSelectionChange={setSelections} />
           </div>
 
           {/* Right Panel: Console Tabs (4 columns on desktop) */}
@@ -55,7 +47,6 @@ export function Scanner() {
         <div className="lg:col-span-12">
           <ActionBar
             selections={selections}
-            projects={projects}
             onScanStart={handleScanStart}
           />
         </div>

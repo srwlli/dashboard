@@ -21,24 +21,17 @@ interface ThemeProviderProps {
  * Persists theme preference to localStorage
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>('dark');
-
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    // Get saved theme from localStorage
+  // Initialize theme from localStorage immediately to prevent hydration mismatch
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'dark';
     const savedTheme = localStorage.getItem('coderef-dashboard-theme') as Theme | null;
+    return (savedTheme === 'dark' || savedTheme === 'light') ? savedTheme : 'dark';
+  });
 
-    if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
-      setThemeState(savedTheme);
-      applyTheme(savedTheme);
-    } else {
-      // Default to dark mode
-      setThemeState('dark');
-      applyTheme('dark');
-    }
-  }, []);
+  // Apply theme to DOM on mount (after hydration)
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

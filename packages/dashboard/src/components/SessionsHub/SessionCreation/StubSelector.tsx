@@ -1,92 +1,87 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search, Sparkles, Bug, TrendingUp, Wrench } from 'lucide-react';
+import { Search, Sparkles, Bug, TrendingUp, Wrench, Loader2 } from 'lucide-react';
+import useSWR from 'swr';
 import type { Stub } from './types';
+import type { StubListResponse, StubObject } from '@/types/stubs';
 
-// Hardcoded stubs as per Phase 1 design spec
-const HARDCODED_STUBS: Stub[] = [
-  {
-    id: 'STUB-082',
-    feature_name: 'Multi-Agent Session Coordinator',
-    description: 'Build automated coordination system for parallel agent execution with dependency tracking, output aggregation, and conflict resolution',
-    target_project: 'coderef-dashboard',
-    category: 'feature',
-    priority: 'high',
-    created_at: '2026-01-10'
-  },
-  {
-    id: 'STUB-054',
-    feature_name: 'Component Inventory Generator',
-    description: 'Scan codebase to generate comprehensive component inventory with props, dependencies, and usage analysis',
-    target_project: 'coderef-dashboard',
-    category: 'feature',
-    priority: 'medium',
-    created_at: '2026-01-08'
-  },
-  {
-    id: 'STUB-055',
-    feature_name: 'Context Backbone Optimizer',
-    description: 'Optimize context backbone generation for files larger than 20,000 lines with progressive streaming and relevance filtering',
-    target_project: 'coderef-workflow',
-    category: 'improvement',
-    priority: 'high',
-    created_at: '2026-01-09'
-  },
-  {
-    id: 'STUB-056',
-    feature_name: 'Session Monitoring Dashboard',
-    description: 'Real-time visualization of active multi-agent sessions with agent status, output preview, and progress tracking',
-    target_project: 'coderef-dashboard',
-    category: 'feature',
-    priority: 'critical',
-    created_at: '2026-01-10'
-  },
-  {
-    id: 'STUB-057',
-    feature_name: 'Dependency Graph Validator',
-    description: 'Detect circular dependencies in agent coordination and suggest optimal execution order based on dependency graph',
-    target_project: 'coderef-workflow',
-    category: 'refactor',
-    priority: 'medium',
-    created_at: '2026-01-07'
+/**
+ * SWR fetcher for API calls
+ */
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+/**
+ * Map API StubObject to component Stub type
+ */
+function mapStubObjectToStub(stubObject: StubObject): Stub | null {
+  // Filter out categories not supported by SessionCreation
+  if (stubObject.category === 'idea' || stubObject.category === 'test') {
+    return null;
   }
-];
+
+  return {
+    id: stubObject.id,
+    feature_name: stubObject.feature_name,
+    description: stubObject.description,
+    target_project: stubObject.target_project || 'unknown',
+    category: stubObject.category as 'feature' | 'fix' | 'improvement' | 'refactor',
+    priority: stubObject.priority,
+    created_at: stubObject.created
+  };
+}
 
 interface StubSelectorProps {
   onSelectStub: (stub: Stub) => void;
   selectedStub: Stub | null;
 }
 
-const categoryIcons = {
+const categoryIcons: Record<string, typeof Sparkles> = {
   feature: Sparkles,
   fix: Bug,
   improvement: TrendingUp,
   refactor: Wrench
 };
 
-const priorityColors = {
+// Default icon for unknown categories
+const DefaultIcon = Sparkles;
+
+const priorityColors: Record<string, string> = {
   low: 'text-ind-text-muted',
   medium: 'text-ind-text',
   high: 'text-ind-warning',
   critical: 'text-ind-error'
 };
 
+// Default priority color for unknown priorities
+const defaultPriorityColor = 'text-ind-text';
+
 export const StubSelector: React.FC<StubSelectorProps> = ({ onSelectStub, selectedStub }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch stubs from API
+  const { data, error, isLoading } = useSWR<StubListResponse>('/api/stubs', fetcher);
+
+  // Map API response to component type
+  const allStubs = useMemo(() => {
+    if (!data?.data?.stubs) return [];
+    return data.data.stubs
+      .map(mapStubObjectToStub)
+      .filter((stub): stub is Stub => stub !== null);
+  }, [data]);
+
   // Filter stubs based on search query
   const filteredStubs = useMemo(() => {
-    if (!searchQuery.trim()) return HARDCODED_STUBS;
+    if (!searchQuery.trim()) return allStubs;
 
     const query = searchQuery.toLowerCase();
-    return HARDCODED_STUBS.filter(stub =>
+    return allStubs.filter(stub =>
       stub.id.toLowerCase().includes(query) ||
       stub.feature_name.toLowerCase().includes(query) ||
       stub.description.toLowerCase().includes(query) ||
       stub.target_project.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, allStubs]);
 
   return (
     <div className="space-y-4">
@@ -111,15 +106,36 @@ export const StubSelector: React.FC<StubSelectorProps> = ({ onSelectStub, select
         />
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12 text-ind-text-muted">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+          <span className="text-sm">Loading stubs...</span>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="bg-ind-error/10 border border-ind-error/30 rounded-md p-4 text-sm text-ind-error">
+          <p className="font-semibold mb-1">Failed to load stubs</p>
+          <p className="text-xs">{error.message || 'Unable to fetch stubs from API'}</p>
+        </div>
+      )}
+
       {/* Stub List */}
-      <div className="space-y-3">
-        {filteredStubs.length === 0 ? (
-          <div className="text-center py-8 text-ind-text-muted text-sm">
-            No stubs found matching &quot;{searchQuery}&quot;
-          </div>
-        ) : (
+      {!isLoading && !error && (
+        <div className="space-y-3">
+          {filteredStubs.length === 0 ? (
+            <div className="text-center py-8 text-ind-text-muted text-sm">
+              {allStubs.length === 0 ? (
+                <>No stubs available. Create stubs to get started.</>
+              ) : (
+                <>No stubs found matching &quot;{searchQuery}&quot;</>
+              )}
+            </div>
+          ) : (
           filteredStubs.map((stub) => {
-            const Icon = categoryIcons[stub.category];
+            const Icon = categoryIcons[stub.category] || DefaultIcon;
             const isSelected = selectedStub?.id === stub.id;
 
             return (
@@ -134,7 +150,7 @@ export const StubSelector: React.FC<StubSelectorProps> = ({ onSelectStub, select
               >
                 <div className="flex items-start gap-3">
                   {/* Icon */}
-                  <div className={`flex-shrink-0 mt-1 ${priorityColors[stub.priority]}`}>
+                  <div className={`flex-shrink-0 mt-1 ${priorityColors[stub.priority] || defaultPriorityColor}`}>
                     <Icon className="w-5 h-5" />
                   </div>
 
@@ -144,7 +160,7 @@ export const StubSelector: React.FC<StubSelectorProps> = ({ onSelectStub, select
                       <span className="text-xs font-mono font-bold text-ind-accent">
                         {stub.id}
                       </span>
-                      <span className={`text-xs font-bold uppercase ${priorityColors[stub.priority]}`}>
+                      <span className={`text-xs font-bold uppercase ${priorityColors[stub.priority] || defaultPriorityColor}`}>
                         {stub.priority}
                       </span>
                     </div>
@@ -172,14 +188,17 @@ export const StubSelector: React.FC<StubSelectorProps> = ({ onSelectStub, select
             );
           })
         )}
-      </div>
+        </div>
+      )}
 
       {/* Stats Footer */}
-      <div className="pt-3 border-t border-ind-border">
-        <p className="text-xs text-ind-text-muted">
-          Showing {filteredStubs.length} of {HARDCODED_STUBS.length} stubs
-        </p>
-      </div>
+      {!isLoading && !error && (
+        <div className="pt-3 border-t border-ind-border">
+          <p className="text-xs text-ind-text-muted">
+            Showing {filteredStubs.length} of {allStubs.length} stubs
+          </p>
+        </div>
+      )}
     </div>
   );
 };

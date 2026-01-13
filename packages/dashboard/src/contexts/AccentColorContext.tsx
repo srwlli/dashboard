@@ -35,23 +35,17 @@ interface AccentColorProviderProps {
  * Persists accent color preference to localStorage
  */
 export function AccentColorProvider({ children }: AccentColorProviderProps) {
-  const [accentColor, setAccentColorState] = useState<AccentColor>('orange');
-
-  // Initialize accent color from localStorage
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
+  // Initialize accent color from localStorage immediately to prevent hydration mismatch
+  const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
+    if (typeof window === 'undefined') return 'orange';
     const savedColor = localStorage.getItem('coderef-dashboard-accent-color') as AccentColor | null;
+    return (savedColor && Object.keys(ACCENT_COLORS).includes(savedColor)) ? savedColor : 'orange';
+  });
 
-    if (savedColor && Object.keys(ACCENT_COLORS).includes(savedColor)) {
-      setAccentColorState(savedColor);
-      applyAccentColor(savedColor);
-    } else {
-      // Default to orange
-      setAccentColorState('orange');
-      applyAccentColor('orange');
-    }
-  }, []);
+  // Apply accent color to DOM on mount (after hydration)
+  useEffect(() => {
+    applyAccentColor(accentColor);
+  }, [accentColor]);
 
   const setAccentColor = (newColor: AccentColor) => {
     setAccentColorState(newColor);

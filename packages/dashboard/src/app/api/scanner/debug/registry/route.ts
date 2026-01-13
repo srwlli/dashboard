@@ -31,7 +31,7 @@ import { createSuccessResponse } from '@/types/api';
  *   }
  * }
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     console.log('[Debug Registry] Inspection requested');
 
