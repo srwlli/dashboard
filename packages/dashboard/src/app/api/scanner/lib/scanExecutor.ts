@@ -246,7 +246,7 @@ export class ScanExecutor extends EventEmitter {
         ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'],
         {
           recursive: true,
-          exclude: DEFAULT_EXCLUDE_PATTERNS as string[],
+          exclude: [...DEFAULT_EXCLUDE_PATTERNS],
         }
       );
 
