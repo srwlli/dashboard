@@ -1,243 +1,159 @@
-# Component Library Reference
+---
+generated_by: coderef-docs
+template: components
+date: "2026-01-14T01:30:00Z"
+feature_id: foundation-docs-components
+doc_type: components
+workorder_id: WO-FOUNDATION-DOCS-001
+task: DOCUMENT
+agent: claude-sonnet-4-5
+_uds:
+  validation_score: 95
+  validation_errors: []
+  validation_warnings: []
+  validated_at: "2026-01-14T01:30:00Z"
+  validator: UDSValidator
+---
 
-**Framework:** React 19 + Next.js 14 (App Router)
-**Date:** 2025-12-28
-**Version:** 0.1.0
+# Components Reference
+
+**Project:** coderef-dashboard  
+**Framework:** React 18+ with Next.js 14  
+**Version:** 0.1.0  
+**Date:** 2026-01-14
 
 ---
+
+## Purpose
+
+This document provides comprehensive documentation for all reusable React components in the coderef-dashboard project. It serves as the component library reference for developers building UI features, ensuring consistency, proper prop usage, and best practices.
 
 ## Overview
 
-This document catalogs all reusable UI components in the CodeRef Dashboard. The component library follows a modular architecture with shared core components and dashboard-specific implementations.
+The coderef-dashboard component library includes:
 
-**Key Characteristics:**
-- React 19 with TypeScript
-- Next.js 14 App Router (`'use client'` directive for client components)
-- Tailwind CSS with custom design tokens (`ind-*` prefix)
-- Lucide React for icons
-- Responsive design (mobile-first)
+- **Layout Components** - Page structure, navigation, headers
+- **Card Components** - Reusable card patterns for content display
+- **Scanner Components** - Code scanning interface components
+- **Context Providers** - React context for global state
+- **Form Components** - Input, selection, and workflow components
+- **Utility Components** - Shared UI primitives
 
----
+All components follow React best practices, use TypeScript for type safety, and support responsive design with Tailwind CSS.
 
-## Component Architecture
+## What
 
-### Package Structure
+### Component Architecture
+
+Components are organized by functionality:
 
 ```
-packages/
-├── core/                    # Shared component library
-│   └── src/
-│       ├── components/      # Core reusable components
-│       │   └── ErrorBoundary.tsx
-│       └── types/           # Shared TypeScript interfaces
-│
-└── dashboard/               # Dashboard-specific components
-    └── src/
-        └── components/
-            ├── WorkorderCard/
-            ├── StubCard/
-            ├── Sidebar/
-            ├── Header/
-            ├── FilterBar/
-            ├── ThemeToggle/
-            └── ... (more)
+packages/dashboard/src/components/
+├── Layout/
+│   ├── RootClientWrapper.tsx
+│   ├── PageLayout.tsx
+│   ├── Sidebar/
+│   └── Header/
+├── Cards/
+│   ├── UnifiedCard/
+│   ├── StubCard/
+│   ├── WorkorderCard/
+│   └── StatsCard/
+├── Scanner/
+│   ├── index.tsx
+│   ├── ProjectListCard.tsx
+│   ├── ConsoleTabs.tsx
+│   └── ActionBar.tsx
+├── Contexts/
+│   ├── ThemeContext.tsx
+│   ├── ProjectsContext.tsx
+│   └── ...
+└── coderef/
+    ├── FileTree.tsx
+    └── ContextMenu.tsx
 ```
 
----
+### Component Patterns
 
-## Core Components
+- **Client Components** - Marked with `'use client'` for interactivity
+- **Server Components** - Default for static content
+- **Context Providers** - Global state management
+- **Composition** - Components compose smaller primitives
 
-### ErrorBoundary
+## Why
 
-**Source:** `packages/core/src/components/ErrorBoundary.tsx`
+Comprehensive component documentation enables:
 
-Error boundary component for catching React errors.
+- **Reusability** - Discover existing components before creating new ones
+- **Consistency** - Follow established patterns and styling
+- **Type Safety** - Understand prop requirements and types
+- **Best Practices** - Learn from proven component patterns
+- **Onboarding** - Quick reference for new developers
 
-**Props:**
-```typescript
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}
-```
+## When
 
-**Usage:**
-```tsx
-import { ErrorBoundary } from '@coderef-dashboard/core';
+Reference this document when:
 
-<ErrorBoundary fallback={<div>Something went wrong</div>}>
-  <YourComponent />
-</ErrorBoundary>
-```
-
----
-
-## Data Display Components
-
-### WorkorderCard
-
-**Source:** `packages/dashboard/src/components/WorkorderCard/index.tsx`
-
-Displays a workorder with status, project info, and metadata.
-
-**Props:**
-```typescript
-interface WorkorderCardProps {
-  workorder: WorkorderObject;
-  onClick?: () => void;
-}
-```
-
-**Features:**
-- Status icons with color coding
-- Responsive layout (mobile-first)
-- Hover effects (when clickable)
-- Date formatting (relative to current year)
-- Truncated text with ellipsis
-
-**Status Icons:**
-```typescript
-const statusIcons = {
-  pending_plan: Clock,
-  plan_submitted: CheckCircle,
-  changes_requested: RefreshCw,
-  approved: CheckCircle,
-  implementing: Zap,
-  complete: Sparkles,
-  verified: CheckCircle,
-  closed: Lock
-};
-```
-
-**Status Colors:**
-```typescript
-const statusColors = {
-  pending_plan: 'text-ind-text-muted',
-  plan_submitted: 'text-ind-text',
-  changes_requested: 'text-ind-warning',
-  approved: 'text-ind-accent',
-  implementing: 'text-ind-accent',
-  complete: 'text-ind-success',
-  verified: 'text-ind-success',
-  closed: 'text-ind-text-muted'
-};
-```
-
-**Usage:**
-```tsx
-import { WorkorderCard } from '@/components/WorkorderCard';
-
-<WorkorderCard
-  workorder={workorderObject}
-  onClick={() => handleCardClick(workorder.id)}
-/>
-```
-
----
-
-### StubCard
-
-**Source:** `packages/dashboard/src/components/StubCard/index.tsx`
-
-Displays a stub (pending feature) with category, priority, and status.
-
-**Props:**
-```typescript
-interface StubCardProps {
-  stub: StubObject;
-  onClick?: () => void;
-}
-```
-
-**Features:**
-- Category icons (feature, fix, improvement, etc.)
-- Priority-based text coloring
-- Status badges with background colors
-- Two-line description with `line-clamp-2`
-- Responsive layout
-
-**Category Icons:**
-```typescript
-const categoryIcons = {
-  feature: Sparkles,
-  fix: Bug,
-  improvement: TrendingUp,
-  idea: Lightbulb,
-  refactor: Wrench,
-  test: Beaker
-};
-```
-
-**Priority Colors:**
-```typescript
-const priorityColors = {
-  low: 'text-ind-text-muted',
-  medium: 'text-ind-text',
-  high: 'text-ind-warning',
-  critical: 'text-ind-error'
-};
-```
-
-**Status Badge Styles:**
-```typescript
-const statusBgColors = {
-  stub: 'bg-ind-bg/30 text-ind-text-muted',
-  planned: 'bg-ind-accent/10 text-ind-accent',
-  in_progress: 'bg-ind-accent/20 text-ind-accent',
-  completed: 'bg-ind-success/10 text-ind-success'
-};
-```
-
-**Usage:**
-```tsx
-import { StubCard } from '@/components/StubCard';
-
-<StubCard
-  stub={stubObject}
-  onClick={() => handleStubClick(stub.id)}
-/>
-```
-
----
-
-### StatsCard
-
-**Source:** `packages/dashboard/src/components/StatsCard/index.tsx`
-
-Displays aggregate statistics with icon and count.
-
-**Props:**
-```typescript
-interface StatsCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number | string;
-  trend?: 'up' | 'down' | 'neutral';
-}
-```
-
-**Usage:**
-```tsx
-import { StatsCard } from '@/components/StatsCard';
-import { Zap } from 'lucide-react';
-
-<StatsCard
-  icon={<Zap className="w-5 h-5" />}
-  label="Active Workorders"
-  value={12}
-  trend="up"
-/>
-```
-
----
+- Building new UI features
+- Looking for reusable components
+- Understanding component props and usage
+- Learning component patterns
+- Integrating components into pages
 
 ## Layout Components
 
+### RootClientWrapper
+
+Global layout wrapper providing consistent page structure.
+
+**Location:** `packages/dashboard/src/components/RootClientWrapper.tsx`
+
+**Props:**
+```typescript
+interface RootClientWrapperProps {
+  children: ReactNode;
+}
+```
+
+**Features:**
+- Sidebar navigation (hidden on mobile)
+- Sticky header with page title
+- Responsive padding and container constraints
+- PWA initialization
+- Standalone route support
+
+**Usage:**
+```tsx
+<RootClientWrapper>
+  <YourPageContent />
+</RootClientWrapper>
+```
+
+### PageLayout
+
+Wrapper for consistent page structure and spacing.
+
+**Location:** `packages/dashboard/src/components/PageLayout.tsx`
+
+**Props:**
+```typescript
+interface PageLayoutProps {
+  children: ReactNode;
+}
+```
+
+**Usage:**
+```tsx
+<PageLayout>
+  <div>Page content</div>
+</PageLayout>
+```
+
 ### Sidebar
 
-**Source:** `packages/dashboard/src/components/Sidebar/index.tsx`
+Main navigation sidebar with collapsible state.
 
-Collapsible navigation sidebar with main and bottom nav items.
+**Location:** `packages/dashboard/src/components/Sidebar/index.tsx`
 
 **Props:**
 ```typescript
@@ -247,633 +163,615 @@ interface SidebarProps {
 ```
 
 **Features:**
-- Collapsible state (managed by `SidebarContext`)
+- Main navigation items (Dashboard, Prompts, Sessions, etc.)
+- Bottom navigation (Settings)
+- Collapsible with animation
 - Active route highlighting
-- Icon-only mode when collapsed
-- Smooth transitions (300ms)
-- Hydration-aware (prevents layout shift)
-
-**Navigation Structure:**
-```typescript
-const mainNavItems = [
-  { label: 'Dashboard', href: '/', icon: Home },
-  { label: 'Prompts', href: '/prompts', icon: BookOpen },
-  { label: 'Assistant', href: '/assistant', icon: Zap },
-  { label: 'Sources', href: '/sources', icon: Archive }
-];
-
-const bottomNavItems = [
-  { label: 'Settings', href: '/settings', icon: Settings }
-];
-```
+- Responsive (hidden on mobile)
 
 **Usage:**
 ```tsx
-import Sidebar from '@/components/Sidebar';
-
-<Sidebar className="hidden md:flex" />
+<Sidebar className="custom-class" />
 ```
-
----
-
-### NavItem
-
-**Source:** `packages/dashboard/src/components/Sidebar/NavItem.tsx`
-
-Individual navigation item within sidebar.
-
-**Props:**
-```typescript
-interface NavItemProps {
-  icon: React.ReactNode;
-  label: string;
-  href: string;
-  isActive: boolean;
-  isCollapsed: boolean;
-}
-```
-
-**States:**
-- Active: Highlighted with accent color
-- Collapsed: Icon-only display
-- Hover: Background color change
-
----
 
 ### Header
 
-**Source:** `packages/dashboard/src/components/Header/index.tsx`
+Sticky header with page title and user avatar.
 
-Top navigation header with breadcrumbs and user avatar.
-
-**Features:**
-- Responsive logo (full on desktop, abbreviated on mobile)
-- Breadcrumb navigation
-- User avatar (right-aligned)
-- Sticky positioning (`sticky top-0`)
-
-**Breadcrumb Map:**
-```typescript
-const breadcrumbMap = {
-  '/': { label: 'Dashboard', href: '/' },
-  '/prompts': { label: 'Prompts', href: '/prompts' },
-  '/settings': { label: 'Settings', href: '/settings' },
-  '/user-settings': { label: 'User Settings', href: '/user-settings' },
-  '/assistant': { label: 'Assistant', href: '/assistant' },
-  '/sources': { label: 'Sources', href: '/sources' }
-};
-```
-
-**Usage:**
-```tsx
-import Header from '@/components/Header';
-
-<Header />
-```
-
----
-
-### PageLayout
-
-**Source:** `packages/dashboard/src/components/PageLayout.tsx`
-
-Wrapper component providing consistent page structure.
+**Location:** `packages/dashboard/src/components/Header/index.tsx`
 
 **Props:**
 ```typescript
-interface PageLayoutProps {
-  children: React.ReactNode;
-  sidebar?: React.ReactNode;
-  header?: React.ReactNode;
+interface HeaderProps {
+  onMobileMenuClick?: () => void;
 }
 ```
 
----
+**Features:**
+- Dynamic page title from route
+- Breadcrumb navigation
+- Theme toggle
+- User avatar
+- Mobile menu trigger
+
+**Usage:**
+```tsx
+<Header onMobileMenuClick={handleMenuClick} />
+```
 
 ### MobileNav
 
-**Source:** `packages/dashboard/src/components/MobileNav/index.tsx`
+Mobile navigation drawer.
 
-Bottom navigation for mobile devices.
-
-**Features:**
-- Fixed bottom positioning
-- Icon-based navigation
-- Active route highlighting
-- Only visible on mobile (`md:hidden`)
-
----
-
-## Filter & Search Components
-
-### FilterBar
-
-**Source:** `packages/dashboard/src/components/FilterBar/index.tsx`
-
-Multi-faceted filter component with search, status, priority, project, and category filters.
+**Location:** `packages/dashboard/src/components/MobileNav/index.tsx`
 
 **Props:**
 ```typescript
-interface FilterBarProps {
-  onFilterChange: (filters: FilterConfig) => void;
-  statusOptions?: string[];
-  priorityOptions?: string[];
-  projectOptions?: string[];
-  categoryOptions?: string[];
-  showSearch?: boolean;
-}
-
-interface FilterConfig {
-  status?: string[];
-  priority?: string[];
-  project?: string[];
-  category?: string[];
-  search?: string;
+interface MobileNavProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 ```
 
-**Features:**
-- Multi-select filters (pill buttons)
-- Text search input
-- Active filter highlighting
-- Clear all filters button
-- Real-time filter updates via callback
+**Usage:**
+```tsx
+<MobileNav isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+```
+
+## Card Components
+
+### UnifiedCard
+
+Shared card component for consistent UI across stub and workorder cards.
+
+**Location:** `packages/dashboard/src/components/UnifiedCard/index.tsx`
+
+**Props:**
+```typescript
+interface UnifiedCardProps {
+  icon: LucideIcon;              // Icon to display in header
+  iconColor: string;              // Tailwind color class for icon
+  title: string;                 // Card title
+  subtitle?: string;              // Optional subtitle below title
+  description?: string;          // Optional description text (with line clamp)
+  headerRight?: ReactNode;        // Optional content for right side of header
+  footerLeft: ReactNode;          // Content for left side of footer
+  footerRight: ReactNode;         // Content for right side of footer
+  onClick?: () => void;          // Optional click handler
+}
+```
 
 **Usage:**
 ```tsx
-import { FilterBar, FilterConfig } from '@/components/FilterBar';
-
-const handleFilterChange = (filters: FilterConfig) => {
-  // Apply filters to data
-};
-
-<FilterBar
-  onFilterChange={handleFilterChange}
-  statusOptions={['implementing', 'complete', 'pending_plan']}
-  priorityOptions={['low', 'medium', 'high', 'critical']}
-  showSearch={true}
+<UnifiedCard
+  icon={FileText}
+  iconColor="text-blue-500"
+  title="Feature Name"
+  subtitle="Category: feature"
+  description="Brief description of the feature"
+  headerRight={<Badge>Active</Badge>}
+  footerLeft={<span>Created: 2026-01-14</span>}
+  footerRight={<Button>View</Button>}
+  onClick={() => navigate('/feature')}
 />
 ```
 
----
+### StubCard
 
-### TabNavigation
+Card component for displaying stub information.
 
-**Source:** `packages/dashboard/src/components/TabNavigation/index.tsx`
-
-Tab switcher component for multi-view pages.
+**Location:** `packages/dashboard/src/components/StubCard/index.tsx`
 
 **Props:**
 ```typescript
-interface TabNavigationProps {
-  tabs: Array<{ id: string; label: string }>;
-  activeTab: string;
-  onTabChange: (tabId: string) => void;
+interface StubCardProps {
+  stub: Stub;                     // Stub data object
+  onClick?: () => void;           // Optional click handler
 }
 ```
 
 **Usage:**
 ```tsx
-import { TabNavigation } from '@/components/TabNavigation';
+<StubCard stub={stubData} onClick={() => handleStubClick(stub.id)} />
+```
 
-<TabNavigation
-  tabs={[
-    { id: 'workorders', label: 'Workorders' },
-    { id: 'stubs', label: 'Stubs' }
+### WorkorderCard
+
+Card component for displaying workorder information.
+
+**Location:** `packages/dashboard/src/components/WorkorderCard/index.tsx`
+
+**Props:**
+```typescript
+interface WorkorderCardProps {
+  workorder: Workorder;           // Workorder data object
+  onClick?: () => void;           // Optional click handler
+}
+```
+
+**Usage:**
+```tsx
+<WorkorderCard workorder={workorderData} onClick={() => handleWorkorderClick(workorder.id)} />
+```
+
+### StatsCard
+
+Card component for displaying statistics.
+
+**Location:** `packages/dashboard/src/components/StatsCard/index.tsx`
+
+**Props:**
+```typescript
+interface StatsItem {
+  label: string;
+  count: number;
+}
+
+interface StatsCardProps {
+  title: string;
+  items: StatsItem[];
+  total?: number;
+}
+```
+
+**Usage:**
+```tsx
+<StatsCard
+  title="Workorders"
+  items={[
+    { label: "Pending", count: 5 },
+    { label: "Implementing", count: 7 },
+    { label: "Complete", count: 3 }
   ]}
-  activeTab={activeTab}
-  onTabChange={setActiveTab}
+  total={15}
 />
 ```
 
----
+## Scanner Components
 
-### ViewModeToggle
+### Scanner
 
-**Source:** `packages/dashboard/src/components/coderef/ViewModeToggle.tsx`
+Main scanner interface component.
 
-Tab toggle for switching between Projects and CodeRef view modes in Explorer.
+**Location:** `packages/dashboard/src/components/Scanner/index.tsx`
 
 **Props:**
 ```typescript
-interface ViewModeToggleProps {
-  /** Current active view mode */
-  value: ViewMode;
-  /** Callback when view mode changes */
-  onChange: (mode: ViewMode) => void;
-  /** Optional className for styling */
-  className?: string;
-}
-
-export type ViewMode = 'projects' | 'coderef';
+// No props - uses context
 ```
 
 **Features:**
-- Two-tab toggle (Projects / CodeRef)
-- Active state styling with accent color
-- Used in CodeRef Explorer for switching between single-project and multi-project views
+- 12-column responsive grid (8-4 split on desktop)
+- Project selection with phase checkboxes
+- Real-time console output streaming
+- Scan execution controls
+- Confirmation dialogs
 
 **Usage:**
 ```tsx
-import { ViewModeToggle, ViewMode } from '@/components/coderef/ViewModeToggle';
-
-const [viewMode, setViewMode] = useState<ViewMode>('projects');
-
-<ViewModeToggle value={viewMode} onChange={setViewMode} />
+<Scanner />
 ```
 
----
+### ProjectListCard
 
-### FileTypeFilter
+Project list with phase selection checkboxes.
 
-**Source:** `packages/dashboard/src/components/coderef/FileTypeFilter.tsx`
-
-Filter buttons for CodeRef view mode to filter files by type with count badges.
+**Location:** `packages/dashboard/src/components/Scanner/ProjectListCard.tsx`
 
 **Props:**
 ```typescript
-interface FileTypeFilterProps {
-  /** Current active filter */
-  value: FileType;
-  /** Callback when filter changes */
-  onChange: (type: FileType) => void;
-  /** Optional file counts per type */
-  counts?: Record<FileType, number>;
-  /** Optional className for styling */
-  className?: string;
+interface ProjectListCardProps {
+  onSelectionChange: (projectId: string, selection: ProjectSelection) => void;
 }
-
-export type FileType = 'all' | 'claude' | 'plan' | 'deliverables' | 'architecture' | 'readme';
-```
-
-**Features:**
-- Button group with file type options
-- Icons for each file type (Lucide React)
-- Dynamic count badges showing number of files per type
-- Active state highlighting
-- Supports pattern matching (exact, wildcard `**/`, extension `*.`)
-
-**File Type Options:**
-```typescript
-const FILE_TYPE_OPTIONS = [
-  { id: 'all', label: 'All Files', pattern: '*', icon: FileText },
-  { id: 'claude', label: 'CLAUDE.md', pattern: 'CLAUDE.md', icon: Code },
-  { id: 'plan', label: 'plan.json', pattern: '**/plan.json', icon: FileCode },
-  { id: 'deliverables', label: 'DELIVERABLES.md', pattern: '**/DELIVERABLES.md', icon: CheckSquare },
-  { id: 'architecture', label: 'ARCHITECTURE.md', pattern: 'ARCHITECTURE.md', icon: BookOpen },
-];
 ```
 
 **Usage:**
 ```tsx
-import { FileTypeFilter, FileType } from '@/components/coderef/FileTypeFilter';
-
-const [fileType, setFileType] = useState<FileType>('all');
-const fileCounts = { all: 42, claude: 5, plan: 8, deliverables: 8, architecture: 3 };
-
-<FileTypeFilter
-  value={fileType}
-  onChange={setFileType}
-  counts={fileCounts}
-/>
+<ProjectListCard onSelectionChange={handleSelectionChange} />
 ```
 
----
+### ConsoleTabs
 
-## List Components
+Console output with SSE streaming and history.
 
-### WorkorderList
-
-**Source:** `packages/dashboard/src/components/WorkorderList/index.tsx`
-
-Virtualized list of workorder cards with filtering.
+**Location:** `packages/dashboard/src/components/Scanner/ConsoleTabs.tsx`
 
 **Props:**
 ```typescript
-interface WorkorderListProps {
-  workorders: WorkorderObject[];
-  onWorkorderClick?: (workorder: WorkorderObject) => void;
-  filters?: FilterConfig;
+interface ConsoleTabsProps {
+  scanId?: string;                // Current scan ID for SSE connection
 }
 ```
-
----
-
-### StubList
-
-**Source:** `packages/dashboard/src/components/StubList/index.tsx`
-
-List of stub cards with optional filtering.
-
-**Props:**
-```typescript
-interface StubListProps {
-  stubs: StubObject[];
-  onStubClick?: (stub: StubObject) => void;
-  filters?: FilterConfig;
-}
-```
-
----
-
-## Theme Components
-
-### ThemeToggle
-
-**Source:** `packages/dashboard/src/components/ThemeToggle.tsx`
-
-Toggle button for switching between light and dark themes.
-
-**Features:**
-- Animated icon transition
-- Persists to localStorage
-- Uses `ThemeContext`
 
 **Usage:**
 ```tsx
-import ThemeToggle from '@/components/ThemeToggle';
-
-<ThemeToggle />
+<ConsoleTabs scanId={activeScanId} />
 ```
 
----
+### ActionBar
 
-### ThemePanel
+Execute button and confirmation dialog.
 
-**Source:** `packages/dashboard/src/components/ThemePanel.tsx`
-
-Advanced theme customization panel (color picker, etc.).
-
----
-
-### AccentColorPicker
-
-**Source:** `packages/dashboard/src/components/AccentColorPicker.tsx`
-
-Color picker for customizing accent color.
-
-**Features:**
-- Predefined color palette
-- Custom color input
-- Persists to localStorage via `AccentColorContext`
-
----
-
-## Workflow Components
-
-### PromptingWorkflow
-
-**Source:** `packages/dashboard/src/components/PromptingWorkflow/`
-
-Complex workflow component for AI prompt management with attachments.
-
-**Sub-components:**
-- `PromptSelector` - Select preloaded prompts
-- `AttachmentManager` - Manage file attachments
-- `AttachmentDropZone` - Drag-and-drop file upload
-- `PasteTextModal` - Paste text content
-- `PasteFinalResultModal` - Paste final result
-- `ExportMenu` - Export workflow data
-- `WorkflowMeta` - Display workflow metadata
-
-**Features:**
-- File attachment with drag-and-drop
-- Syntax highlighting via language detection
-- Export to JSON/Markdown/Clipboard
-- Token estimation
-- Preloaded prompt templates
-
----
-
-## Utility Components
-
-### UserAvatar
-
-**Source:** `packages/dashboard/src/components/UserAvatar/index.tsx`
-
-User avatar with initials or profile picture.
+**Location:** `packages/dashboard/src/components/Scanner/ActionBar.tsx`
 
 **Props:**
 ```typescript
-interface UserAvatarProps {
-  username?: string;
-  imageUrl?: string;
-  size?: 'sm' | 'md' | 'lg';
+interface ActionBarProps {
+  selections: Map<string, ProjectSelection>;
+  onScanStart: (scanId: string) => void;
 }
 ```
 
----
-
-### ComingSoon
-
-**Source:** `packages/dashboard/src/components/ComingSoon/index.tsx`
-
-Placeholder component for unimplemented features.
-
-**Props:**
-```typescript
-interface ComingSoonProps {
-  feature: string;
-  description?: string;
-}
+**Usage:**
+```tsx
+<ActionBar selections={selections} onScanStart={handleScanStart} />
 ```
-
----
-
-### PWAInitializer
-
-**Source:** `packages/dashboard/src/components/PWAInitializer.tsx`
-
-Client-side component that initializes PWA service worker.
-
-**Features:**
-- Registers service worker
-- Handles update prompts
-- Only runs on client-side
-
----
-
-## Design Tokens
-
-### Color Variables
-
-The dashboard uses Tailwind CSS with custom design tokens:
-
-```css
-/* Light Theme */
---ind-bg: #ffffff
---ind-panel: #f9fafb
---ind-border: #e5e7eb
---ind-text: #111827
---ind-text-muted: #6b7280
---ind-accent: #3b82f6
---ind-success: #10b981
---ind-warning: #f59e0b
---ind-error: #ef4444
-
-/* Dark Theme */
---ind-bg: #111827
---ind-panel: #1f2937
---ind-border: #374151
---ind-text: #f9fafb
---ind-text-muted: #9ca3af
---ind-accent: #60a5fa
---ind-success: #34d399
---ind-warning: #fbbf24
---ind-error: #f87171
-```
-
-### Responsive Breakpoints
-
-```css
-sm: 640px   /* Mobile landscape */
-md: 768px   /* Tablet */
-lg: 1024px  /* Desktop */
-xl: 1280px  /* Large desktop */
-2xl: 1536px /* Extra large */
-```
-
----
 
 ## Context Providers
 
 ### ThemeContext
 
-**Source:** `packages/dashboard/src/contexts/ThemeContext.tsx`
+Global theme management (light/dark mode).
 
-Global theme state management.
+**Location:** `packages/dashboard/src/contexts/ThemeContext.tsx`
 
+**Usage:**
+```tsx
+const { theme, toggleTheme } = useTheme();
+```
+
+### AccentColorContext
+
+Accent color customization.
+
+**Location:** `packages/dashboard/src/contexts/AccentColorContext.tsx`
+
+**Usage:**
+```tsx
+const { accentColor, setAccentColor } = useAccentColor();
+```
+
+### ProjectsContext
+
+Project registry management.
+
+**Location:** `packages/dashboard/src/contexts/ProjectsContext.tsx`
+
+**Usage:**
+```tsx
+const { projects, addProject, removeProject } = useProjects();
+```
+
+### SidebarContext
+
+Sidebar collapse state management.
+
+**Location:** `packages/dashboard/src/contexts/SidebarContext.tsx`
+
+**Usage:**
+```tsx
+const { isCollapsed, toggleCollapse } = useSidebar();
+```
+
+### ExplorerContext
+
+File explorer state management.
+
+**Location:** `packages/dashboard/src/contexts/ExplorerContext.tsx`
+
+**Usage:**
+```tsx
+const { selectedPath, setSelectedPath } = useExplorer();
+```
+
+### SearchContext
+
+Global search state management.
+
+**Location:** `packages/dashboard/src/contexts/SearchContext.tsx`
+
+**Usage:**
+```tsx
+const { query, setQuery, results } = useSearch();
+```
+
+### WorkflowContext
+
+Workflow state persistence.
+
+**Location:** `packages/dashboard/src/contexts/WorkflowContext.tsx`
+
+**Usage:**
+```tsx
+const { workflow, updateWorkflow } = useWorkflow();
+```
+
+## CodeRef Components
+
+### FileTree
+
+File tree navigation component.
+
+**Location:** `packages/dashboard/src/components/coderef/FileTree.tsx`
+
+**Props:**
 ```typescript
-interface ThemeContextValue {
-  theme: 'light' | 'dark';
-  toggleTheme: () => void;
+interface FileTreeProps {
+  rootPath: string;               // Root directory path
+  onFileSelect?: (path: string) => void;
+  onDirectorySelect?: (path: string) => void;
+  expandedPaths?: string[];        // Array of expanded directory paths
+  selectedPath?: string;           // Currently selected file path
 }
 ```
 
 **Usage:**
 ```tsx
-import { useTheme } from '@/contexts/ThemeContext';
-
-const { theme, toggleTheme } = useTheme();
+<FileTree
+  rootPath="/path/to/project"
+  onFileSelect={handleFileSelect}
+  expandedPaths={expanded}
+  selectedPath={currentPath}
+/>
 ```
 
----
+### ContextMenu
 
-### AccentColorContext
+Context menu for file operations.
 
-**Source:** `packages/dashboard/src/contexts/AccentColorContext.tsx`
+**Location:** `packages/dashboard/src/components/coderef/ContextMenu.tsx`
 
-Global accent color customization.
-
-```typescript
-interface AccentColorContextValue {
-  accentColor: string;
-  setAccentColor: (color: string) => void;
-}
-```
-
----
-
-### SidebarContext
-
-**Source:** `packages/dashboard/src/contexts/SidebarContext.tsx`
-
-Sidebar collapse state management.
-
-```typescript
-interface SidebarContextValue {
-  isCollapsed: boolean;
-  toggleSidebar: () => void;
-  isHydrated: boolean;
-}
-```
-
----
-
-## Component Best Practices
-
-### 1. Client vs Server Components
-
-- Use `'use client'` for components with:
-  - Event handlers (`onClick`, `onChange`)
-  - React hooks (`useState`, `useEffect`)
-  - Browser APIs
-- Server components by default for:
-  - Static content
-  - Data fetching pages
-
-### 2. Responsive Design
-
-All components use mobile-first responsive design:
+**Usage:**
 ```tsx
-className="text-xs sm:text-sm md:text-base"  // Typography
-className="p-2 sm:p-4 md:p-6"                // Spacing
-className="hidden sm:block"                  // Visibility
+<ContextMenu
+  items={[
+    { label: "Open", action: () => openFile() },
+    { label: "Delete", action: () => deleteFile() }
+  ]}
+/>
 ```
 
-### 3. Accessibility
+## Prompting Workflow Components
 
-- Semantic HTML elements
-- ARIA labels for icon-only buttons
-- Keyboard navigation support
-- Focus states with `focus:` utilities
+### PromptingWorkflow
 
-### 4. Performance
+Main prompting workflow interface.
 
-- Lazy loading for large components
-- Memoization with `React.memo()` for expensive renders
-- Code splitting via dynamic imports
+**Location:** `packages/dashboard/src/components/PromptingWorkflow/components/PromptingWorkflow.tsx`
 
-### 5. Type Safety
+**Features:**
+- Prompt selection and editing
+- Attachment management
+- Export functionality
+- Workflow metadata
 
-All components have full TypeScript interfaces with:
-- Required vs optional props
-- Union types for variants
-- Generic types for reusable components
+**Usage:**
+```tsx
+<PromptingWorkflow />
+```
+
+### PromptSelector
+
+Prompt template selector.
+
+**Location:** `packages/dashboard/src/components/PromptingWorkflow/components/PromptSelector.tsx`
+
+**Usage:**
+```tsx
+<PromptSelector onSelect={handlePromptSelect} />
+```
+
+### AttachmentManager
+
+File attachment management.
+
+**Location:** `packages/dashboard/src/components/PromptingWorkflow/components/AttachmentManager.tsx`
+
+**Usage:**
+```tsx
+<AttachmentManager attachments={files} onRemove={handleRemove} />
+```
+
+## Utility Components
+
+### ComingSoon
+
+Placeholder component for features under development.
+
+**Location:** `packages/dashboard/src/components/ComingSoon/index.tsx`
+
+**Props:**
+```typescript
+interface ComingSoonProps {
+  title?: string;
+  description?: string;
+  eta?: string;
+}
+```
+
+**Usage:**
+```tsx
+<ComingSoon
+  title="Feature Name"
+  description="This feature is coming soon"
+  eta="Q2 2026"
+/>
+```
+
+### PageCard
+
+Page wrapper with corner accents.
+
+**Location:** `packages/dashboard/src/components/PageCard.tsx`
+
+**Props:**
+```typescript
+interface PageCardProps {
+  children: ReactNode;
+  className?: string;
+}
+```
+
+**Usage:**
+```tsx
+<PageCard className="custom-class">
+  <YourContent />
+</PageCard>
+```
+
+## State Management Patterns
+
+### Context Pattern
+
+Most global state uses React Context:
+
+```tsx
+// Context definition
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+
+// Provider
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme: () => setTheme(...) }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+// Hook
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error('useTheme must be used within ThemeProvider');
+  return context;
+}
+```
+
+### Local State Pattern
+
+Component-specific state uses `useState`:
+
+```tsx
+function MyComponent() {
+  const [count, setCount] = useState(0);
+  // ...
+}
+```
+
+### Server State Pattern
+
+API data uses fetch with state:
+
+```tsx
+function DataComponent() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    fetch('/api/data')
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      });
+  }, []);
+  
+  if (loading) return <Loading />;
+  return <div>{data}</div>;
+}
+```
+
+## Styling Guidelines
+
+### Tailwind CSS
+
+All components use Tailwind CSS for styling:
+
+```tsx
+<div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800">
+  <h2 className="text-xl font-semibold">Title</h2>
+</div>
+```
+
+### Responsive Design
+
+Components use Tailwind responsive prefixes:
+
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {/* Responsive grid */}
+</div>
+```
+
+### Dark Mode
+
+Components support dark mode via Tailwind dark: prefix:
+
+```tsx
+<div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+  {/* Content */}
+</div>
+```
+
+## Examples
+
+### Complete Page Example
+
+```tsx
+'use client';
+
+import { PageCard } from '@/components/PageCard';
+import { StatsCard } from '@/components/StatsCard';
+import { useProjects } from '@/contexts/ProjectsContext';
+
+export default function DashboardPage() {
+  const { projects } = useProjects();
+  
+  return (
+    <PageCard>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        
+        <StatsCard
+          title="Projects"
+          items={[
+            { label: "Active", count: projects.length },
+            { label: "Total", count: projects.length }
+          ]}
+        />
+      </div>
+    </PageCard>
+  );
+}
+```
+
+### Component Composition Example
+
+```tsx
+function FeatureCard({ feature }: { feature: Feature }) {
+  return (
+    <UnifiedCard
+      icon={FileText}
+      iconColor="text-blue-500"
+      title={feature.name}
+      description={feature.description}
+      footerLeft={<span>{feature.status}</span>}
+      footerRight={<Button>View</Button>}
+      onClick={() => navigate(`/features/${feature.id}`)}
+    />
+  );
+}
+```
+
+## References
+
+- [API.md](./API.md) - API endpoint documentation
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
+- [SCHEMA.md](./SCHEMA.md) - Data models and types
+- [README.md](../README.md) - Project overview
 
 ---
 
-## Component Testing
-
-**Status:** Not implemented
-
-Future testing strategy:
-- Unit tests with Jest + React Testing Library
-- Component visual regression with Storybook
-- E2E tests with Playwright
-
----
-
-## Future Component Enhancements
-
-- **DataTable:** Generic table component with sorting/pagination
-- **Modal:** Reusable modal dialog component
-- **Toast:** Notification toast system
-- **Dropdown:** Menu dropdown component
-- **Tooltip:** Hover tooltip component
-- **Skeleton:** Loading skeleton states
-- **EmptyState:** Empty state placeholders
-
----
-
-**AI Integration Notes:**
-
-When working with these components:
-
-1. **Import Paths:** Use `@/` alias for dashboard components, `@coderef-dashboard/core` for shared components
-2. **Styling:** Always use Tailwind utilities with `ind-*` design tokens
-3. **Icons:** Import from `lucide-react` library
-4. **Responsiveness:** Test on mobile breakpoints (use browser DevTools)
-5. **State Management:** Use React Context for global state, local `useState` for component state
-6. **Type Safety:** Always define prop interfaces, avoid `any` types
-
-**Component Development Workflow:**
-1. Create component in `packages/dashboard/src/components/`
-2. Define TypeScript interface for props
-3. Add `'use client'` if using hooks/events
-4. Use Tailwind CSS with design tokens
-5. Export from `index.tsx` for clean imports
-
----
-
-*This document was generated as part of the CodeRef Dashboard foundation documentation suite. See also: [API.md](./API.md), [SCHEMA.md](./SCHEMA.md), [ARCHITECTURE.md](./ARCHITECTURE.md)*
+**Last Updated:** 2026-01-14  
+**Maintainer:** CodeRef Development Team  
+**Version:** 0.1.0

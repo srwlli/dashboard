@@ -1,101 +1,151 @@
-# CodeRef Dashboard - Quick Tool Reference
+# coderef-dashboard - Quick Reference
 
-**Version:** 0.1.0
-**Last Updated:** 2025-12-28
-
----
-
-## Development Commands
-
-- `npm run dev` - Start Next.js development server on localhost:3000
-- `npm run dev:electron` - Start Electron desktop app in development mode
-- `npm run build` - Build all workspace packages for production
-- `npm run build:dashboard` - Build Next.js dashboard only
-- `npm run build:electron` - Build Electron app only
-- `npm run package:win` - Package Windows executable installer
-- `npm test` - Run tests across all workspace packages
-- `npm run lint` - Run linter across all workspace packages
-- `npm run type-check` - Run TypeScript type checking across workspaces
+**Version:** 0.1.0  
+**Last Updated:** 2026-01-14
 
 ---
 
-## API Endpoints
+## Documentation Tools
 
-- `GET /api/workorders` - Fetch all workorders from configured projects
-- `GET /api/workorders/:id` - Fetch specific workorder details with tasks
-- `GET /api/stubs` - Fetch all stubs from centralized directory
+### Foundation Documentation
+- `/generate-docs` - Generate foundation documentation (API, SCHEMA, COMPONENTS, ARCHITECTURE, README)
+- `/update-foundation-docs` - Update foundation documentation after changes
+- `/coderef-foundation-docs` - Generate foundation docs using coderef analysis
+- `/list-templates` - List all available documentation templates
+- `/get-template` - Retrieve content of specific template
 
----
+### User Documentation
+- `/generate-user-docs` - Generate user-facing documentation (my-guide, USER-GUIDE, FEATURES, quickref)
+- `/create-resource-sheet` - Create resource sheet for code elements
+- `/resource-sheet-catalog` - Show resource sheet catalog
 
-## Core Components
+### Standards & Quality
+- `/establish-standards` - Scan codebase to discover patterns and generate standards
+- `/audit-codebase` - Audit codebase for standards violations
+- `/check-consistency` - Check code changes against established standards (pre-commit)
+- `/update-docs` - Update all documentation files after completing a feature
 
-- `WorkorderCard` - Display workorder with status, project, and metadata
-- `StubCard` - Display stub with category, priority, and status
-- `FilterBar` - Multi-faceted filter with search and category filters
-- `Sidebar` - Collapsible navigation sidebar with route highlighting
-- `Header` - Top navigation with breadcrumbs and user avatar
-- `ThemeToggle` - Switch between light and dark themes
-- `AccentColorPicker` - Customize accent color from palette
-
----
-
-## Key Files
-
-- `projects.config.json` - External configuration for project directories
-- `packages/core/src/index.ts` - Shared library exports
-- `packages/dashboard/src/app/layout.tsx` - Root layout with providers
-- `packages/dashboard/src/app/page.tsx` - Dashboard home page
-- `packages/dashboard/tailwind.config.ts` - Tailwind design tokens
+### Changelog
+- `/record-changes` - Smart changelog recording with git auto-detection
 
 ---
 
-## Configuration
+## Workflow & Planning Tools
 
-- Update `projects.config.json` with project paths and workorder directories
-- Edit API routes to reference correct config file path
-- Configure theme colors in `tailwind.config.ts` with `ind-*` tokens
-- Set Node version requirement in root `package.json` (>= 18.0.0)
+### Planning
+- `/gather-context` - Gather feature requirements and save to context.json
+- `/analyze-for-planning` - Analyze project to discover foundation docs, standards, patterns
+- `/get-planning-template` - Get feature implementation planning template
+- `/create-plan` - Generate 10-section implementation plan from context
+- `/validate-plan` - Validate implementation plan (0-100 score)
+- `/generate-plan-review` - Generate human-readable plan review report
+- `/align-plan` - Generate TodoWrite task list from plan.json
 
----
+### Execution & Tracking
+- `/create-workorder` - Create workorder with context.json and communication.json
+- `/update-task-status` - Update task status in plan.json as agents complete work
+- `/update-deliverables` - Update deliverables with git metrics
+- `/complete-workorder` - Complete workorder workflow (update deliverables + archive)
+- `/track-agent-status` - Track agent status across workorders
 
-## Type Definitions
+### Multi-Agent Coordination
+- `/assign-agent-task` - Assign task to agent
+- `/generate-agent-communication` - Generate communication.json file
+- `/verify-agent-completion` - Verify agent completion
+- `/aggregate-agent-deliverables` - Aggregate agent deliverables
+- `/generate-handoff-context` - Generate agent handoff context
 
-- `WorkorderObject` - Workorder entity with status and files
-- `StubObject` - Stub entity with category and priority
-- `WorkorderStatus` - Enum of workorder states (8 values)
-- `StubCategory` - Enum of stub types (6 values)
-- `ApiError` - Standard error response structure
-
----
-
-## Common Tasks
-
-- Add new page: Create file in `packages/dashboard/src/app/`
-- Add new component: Create folder in `packages/dashboard/src/components/`
-- Add new API route: Create route in `packages/dashboard/src/app/api/`
-- Add new type: Export from `packages/core/src/types/`
-- Add new context: Create in `packages/dashboard/src/contexts/`
-
----
-
-## Troubleshooting
-
-- Config not found: Update API route file paths to correct `projects.config.json` location
-- No workorders showing: Verify project paths and ensure `coderef/workorder/` directories exist
-- Type errors: Run `npm run type-check` and ensure matching TypeScript versions
-- Electron won't start: Build dashboard first with `npm run build:dashboard`
-- Hot reload not working: Check Next.js dev server is running on port 3000
+### Archival & Inventory
+- `/archive-feature` - Archive completed features
+- `/audit-plans` - Audit all plans in workorder/ directory
+- `/features-inventory` - Generate features inventory
+- `/log-workorder` - Log workorder entry
+- `/get-workorder-log` - Query workorder log
 
 ---
 
-## Documentation
+## Code Intelligence Tools
 
-- `README.md` - Project overview and quick start guide
-- `coderef/foundation-docs/API.md` - REST API reference
-- `coderef/foundation-docs/SCHEMA.md` - TypeScript interfaces and schemas
-- `coderef/foundation-docs/COMPONENTS.md` - UI component library
-- `coderef/foundation-docs/ARCHITECTURE.md` - System design and architecture
+### Scanning & Analysis
+- `coderef_scan` - Scan project and discover code elements
+- `coderef_query` - Query code relationships (what-calls, what-imports, etc.)
+- `coderef_impact` - Analyze modification impact
+- `coderef_complexity` - Get complexity metrics
+- `coderef_patterns` - Discover code patterns
+- `coderef_coverage` - Analyze test coverage
+
+### Context & Validation
+- `coderef_context` - Generate codebase context
+- `coderef_validate` - Validate CodeRef2 references
+- `coderef_drift` - Detect index drift
+- `coderef_diagram` - Generate dependency diagrams
+- `coderef_tag` - Add CodeRef2 tags to source files
+- `coderef_export` - Export coderef data
 
 ---
 
-*This is a quick reference guide. See USER-GUIDE.md for comprehensive tutorials.*
+## Persona Management
+
+### Activate Personas
+- `/lloyd` - Activate Lloyd (general purpose agent)
+- `/marcus` - Activate Marcus (code architect)
+- `/ava` - Activate Ava (frontend specialist)
+- `/quinn` - Activate Quinn (testing specialist)
+- `/taylor` - Activate Taylor (general purpose)
+- `/coderef-assistant` - Activate CodeRef Assistant (orchestrator)
+- `/coderef-context-agent` - Activate context specialist
+- `/coderef-docs-agent` - Activate docs specialist
+- `/coderef-mcp-lead` - Activate MCP lead
+- `/coderef-personas-agent` - Activate personas specialist
+- `/coderef-testing-agent` - Activate testing specialist
+- `/research-scout` - Activate Research Scout
+
+### Persona Management
+- `/use-persona` - Use specific persona by name
+- `/create-persona` - Create custom persona
+- `/fix` - Quick fixes with persona assistance
+- `/debug-ui` - Debug UI issues
+
+---
+
+## Testing Tools
+
+### Test Execution
+- `/run-tests` - Run all tests
+- `/run-test-file` - Run specific test file
+- `/run-by-pattern` - Run tests by pattern
+- `/run-parallel` - Run tests in parallel
+
+### Test Analysis
+- `/test-coverage` - Analyze test coverage
+- `/test-performance` - Analyze test performance
+- `/test-health` - Check test health
+- `/detect-flaky` - Detect flaky tests
+- `/compare-runs` - Compare test runs
+- `/test-trends` - Analyze test trends
+
+### Test Management
+- `/discover-tests` - Discover all tests
+- `/list-frameworks` - List test frameworks
+- `/test-results` - Get test results
+- `/test-report` - Generate test report
+- `/testing-proof` - Generate testing proof
+
+---
+
+## Utility Commands
+
+- `/widget-architect` - Widget architecture tool
+- `/create-session` - Create multi-agent session
+- `/git-release` - Create git release
+- `/stub` - Create feature stub
+
+---
+
+**Total:** 87 MCP tools, 69 slash commands  
+**Ecosystem:** 6 production MCP servers  
+**Status:** All active
+
+---
+
+*Generated by coderef-docs • 2026-01-14*

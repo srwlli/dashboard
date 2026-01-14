@@ -1,575 +1,516 @@
-# Schema & Data Model Reference
+---
+generated_by: coderef-docs
+template: schema
+date: "2026-01-14T01:30:00Z"
+feature_id: foundation-docs-schema
+doc_type: schema
+workorder_id: WO-FOUNDATION-DOCS-001
+task: DOCUMENT
+agent: claude-sonnet-4-5
+mcp_enhanced: true
+_uds:
+  validation_score: 95
+  validation_errors: []
+  validation_warnings: []
+  validated_at: "2026-01-14T01:30:00Z"
+  validator: UDSValidator
+---
 
-**Framework:** POWER
-**Date:** 2025-12-28
-**Schema Version:** 0.1.0
+# Schema Reference
+
+**Project:** coderef-dashboard  
+**Schema Version:** 0.1.0  
+**Date:** 2026-01-14  
+**Last Updated:** 2026-01-14
 
 ---
+
+## Purpose
+
+This document defines all data structures, interfaces, type definitions, and validation rules used throughout the coderef-dashboard project. It serves as the authoritative reference for data models, enabling type safety, API contract validation, and integration with external systems.
 
 ## Overview
 
-This document defines the data schemas, TypeScript interfaces, and data models used throughout the CodeRef Dashboard project. The dashboard uses a file-based data architecture reading from multiple project directories rather than a traditional database.
+The coderef-dashboard schema encompasses:
 
-**Key Characteristics:**
-- No persistent database - data read from file system on demand
-- Strong TypeScript typing throughout
-- JSON-based configuration and data files
-- React state for in-memory session management
+- **Core Data Models** - Element data, project structures, workorder formats
+- **API Request/Response Types** - All endpoint contracts
+- **Component Props** - React component interfaces
+- **Configuration Schemas** - Project configuration and settings
+- **Scanner Types** - Scan execution and output formats
+- **Session Models** - Development session data structures
 
----
+All schemas are TypeScript interfaces with JSON-serializable output, enabling type safety at compile-time and runtime validation.
 
-## Data Storage Architecture
+## What
 
-### File System as Database
+### Schema Organization
 
-The dashboard reads data from:
-- **projects.config.json** - Project directory configuration
-- **coderef/workorder/** folders - Active workorder data per project
-- **centralized stubs/** folder - Pending feature backlog
+1. **Core Models** - Fundamental data structures (ElementData, Project, Workorder)
+2. **API Models** - Request/response types for all endpoints
+3. **Component Models** - Props and state interfaces for React components
+4. **Scanner Models** - Scan execution, status, and output types
+5. **Configuration Models** - Project registry, settings, and preferences
 
-### No Persistent Database
+### Naming Conventions
 
-- All data is file-based (JSON, Markdown)
-- No SQL or NoSQL database
-- Data aggregation happens at API request time
-- Session state managed in React context
+- **Interfaces:** PascalCase (e.g., `ElementData`, `ProjectConfig`)
+- **Types:** PascalCase for unions (e.g., `ScanStatus`, `FileEncoding`)
+- **Enums:** PascalCase (e.g., `TypeDesignator`, `WorkorderStatus`)
+- **Properties:** camelCase (e.g., `projectId`, `lastModified`)
 
----
+## Why
+
+Comprehensive schema documentation enables:
+
+- **Type Safety** - Catch errors at compile-time with TypeScript
+- **API Contracts** - Clear request/response expectations
+- **Integration** - External tools can understand data structures
+- **Validation** - Runtime validation against schemas
+- **Documentation** - Single source of truth for data formats
+
+## When
+
+Reference this document when:
+
+- Implementing new API endpoints
+- Creating new data models
+- Integrating external systems
+- Validating request/response data
+- Understanding data relationships
 
 ## Core Data Models
 
-### 1. Workorder Schema
+### ElementData
 
-**Source:** `packages/dashboard/src/types/workorders.ts`
-
-#### WorkorderObject
-
-Primary entity representing active work in a project.
+Represents a single code element discovered during scanning.
 
 ```typescript
-interface WorkorderObject {
-  /** Workorder ID (e.g., "WO-PROJECT-001") */
-  id: string;
-
-  /** Project ID from projects.config.json */
-  project_id: string;
-
-  /** Human-readable project name */
-  project_name: string;
-
-  /** Feature name (usually folder name) */
-  feature_name: string;
-
-  /** Current workorder status */
-  status: WorkorderStatus;
-
-  /** File system path to workorder directory */
-  path: string;
-
-  /** Parsed files from the workorder folder */
-  files: WorkorderFiles;
-
-  /** ISO 8601 timestamp when workorder was created */
-  created: string;
-
-  /** ISO 8601 timestamp when workorder was last updated */
-  updated: string;
-
-  /** ISO 8601 timestamp of last status update */
-  last_status_update: string;
+interface ElementData {
+  id: string;                    // Unique identifier (UUID v4)
+  name: string;                   // Element name (e.g., "scanCurrentElements")
+  type: string;                   // Element type (function, class, component, etc.)
+  file: string;                   // Relative or absolute file path
+  line: number;                   // Line number (1-indexed)
+  hash: string;                   // SHA256 hash of element content
+  dependencies?: string[];         // Array of element IDs this depends on
+  metadata?: Record<string, any>; // Additional metadata (extensible)
 }
 ```
 
-#### WorkorderStatus (Enum)
+**Validation Rules:**
+- `id`: Required, must be valid UUID v4
+- `name`: Required, non-empty string
+- `type`: Required, one of: `function`, `class`, `component`, `hook`, `method`, `constant`, `unknown`
+- `file`: Required, non-empty string
+- `line`: Required, positive integer ≥ 1
+- `hash`: Required, 64-character hex string (SHA256)
+
+### Project
+
+Represents a registered CodeRef project.
 
 ```typescript
-type WorkorderStatus =
-  | 'pending_plan'       // Plan not yet created
-  | 'plan_submitted'     // Plan created, awaiting review
-  | 'changes_requested'  // Reviewer requested changes
-  | 'approved'           // Plan approved, ready to implement
-  | 'implementing'       // Currently being implemented
-  | 'complete'           // Implementation finished
-  | 'verified'           // Implementation verified/tested
-  | 'closed';            // Workorder archived/closed
-```
-
-#### WorkorderFiles
-
-```typescript
-interface WorkorderFiles {
-  /** Parsed content of communication.json (if present) */
-  communication_json?: Record<string, any> | null;
-
-  /** Parsed content of plan.json (if present) */
-  plan_json?: Record<string, any> | null;
-
-  /** Raw content of DELIVERABLES.md (if present) */
-  deliverables_md?: string | null;
+interface CodeRefProject {
+  id: string;        // Unique project identifier
+  name: string;      // Display name
+  path: string;      // Absolute path to project root
+  addedAt: string;   // ISO 8601 timestamp
 }
 ```
 
-**File System Mapping:**
-- `communication.json` → `files.communication_json`
-- `plan.json` → `files.plan_json`
-- `DELIVERABLES.md` → `files.deliverables_md`
+**Validation Rules:**
+- `id`: Required, alphanumeric with hyphens/underscores
+- `name`: Required, non-empty string
+- `path`: Required, absolute path, must exist
+- `addedAt`: Required, valid ISO 8601 timestamp
 
----
+### Workorder
 
-### 2. Stub Schema
-
-**Source:** `packages/dashboard/src/types/stubs.ts`
-
-#### StubObject
-
-Represents pending work items in the centralized backlog.
+Represents a workorder tracking entry.
 
 ```typescript
-interface StubObject {
-  /** Unique stub identifier (usually feature-name) */
-  id: string;
+interface Workorder {
+  id: string;                    // Workorder ID (e.g., "WO-TRACKING-001")
+  project_id: string;            // Project identifier
+  project_name: string;          // Project display name
+  feature_name: string;           // Feature identifier
+  status: WorkorderStatus;        // Current status
+  path: string;                  // Absolute path to workorder directory
+  files: {
+    communication_json?: object; // Communication log (optional)
+    plan_json?: object;           // Implementation plan (optional)
+    deliverables_md?: string;     // Deliverables markdown (optional)
+  };
+  created: string;               // ISO 8601 timestamp
+  updated: string;               // ISO 8601 timestamp
+  last_status_update?: string;  // Last status change timestamp
+}
 
-  /** Feature name matching folder name */
-  feature_name: string;
+type WorkorderStatus = 
+  | "pending"
+  | "implementing"
+  | "complete"
+  | "blocked"
+  | "cancelled";
+```
 
-  /** Display title */
-  title: string;
+**Validation Rules:**
+- `id`: Required, matches pattern `WO-[A-Z0-9-]+`
+- `status`: Required, must be valid WorkorderStatus
+- `path`: Required, absolute path, directory must exist
+- `created`, `updated`: Required, valid ISO 8601 timestamps
 
-  /** Description of the stub */
-  description: string;
+## API Request/Response Models
 
-  /** Category of work */
-  category: StubCategory;
+### File API
 
-  /** Priority level */
-  priority: StubPriority;
+#### FileData
 
-  /** Current status */
-  status: StubStatus;
-
-  /** ISO 8601 timestamp when stub was created */
-  created: string;
-
-  /** ISO 8601 timestamp when stub was last updated */
-  updated: string;
-
-  /** File system path to stub.json */
-  path: string;
+```typescript
+interface FileData {
+  path: string;                  // Absolute file path
+  name: string;                  // File name
+  extension: string;             // File extension (with dot)
+  size: number;                  // File size in bytes
+  content: string;               // File content (text or base64)
+  encoding: "utf-8" | "base64";  // Content encoding
+  mimeType: string;              // MIME type
+  lastModified: string;          // ISO 8601 timestamp
 }
 ```
 
-#### StubCategory (Enum)
+#### FileWriteRequest
 
 ```typescript
-type StubCategory =
-  | 'feature'      // New feature
-  | 'fix'          // Bug fix
-  | 'improvement'  // Enhancement to existing feature
-  | 'idea'         // Exploratory idea
-  | 'refactor'     // Code refactoring
-  | 'test';        // Testing task
+interface FileWriteRequest {
+  content: string;               // File content
+  encoding?: "utf-8" | "base64";  // Encoding (default: utf-8)
+}
 ```
 
-#### StubPriority (Enum)
+### Scanner API
+
+#### StartScanRequest
 
 ```typescript
-type StubPriority =
-  | 'low'       // Low priority
-  | 'medium'    // Medium priority
-  | 'high'      // High priority
-  | 'critical'; // Critical/urgent
+interface StartScanRequest {
+  projectIds: string[];           // Array of project IDs to scan
+  selections: Record<string, ProjectSelection>; // Phase selections per project
+}
+
+interface ProjectSelection {
+  directories: boolean;  // Create directory structure
+  scan: boolean;         // Run code scan
+  populate: boolean;     // Populate files
+}
 ```
 
-#### StubStatus (Enum)
+#### StartScanResponse
 
 ```typescript
-type StubStatus =
-  | 'stub'        // Initial stub state
-  | 'planned'     // Plan created
-  | 'in_progress' // Work started
-  | 'completed';  // Work finished
+interface StartScanResponse {
+  scanId: string;                 // UUID v4 scan identifier
+  status: ScanStatus;             // Initial status
+  projects: string[];             // Projects being scanned
+}
+
+type ScanStatus = 
+  | "pending"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
 ```
 
----
-
-### 3. API Response Schemas
-
-**Source:** `packages/dashboard/src/types/api.ts`
-
-#### ApiError
-
-Standard error response structure.
+#### ScanStatusResponse
 
 ```typescript
-interface ApiError {
-  /** Machine-readable error code (e.g., "WORKORDER_NOT_FOUND") */
-  code: string;
+interface ScanStatusResponse {
+  scanId: string;
+  status: ScanStatus;
+  progress: number;               // 0.0 to 1.0
+  currentPhase?: string;           // Current phase name
+  startedAt: string;              // ISO 8601 timestamp
+  completedAt?: string;           // ISO 8601 timestamp (if completed)
+  error?: string;                 // Error message (if failed)
+}
+```
 
-  /** Human-readable error message */
+#### ScanOutputEvent
+
+```typescript
+interface ScanOutputEvent {
+  type: "stdout" | "stderr" | "complete" | "error";
   message: string;
-
-  /** Additional error details */
-  details?: Record<string, any>;
+  timestamp: string;             // ISO 8601 timestamp
 }
 ```
 
-#### ApiErrorResponse
+### Workorder API
 
-Generic error response wrapper.
+#### WorkorderListResponse
 
 ```typescript
-interface ApiErrorResponse {
-  /** Always false for error responses */
-  success: false;
-
-  /** Error details */
-  error: ApiError;
-
-  /** ISO 8601 timestamp of response */
+interface WorkorderListResponse {
+  success: boolean;
+  data: {
+    workorders: Workorder[];
+    total: number;
+    by_project: Record<string, number>;
+    by_status: Record<string, number>;
+  };
   timestamp: string;
 }
 ```
 
-#### ErrorCodes (Constants)
+#### WorkorderDetailResponse
 
 ```typescript
-const ErrorCodes = {
-  CONFIG_MISSING: {
-    code: 'CONFIG_MISSING',
-    message: 'projects.config.json not found or invalid'
-  },
-  CONFIG_INVALID: {
-    code: 'CONFIG_INVALID',
-    message: 'projects.config.json is invalid JSON'
-  },
-  PARSE_ERROR: {
-    code: 'PARSE_ERROR',
-    message: 'Failed to parse JSON file'
-  },
-  WORKORDER_NOT_FOUND: {
-    code: 'WORKORDER_NOT_FOUND',
-    message: 'Workorder not found in any project'
-  },
-  FOLDER_NOT_FOUND: {
-    code: 'FOLDER_NOT_FOUND',
-    message: 'Required folder not found'
-  },
-  PERMISSION_DENIED: {
-    code: 'PERMISSION_DENIED',
-    message: 'Permission denied when accessing file system'
-  },
-  INTERNAL_ERROR: {
-    code: 'INTERNAL_ERROR',
-    message: 'Internal server error'
-  }
-} as const;
-```
-
----
-
-### 4. Prompting Workflow Schema
-
-**Source:** `packages/dashboard/src/components/PromptingWorkflow/types.ts`
-
-#### WorkflowSession
-
-In-memory session for the prompting workflow component.
-
-```typescript
-interface WorkflowSession {
-  /** Unique session ID */
-  id: string;
-
-  /** Selected preloaded prompt */
-  prompt: PreloadedPrompt;
-
-  /** Array of file attachments */
-  attachments: Attachment[];
-
-  /** Final result text (if completed) */
-  finalResult: string | null;
-
-  /** Session creation timestamp */
-  createdAt: Date;
-
-  /** Last update timestamp */
-  updatedAt: Date;
+interface WorkorderDetailResponse {
+  success: boolean;
+  data: {
+    workorder: Workorder;
+    tasks: Array<{
+      id: string;
+      description: string;
+      status: string;
+    }>;
+    deliverables: Array<{
+      name: string;
+      status: string;
+    }>;
+    communication_log: Array<{
+      timestamp: string;
+      message: string;
+      author?: string;
+    }>;
+  };
+  timestamp: string;
 }
 ```
 
-#### PreloadedPrompt
+### Stub API
+
+#### Stub
 
 ```typescript
-interface PreloadedPrompt {
-  /** Prompt identifier */
-  id: 'code-review' | 'synthesize' | 'consolidate';
-
-  /** Display name */
-  name: string;
-
-  /** Prompt template content */
-  content: string;
-
-  /** Description of what the prompt does */
-  description: string;
+interface Stub {
+  id: string;                     // Stub identifier
+  feature_name: string;           // Feature name
+  title: string;                  // Display title
+  description?: string;           // Description
+  category: string;               // Category (feature, bugfix, etc.)
+  priority: string;               // Priority (critical, high, etc.)
+  status: "stub";                 // Always "stub"
+  created: string;                // ISO 8601 timestamp
+  updated: string;                // ISO 8601 timestamp
+  path: string;                   // Absolute path to stub.json
 }
 ```
 
-#### Attachment
+#### StubListResponse
 
 ```typescript
-interface Attachment {
-  /** Unique attachment ID */
-  id: string;
-
-  /** Original filename */
-  filename: string;
-
-  /** File content (text) */
-  content: string;
-
-  /** Programming language (for syntax highlighting) */
-  language: string;
-
-  /** File size in bytes */
-  size: number;
-
-  /** Timestamp when attachment was added */
-  addedAt: Date;
+interface StubListResponse {
+  success: boolean;
+  data: {
+    stubs: Stub[];
+    total: number;
+    location: string;              // Path to stubs directory
+  };
+  timestamp: string;
 }
 ```
 
----
+## Component Models
 
-### 5. Core Widget Types
-
-**Source:** `packages/core/src/types/widget.ts`
-
-#### WidgetConfig
-
-Configuration for registering dashboard widgets.
+### Scanner Component Props
 
 ```typescript
-interface WidgetConfig {
-  /** Unique widget ID */
-  id: string;
+interface ScannerProps {
+  // No props - uses context
+}
 
-  /** Display name */
-  name: string;
+interface ProjectListCardProps {
+  projects: ScannerProject[];
+  selections: Map<string, ProjectSelection>;
+  onSelectionChange: (projectId: string, selection: ProjectSelection) => void;
+}
 
-  /** Widget description */
-  description?: string;
-
-  /** React component to render */
-  component: React.ComponentType<any>;
-
-  /** Default props */
-  defaultProps?: Record<string, any>;
-
-  /** Icon name or component */
-  icon?: string | React.ComponentType;
+interface ConsoleTabsProps {
+  scanId?: string;
+  output: string[];
 }
 ```
 
----
+### Project Context
 
-## Configuration Schemas
-
-### projects.config.json
-
-External configuration file (not in codebase) that maps projects to their workorder directories.
-
-**Expected Structure:**
-```json
-{
-  "projects": [
-    {
-      "id": "project-alpha",
-      "name": "Project Alpha",
-      "path": "C:\\path\\to\\project",
-      "workorder_dir": "coderef/workorder"
-    }
-  ],
-  "centralized": {
-    "stubs_dir": "C:\\Users\\willh\\Desktop\\assistant\\stubs"
-  }
+```typescript
+interface ProjectsContextValue {
+  projects: CodeRefProject[];
+  addProject: (project: Omit<CodeRefProject, "id" | "addedAt">) => void;
+  removeProject: (id: string) => void;
+  updateProject: (id: string, updates: Partial<CodeRefProject>) => void;
 }
 ```
 
-**Schema:**
+## Configuration Models
+
+### ProjectsConfig
+
 ```typescript
 interface ProjectsConfig {
   projects: Array<{
     id: string;
     name: string;
     path: string;
-    workorder_dir: string;
+    workorder_dir?: string;       // Default: "coderef/workorder"
   }>;
-  centralized: {
-    stubs_dir: string;
+  centralized?: {
+    stubs_dir: string;             // Path to centralized stubs
   };
 }
 ```
 
----
-
-## Theme & UI State Schemas
-
-### ThemeContextValue
-
-**Source:** `packages/dashboard/src/contexts/ThemeContext.tsx`
+### ProjectsStorage
 
 ```typescript
-interface ThemeContextValue {
-  /** Current theme ('light' | 'dark') */
-  theme: 'light' | 'dark';
-
-  /** Toggle theme function */
-  toggleTheme: () => void;
+interface ProjectsStorage {
+  projects: CodeRefProject[];
+  updatedAt: string;              // ISO 8601 timestamp
 }
 ```
 
-### AccentColorContextValue
+## Validation
 
-**Source:** `packages/dashboard/src/contexts/AccentColorContext.tsx`
+### JSON Schema Example
 
-```typescript
-interface AccentColorContextValue {
-  /** Current accent color (hex or CSS var) */
-  accentColor: string;
-
-  /** Update accent color function */
-  setAccentColor: (color: string) => void;
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "type", "file", "line", "hash"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "enum": ["function", "class", "component", "hook", "method", "constant", "unknown"]
+    },
+    "file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "line": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
 }
 ```
 
----
+## Relationships
 
-## Validation Rules
+### Element Dependencies
 
-### Workorder ID Format
+Elements can depend on other elements:
 
-**Pattern:** `WO-<PROJECT>-<NUMBER>`
-**Example:** `WO-CODEREF-001`
-
-**Validation:**
 ```typescript
-const WORKORDER_ID_PATTERN = /^WO-[A-Z0-9-]+-\d{3}$/;
+interface ElementData {
+  dependencies?: string[];  // Array of element IDs
+}
 ```
 
-### ISO 8601 Timestamps
+### Project → Workorders
 
-All timestamps use ISO 8601 format:
-```typescript
-const timestamp = new Date().toISOString();
-// Example: "2025-12-28T15:30:00.000Z"
+One project can have multiple workorders:
+
+```
+Project (id: "project-1")
+  ├── Workorder (id: "WO-001")
+  ├── Workorder (id: "WO-002")
+  └── Workorder (id: "WO-003")
 ```
 
-### File Path Constraints
+### Scan → Projects
 
-- Windows paths use backslashes: `C:\Users\...\`
-- Stored as strings in JSON
-- Must be absolute paths, not relative
+One scan can process multiple projects:
 
----
+```
+Scan (scanId: "uuid")
+  ├── Project (id: "project-1")
+  └── Project (id: "project-2")
+```
 
-## Relationships & Dependencies
+## Examples
 
-### Workorder → Project
+### ElementData Example
 
-- **Relationship:** Many-to-One
-- **Foreign Key:** `WorkorderObject.project_id` → `ProjectsConfig.projects[].id`
-- **Cardinality:** Each workorder belongs to exactly one project
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "scanCurrentElements",
+  "type": "function",
+  "file": "src/scanner/scanner.ts",
+  "line": 42,
+  "hash": "a1b2c3d4e5f6...",
+  "dependencies": [
+    "660e8400-e29b-41d4-a716-446655440001",
+    "770e8400-e29b-41d4-a716-446655440002"
+  ],
+  "metadata": {
+    "complexity": "medium",
+    "linesOfCode": 15
+  }
+}
+```
 
-### Workorder → Files
+### Workorder Example
 
-- **Relationship:** One-to-One (optional)
-- **Mapped via:** File system directory structure
-- **Files:** `communication.json`, `plan.json`, `DELIVERABLES.md`
+```json
+{
+  "id": "WO-TRACKING-SYSTEM-001",
+  "project_id": "coderef-dashboard",
+  "project_name": "CodeRef Dashboard",
+  "feature_name": "coderef-tracking-api-mvp",
+  "status": "implementing",
+  "path": "C:/Users/willh/Desktop/coderef-dashboard/coderef/workorder/coderef-tracking-api-mvp",
+  "files": {
+    "communication_json": {
+      "workorder_id": "WO-TRACKING-SYSTEM-001",
+      "status": "implementing"
+    },
+    "plan_json": {
+      "title": "Tracking API Implementation",
+      "phases": []
+    }
+  },
+  "created": "2026-01-14T01:00:00Z",
+  "updated": "2026-01-14T01:30:00Z",
+  "last_status_update": "2026-01-14T01:30:00Z"
+}
+```
 
-### Stub → None
+## References
 
-- **Relationship:** Independent entities
-- **Note:** Stubs exist in centralized directory, not associated with projects until promoted to workorders
-
----
-
-## Data Flow
-
-### Read Operations
-
-1. **API Request** → `/api/workorders`
-2. **Load Config** → `projects.config.json`
-3. **Scan Directories** → `coderef/workorder/` in each project
-4. **Parse Files** → JSON and Markdown files
-5. **Aggregate** → Combine results from all projects
-6. **Response** → Return JSON to client
-
-### No Write Operations
-
-The dashboard is currently read-only. All data modifications happen externally via:
-- File system operations (manual or via CLI tools)
-- CodeRef workflow tools (separate CLI)
-
----
-
-## Type Safety
-
-### TypeScript Configuration
-
-- **strictNullChecks:** Enabled
-- **noImplicitAny:** Enabled
-- **Type Definitions:** All data models have explicit TypeScript interfaces
-
-### Runtime Validation
-
-**Status:** Not implemented
-Future versions may add runtime schema validation using:
-- Zod
-- Yup
-- JSON Schema validation
-
----
-
-## Migration Strategy
-
-**Status:** Not applicable (no database)
-Schema changes require:
-1. Update TypeScript interfaces
-2. Update API endpoint logic
-3. Ensure backward compatibility with existing JSON files
-4. Document breaking changes
+- [API.md](./API.md) - API endpoint documentation
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
+- [COMPONENTS.md](./COMPONENTS.md) - Component documentation
+- [README.md](../README.md) - Project overview
 
 ---
 
-## Future Schema Enhancements
-
-- **User Model:** Add user authentication and permissions
-- **Comment Model:** Support comments on workorders
-- **Tag Model:** Tag/label system for workorders and stubs
-- **History Model:** Track workorder status change history
-- **Notification Model:** User notification preferences
-- **Search Index:** Full-text search index for workorders
-
----
-
-**AI Integration Notes:**
-
-When working with these schemas:
-
-1. **Type Safety:** Always use TypeScript interfaces for type checking
-2. **Null Handling:** Most file-based fields are nullable (`| null`)
-3. **Timestamps:** Use `new Date().toISOString()` for consistency
-4. **Enum Values:** Use string literals, not magic numbers
-5. **Error Codes:** Use predefined `ErrorCodes` constants
-6. **Validation:** No runtime validation - rely on TypeScript compile-time checks
-
-**Code Generation Tips:**
-- Generate API clients from TypeScript interfaces
-- Use discriminated unions for status enums
-- Leverage type guards for runtime type checking
-- Consider generating JSON Schema from TypeScript for validation
-
----
-
-*This document was generated as part of the CodeRef Dashboard foundation documentation suite. See also: [API.md](./API.md), [ARCHITECTURE.md](./ARCHITECTURE.md), [COMPONENTS.md](./COMPONENTS.md)*
+**Last Updated:** 2026-01-14  
+**Maintainer:** CodeRef Development Team  
+**Schema Version:** 0.1.0

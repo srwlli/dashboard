@@ -1,442 +1,331 @@
 # CodeRef Dashboard - Quick Reference
 
-**Version:** 0.1.0 | **Type:** Web Application (Next.js + Electron)
+**Version:** 0.1.0  
+**Type:** Web Application  
+**Base URL:** http://localhost:3000
 
 ---
 
 ## At a Glance
 
-- **Multi-Project Workorder Aggregation** - View all active work across 6+ projects in one dashboard
-- **Centralized Stub Management** - Track backlog items (ideas, features, bugs) in single location
-- **Advanced Filtering** - Filter by status, priority, project, category with real-time updates
-- **Responsive Design** - Works on mobile, tablet, desktop with optimized layouts
-- **Dual Deployment** - Available as web app (PWA) or desktop app (Electron)
+- **Aggregate Resources** - Collect workorders, stubs, and documentation from multiple CodeRef projects
+- **Code Analysis** - Scan projects and visualize code structure with real-time output streaming
+- **File Operations** - Read, write, delete, and move files within registered projects securely
+- **Project Management** - Register, list, and manage multiple CodeRef projects from one interface
+- **Workflow Integration** - Track workorders, manage sessions, and integrate with AI-assisted development
 
 ---
 
-## Quick Actions
+## Actions / Commands
 
 | Action | Purpose | Time |
 |--------|---------|------|
-| `npm run dev` | Start development server | 5s |
-| `npm run build` | Build production bundle | 60s |
-| `npm run dev:electron` | Launch desktop app | 10s |
-| Open `localhost:3000` | Access dashboard in browser | instant |
-| Click Workorders tab | View all active workorders | <1s |
-| Click Stubs tab | View backlog items | <1s |
-| Toggle theme | Switch light/dark mode | instant |
-| Apply filter | Filter workorders/stubs | instant |
+| View Dashboard | See aggregated workorders, stubs, and statistics | Instant |
+| Scan Project | Run code analysis on selected projects | 30s - 5min |
+| Read File | View file content and metadata | < 100ms |
+| Write File | Create or update file content | < 200ms |
+| Delete File | Remove file or directory | < 100ms |
+| Move File | Rename or relocate file/directory | < 150ms |
+| List Workorders | Fetch all workorders from configured projects | 100-500ms |
+| Get Workorder | Retrieve detailed workorder information | 50-200ms |
+| List Stubs | Fetch all stubs from centralized directory | 50-200ms |
+| Stream Scan Output | Real-time scan progress via SSE | Continuous |
+| Register Project | Add new CodeRef project to registry | < 50ms |
+| Remove Project | Unregister project from dashboard | < 50ms |
 
 ---
 
-## Features by Category
+## Features / Tools
 
-### Data Aggregation
+### Dashboard Pages
 
-| Feature | What It Does | How to Use |
-|---------|--------------|------------|
-| Multi-Project Scan | Reads workorders from all configured projects | Configure `projects.config.json` |
-| Centralized Stubs | Displays stubs from single directory | Set `centralized.stubs_dir` in config |
-| Real-time Metrics | Shows total counts by status/project | View stats cards on home page |
+| Page | Route | Purpose |
+|------|-------|---------|
+| Dashboard | `/` | Main overview with statistics and cards |
+| Scanner | `/scanner` | Code scanning interface with project selection |
+| Explorer | `/explorer` | File tree navigation and editing |
+| Sessions Hub | `/sessions` | Development session management |
+| Prompts | `/prompts` | Prompting workflow interface |
+| Assistant | `/assistant` | AI-assisted development tools |
+| Notes | `/notes` | Notes management |
+| Metrics | `/metrics` | Project metrics and analytics |
+| Resources | `/resources` | Resource documentation browser |
+| Settings | `/settings` | Configuration and preferences |
 
-### Filtering & Search
+### API Endpoints
 
-| Feature | What It Does | How to Use |
-|---------|--------------|------------|
-| Status Filter | Filter by 8 workorder states | Click status pills in filter bar |
-| Priority Filter | Filter stubs by priority level | Select priority (low/medium/high/critical) |
-| Project Filter | Show workorders from specific projects | Multi-select project names |
-| Category Filter | Filter by stub category | Select category (feature/fix/improvement) |
-| Text Search | Free-text search across names | Type in search input field |
-| Multi-Filter | Combine multiple filters | Click multiple filter pills |
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/workorders` | GET | List all workorders |
+| `/api/workorders/[id]` | GET | Get workorder details |
+| `/api/stubs` | GET | List all stubs |
+| `/api/coderef/file` | GET/PUT/DELETE/PATCH | File operations |
+| `/api/coderef/tree` | GET | Get directory tree |
+| `/api/coderef/projects` | GET/POST | Project management |
+| `/api/coderef/projects/[id]` | DELETE | Remove project |
+| `/api/scanner/scan` | POST | Start scan |
+| `/api/scanner/scan/[id]/output` | GET | Stream scan output (SSE) |
+| `/api/scanner/scan/[id]/status` | GET | Get scan status |
+| `/api/scanner/scan/[id]/cancel` | POST | Cancel scan |
+| `/api/scanner/projects` | GET/POST | Scanner project registry |
+| `/api/sessions` | GET | List sessions |
+| `/api/sessions/create` | POST | Create session |
+| `/api/sessions/output` | GET | Stream session output |
 
-### UI Customization
+### Components
 
-| Feature | What It Does | How to Use |
-|---------|--------------|------------|
-| Dark Mode | Toggle between light/dark themes | Click sun/moon icon in header |
-| Accent Colors | Customize accent color | Settings → Accent Color Picker |
-| Sidebar Collapse | Expand/collapse navigation | Click chevron icon in sidebar |
-| Responsive Layout | Adapts to screen size | Automatic based on viewport |
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| UnifiedCard | `components/UnifiedCard/` | Shared card component for content display |
+| Scanner | `components/Scanner/` | Main scanner interface |
+| ProjectListCard | `components/Scanner/ProjectListCard.tsx` | Project selection with phase checkboxes |
+| ConsoleTabs | `components/Scanner/ConsoleTabs.tsx` | Real-time output display |
+| FileTree | `components/coderef/FileTree.tsx` | File tree navigation |
+| Sidebar | `components/Sidebar/` | Main navigation sidebar |
+| Header | `components/Header/` | Sticky header with breadcrumbs |
+| StatsCard | `components/StatsCard/` | Statistics display card |
 
-### Navigation
+### Context Providers
 
-| Page | Route | What's There |
-|------|-------|--------------|
-| Dashboard | `/` | Stats cards, workorders, stubs tabs |
-| Prompts | `/prompts` | Prompting workflow component |
-| Assistant | `/assistant` | Coming soon placeholder |
-| Sources | `/sources` | Coming soon placeholder |
-| Settings | `/settings` | Theme customization panel |
+| Context | Purpose |
+|---------|---------|
+| ThemeContext | Light/dark mode management |
+| AccentColorContext | Accent color customization |
+| ProjectsContext | Project registry management |
+| SidebarContext | Sidebar collapse state |
+| ExplorerContext | File explorer state |
+| SearchContext | Global search state |
+| WorkflowContext | Workflow state persistence |
 
 ---
 
 ## Common Workflows
 
-### Workflow 1: Daily Standup Prep
+### Workflow 1: Scan a Project
 
 ```
-1. Open localhost:3000
-2. Click "Workorders" tab
-3. Filter by status → "Implementing"
-4. Scan cards for your projects
-5. Note blockers or updates
+1. Navigate to /scanner
+2. Select project(s) from list
+3. Choose phases (Directories, Scan, Populate)
+4. Click "Execute" button
+5. View real-time output in Console tab
+6. Monitor progress in status display
+7. Results written to .coderef/ directories
 ```
-**Time:** 30 seconds
 
-### Workflow 2: Sprint Planning
+**Time:** 30 seconds - 5 minutes (depends on project size)
 
-```
-1. Navigate to "Stubs" tab
-2. Filter priority → "High"
-3. Filter category → "Feature"
-4. Review descriptions and estimates
-5. Copy stub IDs for planning tool
-```
-**Time:** 2 minutes
-
-### Workflow 3: Project Health Check
+### Workflow 2: View Workorders
 
 ```
-1. View stats cards on home page
-2. Check "by_status" breakdown
-3. Click project filter for specific project
-4. Review pending_plan and blocked workorders
-5. Investigate delays
+1. Navigate to / (Dashboard)
+2. View workorder cards in main grid
+3. Filter by status (pending, implementing, complete)
+4. Filter by project using project selector
+5. Click card to view details
+6. Navigate to workorder directory if needed
 ```
-**Time:** 3 minutes
 
-### Workflow 4: Filter Combination
+**Time:** < 1 second
+
+### Workflow 3: Read and Edit File
 
 ```
-1. Open filter bar
-2. Select status: "Implementing"
-3. Select project: "Project Alpha"
-4. Select priority: "High"
+1. Navigate to /explorer
+2. Browse file tree to find file
+3. Click file to open in editor
+4. Make edits in editor pane
+5. Click "Save" button
+6. File written via API route
+7. See confirmation message
+```
+
+**Time:** 10-30 seconds
+
+### Workflow 4: Register New Project
+
+```
+1. Navigate to /settings
+2. Open "Projects" panel
+3. Click "Add Project" button
+4. Enter project name
+5. Enter absolute path to project root
+6. Click "Save"
+7. Project appears in project list
+8. Available for scanning and file operations
+```
+
+**Time:** 15 seconds
+
+### Workflow 5: Filter Workorders
+
+```
+1. Navigate to / (Dashboard)
+2. Use filter bar at top
+3. Select status filter (e.g., "implementing")
+4. Select project filter (e.g., "coderef-dashboard")
 5. View filtered results (AND logic)
 6. Click "Clear Filters" to reset
 ```
-**Time:** 15 seconds
 
-### Workflow 5: Theme Customization
+**Time:** 5 seconds
+
+### Workflow 6: Stream Scan Output
 
 ```
-1. Click theme toggle icon (sun/moon)
-2. Navigate to Settings page
-3. Open Accent Color Picker
-4. Select color from palette
-5. See changes apply instantly
+1. Start scan via /scanner
+2. Scan ID returned in response
+3. Open Console tab in Scanner UI
+4. EventSource connects to /api/scanner/scan/[id]/output
+5. Real-time output displayed as it streams
+6. Status updates shown in ActionBar
+7. Connection closes when scan completes
 ```
-**Time:** 30 seconds
+
+**Time:** Continuous (duration of scan)
 
 ---
 
-## API Endpoints
+## Reference Format
 
-### GET /api/workorders
+### API Request Examples
 
-**Purpose:** Fetch all workorders from configured projects
+```typescript
+// Get all workorders
+const response = await fetch('/api/workorders');
+const data = await response.json();
 
-**Request:**
-```bash
-curl http://localhost:3000/api/workorders
+// Read file
+const fileResponse = await fetch(
+  `/api/coderef/file?path=${encodeURIComponent(filePath)}`
+);
+const fileData = await fileResponse.json();
+
+// Start scan
+const scanResponse = await fetch('/api/scanner/scan', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    projectIds: ['project-1'],
+    selections: { 'project-1': { scan: true } }
+  })
+});
+
+// Stream scan output
+const eventSource = new EventSource(`/api/scanner/scan/${scanId}/output`);
+eventSource.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log(data.message);
+};
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "workorders": [...],
-    "total": 15,
-    "by_project": {"project-a": 5},
-    "by_status": {"implementing": 8}
-  }
+### Component Usage Examples
+
+```tsx
+// Use ProjectsContext
+import { useProjects } from '@/contexts/ProjectsContext';
+
+function MyComponent() {
+  const { projects, addProject } = useProjects();
+  return <div>{projects.length} projects</div>;
 }
+
+// Use UnifiedCard
+import { UnifiedCard } from '@/components/UnifiedCard';
+import { FileText } from 'lucide-react';
+
+<UnifiedCard
+  icon={FileText}
+  iconColor="text-blue-500"
+  title="Feature Name"
+  footerLeft={<span>Status</span>}
+  footerRight={<Button>View</Button>}
+/>
 ```
 
-**Time:** 100-500ms
+### Configuration Example
 
----
-
-### GET /api/workorders/:id
-
-**Purpose:** Get specific workorder details
-
-**Request:**
-```bash
-curl http://localhost:3000/api/workorders/WO-PROJECT-001
-```
-
-**Response:**
 ```json
-{
-  "success": true,
-  "data": {
-    "workorder": {...},
-    "tasks": [...],
-    "deliverables": [...],
-    "communication_log": [...]
-  }
-}
-```
-
-**Time:** 50-200ms
-
----
-
-### GET /api/stubs
-
-**Purpose:** Fetch all stubs from centralized directory
-
-**Request:**
-```bash
-curl http://localhost:3000/api/stubs
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "stubs": [...],
-    "total": 42,
-    "location": "C:\\path\\to\\stubs"
-  }
-}
-```
-
-**Time:** 50-200ms
-
----
-
-## Configuration
-
-### projects.config.json
-
-**Location:** External file (not in repository)
-
-**Structure:**
-```json
+// projects.config.json
 {
   "projects": [
     {
-      "id": "project-alpha",
-      "name": "Project Alpha",
-      "path": "C:\\absolute\\path\\to\\project",
+      "id": "project-1",
+      "name": "Project One",
+      "path": "C:/path/to/project-1",
       "workorder_dir": "coderef/workorder"
     }
   ],
   "centralized": {
-    "stubs_dir": "C:\\path\\to\\stubs"
+    "stubs_dir": "C:/path/to/stubs"
   }
 }
 ```
 
-**Update API Routes:**
-Edit `packages/dashboard/src/app/api/workorders/route.ts:23`
-```typescript
-const configPath = 'YOUR_PATH_TO_projects.config.json';
-```
-
 ---
 
-## File Locations
+## Output Locations
 
-| Type | Location | Purpose |
-|------|----------|---------|
-| Config | External (user-defined path) | Project directory mappings |
-| Workorders | `{project}/coderef/workorder/` | Active work per project |
-| Stubs | Centralized directory | Backlog items |
-| Documentation | `coderef/foundation-docs/` | API, Schema, Architecture |
-| User Docs | `coderef/user/` | Guides and references |
-| Components | `packages/dashboard/src/components/` | React UI components |
-| API Routes | `packages/dashboard/src/app/api/` | Next.js API endpoints |
-
----
-
-## Key Components
-
-### WorkorderCard
-
-**Purpose:** Display individual workorder
-
-**Props:**
-```typescript
-{ workorder: WorkorderObject, onClick?: () => void }
-```
-
-**Usage:**
-```tsx
-<WorkorderCard
-  workorder={workorderData}
-  onClick={() => handleClick(id)}
-/>
-```
-
----
-
-### StubCard
-
-**Purpose:** Display individual stub
-
-**Props:**
-```typescript
-{ stub: StubObject, onClick?: () => void }
-```
-
-**Usage:**
-```tsx
-<StubCard
-  stub={stubData}
-  onClick={() => handleClick(id)}
-/>
-```
-
----
-
-### FilterBar
-
-**Purpose:** Multi-faceted filtering component
-
-**Props:**
-```typescript
-{
-  onFilterChange: (filters: FilterConfig) => void,
-  statusOptions?: string[],
-  priorityOptions?: string[],
-  showSearch?: boolean
-}
-```
-
-**Usage:**
-```tsx
-<FilterBar
-  onFilterChange={applyFilters}
-  statusOptions={['implementing', 'complete']}
-  priorityOptions={['high', 'critical']}
-  showSearch={true}
-/>
-```
-
----
-
-## Type Definitions
-
-### WorkorderStatus (Enum)
-
-```typescript
-'pending_plan' | 'plan_submitted' | 'changes_requested' |
-'approved' | 'implementing' | 'complete' | 'verified' | 'closed'
-```
-
-### StubCategory (Enum)
-
-```typescript
-'feature' | 'fix' | 'improvement' | 'idea' | 'refactor' | 'test'
-```
-
-### StubPriority (Enum)
-
-```typescript
-'low' | 'medium' | 'high' | 'critical'
-```
-
----
-
-## Error Codes
-
-| Code | HTTP | Meaning |
-|------|------|---------|
-| `CONFIG_MISSING` | 500 | Config file not found |
-| `CONFIG_INVALID` | 500 | Invalid JSON in config |
-| `PARSE_ERROR` | 500 | Failed to parse JSON file |
-| `WORKORDER_NOT_FOUND` | 404 | Workorder ID not found |
-| `FOLDER_NOT_FOUND` | 500 | Required directory missing |
-| `PERMISSION_DENIED` | 403 | File access denied |
-| `INTERNAL_ERROR` | 500 | Unexpected error |
-
----
-
-## Troubleshooting Quick Fixes
-
-| Problem | Quick Fix |
-|---------|-----------|
-| Config not found | Update API route paths (line 23) |
-| No workorders | Verify projects in config, check paths |
-| Type errors | Run `npm run type-check` |
-| Port 3000 in use | Kill process: `npx kill-port 3000` |
-| Slow loading | Reduce project count in config |
-| Theme not saving | Clear localStorage, restart browser |
-
----
-
-## Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl + K` | Focus search |
-| `Esc` | Clear filters |
-| `T` | Toggle theme |
-| `/` | Focus sidebar |
+| Type | Location | Files |
+|------|----------|-------|
+| Scan Results | `{project}/.coderef/` | index.json, graph.json, context.json, context.md, reports/*.json, diagrams/*.mmd |
+| Workorders | `{project}/coderef/workorder/{feature-name}/` | communication.json, plan.json, DELIVERABLES.md |
+| Stubs | `{centralized}/stubs/{feature-name}/` | stub.json |
+| Project Registry | `~/.coderef-dashboard/projects.json` | projects.json |
+| Dashboard Config | `projects.config.json` (external) | projects.config.json |
 
 ---
 
 ## Key Concepts
 
-### File-Based Architecture
+### 1. File System Based Architecture
 
-The dashboard reads data directly from the file system rather than a database. Workorders are stored as JSON files in `coderef/workorder/` directories within each project. The API scans these directories on request and aggregates the results.
+- No database required - all data read from file system
+- Projects managed via `projects.config.json`
+- Workorders discovered by folder existence
+- Graceful degradation - missing files don't break system
 
-**Implications:**
-- No database setup required
-- Data is version-controlled with code
-- Read-only by design (no write operations)
-- Performance scales with number of projects
+### 2. Multi-Project Aggregation
 
-### Monorepo Structure
+- Dashboard aggregates resources across unlimited projects
+- Each project manages its own `.coderef/` directory
+- Centralized stubs directory for backlog management
+- Project registry stored in user home directory
 
-The project uses npm workspaces with 3 packages:
-- `core` - Shared library (hooks, utils, types)
-- `dashboard` - Next.js web application
-- `electron-app` - Desktop wrapper
+### 3. Real-Time Streaming
 
-**Benefits:**
-- Code sharing between web and desktop
-- Consistent dependency versions
-- Single build command for all packages
+- Server-Sent Events (SSE) for scan output streaming
+- EventSource API in browser for real-time updates
+- Status polling for scan progress
+- No WebSocket required
 
-### Client vs Server Components
+### 4. Security Validation
 
-Next.js 14 App Router uses React Server Components. Components with event handlers or hooks need the `'use client'` directive at the top of the file.
-
-**Rule of thumb:**
-- Server component: Static content, no interactivity
-- Client component: `onClick`, `useState`, `useEffect`, etc.
+- Path validation prevents directory traversal attacks
+- File extension allowlist for write operations
+- Protected paths prevent deletion of critical files
+- All operations validate project registration
 
 ---
 
 ## Summary
 
-**Total Features:** 7 core capabilities
-**Total API Endpoints:** 3 REST endpoints
-**Total Components:** 25+ UI components
-**Total Pages:** 5 routes
-**Total Filters:** 4 filter types (status, priority, project, category)
-**Total Themes:** 2 (light, dark) + 6 accent colors
+**Total Pages:** 10  
+**Total API Endpoints:** 20+  
+**Total Components:** 72+  
+**Total Context Providers:** 8  
+**Common Workflows:** 6  
+**Output Directories:** 5 types
 
-**Documentation:**
-- [my-guide.md](my-guide.md) - Concise tool reference (60 lines)
-- [USER-GUIDE.md](USER-GUIDE.md) - Comprehensive tutorial (500+ lines)
-- [FEATURES.md](FEATURES.md) - Feature overview (300+ lines)
-- [quickref.md](quickref.md) - This document (250 lines)
-
-**Foundation Docs:**
-- [API.md](../foundation-docs/API.md) - REST API reference
-- [SCHEMA.md](../foundation-docs/SCHEMA.md) - TypeScript schemas
-- [COMPONENTS.md](../foundation-docs/COMPONENTS.md) - Component library
-- [ARCHITECTURE.md](../foundation-docs/ARCHITECTURE.md) - System design
+**Quick Links:**
+- [API Documentation](../foundation-docs/API.md)
+- [Architecture](../foundation-docs/ARCHITECTURE.md)
+- [Components](../foundation-docs/COMPONENTS.md)
+- [Schema](../foundation-docs/SCHEMA.md)
+- [User Guide](./USER-GUIDE.md)
+- [Features](./FEATURES.md)
 
 ---
 
-*Generated: 2025-12-28 | Version: 0.1.0 | Framework: POWER*
+**Last Updated:** 2026-01-14  
+**Version:** 0.1.0

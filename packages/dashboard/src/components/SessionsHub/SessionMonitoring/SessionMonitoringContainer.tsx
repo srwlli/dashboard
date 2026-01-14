@@ -30,6 +30,7 @@ export default function SessionMonitoringContainer({
   className = ''
 }: SessionMonitoringContainerProps) {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [isMarkingComplete, setIsMarkingComplete] = useState(false);
   const [outputViewerState, setOutputViewerState] = useState<{
     isOpen: boolean;
     agentId: string | null;
@@ -113,6 +114,37 @@ export default function SessionMonitoringContainer({
     mutateSessionDetail();
   };
 
+  const handleMarkComplete = async () => {
+    if (!selectedSessionId) return;
+
+    setIsMarkingComplete(true);
+
+    try {
+      const response = await fetch(`/api/sessions/${selectedSessionId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'complete' }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update session status');
+      }
+
+      // Refresh both lists and detail
+      await Promise.all([
+        mutateSessions(),
+        mutateSessionDetail()
+      ]);
+    } catch (error) {
+      console.error('Failed to mark session as complete:', error);
+      alert('Failed to mark session as complete. Please try again.');
+    } finally {
+      setIsMarkingComplete(false);
+    }
+  };
+
   // Loading state
   const isLoadingSessions = !sessionsData && !sessionsError;
 
@@ -182,7 +214,9 @@ export default function SessionMonitoringContainer({
                 session={sessionDetailData.session}
                 onRefresh={handleRefreshSessionDetail}
                 onViewOutput={handleViewOutput}
+                onMarkComplete={handleMarkComplete}
                 isRefreshing={isRefreshingSessionDetail}
+                isMarkingComplete={isMarkingComplete}
               />
             </>
           )}

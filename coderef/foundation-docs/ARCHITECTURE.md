@@ -1,612 +1,540 @@
-# System Architecture
+---
+generated_by: coderef-docs
+template: architecture
+date: "2026-01-14T01:30:00Z"
+feature_id: foundation-docs-architecture
+doc_type: architecture
+workorder_id: WO-FOUNDATION-DOCS-001
+task: DOCUMENT
+agent: claude-sonnet-4-5
+mcp_enhanced: true
+_uds:
+  validation_score: 95
+  validation_errors: []
+  validation_warnings: []
+  validated_at: "2026-01-14T01:30:00Z"
+  validator: UDSValidator
+---
 
-**Date:** 2025-12-28
-**Version:** 0.1.0
+# Architecture Reference
+
+**Project:** coderef-dashboard  
+**Version:** 0.1.0  
+**Date:** 2026-01-14  
+**Last Updated:** 2026-01-14
 
 ---
+
+## Purpose
+
+This document provides comprehensive system architecture documentation for the coderef-dashboard project. It describes the overall system design, package structure, data flow, integration points, and architectural decisions that guide development.
 
 ## Overview
 
-The CodeRef Dashboard is a modular widget system with PWA and Electron support, designed to aggregate and visualize workorder and stub data from multiple project directories. The system follows a monorepo architecture with three primary packages.
+The coderef-dashboard is a modular widget system with PWA and Electron support, designed to aggregate and visualize CodeRef resources across multiple projects. It operates entirely on the file system without requiring database infrastructure, making it lightweight and easy to deploy.
 
-**Core Purpose:** Provide a unified dashboard interface for tracking workorders (active work) and stubs (backlog items) across multiple software projects.
+**Key Architectural Principles:**
+- **File System Based** - Zero database setup, reads directly from project directories
+- **Multi-Project Support** - Aggregate resources across unlimited projects
+- **Modular Design** - Widget-based architecture for extensibility
+- **Type Safety** - TypeScript throughout for compile-time safety
+- **Monorepo Structure** - Shared packages with independent deployment targets
 
----
+## What
 
-## System Topology
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     CodeRef Dashboard                        │
-│                      (Deployment Options)                    │
-└───────────────┬─────────────────────────────┬───────────────┘
-                │                             │
-        ┌───────▼────────┐           ┌────────▼────────┐
-        │   Web (PWA)    │           │    Desktop      │
-        │  localhost:3000│           │   (Electron)    │
-        └───────┬────────┘           └────────┬────────┘
-                │                             │
-                └──────────┬──────────────────┘
-                           │
-                ┌──────────▼──────────┐
-                │   Next.js 14 App    │
-                │   App Router        │
-                │   (Dashboard)       │
-                └──────────┬──────────┘
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-    ┌─────▼─────┐   ┌──────▼──────┐  ┌─────▼──────┐
-    │   API     │   │  Components │  │   Hooks    │
-    │  Routes   │   │     UI      │  │   Utils    │
-    └─────┬─────┘   └──────┬──────┘  └─────┬──────┘
-          │                │                │
-          └────────────────┼────────────────┘
-                           │
-                ┌──────────▼──────────┐
-                │  @coderef-dashboard │
-                │       /core         │
-                │  (Shared Library)   │
-                └──────────┬──────────┘
-                           │
-                ┌──────────▼──────────┐
-                │   File System API   │
-                │  (Node.js / Web)    │
-                └──────────┬──────────┘
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-    ┌─────▼─────┐   ┌──────▼──────┐  ┌─────▼──────┐
-    │  Project  │   │   Project   │  │ Centralized│
-    │  Alpha    │   │    Beta     │  │   Stubs    │
-    │ workorder/│   │  workorder/ │  │   stubs/   │
-    └───────────┘   └─────────────┘  └────────────┘
-```
-
----
-
-## Package Structure
-
-### Monorepo Organization
+### System Architecture
 
 ```
-coderef-dashboard/
-├── packages/
-│   ├── core/                         # Shared library
-│   │   ├── src/
-│   │   │   ├── components/          # Core React components
-│   │   │   ├── hooks/               # Shared React hooks
-│   │   │   ├── types/               # TypeScript interfaces
-│   │   │   ├── utils/               # Utility functions
-│   │   │   └── index.ts             # Public API exports
-│   │   └── package.json
-│   │
-│   ├── dashboard/                    # Next.js web application
-│   │   ├── src/
-│   │   │   ├── app/                 # Next.js App Router
-│   │   │   │   ├── api/             # API routes
-│   │   │   │   │   ├── workorders/
-│   │   │   │   │   └── stubs/
-│   │   │   │   ├── page.tsx         # Dashboard home
-│   │   │   │   ├── prompts/
-│   │   │   │   ├── settings/
-│   │   │   │   └── layout.tsx
-│   │   │   ├── components/          # UI components
-│   │   │   │   ├── WorkorderCard/
-│   │   │   │   ├── StubCard/
-│   │   │   │   ├── Sidebar/
-│   │   │   │   └── ...
-│   │   │   ├── contexts/            # React contexts
-│   │   │   ├── hooks/               # Custom hooks
-│   │   │   ├── lib/                 # Business logic
-│   │   │   │   └── api/             # API client libraries
-│   │   │   └── types/               # TypeScript types
-│   │   └── package.json
-│   │
-│   └── electron-app/                 # Electron wrapper
-│       ├── src/
-│       │   ├── main.ts              # Electron main process
-│       │   └── preload.ts           # Preload script
-│       └── package.json
-│
-├── scripts/                          # Build scripts
-├── package.json                      # Root workspace config
-└── tsconfig.json                     # TypeScript config
+┌─────────────────────────────────────────────────────────┐
+│                    User Interface                        │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
+│  │ Dashboard│  │  Scanner │  │ Explorer │  ...         │
+│  └──────────┘  └──────────┘  └──────────┘             │
+└─────────────────────────────────────────────────────────┘
+                        ↕
+┌─────────────────────────────────────────────────────────┐
+│              Next.js API Routes Layer                   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
+│  │ Workorders│  │  Scanner │  │   File   │  ...         │
+│  └──────────┘  └──────────┘  └──────────┘             │
+└─────────────────────────────────────────────────────────┘
+                        ↕
+┌─────────────────────────────────────────────────────────┐
+│              File System Data Layer                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
+│  │ Projects │  │ Workorders│  │  Stubs   │  ...         │
+│  └──────────┘  └──────────┘  └──────────┘             │
+└─────────────────────────────────────────────────────────┘
+                        ↕
+┌─────────────────────────────────────────────────────────┐
+│              CodeRef Core Integration                     │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
+│  │  Scanner  │  │  Context │  │   Graph  │             │
+│  └──────────┘  └──────────┘  └──────────┘             │
+└─────────────────────────────────────────────────────────┘
 ```
 
----
+### Package Structure
 
-## Technology Stack
+The project uses npm workspaces to organize interdependent packages:
 
-### Frontend Layer
+#### 1. `packages/core`
 
-**Framework:** Next.js 14 (App Router)
-- **Rationale:** Server-side rendering, API routes, built-in optimization
-- **Routing:** File-based routing with App Router
-- **Rendering:** Client + Server components (React Server Components)
-
-**UI Library:** React 19
-- **Rationale:** Modern concurrent features, improved hooks, better TypeScript support
-- **State Management:** React Context API for global state
-
-**Styling:** Tailwind CSS
-- **Rationale:** Utility-first, consistent design tokens, responsive by default
-- **Design System:** Custom `ind-*` prefix for theme variables
-- **Dark Mode:** CSS variables with theme switching
-
-**Icons:** Lucide React
-- **Rationale:** Tree-shakeable, consistent design, TypeScript support
-
-**Language:** TypeScript 5.3.3
-- **Rationale:** Type safety, better IDE support, fewer runtime errors
-- **Configuration:** Strict mode enabled
-
----
-
-### Backend Layer
-
-**API Framework:** Next.js API Routes
-- **Rationale:** Co-located with frontend, serverless-ready, TypeScript support
-- **Location:** `packages/dashboard/src/app/api/`
-- **Pattern:** RESTful JSON endpoints
-
-**Data Layer:** File System
-- **Database:** None (file-based architecture)
-- **Storage:** JSON files + Markdown files
-- **Configuration:** `projects.config.json` (external)
-
----
-
-### Desktop Distribution
-
-**Platform:** Electron
-- **Rationale:** Cross-platform desktop app, native file system access
-- **Architecture:** Main process (Node.js) + Renderer process (Web)
-- **Preload Script:** Secure bridge between main and renderer
-
----
-
-### Build Tools
-
-**Package Manager:** npm with Workspaces
-- **Rationale:** Native monorepo support, consistent dependency resolution
-
-**Bundler (Web):** Next.js with Turbopack
-- **Rationale:** Fast HMR, optimized production builds, built-in code splitting
-
-**Bundler (Electron):** electron-builder
-- **Rationale:** Cross-platform packaging, auto-updates support
-
-**Compiler:** TypeScript + esbuild
-- **Rationale:** Fast compilation, ESM support
-
----
-
-## Module Boundaries
-
-### Core Package (`@coderef-dashboard/core`)
-
-**Purpose:** Shared utilities and components used by both dashboard and Electron app
+Shared library consumed by both web and Electron packages.
 
 **Responsibilities:**
-- Error boundary components
-- Shared TypeScript interfaces
-- Utility functions (clipboard, file handlers)
-- React hooks (session management)
+- Shared TypeScript types and interfaces
+- Common utilities and helpers
+- Shared hooks and context providers
+- Type-safe API client functions
 
-**Dependencies:**
-- React 19
-- React DOM 19
-- TypeScript 5.x
+**Location:** `packages/core/`
 
-**Export Strategy:**
-```typescript
-// packages/core/src/index.ts
-export { ErrorBoundary } from './components';
-export { useSession, useSessionRefresh } from './hooks';
-export { clipboard, fileHandlers } from './utils';
-export type { WidgetConfig } from './types';
-```
+#### 2. `packages/dashboard`
 
----
-
-### Dashboard Package
-
-**Purpose:** Web application for workorder and stub management
+Next.js 16 web application with App Router.
 
 **Responsibilities:**
-- API endpoints (`/api/workorders`, `/api/stubs`)
-- UI components (WorkorderCard, StubCard, etc.)
-- Routing and navigation
-- Theme management
-- PWA service worker
+- Next.js API routes for file system operations
+- React components and pages
+- Server-side rendering and static generation
+- PWA configuration and service workers
 
-**Dependencies:**
-- Next.js 16.1.1
-- React 19
-- Tailwind CSS
-- Lucide React
-- @coderef-dashboard/core
+**Location:** `packages/dashboard/`
 
-**API Design Pattern:**
-```typescript
-// packages/dashboard/src/app/api/workorders/route.ts
-export async function GET(): Promise<NextResponse> {
-  // 1. Load config
-  // 2. Scan workorder directories
-  // 3. Parse JSON files
-  // 4. Aggregate results
-  // 5. Return JSON response
-}
-```
+**Key Features:**
+- App Router architecture
+- API routes for file operations, scanner, workorders
+- React Server Components and Client Components
+- Tailwind CSS for styling
+- Responsive design with mobile support
 
----
+#### 3. `packages/coderef-core`
 
-### Electron Package
-
-**Purpose:** Desktop distribution of the dashboard
+CodeRef core library for code analysis and scanning.
 
 **Responsibilities:**
-- Application window management
-- Native menu integration
-- File system access via preload script
-- Auto-update functionality
+- Code element scanning and extraction
+- Dependency graph generation
+- Context generation
+- File generation system
+- Pattern detection and analysis
 
-**Dependencies:**
-- Electron
-- electron-builder
-- @coderef-dashboard/core
+**Location:** `packages/coderef-core/`
 
-**IPC Bridge:**
-```typescript
-// packages/electron-app/src/preload.ts
-contextBridge.exposeInMainWorld('CodeRefCore', {
-  api: {
-    openFile: () => ipcRenderer.invoke('open-file'),
-    selectDirectory: () => ipcRenderer.invoke('select-directory'),
-    isElectron: () => true
-  }
-});
-```
+**Key Features:**
+- AST-based code analysis
+- Multi-language support (TypeScript, JavaScript, TSX, JSX)
+- Graph-based dependency tracking
+- Real-time scanning with progress reporting
 
----
+#### 4. `packages/electron-app`
+
+Electron wrapper for desktop distribution.
+
+**Responsibilities:**
+- Electron main process
+- Window management
+- IPC communication
+- Desktop integration
+
+**Location:** `packages/electron-app/`
+
+## Why
+
+### Architectural Decisions
+
+**1. File System Based Architecture**
+
+**Decision:** No database, all data read from file system.
+
+**Rationale:**
+- Zero setup required - works immediately
+- Version control friendly - all data in git
+- Distributed - each project manages its own data
+- Simple deployment - no database migrations
+- Portable - easy to backup and restore
+
+**Trade-offs:**
+- Slower for very large datasets (mitigated by caching)
+- No real-time updates (mitigated by polling/SSE)
+
+**2. Monorepo Package Structure**
+
+**Decision:** Separate packages for core, dashboard, and electron-app.
+
+**Rationale:**
+- Type safety across packages
+- Shared component library
+- Independent deployment targets
+- Clear separation of concerns
+- Reusable code across platforms
+
+**Trade-offs:**
+- More complex build process (mitigated by npm workspaces)
+- Potential version conflicts (mitigated by workspace dependencies)
+
+**3. Widget-Based UI Architecture**
+
+**Decision:** Modular widgets for different resource types.
+
+**Rationale:**
+- Extensibility - easy to add new resource types
+- Reusability - widgets can be composed
+- Maintainability - isolated components
+- Flexibility - different layouts per page
+
+**Trade-offs:**
+- Initial setup complexity (mitigated by shared patterns)
+- Potential duplication (mitigated by UnifiedCard component)
+
+**4. Next.js App Router**
+
+**Decision:** Use Next.js 14+ App Router architecture.
+
+**Rationale:**
+- Server Components for performance
+- Built-in API routes
+- File-based routing
+- Optimized bundling
+- React 18+ features
+
+**Trade-offs:**
+- Learning curve (mitigated by documentation)
+- Some patterns different from Pages Router (mitigated by migration guides)
+
+## When
+
+### System Lifecycle
+
+**1. Initialization**
+
+- User configures `projects.config.json` with project paths
+- Dashboard scans configured projects on startup
+- Resources are discovered and cached
+
+**2. Runtime**
+
+- API routes handle file system operations
+- React components fetch data via API routes
+- Real-time updates via Server-Sent Events (SSE)
+- State management via React Context
+
+**3. Scanning Workflow**
+
+- User selects projects and phases in Scanner UI
+- API route initiates scan via subprocess
+- Real-time output streamed via SSE
+- Progress tracked and displayed
+- Results written to `.coderef/` directories
 
 ## Data Flow
 
-### Read Operations (Workorders)
+### Workorder Discovery Flow
 
 ```
-User Request
-    │
-    ▼
-Next.js Page (/workorders)
-    │
-    ▼
-React Hook (useWorkorders)
-    │
-    ▼
-Fetch /api/workorders
-    │
-    ▼
-API Route Handler
-    │
-    ├─▶ Load projects.config.json
-    ├─▶ Get workorder directories
-    ├─▶ Scan each project's coderef/workorder/
-    ├─▶ Parse communication.json, plan.json, DELIVERABLES.md
-    └─▶ Aggregate + Return JSON
-    │
-    ▼
-React State Update
-    │
-    ▼
-UI Re-render (WorkorderList)
+1. User requests /api/workorders
+   ↓
+2. API route reads projects.config.json
+   ↓
+3. For each project:
+   - Scan coderef/workorder/* directories
+   - Read communication.json, plan.json, DELIVERABLES.md
+   - Build workorder objects with graceful degradation
+   ↓
+4. Aggregate all workorders
+   ↓
+5. Return JSON response with:
+   - workorders array
+   - total count
+   - by_project aggregation
+   - by_status aggregation
 ```
 
-### Read Operations (Stubs)
+### Scanner Execution Flow
 
 ```
-User Request
-    │
-    ▼
-Fetch /api/stubs
-    │
-    ▼
-API Route Handler
-    │
-    ├─▶ Load projects.config.json
-    ├─▶ Get centralized stubs directory
-    ├─▶ Read stub.json files
-    └─▶ Return JSON
-    │
-    ▼
-UI Update (StubList)
+1. User clicks "Execute" in Scanner UI
+   ↓
+2. POST /api/scanner/scan with projectIds and selections
+   ↓
+3. API route:
+   - Creates scanId (UUID)
+   - Registers ScanExecutor
+   - Starts subprocess for each project
+   ↓
+4. Subprocess execution:
+   - Phase 1: Create directories (if selected)
+   - Phase 2: Run code scan (if selected)
+   - Phase 3: Populate files (if selected)
+   ↓
+5. Real-time output streamed via SSE:
+   - GET /api/scanner/scan/[scanId]/output
+   - EventSource connection in browser
+   - Console output displayed in real-time
+   ↓
+6. Status polling:
+   - GET /api/scanner/scan/[scanId]/status
+   - Updates UI with progress
+   ↓
+7. Completion:
+   - Results written to .coderef/ directories
+   - Scan status set to "completed"
 ```
 
-### Theme Switching
+### File Operation Flow
 
 ```
-User clicks ThemeToggle
-    │
-    ▼
-ThemeContext.toggleTheme()
-    │
-    ├─▶ Update React state
-    ├─▶ Save to localStorage
-    └─▶ Update CSS variables
-    │
-    ▼
-All components re-render with new theme
+1. User requests file operation (read/write/delete)
+   ↓
+2. API route validates path:
+   - Check if path is within registered project
+   - Validate file extension (allowlist)
+   - Check protected paths (prevent deletion)
+   ↓
+3. Execute operation:
+   - Read: Read file, return content + metadata
+   - Write: Write content, return success
+   - Delete: Delete file, return success
+   - Move: Rename/move file, return success
+   ↓
+4. Return JSON response with operation result
 ```
 
----
+## Integration Points
 
-## Design Decisions & Rationale
+### CodeRef Core Integration
 
-### 1. File-Based Data Architecture
+The dashboard integrates with `@coderef/core` for code analysis:
 
-**Decision:** Use file system as "database" instead of SQL/NoSQL
-**Rationale:**
-- Workorders already exist as files in project directories
-- No need for data migration or synchronization
-- Developers already interact with files via CLI tools
-- Eliminates database setup/maintenance overhead
+**Scanner Integration:**
+- Uses `coderef-core` CLI for scanning
+- Subprocess execution via Node.js child_process
+- Real-time output streaming
+- Progress tracking
 
-**Trade-offs:**
-- ✅ Zero setup, no database server required
-- ✅ Data is version-controlled with code
-- ❌ No ACID guarantees
-- ❌ Limited query capabilities
-- ❌ Slower for large datasets (100+ projects)
+**File Generation:**
+- Scanner generates `.coderef/` directory structure
+- Files include: index.json, graph.json, context.json, etc.
+- Dashboard reads these files for display
 
----
+**MCP Server Integration:**
+- Dashboard can connect to CodeRef MCP Server
+- Provides AI-assisted development context
+- Enables code intelligence features
 
-### 2. Monorepo Architecture
+### External Systems
 
-**Decision:** Use npm workspaces monorepo
-**Rationale:**
-- Share code between web and desktop apps
-- Consistent dependency versions
-- Single build command for all packages
-- Easier refactoring across packages
+**1. File System**
 
-**Trade-offs:**
-- ✅ Code reuse via `@coderef-dashboard/core`
-- ✅ Simplified dependency management
-- ❌ Slower install times (all deps downloaded)
-- ❌ Type errors cascade across packages
+- Reads from project directories
+- Writes scan results to `.coderef/` directories
+- Manages workorder files (JSON, Markdown)
 
----
+**2. Projects Configuration**
 
-### 3. Next.js App Router
+- Reads `projects.config.json` for project registry
+- Supports centralized stubs directory
+- Configurable workorder directory paths
 
-**Decision:** Use App Router (not Pages Router)
-**Rationale:**
-- Modern React patterns (Server Components)
-- Better performance (server-side rendering)
-- Co-located API routes
-- Improved data fetching
+**3. Electron IPC (Desktop Mode)**
 
-**Trade-offs:**
-- ✅ Server-side rendering for better SEO/performance
-- ✅ API routes + frontend in one codebase
-- ❌ Steeper learning curve
-- ❌ Client components require `'use client'` directive
-
----
-
-### 4. Tailwind CSS
-
-**Decision:** Use Tailwind instead of CSS-in-JS or CSS modules
-**Rationale:**
-- Utility-first approach reduces custom CSS
-- Built-in responsive design utilities
-- Excellent TypeScript support
-- Tree-shaking removes unused styles
-
-**Trade-offs:**
-- ✅ Fast development with utility classes
-- ✅ Consistent design system via config
-- ❌ Verbose className strings
-- ❌ Learning curve for newcomers
-
----
-
-### 5. React Context for State
-
-**Decision:** Use React Context instead of Redux/MobX
-**Rationale:**
-- Simple state requirements (theme, sidebar, accent color, projects, explorer state)
-- No complex state interactions
-- Built-in React feature (no extra deps)
-- Optimistic UI updates handled at context level
-
-**Trade-offs:**
-- ✅ No external dependencies
-- ✅ Simpler mental model
-- ✅ Automatic rollback on error (optimistic updates)
-- ❌ Limited devtools support
-- ❌ Performance issues with frequent updates (mitigated by splitting contexts)
-
-**Context Architecture** (as of v0.7.0):
-
-1. **ProjectsContext** (`packages/dashboard/src/contexts/ProjectsContext.tsx`)
-   - **Purpose:** Global project list state management
-   - **Features:**
-     - Single API call on app mount (eliminates redundant fetches)
-     - Optimistic UI updates for add/remove operations
-     - Automatic rollback on API errors
-   - **Performance Impact:** ~80% reduction in API calls
-   - **Usage:** `const { projects, isLoading, addProject, removeProject } = useProjects()`
-
-2. **ExplorerContext** (`packages/dashboard/src/contexts/ExplorerContext.tsx`)
-   - **Purpose:** CodeRef Explorer view mode and file selection state
-   - **Features:**
-     - localStorage persistence for view mode across navigation
-     - Centralized selected file state
-     - Automatic selection clearing on view mode change
-   - **Usage:** `const { viewMode, selectedFile, setViewMode, setSelectedFile } = useExplorer()`
-
-3. **ThemeContext** - Dark/light mode toggle
-4. **AccentColorContext** - Custom accent color selection
-5. **SidebarContext** - Sidebar open/closed state
-
-**Context Provider Hierarchy:**
-```jsx
-<ThemeProvider>
-  <AccentColorProvider>
-    <SidebarProvider>
-      <ProjectsProvider>
-        <ExplorerProvider>
-          <RootClientWrapper>
-            {children}
-          </RootClientWrapper>
-        </ExplorerProvider>
-      </ProjectsProvider>
-    </SidebarProvider>
-  </AccentColorProvider>
-</ThemeProvider>
-```
-
----
+- Main process communicates with renderer
+- File system operations via IPC
+- Window management
 
 ## Security Considerations
 
-### API Security
+### Path Validation
 
-**Current State:** No authentication
-**Recommendation:** Add API key authentication for production
+All file operations validate paths to prevent directory traversal:
 
-**Input Validation:**
-- File path sanitization to prevent directory traversal
-- JSON parsing with try/catch error handling
+```typescript
+function validateFilePath(path: string, registeredProjects: Project[]): boolean {
+  // Check if path is within a registered project
+  // Prevent ../ and absolute path attacks
+  // Validate file extensions
+}
+```
 
-### Electron Security
+### Protected Paths
 
-**IPC Bridge:** Uses `contextBridge.exposeInMainWorld()` for secure IPC
-**File Access:** Preload script validates file paths before opening
+Critical system files are protected from deletion:
 
----
+```typescript
+const PROTECTED_PATHS = [
+  '.coderef/index.json',
+  '.coderef/graph.json',
+  'package.json',
+  // ...
+];
+```
+
+### File Extension Allowlist
+
+Only allowed file types can be written:
+
+```typescript
+const ALLOWED_EXTENSIONS = [
+  '.ts', '.tsx', '.js', '.jsx',
+  '.md', '.json', '.txt',
+  // ...
+];
+```
 
 ## Performance Considerations
 
-### Bundle Size
+### Caching Strategy
 
-**Next.js Optimizations:**
-- Code splitting by route
-- Tree-shaking unused imports
-- Image optimization via next/image
+- API responses cached in React state
+- File system reads cached in memory
+- Scan results cached in `.coderef/` directories
 
-**Current Bundle Sizes:**
-- First Load JS: ~200 KB (estimated)
-- Shared chunks: ~150 KB (estimated)
+### Optimization Techniques
 
-### Rendering Performance
-
-**Optimizations:**
 - Server Components for static content
-- Client Components only when needed (events, hooks)
-- Memoization with `React.memo()` for expensive components
+- Client Components only when needed
+- Code splitting via Next.js
+- Lazy loading for heavy components
+- SSE for real-time updates (no polling)
 
-### Data Loading
+### Scalability
 
-**API Response Times:**
-- `/api/workorders`: 100-500ms (depending on project count)
-- `/api/stubs`: 50-200ms
-
-**Caching Strategy:**
-- No server-side caching (data changes frequently)
-- Client-side caching via SWR/React Query (future enhancement)
-
----
+- File system operations are I/O bound
+- Parallel processing for multi-project scans
+- Graceful degradation for large datasets
+- Pagination support (future enhancement)
 
 ## Deployment Architecture
 
-### Web (PWA)
+### Web PWA Deployment
 
 ```
-User → Browser → localhost:3000 (dev) or Vercel (prod)
-                      │
-                      ▼
-              Next.js Server
-                      │
-                      ├─▶ Static pages (pre-rendered)
-                      ├─▶ API routes (serverless functions)
-                      └─▶ Service Worker (PWA caching)
+┌─────────────┐
+│   Browser   │
+└──────┬──────┘
+       │
+┌──────▼──────┐
+│  Next.js    │
+│  (Vercel)   │
+└──────┬──────┘
+       │
+┌──────▼──────┐
+│ File System │
+│  (Projects) │
+└─────────────┘
 ```
 
-### Desktop (Electron)
+### Electron Desktop Deployment
 
 ```
-User → Electron App → Chromium Renderer
-                          │
-                          ├─▶ Main Process (Node.js)
-                          ├─▶ Preload Script (IPC bridge)
-                          └─▶ Dashboard (bundled Next.js build)
+┌─────────────┐
+│   Electron  │
+│   Window    │
+└──────┬──────┘
+       │ IPC
+┌──────▼──────┐
+│   Main      │
+│  Process    │
+└──────┬──────┘
+       │
+┌──────▼──────┐
+│ File System │
+│  (Local)    │
+└─────────────┘
 ```
+
+## Development Workflow
+
+### Local Development
+
+1. **Setup:**
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+2. **Development:**
+   - Hot reload for Next.js
+   - TypeScript type checking
+   - ESLint for code quality
+
+3. **Testing:**
+   - Unit tests for utilities
+   - Integration tests for API routes
+   - E2E tests for critical flows
+
+### Build Process
+
+1. **Type Checking:**
+   ```bash
+   npm run type-check
+   ```
+
+2. **Linting:**
+   ```bash
+   npm run lint
+   ```
+
+3. **Build:**
+   ```bash
+   npm run build
+   ```
+
+4. **Package (Electron):**
+   ```bash
+   npm run package:win
+   ```
+
+## Examples
+
+### Adding a New API Route
+
+```typescript
+// packages/dashboard/src/app/api/new-endpoint/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // Implementation
+    return NextResponse.json({ success: true, data: {} });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: { code: 'ERROR', message: String(error) } },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### Adding a New Component
+
+```typescript
+// packages/dashboard/src/components/NewComponent/index.tsx
+'use client';
+
+interface NewComponentProps {
+  title: string;
+}
+
+export function NewComponent({ title }: NewComponentProps) {
+  return (
+    <div className="p-4">
+      <h2>{title}</h2>
+    </div>
+  );
+}
+```
+
+## References
+
+- [API.md](./API.md) - API endpoint documentation
+- [SCHEMA.md](./SCHEMA.md) - Data models and schemas
+- [COMPONENTS.md](./COMPONENTS.md) - Component documentation
+- [README.md](../README.md) - Project overview
 
 ---
 
-## Future Architecture Enhancements
-
-### Short-term (Next 3 months)
-
-1. **Add Database:** PostgreSQL or SQLite for faster queries
-2. **Add Authentication:** JWT or session-based auth
-3. **API Caching:** Redis for workorder list caching
-4. **Real-time Updates:** WebSockets for live workorder status
-
-### Long-term (6-12 months)
-
-1. **Microservices:** Split API into separate services (workorders, stubs, users)
-2. **GraphQL:** Replace REST with GraphQL for flexible queries
-3. **Event Sourcing:** Track workorder status changes as events
-4. **Search Index:** Elasticsearch for full-text search
-
----
-
-## Migration Path
-
-### Current State (v0.1.0)
-
-- Monorepo with 3 packages
-- File-based data storage
-- Next.js App Router
-- No authentication
-
-### Target State (v1.0.0)
-
-- Monorepo with 4 packages (add API service)
-- Hybrid storage (files + database)
-- GraphQL API layer
-- JWT authentication
-
-**Migration Strategy:**
-1. Introduce database without removing file reading (dual reads)
-2. Migrate data to database incrementally
-3. Add authentication layer
-4. Switch to database as primary source
-5. Keep file reading as fallback
-
----
-
-**AI Integration Notes:**
-
-When working with this architecture:
-
-1. **Module Boundaries:** Respect package boundaries - core should not depend on dashboard
-2. **API Design:** Follow RESTful conventions for new endpoints
-3. **Component Location:** Dashboard-specific components go in `dashboard/`, shared ones in `core/`
-4. **Type Sharing:** Share types via `@coderef-dashboard/core/types`
-5. **File System Access:** Always use absolute paths, sanitize inputs
-6. **Error Handling:** Use predefined `ErrorCodes` from `types/api.ts`
-
-**Common Pitfalls:**
-- Don't circular dependencies between packages
-- Don't bypass the IPC bridge in Electron (use preload script)
-- Don't mutate config files from API routes (read-only)
-- Don't forget `'use client'` for components with hooks/events
-
----
-
-*This document was generated as part of the CodeRef Dashboard foundation documentation suite. See also: [API.md](./API.md), [SCHEMA.md](./SCHEMA.md), [COMPONENTS.md](./COMPONENTS.md)*
+**Last Updated:** 2026-01-14  
+**Maintainer:** CodeRef Development Team  
+**Version:** 0.1.0

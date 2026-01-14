@@ -8,10 +8,11 @@
  * - Agents grid below
  * - Real-time status updates
  * - Manual refresh button
+ * - Manual "Mark as Complete" button (when all agents complete but session isn't)
  */
 
 import React from 'react';
-import { RefreshCw, User, Users } from 'lucide-react';
+import { RefreshCw, User, Users, CheckCircle } from 'lucide-react';
 import type { SessionDetail as SessionDetailType } from '@/lib/api/sessions';
 import AgentCard from './AgentCard';
 
@@ -19,7 +20,9 @@ interface SessionDetailProps {
   session: SessionDetailType;
   onRefresh?: () => void;
   onViewOutput?: (agentId: string) => void;
+  onMarkComplete?: () => void;
   isRefreshing?: boolean;
+  isMarkingComplete?: boolean;
   className?: string;
 }
 
@@ -54,9 +57,15 @@ export default function SessionDetail({
   session,
   onRefresh,
   onViewOutput,
+  onMarkComplete,
   isRefreshing = false,
+  isMarkingComplete = false,
   className = ''
 }: SessionDetailProps) {
+  // Check if all agents and orchestrator are complete but session status isn't
+  const allAgentsComplete = session.completed_agents === session.total_agents && session.orchestrator.status === 'complete';
+  const canMarkComplete = allAgentsComplete && session.status !== 'complete';
+
   return (
     <div className={`flex flex-col h-full bg-ind-bg ${className}`}>
       {/* Header */}
@@ -79,17 +88,33 @@ export default function SessionDetail({
             </div>
           </div>
 
-          {/* Refresh Button */}
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              disabled={isRefreshing}
-              className="p-2 rounded-md border border-ind-border bg-ind-panel text-ind-text hover:border-ind-accent hover:text-ind-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Refresh session status"
-            >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
-          )}
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            {/* Mark as Complete Button (shown when all agents complete but session isn't) */}
+            {canMarkComplete && onMarkComplete && (
+              <button
+                onClick={onMarkComplete}
+                disabled={isMarkingComplete}
+                className="px-3 py-2 rounded-md border border-ind-success bg-ind-success/10 text-ind-success hover:bg-ind-success/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                title="Mark session as complete"
+              >
+                <CheckCircle className={`w-4 h-4 ${isMarkingComplete ? 'animate-pulse' : ''}`} />
+                <span className="text-sm font-medium">Mark as Complete</span>
+              </button>
+            )}
+
+            {/* Refresh Button */}
+            {onRefresh && (
+              <button
+                onClick={onRefresh}
+                disabled={isRefreshing}
+                className="p-2 rounded-md border border-ind-border bg-ind-panel text-ind-text hover:border-ind-accent hover:text-ind-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Refresh session status"
+              >
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Description */}

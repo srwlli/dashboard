@@ -359,3 +359,47 @@ export async function refreshSessionStatus(
     aggregation
   };
 }
+
+/**
+ * Update session status in communication.json
+ *
+ * Manually sets the status field in communication.json file.
+ *
+ * @param featureName - Feature name (session directory)
+ * @param newStatus - New status to set
+ * @returns Updated session detail or null if not found/failed
+ */
+export async function updateSessionStatus(
+  featureName: string,
+  newStatus: SessionStatus
+): Promise<{ status: SessionStatus } | null> {
+  for (const sessionBaseDir of DEFAULT_SESSION_DIRS) {
+    const sessionPath = path.join(sessionBaseDir, featureName);
+    const commPath = path.join(sessionPath, 'communication.json');
+
+    if (!fs.existsSync(commPath)) {
+      continue;
+    }
+
+    try {
+      // Read current communication.json
+      const commData = safeJSONParse<any>(commPath);
+      if (!commData) {
+        return null;
+      }
+
+      // Update status field
+      commData.status = newStatus;
+
+      // Write back to file
+      fs.writeFileSync(commPath, JSON.stringify(commData, null, 4), 'utf-8');
+
+      return { status: newStatus };
+    } catch (error) {
+      console.error(`Failed to update session status: ${commPath}`, error);
+      return null;
+    }
+  }
+
+  return null;
+}
