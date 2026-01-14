@@ -9,7 +9,9 @@ version: "1.0.0"
 related_files:
   - packages/coderef-core/src/scanner/scanner.ts
   - packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts
-  - packages/coderef-core/src/fileGeneration/
+  - packages/coderef-core/src/fileGeneration/detectPatterns.ts
+  - packages/coderef-core/src/fileGeneration/validateReferences.ts
+  - packages/coderef-core/src/fileGeneration/buildDependencyGraph.ts
 status: APPROVED
 ---
 
