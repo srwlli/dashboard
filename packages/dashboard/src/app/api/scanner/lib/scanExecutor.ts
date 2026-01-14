@@ -12,7 +12,7 @@ import { EventEmitter } from 'events';
 import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
 import type { ScanProgress, ScanStatus } from '../types';
-import { scanCurrentElements, type ElementData } from '@coderef/core';
+import { scanCurrentElements, DEFAULT_EXCLUDE_PATTERNS, type ElementData } from '@coderef/core';
 
 /**
  * Project selection for directories/scan/populate operations
@@ -246,7 +246,7 @@ export class ScanExecutor extends EventEmitter {
         ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'],
         {
           recursive: true,
-          exclude: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.next/**'],
+          exclude: DEFAULT_EXCLUDE_PATTERNS as string[],
         }
       );
 

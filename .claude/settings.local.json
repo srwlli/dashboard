@@ -32,7 +32,8 @@
       "Bash(done)",
       "Bash(for dir in */)",
       "Bash(then dirname=\"$dir%/\")",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(timeout 10 bash:*)"
     ],
     "deny": [],
     "ask": []
