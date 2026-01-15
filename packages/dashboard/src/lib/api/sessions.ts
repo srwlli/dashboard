@@ -377,10 +377,88 @@ export async function getAllSessions(): Promise<Session[]> {
 }
 
 /**
+ * Read agent subdirectory communication.json (hierarchical session structure)
+ *
+ * For sessions using agent-subdirectory pattern, each agent has:
+ * - <session>/<agent-id>/communication.json (agent-level data)
+ * - <session>/<agent-id>/resources/index.md
+ * - <session>/<agent-id>/outputs/
+ *
+ * This function enriches AgentInfo with data from agent subdirectory.
+ *
+ * @param sessionPath - Path to session directory
+ * @param agentId - Agent identifier
+ * @returns Partial AgentInfo with hierarchical fields, or empty object if not found
+ */
+async function readAgentSubdirectory(
+  sessionPath: string,
+  agentId: string
+): Promise<Partial<AgentInfo>> {
+  const agentDir = path.join(sessionPath, agentId);
+  const agentCommPath = path.join(agentDir, 'communication.json');
+
+  // Check if agent subdirectory exists (hierarchical structure)
+  if (!fs.existsSync(agentDir) || !fs.existsSync(agentCommPath)) {
+    return {}; // Flat structure - return empty (no hierarchical data)
+  }
+
+  const agentCommData = safeJSONParse<any>(agentCommPath);
+  if (!agentCommData) {
+    return {}; // Invalid/missing data
+  }
+
+  // Extract hierarchical fields from agent communication.json
+  return {
+    tasks: agentCommData.tasks,
+    success_metrics: agentCommData.success_metrics,
+    resources: agentCommData.resources,
+    outputs: agentCommData.outputs,
+    phase_gate: agentCommData.phase_gate,
+    started: agentCommData.started,
+    phase: agentCommData.phase,
+    workorder_id: agentCommData.workorder_id || undefined
+  };
+}
+
+/**
+ * Extract workorders created during session execution
+ *
+ * Scans agent subdirectories for workorders created as deliverables.
+ * Checks agent.outputs.workorders_created fields.
+ *
+ * @param sessionPath - Path to session directory
+ * @param agents - Array of AgentInfo objects (must be enriched with outputs field)
+ * @returns Array of workorder IDs created during session
+ */
+async function extractWorkordersCreated(
+  sessionPath: string,
+  agents: AgentInfo[]
+): Promise<string[]> {
+  const workorders: string[] = [];
+
+  for (const agent of agents) {
+    if (agent.outputs?.workorders_created) {
+      workorders.push(...agent.outputs.workorders_created);
+    }
+  }
+
+  return workorders;
+}
+
+/**
  * Get detailed session information by feature name
  *
  * Reads communication.json and returns full session details
  * including orchestrator, agents, and parallel execution info.
+ *
+ * For hierarchical sessions (agent-subdirectory pattern):
+ * - Reads agent/<agent-id>/communication.json for each agent
+ * - Populates agent.tasks, agent.success_metrics, etc.
+ * - Extracts created workorders from agent outputs
+ *
+ * For flat sessions (legacy):
+ * - Only reads session-level communication.json
+ * - Hierarchical fields remain undefined (backward compatible)
  *
  * @param featureName - Feature name (used as directory name)
  * @returns Session details or null if not found
@@ -400,10 +478,26 @@ export async function getSessionById(featureName: string): Promise<SessionDetail
     }
 
     const agents: AgentInfo[] = commData.agents || [];
+
+    // Enrich agents with hierarchical data (if agent subdirectories exist)
+    // Read agent/<agent-id>/communication.json for each agent
+    const enrichedAgents = await Promise.all(
+      agents.map(async (agent) => {
+        const hierarchicalData = await readAgentSubdirectory(sessionPath, agent.agent_id);
+        return {
+          ...agent,
+          ...hierarchicalData  // Merge hierarchical fields (tasks, success_metrics, etc.)
+        };
+      })
+    );
+
     // Always recalculate aggregation from agents array (source of truth)
     // Don't trust commData.aggregation as it may be stale from template
-    const aggregation = calculateAggregation(agents);
-    const calculatedStatus = calculateSessionStatus(agents);
+    const aggregation = calculateAggregation(enrichedAgents);
+    const calculatedStatus = calculateSessionStatus(enrichedAgents);
+
+    // Extract workorders created during session
+    const createdWorkorders = await extractWorkordersCreated(sessionPath, enrichedAgents);
 
     const sessionDetail: SessionDetail = {
       workorder_id: commData.workorder_id || 'UNKNOWN',
@@ -411,13 +505,19 @@ export async function getSessionById(featureName: string): Promise<SessionDetail
       status: commData.status || calculatedStatus,
       created: commData.created || 'Unknown',
       description: commData.description || '',
-      total_agents: agents.length,
+      total_agents: enrichedAgents.length,
       completed_agents: aggregation.completed,
       orchestrator: commData.orchestrator,
-      agents: agents,
+      agents: enrichedAgents,  // Use enriched agents with hierarchical data
       parallel_execution: commData.parallel_execution,
       aggregation: aggregation,
-      instructions_file: commData.instructions_file
+      instructions_file: commData.instructions_file,
+
+      // Hierarchical session fields
+      phases: commData.phases,  // Session-level phase tracking
+      created_workorders: createdWorkorders.length > 0 ? createdWorkorders : undefined,
+      completed_at: commData.completed_at,
+      duration: commData.duration
     };
 
     return sessionDetail;
