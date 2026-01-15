@@ -49,6 +49,16 @@ export interface AgentInfo {
   forbidden_files?: string[];
   depends_on?: string[];
   context_file?: string;
+
+  // Hierarchical session structure fields (requires agent subdirectory)
+  // Only populated when session uses agent-subdirectory pattern
+  tasks?: AgentTask[];              // Task tracking from agent/communication.json
+  success_metrics?: SuccessMetric;  // Progress metrics from agent/communication.json
+  resources?: AgentResources;       // Resource links from agent/resources/index.md
+  outputs?: AgentOutputs;           // Output specifications from agent/communication.json
+  phase_gate?: PhaseGate;           // Phase progression criteria
+  started?: string;                 // ISO 8601 timestamp when agent started work
+  phase?: string;                   // Which phase this agent belongs to (e.g., "phase_1")
 }
 
 export interface ParallelExecutionInfo {
@@ -76,6 +86,13 @@ export interface SessionDetail extends Session {
   // Phase 1: Session metrics
   completed_at?: string;  // ISO 8601 timestamp when session marked complete
   duration?: number;      // Duration in seconds
+
+  // Hierarchical session structure fields (WO-SESSION-STRUCTURE-STANDARDIZATION)
+  // Only populated when session uses multi-phase pattern
+  phases?: Record<string, PhaseInfo>;  // Phase tracking (e.g., { "phase_1": {...}, "phase_2": {...} })
+  created_workorders?: string[];       // Workorder IDs created during session execution
+  files_modified?: string[];           // Files modified during session (Phase 2)
+  resource_sheets?: string[];          // Resource sheets accessed (Phase 2)
 }
 
 export interface SessionStatusUpdate {
@@ -83,6 +100,81 @@ export interface SessionStatusUpdate {
   total_agents: number;
   completed_agents: number;
   aggregation: AggregationInfo;
+}
+
+// ============================================================================
+// Hierarchical Session Structure Types (WO-SESSION-STRUCTURE-STANDARDIZATION)
+// ============================================================================
+
+/**
+ * Agent task tracking from agent subdirectory communication.json
+ * Represents individual task within an agent's workorder
+ */
+export interface AgentTask {
+  task_id: string;          // e.g., "TASK-001"
+  description: string;      // What this task accomplishes
+  status: 'pending' | 'in_progress' | 'complete' | 'blocked';
+  completed?: string;       // ISO 8601 timestamp when completed
+  commit?: string;          // Git commit SHA for this task
+  proof?: string;           // Path to proof of completion
+}
+
+/**
+ * Success metrics tracking progress toward goals
+ * Used at both agent and phase level
+ */
+export interface SuccessMetric {
+  baseline: number | string;   // Starting value
+  current: number | string;     // Current value
+  target: number | string;      // Goal value
+  status: string;               // Progress percentage or status description
+}
+
+/**
+ * Agent resource tracking from resources/index.md
+ * Links to source documents, not copies
+ */
+export interface AgentResources {
+  index?: string;                // Path to resources/index.md
+  primary_spec?: string;         // Link to primary specification
+  proof_of_concept?: string;     // Link to POC or example
+  requirements?: string;         // Link to requirements doc
+  architecture?: string;         // Link to architecture doc
+  [key: string]: string | undefined;  // Additional resource links
+}
+
+/**
+ * Agent output specifications
+ * Defines what the agent produces
+ */
+export interface AgentOutputs {
+  primary_output: string;        // Path to main deliverable
+  format: string;                // Output format (markdown, json, code, etc.)
+  workorders_created?: string[]; // Workorder IDs created by this agent
+}
+
+/**
+ * Phase gate criteria for progression
+ * Defines what must be achieved before next phase
+ */
+export interface PhaseGate {
+  required_for_phase_2: boolean;
+  criteria: string[];            // List of criteria that must be met
+}
+
+/**
+ * Phase information from session-level communication.json
+ * Tracks multi-phase execution progress
+ */
+export interface PhaseInfo {
+  status: 'not_started' | 'in_progress' | 'complete';
+  progress: number;              // Percentage complete (0-100)
+  lead_agents: string[];         // Agent IDs responsible for this phase
+  started?: string;              // ISO 8601 timestamp when phase started
+  completed?: string;            // ISO 8601 timestamp when phase completed
+  description: string;           // What this phase accomplishes
+  success_metrics?: SuccessMetric;
+  dependencies?: string[];       // Phase IDs that must complete first (e.g., ["phase_1"])
 }
 
 // ============================================================================
