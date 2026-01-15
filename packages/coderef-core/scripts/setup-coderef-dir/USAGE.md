@@ -30,8 +30,22 @@ py C:\Users\willh\Desktop\coderef-dashboard\packages\coderef-core\scripts\setup-
 
 ## What Gets Created
 
-- **`.coderef/`** - Reports, diagrams, exports (hidden folder)
-- **`coderef/`** - Workorders, standards, documents (visible folder)
+### `.coderef/` (Hidden, Technical)
+- `reports/complexity/` - Complexity analysis reports
+- `diagrams/` - Dependency diagrams
+- `exports/` - Exported data (JSON-LD, Mermaid, DOT)
+
+### `coderef/` (Visible, Workflow)
+- `workorder/` - Active workorders (shared across all coderef projects)
+- `archived/` - Completed/cancelled features
+- `standards/` - UI/UX/behavior standards
+- `foundation-docs/` - Generated documentation (README, ARCHITECTURE, API, SCHEMA, COMPONENTS)
+- `documents/` - General documentation
+- `resource/` - Resource sheets
+- `user/` - User-facing documentation
+- `notes/` - Working notes
+- `sessions/` - Multi-agent session files
+- `reports/` - Project assessment and analysis reports
 
 ---
 

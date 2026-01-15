@@ -1,6 +1,6 @@
 ---
 agent: Claude Sonnet 4.5
-date: "2026-01-12"
+date: "2026-01-14"
 task: UPDATE
 subject: FileViewer
 parent_project: coderef-dashboard
@@ -17,7 +17,7 @@ status: APPROVED
 **Type:** React Client Component
 **File:** `packages/dashboard/src/components/coderef/FileViewer.tsx`
 **Created:** 2026-01-04
-**Lines of Code:** ~300
+**Lines of Code:** ~490
 **Complexity:** Medium
 
 ---
@@ -64,6 +64,7 @@ status: APPROVED
 **External:**
 - `react-syntax-highlighter`: For code blocks.
 - `react-markdown`: For `.md` files.
+- `remark-gfm`: For GitHub Flavored Markdown support (tables, strikethrough, task lists, etc.).
 - `rehype-slug`: For Markdown anchor links.
 - `lucide-react`: For icons.
 
@@ -84,18 +85,52 @@ status: APPROVED
    - Checks extension (`.ts`, `.md`, etc.).
    - Selects appropriate renderer (SyntaxHighlighter, ReactMarkdown, etc.).
 
+### Utility Functions
+
+- **`extractMermaidCode(content: string): string`** - Removes metadata blocks from `.mmd` files to prevent parsing errors. Handles metadata markers like "Diagram Summary:", "Tip:", "Format:" and stops processing after classDef blocks. This ensures only valid Mermaid syntax is passed to the MermaidViewer component.
+
+- **`formatFileSize(bytes: number): string`** - Formats file sizes in human-readable format (B, KB, MB, GB). Used in the file header display to show file size information to users.
+
 ---
 
 ## Supported Formats
 
 | Type | Extensions | Renderer |
 | :--- | :--- | :--- |
-| **Code** | `.ts`, `.js`, `.py`, `.java`, `.go`, etc. | `Prism` (VSCode Dark Plus) |
-| **Markdown** | `.md` | `ReactMarkdown` + `rehype-slug` |
-| **Mermaid** | `.mmd` | `<MermaidViewer />` |
+| **Code** | `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.java`, `.c`, `.cpp`, `.rs`, `.go` | `Prism` (VSCode Dark Plus) |
+| **Markdown** | `.md` | `ReactMarkdown` + `remark-gfm` + `rehype-slug` (supports tables, strikethrough, task lists) |
+| **Mermaid** | `.mmd` | `<MermaidViewer />` (uses `extractMermaidCode()` to remove metadata) |
 | **HTML** | `.html`, `.htm` | `<iframe sandbox="..." />` |
 | **JSON** | `.json` | `JSON.stringify(parsed, null, 2)` |
 | **Binary** | Images, etc. | "Binary file preview not available" |
+
+---
+
+## UI Features
+
+### File Header
+
+The file header displays comprehensive file information:
+- **File Name**: Truncated with ellipsis if too long
+- **Access Mode Badge**: Visual indicator showing how the file was loaded:
+  - "Local" (Zap icon, green) - Loaded via File System Access API
+  - "API" (Cloud icon, blue) - Loaded via HTTP API
+- **File Size**: Human-readable formatted size (B, KB, MB, GB)
+- **File Path**: Full file path displayed in monospace font
+
+### Action Buttons
+
+Four utility buttons with visual feedback states:
+
+1. **Expand** (Maximize2 icon) - Opens file in full-page viewer at `/viewer/full`
+2. **Path** (FolderTree icon) - Copies full file path to clipboard. Handles `[Directory: ...]` wrapper removal from project paths.
+3. **Copy** (Copy icon) - Copies file content to clipboard
+4. **Share** (Share2 icon) - Uses Web Share API if available, otherwise falls back to clipboard
+
+All buttons show visual feedback on success:
+- Checkmark icon (green) replaces action icon
+- Button text changes to "Copied", "Shared", or "Path Copied"
+- Feedback automatically resets after 2 seconds
 
 ---
 
@@ -109,9 +144,10 @@ status: APPROVED
 
 ## Common Pitfalls
 
-1.  **Binary Files:** Currently shows a placeholder. No image preview yet.
-2.  **Large Files:** No virtualization. Very large files (>1MB) might lag the DOM.
-3.  **Encoding:** Assumes UTF-8. Base64 content is strictly for binary detection, not decoding.
+1. **Binary Files:** Currently shows a placeholder. No image preview yet.
+2. **Large Files:** No virtualization. Very large files (>1MB) might lag the DOM.
+3. **Encoding:** Assumes UTF-8. Base64 content is strictly for binary detection, not decoding.
+4. **Debug Logging:** Console logging for Mermaid files (extension, encoding, content preview) is present for development. Consider removing in production builds.
 
 ---
 

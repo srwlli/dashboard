@@ -9,6 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeSlug from 'rehype-slug';
+import remarkGfm from 'remark-gfm';
 import { MermaidViewer } from './MermaidViewer';
 
 interface FileViewerProps {
@@ -403,6 +404,7 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
           // Render markdown as HTML with syntax-highlighted code blocks and heading IDs for TOC links
           <div className="prose prose-sm prose-invert max-w-none">
             <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeSlug]}
               components={{
                 code(props) {

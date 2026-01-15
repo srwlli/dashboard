@@ -16,15 +16,18 @@ Directories Created:
        - reports/complexity/
        - diagrams/
        - exports/
-    
+
     2. coderef/ (Visible, Workflow)
        - workorder/
        - archived/
        - standards/
+       - foundation-docs/
        - documents/
-       - reference/
+       - resource/
        - user/
        - notes/
+       - sessions/
+       - reports/
 
 Usage:
     python setup-coderef-dirs.py [project_path] [--dry-run]
@@ -57,10 +60,13 @@ def create_structure(project_path: str, dry_run: bool = False) -> dict:
             'workorder',
             'archived',
             'standards',
+            'foundation-docs',
             'documents',
             'resource',
             'user',
-            'notes'
+            'notes',
+            'sessions',
+            'reports'
         ])
     ]
 

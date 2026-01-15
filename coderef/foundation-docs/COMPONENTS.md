@@ -515,6 +515,77 @@ interface FileTreeProps {
 />
 ```
 
+### FileViewer
+
+File content viewer with syntax highlighting and markdown rendering.
+
+**Location:** `packages/dashboard/src/components/coderef/FileViewer.tsx`
+
+**Props:**
+```typescript
+interface FileViewerProps {
+  project: Project | null;        // Project containing the file
+  filePath: string | null;        // Relative file path to display
+  className?: string;              // Optional custom class name
+}
+```
+
+**Features:**
+- Syntax highlighting for code files (TypeScript, JavaScript, Python, etc.)
+- Markdown rendering with GitHub Flavored Markdown (tables, autolinks, strikethrough, task lists)
+- Mermaid diagram rendering
+- HTML preview in sandboxed iframe
+- JSON pretty-printing
+- File operations: Copy content, Copy path, Share, Expand to full page
+
+**Usage:**
+```tsx
+<FileViewer
+  project={selectedProject}
+  filePath="coderef/foundation-docs/API.md"
+/>
+```
+
+## Session Components
+
+### OutputViewer
+
+Modal component for displaying agent output files with automatic type detection.
+
+**Location:** `packages/dashboard/src/components/SessionsHub/SessionMonitoring/OutputViewer.tsx`
+
+**Props:**
+```typescript
+interface OutputViewerProps {
+  isOpen: boolean;                // Modal open state
+  onClose: () => void;             // Close handler
+  agentId: string;                 // Agent identifier
+  content: string | null;          // File content to display
+  fileName?: string;               // Optional filename for type detection
+  isLoading?: boolean;             // Loading state
+}
+```
+
+**Features:**
+- Automatic file type detection (JSON, Markdown, Text)
+- JSON syntax highlighting with line numbers
+- Markdown rendering with GitHub Flavored Markdown support (tables, autolinks, strikethrough, task lists)
+- Plain text display with monospace formatting
+- File download functionality
+- Loading and empty states
+
+**Usage:**
+```tsx
+<OutputViewer
+  isOpen={isViewerOpen}
+  onClose={() => setIsViewerOpen(false)}
+  agentId="agent-1"
+  content={outputContent}
+  fileName="output.md"
+  isLoading={loading}
+/>
+```
+
 ### ContextMenu
 
 Context menu for file operations.

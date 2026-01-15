@@ -17,6 +17,7 @@ import { X, Download, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import remarkGfm from 'remark-gfm';
 
 interface OutputViewerProps {
   isOpen: boolean;
@@ -160,7 +161,7 @@ export default function OutputViewer({
               {/* Markdown Rendering */}
               {fileType === 'markdown' && (
                 <div className="prose prose-sm prose-invert max-w-none">
-                  <ReactMarkdown>{content}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
                 </div>
               )}
 

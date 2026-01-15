@@ -203,6 +203,30 @@ export default function SessionDetail({
               </div>
             )}
           </div>
+
+          {/* Orchestrator Metrics */}
+          <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+            <div className="p-2 bg-ind-bg rounded">
+              <span className="text-ind-text-muted block mb-1">Agents Managed</span>
+              <span className="text-ind-text font-medium">{session.total_agents}</span>
+            </div>
+            <div className="p-2 bg-ind-bg rounded">
+              <span className="text-ind-text-muted block mb-1">Parallel Groups</span>
+              <span className="text-ind-text font-medium">
+                {session.parallel_execution?.can_run_simultaneously.length || 0}
+              </span>
+            </div>
+          </div>
+
+          {/* Output Preview Button */}
+          {session.orchestrator.output_file && (
+            <button
+              onClick={() => onViewOutput?.(session.orchestrator.agent_id)}
+              className="mt-3 w-full px-3 py-2 bg-ind-accent/10 text-ind-accent rounded-md hover:bg-ind-accent/20 transition-colors text-xs font-medium"
+            >
+              View Orchestrator Output →
+            </button>
+          )}
         </div>
 
         {/* Agents Grid */}

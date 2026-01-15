@@ -55,6 +55,10 @@ SessionsHub (index.tsx)
     ├── SessionsList (SWR polling)
     ├── SessionDetail (SWR polling)
     └── OutputViewer (modal)
+        ├── File type detection (JSON/Markdown/Text)
+        ├── JSON syntax highlighting
+        ├── Markdown rendering with GitHub Flavored Markdown (tables, autolinks, strikethrough, task lists)
+        └── File download functionality
 ```
 
 ### 1.3 Core Files & Responsibilities
@@ -567,6 +571,11 @@ SessionsHub (index.tsx)
    - If agent hasn't created output file yet, viewer shows placeholder
    - **Symptom:** "Output file not yet created by agent." message
    - **Fix:** Wait for agent to complete, or check file path in `communication.json`
+
+4. **Markdown rendering:**
+   - OutputViewer uses `remark-gfm` for GitHub Flavored Markdown support
+   - Supports tables, autolinks, strikethrough, task lists, and other GFM features
+   - Consistent with FileViewer component for unified markdown rendering
 
 ### 11.4 Edge Cases
 
