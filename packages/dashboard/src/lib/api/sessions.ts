@@ -308,7 +308,9 @@ export async function getSessionById(featureName: string): Promise<SessionDetail
     }
 
     const agents: AgentInfo[] = commData.agents || [];
-    const aggregation = commData.aggregation || calculateAggregation(agents);
+    // Always recalculate aggregation from agents array (source of truth)
+    // Don't trust commData.aggregation as it may be stale from template
+    const aggregation = calculateAggregation(agents);
     const calculatedStatus = calculateSessionStatus(agents);
 
     const sessionDetail: SessionDetail = {
