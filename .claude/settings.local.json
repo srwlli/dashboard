@@ -33,7 +33,10 @@
       "Bash(for dir in */)",
       "Bash(then dirname=\"$dir%/\")",
       "Bash(echo:*)",
-      "Bash(timeout 10 bash:*)"
+      "Bash(timeout 10 bash:*)",
+      "Bash(NUL)",
+      "Bash(nul)",
+      "Bash(Select-Object FullName)"
     ],
     "deny": [],
     "ask": []

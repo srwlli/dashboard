@@ -2,14 +2,77 @@
   "META_DOCUMENTATION": {
     "workorder_id": "WO-SESSIONS-HUB-001",
     "feature_name": "sessions-hub-enhancement",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "created": "2026-01-14T23:30:00.000Z",
     "author": "Claude Code AI",
-    "status": "pending",
+    "status": "re-planning",
+    "last_updated": "2026-01-15T14:00:00.000Z",
+    "progress": {
+      "priority_0_pending": ["SETUP-000A", "SETUP-000B", "SETUP-000C", "SETUP-000D"],
+      "phase_1_completed": ["SETUP-001", "IMPL-001", "IMPL-002", "IMPL-003", "FIX-001"],
+      "phase_1_pending": ["IMPL-004", "IMPL-005", "TEST-001"],
+      "phase_2_pending": ["SETUP-002", "IMPL-006", "IMPL-006A", "IMPL-006B", "IMPL-007", "IMPL-007A", "IMPL-008", "IMPL-009", "IMPL-010", "IMPL-010A", "IMPL-011", "TEST-002"],
+      "phase_3_pending": ["SETUP-003", "IMPL-012", "IMPL-013", "IMPL-014", "IMPL-015", "IMPL-016", "IMPL-017", "TEST-003", "DOC-001"],
+      "total_tasks": 35,
+      "completed_tasks": 5,
+      "completion_percentage": "14%",
+      "notes": "Plan updated to align with session-structure-standardization workorder (hierarchical agent-subdirectory pattern). Added Priority 0 tasks for data model migration, workorder tracking, and enhanced agent/phase/task visualization. Plan expanded from 24 to 35 tasks to leverage new session structure capabilities."
+    },
+    "commits": [
+      {
+        "sha": "27db59e",
+        "date": "2026-01-15",
+        "message": "fix(sessions): Always recalculate aggregation from agents array",
+        "scope": "FIX-001 - Dashboard aggregation calculation fix"
+      }
+    ],
+    "blocking_dependencies": [
+      {
+        "workorder_id": "WO-SESSION-STRUCTURE-STANDARDIZATION",
+        "location": "C:\\Users\\willh\\Desktop\\assistant\\coderef\\workorder\\session-structure-standardization",
+        "reason": "Hierarchical agent-subdirectory pattern introduces new data sources (agent communication.json, phases, tasks, success_metrics, outputs/). Must align UI to new structure.",
+        "impact": "Priority 0 tasks required before resuming Phase 1. New capabilities enable workorder tracking, task-level progress, phase visualization.",
+        "new_features_enabled": [
+          "Agent-level task tracking (agent.tasks array)",
+          "Phase-based progress visualization (session.phases object)",
+          "Success metrics display (agent.success_metrics)",
+          "Workorder deliverables tracking (session.created_workorders)",
+          "Resource sheet attribution (agent subdirectory resources/index.md)",
+          "Task-level timeline events (from agent.tasks)"
+        ]
+      }
+    ],
     "related_documents": [
       "coderef/workorder/sessions-hub-enhancement/context.json",
       "coderef/session-improvement-ideas.md",
-      "coderef/resources-sheets/Sessions-RESOURCE-SHEET.md"
+      "coderef/resources-sheets/Sessions-RESOURCE-SHEET.md",
+      "C:\\Users\\willh\\Desktop\\assistant\\coderef\\workorder\\session-structure-standardization\\plan.json"
+    ],
+    "risk_assessment": [
+      {
+        "risk_id": "RISK-001",
+        "severity": "high",
+        "description": "Agent data parsing breaks with flat structure",
+        "mitigation": "Implement backward compatibility checks in SETUP-000D, graceful degradation for missing fields"
+      },
+      {
+        "risk_id": "RISK-002",
+        "severity": "high",
+        "description": "Aggregation calculation incorrect with subdirectories",
+        "mitigation": "Update calculateAggregation to read agent subdirectory communication.json files (SETUP-000B)"
+      },
+      {
+        "risk_id": "RISK-003",
+        "severity": "medium",
+        "description": "Existing sessions lack new fields (phases, tasks, created_workorders)",
+        "mitigation": "Use optional chaining, empty state displays, test with both old and new sessions (SETUP-000C, TEST-001)"
+      },
+      {
+        "risk_id": "RISK-004",
+        "severity": "medium",
+        "description": "Performance degradation with deep directory scanning",
+        "mitigation": "Implement caching, parallel file reads, lazy loading (TEST-002, TEST-003 performance benchmarks)"
+      }
     ]
   },
   "OVERVIEW": {
@@ -49,11 +112,110 @@
   },
   "IMPLEMENTATION_PHASES": [
     {
+      "phase_number": 0,
+      "phase_name": "Data Model Migration (CRITICAL - Must Complete First)",
+      "duration_estimate": "6-8 hours",
+      "description": "Migrate SessionsHub data layer to support hierarchical agent-subdirectory pattern from WO-SESSION-STRUCTURE-STANDARDIZATION. Update TypeScript interfaces, modify data parsing logic, test with real hierarchical sessions, and ensure backward compatibility with flat structure. BLOCKING for all other phases.",
+      "dependencies": ["WO-SESSION-STRUCTURE-STANDARDIZATION"],
+      "tasks": [
+        {
+          "task_id": "SETUP-000A",
+          "task_name": "Update all TypeScript interfaces with new session structure fields",
+          "description": "Comprehensive interface update to support hierarchical agent pattern. Add new interfaces for AgentTask, PhaseInfo, SuccessMetric, AgentResources, AgentOutputs, PhaseGate. Update AgentInfo with tasks[], success_metrics, resources, outputs, phase_gate, started. Update SessionDetail with phases object and created_workorders array. These interfaces enable task-level tracking, phase visualization, and workorder deliverables.",
+          "type": "setup",
+          "estimated_effort": "2 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "acceptance_criteria": [
+            "AgentTask interface: { task_id, description, status, completed, commit, proof }",
+            "PhaseInfo interface: { status, progress, lead_agents, started, description, success_metrics, dependencies }",
+            "SuccessMetric interface: { baseline, current, target, status }",
+            "AgentResources interface: { index, primary_spec, proof_of_concept, requirements, ... }",
+            "AgentOutputs interface: { primary_output, format, workorders_created? }",
+            "PhaseGate interface: { required_for_phase_2, criteria }",
+            "AgentInfo updated with: tasks?: AgentTask[], success_metrics?: SuccessMetric, resources?: AgentResources, outputs?: AgentOutputs, phase_gate?: PhaseGate, started?: string",
+            "SessionDetail updated with: phases?: Record<string, PhaseInfo>, created_workorders?: string[]",
+            "TypeScript compiles with zero errors",
+            "All existing code using SessionDetail/AgentInfo still compiles (backward compatible)"
+          ]
+        },
+        {
+          "task_id": "SETUP-000B",
+          "task_name": "Modify getSessionById to read agent subdirectory communication.json files",
+          "description": "Update session data loading logic to scan agent subdirectories and parse agent-level communication.json files. For each agent, read <session>/agent-id/communication.json and populate agent.tasks, agent.success_metrics, agent.started, agent.resources, agent.outputs. Merge this data into the AgentInfo objects returned by getSessionById. Enable hierarchical data access while maintaining flat structure fallback.",
+          "type": "implementation",
+          "estimated_effort": "3 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["SETUP-000A"],
+          "acceptance_criteria": [
+            "getSessionById checks for agent subdirectories (e.g., sessions/my-session/agent-id/)",
+            "If subdirectory exists, reads agent-id/communication.json",
+            "Populates agent.tasks from agent communication.json tasks field",
+            "Populates agent.success_metrics from agent success_metrics field",
+            "Populates agent.started from agent started field",
+            "Populates agent.resources from agent resources field",
+            "Populates agent.outputs from agent outputs field",
+            "Falls back gracefully if subdirectory doesn't exist (flat structure)",
+            "Session-level phases read from session communication.json",
+            "Created workorders extracted via new extractWorkordersCreated() helper",
+            "Parallel file reading for performance (Promise.all)",
+            "Error handling for missing/malformed agent communication.json files"
+          ]
+        },
+        {
+          "task_id": "SETUP-000C",
+          "task_name": "Test data loading with scanner-context-enhancement reference session",
+          "description": "Use the real scanner-context-enhancement session (hierarchical structure with 9 agents, phases, tasks) to verify data loading works correctly. This session has agent subdirectories with communication.json files containing tasks, success_metrics, and phase information. Validate all new fields populate correctly and UI displays expected data.",
+          "type": "testing",
+          "estimated_effort": "1.5 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["SETUP-000B"],
+          "acceptance_criteria": [
+            "getSessionById('scanner-context-enhancement') returns session with 9 agents",
+            "Each agent has populated tasks array (e.g., coderef-context has 7 tasks)",
+            "success_metrics shows correct progress (e.g., 38% for coderef-context)",
+            "session.phases object contains phase_1 with lead_agents array",
+            "Agent.started timestamps correctly parsed",
+            "Aggregation calculation still works (shows 1 in_progress, 8 not_started)",
+            "No errors in dev server console",
+            "API response includes all new fields in JSON"
+          ]
+        },
+        {
+          "task_id": "SETUP-000D",
+          "task_name": "Verify backward compatibility with old flat session structure",
+          "description": "Test with sessions that DON'T have agent subdirectories (old flat structure) to ensure graceful degradation. Sessions like 'foundation-docs-cleanup' use flat structure without agent directories. Verify UI shows empty states for missing fields and doesn't crash. Document which features require hierarchical structure vs work with both.",
+          "type": "testing",
+          "estimated_effort": "1.5 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts",
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx"
+          ],
+          "dependencies": ["SETUP-000C"],
+          "acceptance_criteria": [
+            "getSessionById works with flat structure sessions (no agent subdirectories)",
+            "agent.tasks is undefined for flat sessions (no crash)",
+            "agent.success_metrics is undefined (UI shows N/A)",
+            "session.phases is undefined (phase display hidden)",
+            "Optional chaining used throughout UI components (session.phases?.phase_1)",
+            "Empty states displayed for missing data ('No tasks tracked', 'No workorders created')",
+            "Existing sessions continue to work without errors",
+            "Documentation added to SETUP-000A interfaces indicating which fields require hierarchical structure"
+          ]
+        }
+      ]
+    },
+    {
       "phase_number": 1,
       "phase_name": "Core UI Enhancements (Quick Wins)",
       "duration_estimate": "4-6 hours",
-      "description": "Implement Session Metrics Card, Enhanced Orchestrator Panel, and Enhanced Agent Cards with performance metrics. These are the highest-value, lowest-effort improvements.",
-      "dependencies": [],
+      "description": "Implement Session Metrics Card, Enhanced Orchestrator Panel, and Enhanced Agent Cards with performance metrics. These are the highest-value, lowest-effort improvements. NOW ENHANCED with task-level progress, phase display, and success metrics from hierarchical session structure.",
+      "dependencies": ["Phase 0"],
       "tasks": [
         {
           "task_id": "SETUP-001",
