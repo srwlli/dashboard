@@ -15,6 +15,7 @@ import React from 'react';
 import { RefreshCw, User, Users, CheckCircle } from 'lucide-react';
 import type { SessionDetail as SessionDetailType } from '@/lib/api/sessions';
 import AgentCard from './AgentCard';
+import SessionMetricsCard from './SessionMetricsCard';
 
 interface SessionDetailProps {
   session: SessionDetailType;
@@ -156,6 +157,9 @@ export default function SessionDetail({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Session Metrics Card */}
+        <SessionMetricsCard session={session} />
+
         {/* Orchestrator Panel */}
         <div className="border border-ind-border rounded-lg p-4 bg-ind-panel">
           <div className="flex items-center gap-2 mb-3">
