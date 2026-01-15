@@ -1,0 +1,80 @@
+{
+  "feature_name": "sessions-hub-enhancement",
+  "workorder_id": "WO-SESSIONS-HUB-001",
+  "created": "2026-01-14T23:30:00.000Z",
+  "description": "Comprehensive SessionsHub enhancement implementing SESSION-REPORT auto-generation and inline analytics dashboard. Three-phase implementation: (1) Session Metrics Card, Enhanced Orchestrator Panel, Enhanced Agent Cards with performance metrics; (2) Files Modified Section and Resource Sheets Used Section; (3) Execution Timeline visualization. Auto-generates SESSION-REPORT.md when session status changes to complete, and displays all report data inline in SessionDetail UI for real-time session analytics.",
+  "goal": "Transform SessionsHub from static status view into comprehensive session analytics dashboard with auto-generated session reports. Provide inline visibility into session execution metrics (duration, agents, files modified, resource sheets used, execution timeline) without requiring file downloads. Bridge session execution with workorder completion through SESSION-REPORT.md generation.",
+  "requirements": [
+    "Auto-generate SESSION-REPORT.md when session marked complete",
+    "Session Metrics Card showing duration, total agents, files modified, completion %",
+    "Enhanced Orchestrator Panel with metrics and output preview",
+    "Enhanced Agent Cards with phases, files, duration metrics",
+    "Files Modified Section listing all changed files by action (created/modified/deleted)",
+    "Resource Sheets Used Section showing referenced sheets with access counts",
+    "Execution Timeline visualization with event graph",
+    "Update SessionDetail TypeScript interface with new fields (files_modified, resource_sheets, timeline, completed_at, duration)",
+    "Backend functions to extract files modified, resource sheets, and build timeline from session data",
+    "Integration with existing Mark as Complete flow",
+    "Responsive design (mobile-first, stacks on small screens)",
+    "Uses industrial theme (ind-* color tokens)",
+    "Performance: SESSION-REPORT generation < 2 seconds",
+    "All data persists in communication.json or separate session directory files"
+  ],
+  "out_of_scope": [
+    "Manual session report generation button (auto-only)",
+    "Editing session reports after generation",
+    "Exporting session reports to PDF/CSV",
+    "Real-time session monitoring (polling already exists)",
+    "Session comparison views",
+    "Advanced analytics (charts, graphs beyond timeline)",
+    "Integration with external tracking tools",
+    "Session templates or presets"
+  ],
+  "constraints": [
+    "Must use existing SessionDetail component architecture",
+    "Must preserve backward compatibility with existing communication.json schema",
+    "No breaking changes to Sessions API (/api/sessions)",
+    "Must work with existing SWR polling (10-second refresh)",
+    "Use existing Lucide icons (no new icon libraries)",
+    "Follow existing file naming conventions (kebab-case for components)",
+    "TypeScript strict mode compliance",
+    "No new dependencies (use existing Next.js, React, SWR, Lucide)",
+    "Must handle missing session data gracefully (empty states)",
+    "SESSION-REPORT template should follow POWER framework pattern (similar to DELIVERABLES.md)",
+    "Use existing unified storage (~/.coderef-dashboard/projects.json) for session directories"
+  ],
+  "success_criteria": [
+    "SESSION-REPORT.md auto-generates when session marked complete",
+    "All 3 UI phases render correctly on desktop and mobile",
+    "Session metrics display in < 100ms",
+    "TypeScript compiles with no errors",
+    "Backward compatibility: existing sessions display without errors",
+    "Empty states render gracefully when data missing",
+    "Report generation completes in < 2 seconds",
+    "All new components follow industrial theme",
+    "SWR polling continues to work (10-second refresh)",
+    "No breaking changes to existing Sessions API"
+  ],
+  "technical_context": {
+    "existing_architecture": {
+      "sessions_api": "packages/dashboard/src/lib/api/sessions.ts",
+      "session_detail_component": "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx",
+      "session_container": "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx",
+      "agent_card": "packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx",
+      "sessions_route": "packages/dashboard/src/app/api/sessions/route.ts",
+      "status_route": "packages/dashboard/src/app/api/sessions/[id]/status/route.ts"
+    },
+    "data_structure": {
+      "communication_json": "Stores session metadata, orchestrator, agents array, parallel_execution, aggregation",
+      "session_directories": "~/.mcp-servers/coderef/sessions/{feature-name}/",
+      "agent_outputs": "agents/{agent-id}/output.md"
+    },
+    "ui_patterns": {
+      "theme": "Industrial theme (ind-* tokens)",
+      "icons": "Lucide React",
+      "layout": "Flex/Grid with responsive breakpoints",
+      "cards": "border border-ind-border rounded-lg p-4 bg-ind-panel",
+      "buttons": "bg-ind-accent/10 text-ind-accent hover:bg-ind-accent/20"
+    }
+  }
+}

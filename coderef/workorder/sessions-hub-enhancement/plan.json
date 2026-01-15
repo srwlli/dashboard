@@ -1,0 +1,688 @@
+{
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-SESSIONS-HUB-001",
+    "feature_name": "sessions-hub-enhancement",
+    "version": "1.0.0",
+    "created": "2026-01-14T23:30:00.000Z",
+    "author": "Claude Code AI",
+    "status": "pending",
+    "related_documents": [
+      "coderef/workorder/sessions-hub-enhancement/context.json",
+      "coderef/session-improvement-ideas.md",
+      "coderef/resources-sheets/Sessions-RESOURCE-SHEET.md"
+    ]
+  },
+  "OVERVIEW": {
+    "goal": "Transform SessionsHub from static status view into comprehensive session analytics dashboard with auto-generated session reports",
+    "description": "Implement three-phase UI enhancement to SessionDetail component with inline analytics (metrics, files modified, resource sheets, timeline) and auto-generate SESSION-REPORT.md when session marked complete. Provides real-time visibility into session execution without file downloads.",
+    "scope": {
+      "in_scope": [
+        "Auto-generate SESSION-REPORT.md on session completion",
+        "Phase 1: Session Metrics Card, Enhanced Orchestrator Panel, Enhanced Agent Cards",
+        "Phase 2: Files Modified Section, Resource Sheets Used Section",
+        "Phase 3: Execution Timeline visualization",
+        "TypeScript interface updates for new session data fields",
+        "Backend helper functions for data extraction",
+        "Integration with existing Mark as Complete flow",
+        "Responsive design for all new UI components"
+      ],
+      "out_of_scope": [
+        "Manual report generation UI",
+        "Report editing after generation",
+        "PDF/CSV export functionality",
+        "Real-time monitoring beyond existing SWR polling",
+        "Session comparison views",
+        "Advanced charts/graphs",
+        "External tool integrations"
+      ]
+    },
+    "success_criteria": [
+      "SESSION-REPORT.md auto-generates when session marked complete (< 2s)",
+      "All 3 UI phases render correctly on desktop and mobile",
+      "Session metrics display with < 100ms latency",
+      "TypeScript compiles with zero errors",
+      "Backward compatibility maintained for existing sessions",
+      "Empty states handle missing data gracefully",
+      "No breaking changes to Sessions API",
+      "Industrial theme consistency across all new components"
+    ]
+  },
+  "IMPLEMENTATION_PHASES": [
+    {
+      "phase_number": 1,
+      "phase_name": "Core UI Enhancements (Quick Wins)",
+      "duration_estimate": "4-6 hours",
+      "description": "Implement Session Metrics Card, Enhanced Orchestrator Panel, and Enhanced Agent Cards with performance metrics. These are the highest-value, lowest-effort improvements.",
+      "dependencies": [],
+      "tasks": [
+        {
+          "task_id": "SETUP-001",
+          "task_name": "Update TypeScript interfaces for Phase 1 data",
+          "description": "Extend SessionDetail interface in packages/dashboard/src/lib/api/sessions.ts with completed_at (string) and duration (number) fields. These fields support the Session Metrics Card calculations.",
+          "type": "setup",
+          "estimated_effort": "30 minutes",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "acceptance_criteria": [
+            "SessionDetail interface includes completed_at?: string field",
+            "SessionDetail interface includes duration?: number field (seconds)",
+            "TypeScript compiles without errors",
+            "Existing session data backward compatible (optional fields)"
+          ]
+        },
+        {
+          "task_id": "IMPL-001",
+          "task_name": "Create calculateDuration helper function",
+          "description": "Add utility function in packages/dashboard/src/lib/api/sessions.ts to calculate duration between created and completed_at timestamps. Returns human-readable string (e.g., '4h 15m').",
+          "type": "implementation",
+          "estimated_effort": "30 minutes",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "Function signature: calculateDuration(created: string, completed?: string): string",
+            "Returns formatted duration string (e.g., '2h 30m', '45m', 'N/A' if incomplete)",
+            "Handles missing completed_at gracefully",
+            "Unit tests for edge cases (same time, missing values, future dates)"
+          ]
+        },
+        {
+          "task_id": "IMPL-002",
+          "task_name": "Implement Session Metrics Card component",
+          "description": "Create new SessionMetricsCard component in packages/dashboard/src/components/SessionsHub/SessionMonitoring/ displaying 4 metrics: Duration, Total Agents, Files Modified (TBD for now), Completion %. Uses grid layout (2x2 on mobile, 1x4 on desktop).",
+          "type": "implementation",
+          "estimated_effort": "1.5 hours",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMetricsCard.tsx"
+          ],
+          "dependencies": ["SETUP-001", "IMPL-001"],
+          "acceptance_criteria": [
+            "Component accepts session prop (SessionDetail type)",
+            "Displays duration using calculateDuration helper",
+            "Shows completion percentage: (completed_agents / total_agents) * 100",
+            "Responsive grid: grid-cols-2 md:grid-cols-4",
+            "Uses industrial theme (ind-* tokens)",
+            "Includes BarChart3 Lucide icon",
+            "Renders 'TBD' for Files Modified (placeholder for Phase 2)"
+          ]
+        },
+        {
+          "task_id": "IMPL-003",
+          "task_name": "Enhance Orchestrator Panel with metrics",
+          "description": "Modify SessionDetail.tsx to add 2-column metrics grid to Orchestrator Panel showing 'Agents Managed' and 'Parallel Groups' counts. Add 'View Orchestrator Output' button with full-width styling.",
+          "type": "implementation",
+          "estimated_effort": "1 hour",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx"
+          ],
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "Metrics grid added after orchestrator role/status section",
+            "Agents Managed shows session.total_agents",
+            "Parallel Groups shows session.parallel_execution?.can_run_simultaneously.length || 0",
+            "Output button triggers onViewOutput with orchestrator.agent_id",
+            "Button uses bg-ind-accent/10 text-ind-accent styling",
+            "Grid uses grid-cols-2 gap-3 layout",
+            "Responsive on mobile (stacks if needed)"
+          ]
+        },
+        {
+          "task_id": "IMPL-004",
+          "task_name": "Enhance Agent Cards with performance metrics",
+          "description": "Modify AgentCard.tsx to add metrics section below agent info showing Phases count, Files Modified (TBD), Duration (N/A). Enhance 'View Output' button with icon and improved styling.",
+          "type": "implementation",
+          "estimated_effort": "1.5 hours",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx"
+          ],
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "Metrics section added with border-t separator",
+            "Phases displays agent.phases?.length || 0",
+            "Files shows placeholder '0' (Phase 2 will populate)",
+            "Duration shows 'N/A' (Phase 2 will calculate)",
+            "3-column grid: grid-cols-3 gap-2",
+            "Output button includes FileText icon",
+            "Uses bg-ind-accent/10 hover:bg-ind-accent/20 styling",
+            "Mobile responsive (metrics stack on small screens)"
+          ]
+        },
+        {
+          "task_id": "IMPL-005",
+          "task_name": "Integrate SessionMetricsCard into SessionDetail",
+          "description": "Add SessionMetricsCard component to SessionDetail.tsx above Orchestrator Panel. Import component and pass session prop. Ensure proper spacing (mb-4) between cards.",
+          "type": "implementation",
+          "estimated_effort": "30 minutes",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx"
+          ],
+          "dependencies": ["IMPL-002"],
+          "acceptance_criteria": [
+            "SessionMetricsCard imported from ./SessionMetricsCard",
+            "Rendered above Orchestrator Panel section",
+            "Receives full session object as prop",
+            "Proper spacing with mb-4 className",
+            "No layout shifts or overflow issues"
+          ]
+        },
+        {
+          "task_id": "TEST-001",
+          "task_name": "Test Phase 1 UI on desktop and mobile",
+          "description": "Manual testing of all Phase 1 components on desktop (1920x1080), tablet (768px), and mobile (375px) viewports. Verify responsive behavior, theme consistency, and data display.",
+          "type": "testing",
+          "estimated_effort": "1 hour",
+          "files_affected": [],
+          "dependencies": ["IMPL-005"],
+          "acceptance_criteria": [
+            "Session Metrics Card displays correctly on all viewports",
+            "Orchestrator Panel metrics visible and readable",
+            "Agent Cards stack properly on mobile",
+            "All text readable (no overflow or truncation)",
+            "Industrial theme consistent across components",
+            "No console errors or TypeScript warnings",
+            "Placeholder values ('TBD', 'N/A', '0') display correctly"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_number": 2,
+      "phase_name": "Data Integration (Medium Effort)",
+      "duration_estimate": "6-8 hours",
+      "description": "Implement Files Modified Section and Resource Sheets Used Section with backend data extraction. Populate agent metrics and session metrics with real data.",
+      "dependencies": ["IMPLEMENTATION_PHASES[0]"],
+      "tasks": [
+        {
+          "task_id": "SETUP-002",
+          "task_name": "Update TypeScript interfaces for Phase 2 data",
+          "description": "Extend SessionDetail interface with files_modified (FileModification[]) and resource_sheets (ResourceSheetReference[]). Create new interfaces for FileModification and ResourceSheetReference in packages/dashboard/src/lib/api/sessions.ts.",
+          "type": "setup",
+          "estimated_effort": "45 minutes",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": [],
+          "acceptance_criteria": [
+            "FileModification interface includes: path (string), action ('created'|'modified'|'deleted'), agent_id (string), lines_added? (number), lines_deleted? (number)",
+            "ResourceSheetReference interface includes: name (string), path (string), access_count (number), accessed_by (string[])",
+            "SessionDetail interface includes files_modified?: FileModification[]",
+            "SessionDetail interface includes resource_sheets?: ResourceSheetReference[]",
+            "All interfaces exported for component usage"
+          ]
+        },
+        {
+          "task_id": "IMPL-006",
+          "task_name": "Create extractFilesModified backend function",
+          "description": "Implement extractFilesModified(sessionPath: string, agents: AgentInfo[]): Promise<FileModification[]> in packages/dashboard/src/lib/api/sessions.ts. Reads agent output files, parses file modification data, aggregates by file path.",
+          "type": "implementation",
+          "estimated_effort": "2 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["SETUP-002"],
+          "acceptance_criteria": [
+            "Function reads all agent output files from session directory",
+            "Parses output for file mentions (regex: 'Modified: path', 'Created: path', 'Deleted: path')",
+            "Aggregates files by path (deduplicates)",
+            "Returns FileModification array with action type and agent_id",
+            "Handles missing output files gracefully (returns empty array)",
+            "Performance: < 500ms for typical session (10 agents)"
+          ]
+        },
+        {
+          "task_id": "IMPL-007",
+          "task_name": "Create extractResourceSheets backend function",
+          "description": "Implement extractResourceSheets(sessionPath: string, agents: AgentInfo[]): Promise<ResourceSheetReference[]> in packages/dashboard/src/lib/api/sessions.ts. Reads agent output files, parses resource sheet references, counts access by agent.",
+          "type": "implementation",
+          "estimated_effort": "2 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["SETUP-002"],
+          "acceptance_criteria": [
+            "Function reads all agent output files",
+            "Parses output for resource sheet mentions (regex: 'Resource Sheet: name' or links to .md files)",
+            "Aggregates by resource sheet name",
+            "Counts access_count and tracks accessed_by agents",
+            "Returns ResourceSheetReference array sorted by access_count DESC",
+            "Handles missing output files gracefully",
+            "Performance: < 500ms for typical session"
+          ]
+        },
+        {
+          "task_id": "IMPL-008",
+          "task_name": "Update getSessionById to populate new fields",
+          "description": "Modify getSessionById function in packages/dashboard/src/lib/api/sessions.ts to call extractFilesModified and extractResourceSheets. Add completed_at from communication.json and calculate duration.",
+          "type": "implementation",
+          "estimated_effort": "1 hour",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["IMPL-006", "IMPL-007"],
+          "acceptance_criteria": [
+            "getSessionById calls extractFilesModified(sessionPath, agents)",
+            "getSessionById calls extractResourceSheets(sessionPath, agents)",
+            "completed_at extracted from commData.completed_at || null",
+            "duration calculated if both created and completed_at exist",
+            "SessionDetail object includes all new fields",
+            "Backward compatibility: returns null for missing fields",
+            "Performance: total < 1 second for typical session"
+          ]
+        },
+        {
+          "task_id": "IMPL-009",
+          "task_name": "Create FilesModifiedSection component",
+          "description": "Create FilesModifiedSection.tsx component in packages/dashboard/src/components/SessionsHub/SessionMonitoring/ displaying list of modified files with action badges (Created/Modified/Deleted) and 'Show all X files' expansion.",
+          "type": "implementation",
+          "estimated_effort": "2 hours",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/FilesModifiedSection.tsx"
+          ],
+          "dependencies": ["SETUP-002"],
+          "acceptance_criteria": [
+            "Component accepts files_modified?: FileModification[] prop",
+            "Shows top 5 files by default, expandable to show all",
+            "File paths displayed in monospace font (font-mono text-xs)",
+            "Action badges color-coded: Created (green), Modified (blue), Deleted (red)",
+            "Empty state: 'No files modified' when array empty or undefined",
+            "FileCode Lucide icon in header",
+            "Responsive: file paths truncate on mobile",
+            "Uses industrial theme styling"
+          ]
+        },
+        {
+          "task_id": "IMPL-010",
+          "task_name": "Create ResourceSheetsSection component",
+          "description": "Create ResourceSheetsSection.tsx component in packages/dashboard/src/components/SessionsHub/SessionMonitoring/ displaying resource sheets with access counts in 2-column grid layout.",
+          "type": "implementation",
+          "estimated_effort": "1.5 hours",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/ResourceSheetsSection.tsx"
+          ],
+          "dependencies": ["SETUP-002"],
+          "acceptance_criteria": [
+            "Component accepts resource_sheets?: ResourceSheetReference[] prop",
+            "Grid layout: grid-cols-1 md:grid-cols-2",
+            "Shows sheet name and access count (e.g., '3x')",
+            "Empty state: 'No resource sheets referenced' when empty",
+            "BookOpen Lucide icon in header",
+            "Access count displayed in muted color (text-ind-text-muted)",
+            "Sorted by access_count DESC",
+            "Uses industrial theme styling"
+          ]
+        },
+        {
+          "task_id": "IMPL-011",
+          "task_name": "Integrate Phase 2 sections into SessionDetail",
+          "description": "Add FilesModifiedSection and ResourceSheetsSection to SessionDetail.tsx between Orchestrator Panel and Agents Grid. Update SessionMetricsCard to show real files_modified count.",
+          "type": "implementation",
+          "estimated_effort": "1 hour",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx",
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMetricsCard.tsx"
+          ],
+          "dependencies": ["IMPL-009", "IMPL-010"],
+          "acceptance_criteria": [
+            "FilesModifiedSection rendered with session.files_modified prop",
+            "ResourceSheetsSection rendered with session.resource_sheets prop",
+            "Sections appear between Orchestrator and Agents",
+            "SessionMetricsCard shows session.files_modified?.length || 0",
+            "Proper spacing between sections (space-y-6)",
+            "Conditional rendering (only show if data exists)"
+          ]
+        },
+        {
+          "task_id": "TEST-002",
+          "task_name": "Test Phase 2 data extraction and display",
+          "description": "Test backend extraction functions with real session data. Verify UI displays correct file lists and resource sheets. Test empty states and edge cases.",
+          "type": "testing",
+          "estimated_effort": "1.5 hours",
+          "files_affected": [],
+          "dependencies": ["IMPL-011"],
+          "acceptance_criteria": [
+            "extractFilesModified correctly parses agent outputs",
+            "extractResourceSheets aggregates access counts",
+            "Files Modified Section displays real data",
+            "Resource Sheets Section shows correct access counts",
+            "Empty states render when no data available",
+            "Performance: session load < 1.5s with extraction",
+            "No console errors or data parsing failures"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_number": 3,
+      "phase_name": "Timeline & Report Generation (Advanced)",
+      "duration_estimate": "6-8 hours",
+      "description": "Implement Execution Timeline visualization and auto-generate SESSION-REPORT.md when session marked complete. Final polish and integration testing.",
+      "dependencies": ["IMPLEMENTATION_PHASES[1]"],
+      "tasks": [
+        {
+          "task_id": "SETUP-003",
+          "task_name": "Update TypeScript interfaces for timeline data",
+          "description": "Extend SessionDetail interface with timeline?: TimelineEvent[]. Create TimelineEvent interface in packages/dashboard/src/lib/api/sessions.ts with type, description, timestamp, and agent_id fields.",
+          "type": "setup",
+          "estimated_effort": "30 minutes",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": [],
+          "acceptance_criteria": [
+            "TimelineEvent interface includes: type ('start'|'agent_start'|'agent_complete'|'complete'), description (string), timestamp (string), agent_id? (string)",
+            "SessionDetail interface includes timeline?: TimelineEvent[]",
+            "All interfaces exported for component usage",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "task_id": "IMPL-012",
+          "task_name": "Create buildTimeline backend function",
+          "description": "Implement buildTimeline(commData: any): TimelineEvent[] in packages/dashboard/src/lib/api/sessions.ts. Constructs timeline from session created date, agent status changes, and completion timestamp.",
+          "type": "implementation",
+          "estimated_effort": "2 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["SETUP-003"],
+          "acceptance_criteria": [
+            "Parses communication.json for timestamps",
+            "Creates timeline events for: session start, orchestrator assignment, each agent start/complete, session complete",
+            "Events sorted chronologically by timestamp",
+            "Handles missing timestamps gracefully (skips event)",
+            "Returns TimelineEvent array with proper type enum values",
+            "Performance: < 100ms for typical session"
+          ]
+        },
+        {
+          "task_id": "IMPL-013",
+          "task_name": "Create ExecutionTimeline component",
+          "description": "Create ExecutionTimeline.tsx component in packages/dashboard/src/components/SessionsHub/SessionMonitoring/ with vertical timeline visualization using colored dots and connecting lines.",
+          "type": "implementation",
+          "estimated_effort": "3 hours",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/ExecutionTimeline.tsx"
+          ],
+          "dependencies": ["SETUP-003"],
+          "acceptance_criteria": [
+            "Component accepts timeline?: TimelineEvent[] prop",
+            "Vertical timeline with colored dots: start (accent), complete (success), other (muted)",
+            "Connecting lines between events (border-ind-border)",
+            "Event description and formatted timestamp displayed",
+            "Clock Lucide icon in header",
+            "Empty state: 'No timeline data available' when empty",
+            "Responsive: timeline stacks on mobile without overflow",
+            "Uses industrial theme styling"
+          ]
+        },
+        {
+          "task_id": "IMPL-014",
+          "task_name": "Integrate ExecutionTimeline into SessionDetail",
+          "description": "Add ExecutionTimeline component to SessionDetail.tsx at bottom of content area. Update getSessionById to call buildTimeline and populate timeline field.",
+          "type": "implementation",
+          "estimated_effort": "45 minutes",
+          "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx",
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["IMPL-012", "IMPL-013"],
+          "acceptance_criteria": [
+            "ExecutionTimeline rendered after Parallel Execution Info section",
+            "getSessionById calls buildTimeline(commData)",
+            "timeline field populated in SessionDetail object",
+            "Conditional rendering (only show if timeline data exists)",
+            "Proper spacing with other sections",
+            "No layout shifts when timeline renders"
+          ]
+        },
+        {
+          "task_id": "IMPL-015",
+          "task_name": "Create SESSION-REPORT template",
+          "description": "Create SESSION-REPORT_template.md in packages/dashboard/src/templates/ following POWER framework pattern (similar to DELIVERABLES.md). Includes sections for metadata, orchestrator summary, agent breakdown, metrics, files touched, resource sheets, timeline.",
+          "type": "implementation",
+          "estimated_effort": "1.5 hours",
+          "files_affected": [
+            "packages/dashboard/src/templates/SESSION-REPORT_template.md"
+          ],
+          "dependencies": [],
+          "acceptance_criteria": [
+            "Template includes: Session metadata, Orchestrator summary, Agent breakdown, Execution metrics, Files modified, Resource sheets, Timeline",
+            "Uses mustache-style placeholders: {{SESSION_NAME}}, {{WORKORDER_ID}}, etc.",
+            "Markdown formatting with tables for agents and files",
+            "Follows POWER framework structure",
+            "Similar format to existing DELIVERABLES.md template",
+            "Professional, readable formatting"
+          ]
+        },
+        {
+          "task_id": "IMPL-016",
+          "task_name": "Create generateSessionReport backend function",
+          "description": "Implement generateSessionReport(sessionDetail: SessionDetail, sessionPath: string): Promise<void> in packages/dashboard/src/lib/api/sessions.ts. Reads template, populates with session data, writes SESSION-REPORT.md to session directory.",
+          "type": "implementation",
+          "estimated_effort": "2 hours",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["IMPL-015"],
+          "acceptance_criteria": [
+            "Reads SESSION-REPORT_template.md from templates/",
+            "Replaces all placeholders with session data",
+            "Generates agent breakdown table from agents array",
+            "Includes files modified list with action types",
+            "Includes resource sheets with access counts",
+            "Includes timeline events formatted as list",
+            "Writes to {sessionPath}/SESSION-REPORT.md",
+            "Performance: < 2 seconds for typical session",
+            "Error handling: logs error but doesn't crash if write fails"
+          ]
+        },
+        {
+          "task_id": "IMPL-017",
+          "task_name": "Integrate report generation into updateSessionStatus",
+          "description": "Modify updateSessionStatus function in packages/dashboard/src/lib/api/sessions.ts to call generateSessionReport when status changes to 'complete'. Happens after writing communication.json.",
+          "type": "implementation",
+          "estimated_effort": "1 hour",
+          "files_affected": [
+            "packages/dashboard/src/lib/api/sessions.ts"
+          ],
+          "dependencies": ["IMPL-016"],
+          "acceptance_criteria": [
+            "updateSessionStatus checks if newStatus === 'complete'",
+            "Fetches full SessionDetail with getSessionById",
+            "Calls generateSessionReport(sessionDetail, sessionPath)",
+            "Report generation happens asynchronously (doesn't block API response)",
+            "Errors logged but don't fail status update",
+            "Existing Mark as Complete flow still works",
+            "Backward compatibility: no breaking changes"
+          ]
+        },
+        {
+          "task_id": "TEST-003",
+          "task_name": "End-to-end test of session completion flow",
+          "description": "Test complete workflow: mark session as complete → verify SESSION-REPORT.md generated → verify all UI sections display data → check responsive behavior.",
+          "type": "testing",
+          "estimated_effort": "2 hours",
+          "files_affected": [],
+          "dependencies": ["IMPL-017"],
+          "acceptance_criteria": [
+            "Click 'Mark as Complete' button on active session",
+            "SESSION-REPORT.md file created in session directory",
+            "Report contains all sections with real data",
+            "All UI sections display correctly (metrics, files, resource sheets, timeline)",
+            "Responsive behavior verified on desktop/tablet/mobile",
+            "No console errors or warnings",
+            "Performance: report generation < 2 seconds",
+            "Existing sessions without new data show graceful empty states"
+          ]
+        },
+        {
+          "task_id": "DOC-001",
+          "task_name": "Update Sessions RESOURCE-SHEET.md",
+          "description": "Update coderef/resources-sheets/Sessions-RESOURCE-SHEET.md to document new SESSION-REPORT.md auto-generation, new UI sections, and updated TypeScript interfaces.",
+          "type": "documentation",
+          "estimated_effort": "1 hour",
+          "files_affected": [
+            "coderef/resources-sheets/Sessions-RESOURCE-SHEET.md"
+          ],
+          "dependencies": ["TEST-003"],
+          "acceptance_criteria": [
+            "Documents SESSION-REPORT.md structure and auto-generation trigger",
+            "Lists all new SessionDetail interface fields",
+            "Describes all 6 new UI sections (Metrics, Enhanced Orchestrator, Enhanced Agents, Files, Resource Sheets, Timeline)",
+            "Includes examples of each section",
+            "Documents backend extraction functions",
+            "Links to SESSION-REPORT_template.md",
+            "Updated timestamp and version"
+          ]
+        }
+      ]
+    }
+  ],
+  "DEPENDENCIES": {
+    "internal": [
+      {
+        "source": "IMPLEMENTATION_PHASES[1]",
+        "target": "IMPLEMENTATION_PHASES[0]",
+        "reason": "Phase 2 depends on Phase 1 TypeScript interfaces and UI structure"
+      },
+      {
+        "source": "IMPLEMENTATION_PHASES[2]",
+        "target": "IMPLEMENTATION_PHASES[1]",
+        "reason": "Phase 3 report generation needs Phase 2 data extraction functions"
+      }
+    ],
+    "external": [
+      {
+        "name": "Next.js 16",
+        "version": "16.x",
+        "purpose": "Web framework for server components and API routes"
+      },
+      {
+        "name": "React 19",
+        "version": "19.x",
+        "purpose": "UI component library"
+      },
+      {
+        "name": "TypeScript",
+        "version": "5.x",
+        "purpose": "Type safety and interfaces"
+      },
+      {
+        "name": "SWR",
+        "version": "latest",
+        "purpose": "Data fetching with 10-second polling"
+      },
+      {
+        "name": "Lucide React",
+        "version": "latest",
+        "purpose": "Icons (BarChart3, FileCode, BookOpen, Clock, FileText)"
+      }
+    ]
+  },
+  "RISK_ASSESSMENT": {
+    "risks": [
+      {
+        "risk_id": "RISK-001",
+        "description": "Agent output files may not contain parseable file modification data",
+        "severity": "medium",
+        "likelihood": "medium",
+        "mitigation": "Implement robust regex parsing with fallback to empty array. Add manual file tracking to agent output format in future sessions.",
+        "impact": "Files Modified Section shows 'No files modified' even when files were changed"
+      },
+      {
+        "risk_id": "RISK-002",
+        "description": "Large sessions (50+ agents) may slow down data extraction",
+        "severity": "low",
+        "likelihood": "low",
+        "mitigation": "Set performance budget (< 1.5s for getSessionById). Add pagination to Files Modified Section if > 100 files. Consider caching extracted data in communication.json.",
+        "impact": "Session detail page loads slowly for very large sessions"
+      },
+      {
+        "risk_id": "RISK-003",
+        "description": "Existing sessions lack completed_at timestamp",
+        "severity": "low",
+        "likelihood": "high",
+        "mitigation": "Use optional chaining and null checks. Display 'N/A' for duration when completed_at missing. Backward compatible by design.",
+        "impact": "Duration and timeline unavailable for old sessions"
+      },
+      {
+        "risk_id": "RISK-004",
+        "description": "SESSION-REPORT.md write may fail (permissions, disk space)",
+        "severity": "low",
+        "likelihood": "low",
+        "mitigation": "Wrap generateSessionReport in try/catch. Log errors but don't fail status update. User can manually regenerate later.",
+        "impact": "Report not generated but session still marks as complete"
+      }
+    ]
+  },
+  "TIMELINE": {
+    "start_date": "2026-01-15",
+    "estimated_end_date": "2026-01-17",
+    "milestones": [
+      {
+        "milestone_id": "M1",
+        "name": "Phase 1 Complete - Core UI Enhancements",
+        "target_date": "2026-01-15",
+        "deliverables": [
+          "Session Metrics Card rendering",
+          "Enhanced Orchestrator Panel with metrics",
+          "Enhanced Agent Cards with performance metrics",
+          "All components responsive and themed"
+        ]
+      },
+      {
+        "milestone_id": "M2",
+        "name": "Phase 2 Complete - Data Integration",
+        "target_date": "2026-01-16",
+        "deliverables": [
+          "Files Modified Section with real data",
+          "Resource Sheets Section with access counts",
+          "Backend extraction functions working",
+          "Session Metrics Card showing real file counts"
+        ]
+      },
+      {
+        "milestone_id": "M3",
+        "name": "Phase 3 Complete - Timeline & Report Generation",
+        "target_date": "2026-01-17",
+        "deliverables": [
+          "Execution Timeline visualization",
+          "SESSION-REPORT.md auto-generated on completion",
+          "All 3 phases integrated and tested",
+          "Documentation updated"
+        ]
+      }
+    ]
+  },
+  "VALIDATION_CRITERIA": {
+    "functional_requirements": [
+      "SESSION-REPORT.md auto-generates when session marked complete",
+      "Session Metrics Card displays duration, agents, files, completion %",
+      "Orchestrator Panel shows agents managed and parallel groups",
+      "Agent Cards show phases, files, duration metrics",
+      "Files Modified Section lists all changed files with action badges",
+      "Resource Sheets Section shows access counts",
+      "Execution Timeline visualizes session events chronologically"
+    ],
+    "non_functional_requirements": [
+      "SESSION-REPORT generation completes in < 2 seconds",
+      "Session detail page loads in < 1.5 seconds with extraction",
+      "Session metrics display in < 100ms",
+      "All components responsive on mobile/tablet/desktop",
+      "TypeScript compiles with zero errors",
+      "No breaking changes to existing Sessions API",
+      "Backward compatible with existing sessions"
+    ],
+    "test_coverage": [
+      "Unit tests for calculateDuration helper (edge cases)",
+      "Unit tests for extractFilesModified (parsing, aggregation)",
+      "Unit tests for extractResourceSheets (counting, sorting)",
+      "Unit tests for buildTimeline (event creation, sorting)",
+      "Integration test for complete Mark as Complete flow",
+      "Visual regression tests for all new UI components",
+      "Mobile responsive tests for all 3 phases"
+    ]
+  }
+}
