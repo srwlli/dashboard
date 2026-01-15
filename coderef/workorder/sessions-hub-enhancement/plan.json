@@ -292,41 +292,51 @@
         },
         {
           "task_id": "IMPL-004",
-          "task_name": "Enhance Agent Cards with performance metrics",
-          "description": "Modify AgentCard.tsx to add metrics section below agent info showing Phases count, Files Modified (TBD), Duration (N/A). Enhance 'View Output' button with icon and improved styling.",
+          "task_name": "Enhance Agent Cards with task-level performance metrics",
+          "description": "Modify AgentCard.tsx to display agent-level metrics from hierarchical session structure. Show task completion (e.g., '3/7 tasks'), progress percentage from success_metrics, phase assignment, and calculated duration from agent.started timestamp. Replace placeholder metrics with real data from agent subdirectory communication.json. Graceful degradation for flat sessions.",
           "type": "implementation",
-          "estimated_effort": "1.5 hours",
+          "estimated_effort": "2 hours",
           "files_affected": [
             "packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx"
           ],
-          "dependencies": ["SETUP-001"],
+          "dependencies": ["SETUP-000D"],
           "acceptance_criteria": [
             "Metrics section added with border-t separator",
-            "Phases displays agent.phases?.length || 0",
-            "Files shows placeholder '0' (Phase 2 will populate)",
-            "Duration shows 'N/A' (Phase 2 will calculate)",
-            "3-column grid: grid-cols-3 gap-2",
+            "Tasks metric: 'X/Y complete' calculated from agent.tasks array (filter by status: 'complete' vs total)",
+            "Progress metric: Shows agent.success_metrics.status percentage (e.g., '38%')",
+            "Phase metric: Shows agent.phase value (e.g., 'phase_1') with badge styling",
+            "Duration: Calculate from agent.started to now (if in_progress) or completed timestamp",
+            "4-column grid: grid-cols-4 gap-2 (Tasks | Progress | Phase | Duration)",
+            "Graceful degradation: Shows 'N/A' if agent.tasks is undefined (flat sessions)",
+            "Optional chaining used: agent.tasks?.length",
             "Output button includes FileText icon",
             "Uses bg-ind-accent/10 hover:bg-ind-accent/20 styling",
-            "Mobile responsive (metrics stack on small screens)"
+            "Mobile responsive (metrics stack on small screens, grid-cols-2)",
+            "Empty state message for agents without task tracking: 'Task tracking not available'"
           ]
         },
         {
           "task_id": "IMPL-005",
-          "task_name": "Integrate SessionMetricsCard into SessionDetail",
-          "description": "Add SessionMetricsCard component to SessionDetail.tsx above Orchestrator Panel. Import component and pass session prop. Ensure proper spacing (mb-4) between cards.",
+          "task_name": "Enhance SessionMetricsCard with phase and task metrics",
+          "description": "Update SessionMetricsCard component to display active phase information and total task count alongside existing metrics (Duration, Total Agents, Completion%). Show current phase with progress percentage (e.g., 'Phase 1: 65%') and aggregate task completion across all agents (e.g., '12/35 tasks'). Then integrate enhanced component into SessionDetail.tsx above Orchestrator Panel.",
           "type": "implementation",
-          "estimated_effort": "30 minutes",
+          "estimated_effort": "1.5 hours",
           "files_affected": [
+            "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMetricsCard.tsx",
             "packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx"
           ],
-          "dependencies": ["IMPL-002"],
+          "dependencies": ["IMPL-002", "SETUP-000D"],
           "acceptance_criteria": [
-            "SessionMetricsCard imported from ./SessionMetricsCard",
+            "SessionMetricsCard updated to 6-metric grid: Duration | Total Agents | Active Phase | Tasks | Files Modified | Completion",
+            "Active Phase metric: Show current phase name with progress from session.phases (e.g., 'Phase 1: 65%')",
+            "Tasks metric: Aggregate agent.tasks across all agents (e.g., '12/35 complete')",
+            "Graceful degradation: Show 'N/A' if session.phases undefined",
+            "Calculate active phase by finding highest phase number with status 'in_progress' or 'complete'",
+            "Optional chaining: session.phases?.phase_1?.progress",
+            "Responsive grid: grid-cols-2 md:grid-cols-3 lg:grid-cols-6",
+            "SessionMetricsCard imported in SessionDetail.tsx",
             "Rendered above Orchestrator Panel section",
-            "Receives full session object as prop",
-            "Proper spacing with mb-4 className",
-            "No layout shifts or overflow issues"
+            "Proper spacing with mb-4 className"
           ]
         },
         {
@@ -845,6 +855,58 @@
       "Integration test for complete Mark as Complete flow",
       "Visual regression tests for all new UI components",
       "Mobile responsive tests for all 3 phases"
+    ]
+  },
+  "PLAN_UPDATE_NOTES": {
+    "update_date": "2026-01-15T14:00:00.000Z",
+    "update_version": "2.0.0",
+    "update_reason": "Align with WO-SESSION-STRUCTURE-STANDARDIZATION hierarchical agent-subdirectory pattern",
+    "changes_summary": {
+      "priority_0_added": "4 new critical tasks (SETUP-000A through 000D) for data model migration to hierarchical structure",
+      "phase_1_enhanced": "IMPL-004 and IMPL-005 updated to leverage task-level tracking, phase display, and success metrics",
+      "phase_2_pending": "Will add 3 new tasks: IMPL-006A (extractAgentTasks), IMPL-006B (extractPhaseProgress), IMPL-007A (extractWorkordersCreated), IMPL-010A (WorkordersCreatedSection component)",
+      "phase_3_pending": "Will enhance SETUP-003 (new timeline event types), IMPL-012 (phase/task events), IMPL-015 (report template sections), IMPL-016 (report population)",
+      "total_task_increase": "24 → 35 tasks (11 new tasks added)",
+      "completion_percentage": "Updated from 21% to 14% due to expanded scope"
+    },
+    "new_capabilities_enabled": [
+      "Task-level progress tracking (agent.tasks array)",
+      "Phase-based visualization (session.phases object)",
+      "Success metrics display (agent.success_metrics)",
+      "Workorder deliverables tracking (session.created_workorders)",
+      "Resource sheet attribution (agent resources/index.md)",
+      "Task-level timeline events (from agent.tasks)",
+      "Agent subdirectory outputs scanning (structured data)",
+      "Backward compatibility with flat session structure"
+    ],
+    "next_steps": [
+      "Complete Priority 0 tasks (data model migration) before resuming Phase 1",
+      "Test with context-enhancement-v2 reference session (hierarchical structure with 2 agents)",
+      "Update remaining Phase 2 and Phase 3 task descriptions (in progress)",
+      "Add detailed acceptance criteria for new tasks IMPL-006A, IMPL-006B, IMPL-007A, IMPL-010A",
+      "Update TIMELINE and DEPENDENCIES sections to reflect new task dependencies"
+    ],
+    "reference_sessions": [
+      {
+        "session_id": "context-enhancement-v2",
+        "structure": "hierarchical",
+        "agents": 2,
+        "location": "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\context-enhancement-v2",
+        "use_case": "Primary test session for hierarchical structure validation (Priority 0 and Phase 1)"
+      },
+      {
+        "session_id": "scanner-context-enhancement",
+        "structure": "hierarchical",
+        "agents": 9,
+        "location": "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\scanner-context-enhancement",
+        "use_case": "Multi-agent stress test with phases and tasks (Phase 2 and Phase 3 testing)"
+      },
+      {
+        "session_id": "foundation-docs-cleanup",
+        "structure": "flat",
+        "agents": 2,
+        "use_case": "Backward compatibility testing with old session structure"
+      }
     ]
   }
 }
