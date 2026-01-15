@@ -88,6 +88,75 @@ export default function AgentCard({
         </span>
       </div>
 
+      {/* Task-Level Metrics (Hierarchical Session Structure) */}
+      {agent.tasks && agent.tasks.length > 0 && (
+        <div className="mb-3 pt-3 border-t border-ind-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            {/* Tasks Completion */}
+            <div>
+              <span className="text-ind-text-muted block mb-1">Tasks</span>
+              <span className="text-ind-text font-medium">
+                {agent.tasks.filter(t => t.status === 'complete').length}/{agent.tasks.length}
+              </span>
+            </div>
+
+            {/* Progress from Success Metrics */}
+            {agent.success_metrics?.status && (
+              <div>
+                <span className="text-ind-text-muted block mb-1">Progress</span>
+                <span className="text-ind-text font-medium">
+                  {typeof agent.success_metrics.status === 'string'
+                    ? agent.success_metrics.status
+                    : `${agent.success_metrics.status}%`}
+                </span>
+              </div>
+            )}
+
+            {/* Phase Assignment */}
+            {agent.phase && (
+              <div>
+                <span className="text-ind-text-muted block mb-1">Phase</span>
+                <span className="px-2 py-0.5 bg-ind-accent/10 text-ind-accent rounded text-xs font-medium">
+                  {agent.phase}
+                </span>
+              </div>
+            )}
+
+            {/* Duration (if started timestamp available) */}
+            {agent.started && (
+              <div>
+                <span className="text-ind-text-muted block mb-1">Duration</span>
+                <span className="text-ind-text font-medium">
+                  {(() => {
+                    try {
+                      const start = new Date(agent.started).getTime();
+                      const now = Date.now();
+                      const durationMs = now - start;
+                      const hours = Math.floor(durationMs / (1000 * 60 * 60));
+                      const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+
+                      if (hours > 0) {
+                        return `${hours}h ${minutes}m`;
+                      }
+                      return `${minutes}m`;
+                    } catch {
+                      return 'N/A';
+                    }
+                  })()}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Empty state for flat sessions */}
+          {(!agent.success_metrics && !agent.phase && !agent.started) && (
+            <div className="text-xs text-ind-text-muted italic">
+              Task tracking not available for this session
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Phases */}
       {agent.phases && agent.phases.length > 0 && (
         <div className="mb-3">
