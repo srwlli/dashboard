@@ -260,9 +260,15 @@ export { Scanner };
  * PERFORMANCE NOTE: Patterns are automatically sorted by this priority to enable
  * short-circuit matching. Most specific patterns execute first, reducing redundant
  * regex operations by ~15% on average.
+ *
+ * PHASE 1: AST Integration - Added priorities for interface, type, decorator, property
  */
 const TYPE_PRIORITY: Record<ElementData['type'], number> = {
-  'constant': 6,    // Most specific - ALL_CAPS constants
+  'decorator': 8,   // Most specific - Decorators (@Component, @Injectable)
+  'interface': 7,   // TypeScript interfaces
+  'type': 7,        // TypeScript type aliases (same priority as interface)
+  'constant': 6,    // ALL_CAPS constants
+  'property': 5,    // Class properties (same priority as component)
   'component': 5,   // React components (PascalCase functions)
   'hook': 4,        // React hooks (use* functions)
   'class': 3,       // Class declarations
@@ -552,7 +558,75 @@ export async function scanCurrentElements(
           console.log(`Processing file: ${file} with language: ${currentLang}`);
         }
 
-        // Get patterns and sort by priority (highest first) for optimal performance
+        // Track elements before processing this file
+        const elementsBefore = scanner.getElements().length;
+
+        // PHASE 1: AST Integration - Use AST mode for TypeScript/JavaScript if enabled
+        const useASTMode = options.useAST && (currentLang === 'ts' || currentLang === 'js');
+        const fallbackEnabled = options.fallbackToRegex !== false; // Default true
+
+        if (useASTMode) {
+          try {
+            if (verbose) {
+              console.log(`Using AST mode for: ${file}`);
+            }
+
+            // Import JSCallDetector dynamically to avoid circular dependencies
+            const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
+            const detector = new JSCallDetector();
+
+            // Use AST-based element detection
+            const astElements = detector.detectElements(file);
+
+            // Add AST-detected elements to scanner
+            for (const element of astElements) {
+              scanner.addElement({
+                type: element.type as ElementData['type'],
+                name: element.name,
+                file: element.file,
+                line: element.line,
+                exported: element.exported
+              });
+            }
+
+            if (verbose) {
+              console.log(`AST mode detected ${astElements.length} elements in: ${file}`);
+            }
+
+            // If AST succeeded and we only want AST results, skip regex
+            if (!fallbackEnabled) {
+              // Get elements added for this file
+              const allElements = scanner.getElements();
+              const fileElements = allElements.slice(elementsBefore);
+
+              // Store in cache
+              SCAN_CACHE.set(file, {
+                mtime: currentMtime,
+                elements: fileElements
+              });
+
+              if (verbose) {
+                console.log(`Cached ${fileElements.length} AST elements for: ${file}`);
+              }
+              continue;
+            }
+          } catch (astError) {
+            if (verbose) {
+              console.warn(`AST parsing failed for ${file}, falling back to regex:`, astError);
+            }
+
+            if (!fallbackEnabled) {
+              // AST failed and no fallback - skip file
+              if (verbose) {
+                console.error(`Skipping file ${file} - AST failed and fallback disabled`);
+              }
+              continue;
+            }
+            // Otherwise continue to regex processing below
+          }
+        }
+
+        // Regex-based processing (always runs if AST disabled, or as fallback)
         const patterns = sortPatternsByPriority(LANGUAGE_PATTERNS[currentLang] || []);
 
         if (patterns.length === 0) {
@@ -568,9 +642,6 @@ export async function scanCurrentElements(
           }
           continue;
         }
-
-        // Track elements before processing this file
-        const elementsBefore = scanner.getElements().length;
 
         scanner.processFile(file, content, patterns, includeComments);
 

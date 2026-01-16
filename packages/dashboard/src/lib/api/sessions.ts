@@ -90,7 +90,7 @@ export interface SessionDetail extends Session {
   // Hierarchical session structure fields (WO-SESSION-STRUCTURE-STANDARDIZATION)
   // Only populated when session uses multi-phase pattern
   phases?: Record<string, PhaseInfo>;  // Phase tracking (e.g., { "phase_1": {...}, "phase_2": {...} })
-  created_workorders?: string[];       // Workorder IDs created during session execution
+  created_workorders?: WorkorderInfo[];// Workorders created during session execution with metadata
   files_modified?: string[];           // Files modified during session (Phase 2)
   resource_sheets?: string[];          // Resource sheets accessed (Phase 2)
 }
@@ -157,6 +157,32 @@ export interface AgentOutputs {
   total_functions_added?: number;// Total functions added
   breaking_changes?: number;     // Number of breaking changes
   typescript_compilation?: string; // TypeScript compilation status
+}
+
+/**
+ * Workorder metadata from context.json
+ * Created by /create-workorder command in agent home project
+ */
+export interface WorkorderMetadata {
+  workorder_id: string;
+  feature_name: string;
+  created_at: string;
+  agent_id: string;
+  parent_session: string;
+  requirements: string[];
+  constraints: string[];
+  success_criteria: Record<string, string>;
+  implementation_reference?: string;
+}
+
+/**
+ * Workorder with metadata
+ * Combines workorder ID with parsed context.json data
+ */
+export interface WorkorderInfo {
+  id: string;                    // Workorder ID (e.g., "WO-SCANNER-QUICKWINS-001")
+  path: string;                  // Path to workorder directory
+  metadata?: WorkorderMetadata;  // Parsed context.json (if available)
 }
 
 /**
@@ -393,24 +419,63 @@ async function readAgentSubdirectory(
 }
 
 /**
- * Extract workorders created during session execution
+ * Extract workorders created during session execution with metadata
  *
  * Scans agent subdirectories for workorders created as deliverables.
- * Checks agent.outputs.workorders_created fields.
+ * Parses workorder path and reads context.json for metadata.
  *
  * @param sessionPath - Path to session directory
  * @param agents - Array of AgentInfo objects (must be enriched with outputs field)
- * @returns Array of workorder IDs created during session
+ * @returns Array of WorkorderInfo objects with metadata
  */
 async function extractWorkordersCreated(
   _sessionPath: string,
   agents: AgentInfo[]
-): Promise<string[]> {
-  const workorders: string[] = [];
+): Promise<WorkorderInfo[]> {
+  const workorders: WorkorderInfo[] = [];
 
   for (const agent of agents) {
     if (agent.outputs?.workorders_created) {
-      workorders.push(...agent.outputs.workorders_created);
+      for (const workorderEntry of agent.outputs.workorders_created) {
+        // Parse format: "WO-ID (path/to/workorder/)"
+        const match = workorderEntry.match(/^(.+?)\s*\((.+?)\)$/);
+
+        if (match) {
+          const [, workorderId, workorderPath] = match;
+
+          // Read context.json from workorder directory
+          let metadata: WorkorderMetadata | undefined;
+
+          // Try to resolve workorder path (could be relative to agent home project)
+          const possiblePaths = [
+            path.join(agent.agent_path || '', workorderPath, 'context.json'),
+            path.join(workorderPath, 'context.json'),
+          ];
+
+          for (const contextPath of possiblePaths) {
+            if (fs.existsSync(contextPath)) {
+              const contextData = safeJSONParse<WorkorderMetadata>(contextPath);
+              if (contextData) {
+                metadata = contextData;
+                break;
+              }
+            }
+          }
+
+          workorders.push({
+            id: workorderId.trim(),
+            path: workorderPath.trim(),
+            metadata
+          });
+        } else {
+          // Fallback for simple format (just ID)
+          workorders.push({
+            id: workorderEntry.trim(),
+            path: '',
+            metadata: undefined
+          });
+        }
+      }
     }
   }
 

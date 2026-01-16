@@ -18,7 +18,9 @@
       "Bash(test:*)",
       "Bash(cat:*)",
       "mcp__papertrail__validate_document",
-      "Bash(/dev/null)"
+      "Bash(/dev/null)",
+      "Bash(git ls-tree:*)",
+      "Bash(git push:*)"
     ]
   },
   "enabledMcpjsonServers": [

@@ -782,6 +782,173 @@ export class JSCallDetector {
   }
 
   /**
+   * PHASE 1: AST Integration - Detect code elements (interfaces, types, decorators, properties)
+   *
+   * Extracts TypeScript/JavaScript elements beyond what regex can detect:
+   * - Interfaces
+   * - Type aliases
+   * - Decorators (@Component, @Injectable)
+   * - Class properties
+   *
+   * @param filePath Path to the file to analyze
+   * @returns Array of ElementData matching scanner format
+   */
+  detectElements(filePath: string): Array<{
+    type: 'interface' | 'type' | 'decorator' | 'property' | 'function' | 'class' | 'method';
+    name: string;
+    file: string;
+    line: number;
+    exported?: boolean;
+  }> {
+    const result = parseJavaScriptFile(filePath);
+    if (!result.success || !result.ast) {
+      return [];
+    }
+
+    const elements: Array<{
+      type: 'interface' | 'type' | 'decorator' | 'property' | 'function' | 'class' | 'method';
+      name: string;
+      file: string;
+      line: number;
+      exported?: boolean;
+    }> = [];
+
+    this.extractElementsFromAST(result.ast, filePath, elements);
+    return elements;
+  }
+
+  /**
+   * Recursively extract elements from AST
+   */
+  private extractElementsFromAST(
+    ast: any,
+    filePath: string,
+    elements: Array<{
+      type: 'interface' | 'type' | 'decorator' | 'property' | 'function' | 'class' | 'method';
+      name: string;
+      file: string;
+      line: number;
+      exported?: boolean;
+    }>,
+    parentExported: boolean = false
+  ): void {
+    if (!ast || typeof ast !== 'object') {
+      return;
+    }
+
+    const isExported = parentExported ||
+                      (ast.type === 'ExportNamedDeclaration' || ast.type === 'ExportDefaultDeclaration');
+
+    // TypeScript Interface
+    if (ast.type === 'TSInterfaceDeclaration' && ast.id) {
+      elements.push({
+        type: 'interface',
+        name: ast.id.name,
+        file: filePath,
+        line: ast.loc?.start.line || 0,
+        exported: isExported
+      });
+    }
+
+    // TypeScript Type Alias
+    if (ast.type === 'TSTypeAliasDeclaration' && ast.id) {
+      elements.push({
+        type: 'type',
+        name: ast.id.name,
+        file: filePath,
+        line: ast.loc?.start.line || 0,
+        exported: isExported
+      });
+    }
+
+    // Decorators (both class and method decorators)
+    if (ast.decorators && Array.isArray(ast.decorators)) {
+      for (const decorator of ast.decorators) {
+        let decoratorName = '';
+
+        if (decorator.expression?.type === 'Identifier') {
+          decoratorName = decorator.expression.name;
+        } else if (decorator.expression?.type === 'CallExpression' &&
+                   decorator.expression.callee?.type === 'Identifier') {
+          decoratorName = decorator.expression.callee.name;
+        }
+
+        if (decoratorName) {
+          elements.push({
+            type: 'decorator',
+            name: decoratorName,
+            file: filePath,
+            line: decorator.loc?.start.line || 0,
+            exported: false // Decorators aren't directly exported
+          });
+        }
+      }
+    }
+
+    // Class Properties (PropertyDefinition in newer acorn, ClassProperty in older)
+    if ((ast.type === 'PropertyDefinition' || ast.type === 'ClassProperty') && ast.key) {
+      const propertyName = ast.key.type === 'Identifier' ? ast.key.name : '';
+      if (propertyName) {
+        elements.push({
+          type: 'property',
+          name: propertyName,
+          file: filePath,
+          line: ast.loc?.start.line || 0,
+          exported: false // Properties inherit class export status
+        });
+      }
+    }
+
+    // Functions (also capture these for completeness)
+    if (ast.type === 'FunctionDeclaration' && ast.id) {
+      elements.push({
+        type: 'function',
+        name: ast.id.name,
+        file: filePath,
+        line: ast.loc?.start.line || 0,
+        exported: isExported
+      });
+    }
+
+    // Classes
+    if (ast.type === 'ClassDeclaration' && ast.id) {
+      elements.push({
+        type: 'class',
+        name: ast.id.name,
+        file: filePath,
+        line: ast.loc?.start.line || 0,
+        exported: isExported
+      });
+    }
+
+    // Methods
+    if (ast.type === 'MethodDefinition' && ast.key) {
+      const methodName = ast.key.type === 'Identifier' ? ast.key.name : '';
+      if (methodName) {
+        elements.push({
+          type: 'method',
+          name: methodName,
+          file: filePath,
+          line: ast.loc?.start.line || 0,
+          exported: false // Methods inherit class export status
+        });
+      }
+    }
+
+    // Recursively traverse AST
+    for (const key in ast) {
+      const child = ast[key];
+      if (Array.isArray(child)) {
+        for (const item of child) {
+          this.extractElementsFromAST(item, filePath, elements, isExported);
+        }
+      } else if (child && typeof child === 'object') {
+        this.extractElementsFromAST(child, filePath, elements, isExported);
+      }
+    }
+  }
+
+  /**
    * Clear all caches
    */
   clearCache(): void {
