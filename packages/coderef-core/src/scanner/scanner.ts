@@ -706,22 +706,41 @@ export async function scanCurrentElements(
             const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
             const detector = new JSCallDetector();
 
+            // PHASE 4: Extract imports and calls from file
+            const fileImports = detector.detectImports(file);
+            const fileCalls = detector.detectCalls(file);
+
             // Use AST-based element detection
             const astElements = detector.detectElements(file);
 
-            // Add AST-detected elements to scanner
+            // Add AST-detected elements to scanner with imports and calls
             for (const element of astElements) {
+              // Find calls made by this element
+              const elementCalls = fileCalls
+                .filter(call => call.callerFunction === element.name || call.callerClass === element.name)
+                .map(call => call.calleeFunction);
+
               scanner.addElement({
                 type: element.type as ElementData['type'],
                 name: element.name,
                 file: element.file,
                 line: element.line,
-                exported: element.exported
+                exported: element.exported,
+                // PHASE 4: Add imports to element
+                imports: fileImports.length > 0 ? fileImports.map(imp => ({
+                  source: imp.source,
+                  specifiers: imp.specifiers.filter(s => s !== 'default'),
+                  default: imp.isDefault ? imp.specifiers[0] : undefined,
+                  dynamic: imp.dynamic || false, // PHASE 5: Use dynamic flag from ModuleImport
+                  line: imp.line
+                })) : undefined,
+                // PHASE 4: Add calls made by this element
+                calls: elementCalls.length > 0 ? elementCalls : undefined
               });
             }
 
             if (verbose) {
-              console.log(`AST mode detected ${astElements.length} elements in: ${file}`);
+              console.log(`AST mode detected ${astElements.length} elements, ${fileImports.length} imports, and ${fileCalls.length} calls in: ${file}`);
             }
 
             // If AST succeeded and we only want AST results, skip regex

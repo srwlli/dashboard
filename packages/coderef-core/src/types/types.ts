@@ -224,6 +224,7 @@ export function getTypesByPriority(priority: TypePriority): string[] {
  * Represents a code element (function, class, etc.) found in the codebase
  * MIGRATED FROM ROOT types.ts - Phase 1 Type Migration
  * EXTENDED for Phase 1: AST Integration - Added interface, type, decorator, property types
+ * EXTENDED for Phase 4: Relationship Tracking - Added imports, dependencies, callsTo fields
  */
 export interface ElementData {
   type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'constant' | 'interface' | 'type' | 'decorator' | 'property' | 'unknown';
@@ -236,6 +237,21 @@ export interface ElementData {
   parameters?: string[];
   /** Optional: Functions/methods called by this element (from AST analysis) */
   calls?: string[];
+
+  // PHASE 4: Relationship Tracking
+  /** Optional: Import statements in this file (ESM, CommonJS, dynamic) */
+  imports?: Array<{
+    source: string;      // Module path (e.g., './utils', 'react')
+    specifiers?: string[]; // Named imports (e.g., ['useState', 'useEffect'])
+    default?: string;    // Default import name
+    namespace?: string;  // Namespace import (e.g., import * as React)
+    dynamic?: boolean;   // True for dynamic imports (import() or require())
+    line: number;        // Line number of import
+  }>;
+  /** Optional: Dependencies this element relies on (resolved imports) */
+  dependencies?: string[]; // Array of module/file paths
+  /** Optional: Elements that call this element (reverse relationship) */
+  calledBy?: string[];     // Array of element names that call this element
 }
 
 /**
@@ -291,4 +307,39 @@ export interface ScanOptions {
    * Only used if parallel is true (default: os.cpus().length - 1)
    */
   workerPoolSize?: number;
+  /**
+   * Phase 5: Progress Reporting
+   * Optional callback for progress updates during scanning
+   * Called after each file is processed with current progress info
+   * @param progress Progress information object
+   */
+  onProgress?: (progress: {
+    /** Current file being processed */
+    currentFile: string;
+    /** Number of files processed so far */
+    filesProcessed: number;
+    /** Total number of files to process */
+    totalFiles: number;
+    /** Number of elements found so far */
+    elementsFound: number;
+    /** Percentage complete (0-100) */
+    percentComplete: number;
+  }) => void;
+}
+
+/**
+ * Progress information for scan operations
+ * Phase 5: Progress Reporting
+ */
+export interface ScanProgress {
+  /** Current file being processed */
+  currentFile: string;
+  /** Number of files processed so far */
+  filesProcessed: number;
+  /** Total number of files to process */
+  totalFiles: number;
+  /** Number of elements found so far */
+  elementsFound: number;
+  /** Percentage complete (0-100) */
+  percentComplete: number;
 }

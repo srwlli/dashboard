@@ -61,6 +61,7 @@ export interface ModuleImport {
   specifiers: string[];     // ['foo', 'bar'] or ['default']
   line: number;
   isDefault: boolean;
+  dynamic?: boolean;        // PHASE 5: True for dynamic imports (import() calls)
 }
 
 /**
@@ -659,6 +660,34 @@ export class JSCallDetector {
         specifiers: ['*'], // CommonJS typically imports the whole module
         line: ast.loc?.start.line || 0,
         isDefault: false,
+      });
+    }
+
+    // PHASE 5: Dynamic import: import('./module') or await import('./module')
+    if (ast.type === 'CallExpression' &&
+        ast.callee?.type === 'Import' && // Acorn uses 'Import' type for dynamic imports
+        ast.arguments[0]) {
+
+      let source = '<dynamic>'; // Default for non-literal expressions
+
+      // Try to extract the module path
+      if (ast.arguments[0].type === 'Literal') {
+        source = ast.arguments[0].value;
+      } else if (ast.arguments[0].type === 'TemplateLiteral') {
+        // Template literal - extract the static part
+        const quasis = ast.arguments[0].quasis || [];
+        if (quasis.length > 0 && quasis[0].value?.cooked) {
+          source = quasis[0].value.cooked + '...'; // Mark as dynamic template
+        }
+      }
+
+      imports.push({
+        source,
+        importType: 'esm', // Dynamic imports use ESM module resolution
+        specifiers: ['*'], // Dynamic imports can access any export
+        line: ast.loc?.start.line || 0,
+        isDefault: false,
+        dynamic: true, // PHASE 5: Mark as dynamic import
       });
     }
 
