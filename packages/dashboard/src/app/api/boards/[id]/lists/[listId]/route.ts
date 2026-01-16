@@ -57,10 +57,10 @@ async function saveBoard(board: Board): Promise<void> {
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; listId: string } }
+  { params }: { params: Promise<{ id: string; listId: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id, listId } = params;
+    const { id, listId } = await params;
     const updates: UpdateListRequest = await request.json();
 
     const board = await loadBoard(id);
@@ -141,10 +141,10 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; listId: string } }
+  { params }: { params: Promise<{ id: string; listId: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id, listId } = params;
+    const { id, listId } = await params;
 
     const board = await loadBoard(id);
     if (!board) {

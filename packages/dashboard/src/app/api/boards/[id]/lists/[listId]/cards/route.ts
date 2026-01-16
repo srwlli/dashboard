@@ -84,10 +84,10 @@ async function saveListCards(boardId: string, listId: string, cards: BoardCard[]
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string; listId: string } }
+  { params }: { params: Promise<{ id: string; listId: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id, listId } = params;
+    const { id, listId } = await params;
     const body: CreateCardRequest = await request.json();
     const { title, description, order, tags } = body;
 

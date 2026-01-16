@@ -57,10 +57,10 @@ async function saveBoard(board: Board): Promise<void> {
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body: CreateListRequest = await request.json();
     const { title, order, color } = body;
 

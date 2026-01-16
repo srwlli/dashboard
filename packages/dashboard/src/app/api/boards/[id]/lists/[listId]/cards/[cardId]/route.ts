@@ -84,10 +84,10 @@ async function saveListCards(boardId: string, listId: string, cards: BoardCard[]
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; listId: string; cardId: string } }
+  { params }: { params: Promise<{ id: string; listId: string; cardId: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id, listId, cardId } = params;
+    const { id, listId, cardId } = await params;
     const updates: UpdateCardRequest = await request.json();
 
     const board = await loadBoard(id);
@@ -214,10 +214,10 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; listId: string; cardId: string } }
+  { params }: { params: Promise<{ id: string; listId: string; cardId: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id, listId, cardId } = params;
+    const { id, listId, cardId } = await params;
 
     const board = await loadBoard(id);
     if (!board) {
