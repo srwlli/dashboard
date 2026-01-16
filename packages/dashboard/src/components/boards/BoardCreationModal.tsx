@@ -98,11 +98,11 @@ export function BoardCreationModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-ind-panel border-2 border-ind-border shadow-xl max-w-lg w-full mx-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4">
+      <div className="bg-ind-panel border-2 border-ind-border shadow-xl max-w-lg w-full">
         {/* Header */}
-        <div className="border-b-2 border-ind-border p-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-ind-text">Create New Board</h2>
+        <div className="border-b-2 border-ind-border p-4 sm:p-6 flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl font-semibold text-ind-text">Create New Board</h2>
           <button
             onClick={handleClose}
             disabled={creating}
@@ -113,7 +113,7 @@ export function BoardCreationModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4">
           {/* Board Name */}
           <div>
             <label
@@ -193,7 +193,7 @@ export function BoardCreationModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t-2 border-ind-border p-6">
+        <div className="border-t-2 border-ind-border p-4 sm:p-6">
           <div className="flex items-center justify-end gap-3">
             <button
               onClick={handleClose}

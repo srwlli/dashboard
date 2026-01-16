@@ -73,7 +73,7 @@ export function BoardList({
   const sortedCards = [...cards].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="flex-shrink-0 w-[300px] bg-ind-panel border-2 border-ind-border flex flex-col max-h-full">
+    <div className="flex-shrink-0 w-[280px] sm:w-[300px] bg-ind-panel border-2 border-ind-border flex flex-col max-h-full">
       {/* List Header */}
       <div className="border-b-2 border-ind-border p-3">
         <div className="flex items-center justify-between gap-2">

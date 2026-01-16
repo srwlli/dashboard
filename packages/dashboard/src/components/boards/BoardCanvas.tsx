@@ -320,36 +320,36 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Board Header */}
-      <div className="border-b-2 border-ind-border p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-ind-text">{board.name}</h1>
+      <div className="border-b-2 border-ind-border p-3 md:p-4">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg md:text-2xl font-bold text-ind-text truncate">{board.name}</h1>
             {(board.projectId || board.linkedPath) && (
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 {board.projectId && (
-                  <span className="text-xs bg-ind-accent/10 text-ind-accent px-2 py-0.5">
+                  <span className="text-xs bg-ind-accent/10 text-ind-accent px-2 py-0.5 truncate">
                     Project: {board.projectId}
                   </span>
                 )}
                 {board.linkedPath && (
-                  <span className="text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5">
+                  <span className="text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 truncate max-w-[200px]">
                     {board.linkedPath}
                   </span>
                 )}
               </div>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-ind-text-muted">
-              {board.lists.length} lists
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="text-xs md:text-sm text-ind-text-muted">
+              {board.lists.length} <span className="hidden sm:inline">lists</span>
             </div>
             <button
               onClick={handleOpenNewWindow}
-              className="px-3 py-1.5 text-xs font-medium bg-ind-border hover:bg-ind-accent hover:text-black text-ind-text transition-colors flex items-center gap-1.5"
+              className="px-2 md:px-3 py-1.5 text-xs font-medium bg-ind-border hover:bg-ind-accent hover:text-black text-ind-text transition-colors flex items-center gap-1.5"
               title="Open in New Window"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              New Window
+              <span className="hidden sm:inline">New Window</span>
             </button>
           </div>
         </div>
