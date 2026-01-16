@@ -9,12 +9,14 @@
 
 import { useState, useEffect } from 'react';
 import { X, Plus, Tag as TagIcon } from 'lucide-react';
-import type { CardEditorProps } from '@/types/boards';
+import type { CardEditorProps, CardAttachment } from '@/types/boards';
+import { AttachmentPicker } from './AttachmentPicker';
 
 export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
   const [title, setTitle] = useState(card?.title || '');
   const [description, setDescription] = useState(card?.description || '');
   const [tags, setTags] = useState<string[]>(card?.tags || []);
+  const [attachments, setAttachments] = useState<CardAttachment[]>(card?.attachments || []);
   const [newTag, setNewTag] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -38,6 +40,7 @@ export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
           title: title.trim(),
           description: description.trim() || undefined,
           tags,
+          attachments,
         });
       } else {
         // Create new card
@@ -47,6 +50,7 @@ export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
           description: description.trim() || undefined,
           order: 0, // Will be set by parent
           tags,
+          attachments,
         });
       }
 
@@ -57,6 +61,14 @@ export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleAddAttachment(attachment: CardAttachment) {
+    setAttachments([...attachments, attachment]);
+  }
+
+  function handleRemoveAttachment(id: string) {
+    setAttachments(attachments.filter((att) => att.id !== id));
   }
 
   function handleAddTag() {
@@ -185,16 +197,16 @@ export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
             </div>
           </div>
 
-          {/* Attachments - Placeholder for Phase 5 */}
+          {/* Attachments */}
           <div>
             <label className="block text-sm font-medium text-ind-text mb-2">
-              Attachments <span className="text-xs text-ind-text-muted font-normal">(coming in Phase 5)</span>
+              Attachments <span className="text-xs text-ind-text-muted font-normal">(optional)</span>
             </label>
-            <div className="p-4 bg-ind-bg border border-ind-border text-center">
-              <p className="text-xs text-ind-text-muted">
-                File and folder attachments will be added in Phase 5
-              </p>
-            </div>
+            <AttachmentPicker
+              attachments={attachments}
+              onAdd={handleAddAttachment}
+              onRemove={handleRemoveAttachment}
+            />
           </div>
 
           {/* Error Message */}

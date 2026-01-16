@@ -684,7 +684,7 @@ export async function getSessionById(featureName: string): Promise<SessionDetail
     const sessionDetail: SessionDetail = {
       workorder_id: commData.workorder_id || 'UNKNOWN',
       feature_name: commData.feature_name || featureName,
-      status: commData.status || calculatedStatus,
+      status: calculatedStatus || commData.status,  // Prioritize calculated status from agent data (source of truth)
       created: commData.created || 'Unknown',
       description: commData.description || '',
       total_agents: enrichedAgents.length,
