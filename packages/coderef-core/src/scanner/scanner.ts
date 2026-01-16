@@ -7,6 +7,7 @@ import { Worker } from 'worker_threads';
 import { glob } from 'glob';
 import { minimatch } from 'minimatch';
 import { ElementData, ScanOptions } from '../types/types.js';
+import { createScannerCache, type ScanCacheEntry } from './lru-cache.js';
 
 /**
  * Pattern configurations by language
@@ -178,19 +179,11 @@ export const DEFAULT_EXCLUDE_PATTERNS = [
 ] as const;
 
 /**
- * Cache entry for storing scan results
+ * PHASE 3: LRU Cache with Memory Cap
+ * Global cache for scan results with 50MB memory limit
+ * Automatically evicts least recently used entries when full
  */
-interface CacheEntry {
-  mtime: number;
-  elements: ElementData[];
-}
-
-/**
- * Global cache for scan results
- * Key: absolute file path
- * Value: CacheEntry with modification time and cached elements
- */
-const SCAN_CACHE = new Map<string, CacheEntry>();
+const SCAN_CACHE = createScannerCache(50 * 1024 * 1024);
 
 /**
  * Scanner class to manage state and context
@@ -827,16 +820,23 @@ export function clearScanCache(): void {
 
 /**
  * Gets cache statistics
- * @returns Object with cache size and hit/miss information
+ * PHASE 3: Enhanced with LRU cache metrics
+ * @returns Object with cache size, entries, and memory utilization
  */
-export function getScanCacheStats(): { size: number; entries: number } {
-  let totalSize = 0;
-  for (const [, entry] of SCAN_CACHE) {
-    totalSize += entry.elements.length;
-  }
+export function getScanCacheStats(): {
+  size: number;
+  entries: number;
+  currentSize: number;
+  maxSize: number;
+  utilizationPercent: number;
+} {
+  const stats = SCAN_CACHE.getStats();
   return {
-    size: totalSize,
-    entries: SCAN_CACHE.size
+    size: stats.entries, // Legacy field for backward compatibility
+    entries: stats.entries,
+    currentSize: stats.currentSize,
+    maxSize: stats.maxSize,
+    utilizationPercent: stats.utilizationPercent
   };
 }
 
