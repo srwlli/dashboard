@@ -9,6 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
+import { DndContext, closestCorners, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Board, BoardCard, BoardCanvasProps, UpdateListRequest, CreateCardRequest, UpdateCardRequest } from '@/types/boards';
 import { BoardList } from './BoardList';
 
@@ -17,6 +18,15 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   const [cards, setCards] = useState<Record<string, BoardCard[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Drag & drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before drag starts
+      },
+    })
+  );
 
   // Fetch board data
   useEffect(() => {
@@ -217,6 +227,40 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
     }
   }
 
+  /**
+   * Handle drag end event
+   * Moves cards between lists
+   */
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const activeData = active.data.current;
+    const overData = over.data.current;
+
+    // Check if dragging a card
+    if (activeData?.type !== 'card') return;
+
+    const draggedCard = activeData.card as BoardCard;
+    const targetListId = overData?.type === 'list' ? over.id as string : null;
+
+    if (!targetListId) return;
+
+    // Check if card is being moved to a different list
+    if (draggedCard.listId === targetListId) return;
+
+    // Update card's listId via API
+    try {
+      await handleUpdateCard(draggedCard.id, {
+        listId: targetListId,
+      });
+    } catch (err) {
+      console.error('Failed to move card:', err);
+      alert('Failed to move card');
+    }
+  }
+
   // Loading state
   if (loading) {
     return (
@@ -288,36 +332,42 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
 
       {/* Lists Container - Horizontal Scrolling */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden">
-        <div className="flex gap-4 p-4 h-full">
-          {/* Render Lists using BoardList component */}
-          {sortedLists.map((list) => {
-            const listCards = cards[list.id] || [];
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex gap-4 p-4 h-full">
+            {/* Render Lists using BoardList component */}
+            {sortedLists.map((list) => {
+              const listCards = cards[list.id] || [];
 
-            return (
-              <BoardList
-                key={list.id}
-                list={list}
-                cards={listCards}
-                onUpdateList={handleUpdateList}
-                onDeleteList={handleDeleteList}
-                onCreateCard={handleCreateCard}
-                onUpdateCard={handleUpdateCard}
-                onDeleteCard={handleDeleteCard}
-              />
-            );
-          })}
+              return (
+                <BoardList
+                  key={list.id}
+                  list={list}
+                  cards={listCards}
+                  onUpdateList={handleUpdateList}
+                  onDeleteList={handleDeleteList}
+                  onCreateCard={handleCreateCard}
+                  onUpdateCard={handleUpdateCard}
+                  onDeleteCard={handleDeleteCard}
+                />
+              );
+            })}
 
-          {/* Add List Button */}
-          <div className="flex-shrink-0 w-[300px]">
-            <button
-              onClick={handleCreateList}
-              className="w-full h-full min-h-[100px] bg-ind-panel/50 border-2 border-dashed border-ind-border hover:border-ind-accent hover:bg-ind-panel transition-colors flex flex-col items-center justify-center gap-2"
-            >
-              <Plus className="w-6 h-6 text-ind-accent" />
-              <span className="text-sm font-medium text-ind-accent">Add List</span>
-            </button>
+            {/* Add List Button */}
+            <div className="flex-shrink-0 w-[300px]">
+              <button
+                onClick={handleCreateList}
+                className="w-full h-full min-h-[100px] bg-ind-panel/50 border-2 border-dashed border-ind-border hover:border-ind-accent hover:bg-ind-panel transition-colors flex flex-col items-center justify-center gap-2"
+              >
+                <Plus className="w-6 h-6 text-ind-accent" />
+                <span className="text-sm font-medium text-ind-accent">Add List</span>
+              </button>
+            </div>
           </div>
-        </div>
+        </DndContext>
       </div>
     </div>
   );

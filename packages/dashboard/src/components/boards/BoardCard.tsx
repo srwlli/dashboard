@@ -7,17 +7,39 @@
  * Supports drag & drop (Phase 4) and context menu (Phase 5)
  */
 
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import type { BoardCardProps } from '@/types/boards';
 
 export function BoardCard({ card, onUpdate, onDelete }: BoardCardProps) {
-  async function handleDelete() {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: card.id,
+    data: {
+      type: 'card',
+      card,
+    },
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  async function handleDelete(e: React.MouseEvent) {
+    e.stopPropagation(); // Prevent drag from triggering
     if (confirm('Delete this card?')) {
       await onDelete();
     }
   }
 
   return (
-    <div className="bg-ind-bg border border-ind-border p-3 hover:border-ind-accent transition-colors cursor-pointer group">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="bg-ind-bg border border-ind-border p-3 hover:border-ind-accent transition-colors cursor-pointer group"
+    >
       {/* Card Title */}
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm text-ind-text font-medium flex-1">{card.title}</p>

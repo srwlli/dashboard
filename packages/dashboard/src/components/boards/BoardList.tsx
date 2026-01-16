@@ -9,6 +9,7 @@
 
 import { useState } from 'react';
 import { Plus, ChevronDown, ChevronRight, MoreVertical } from 'lucide-react';
+import { useDroppable } from '@dnd-kit/core';
 import type { BoardListProps, BoardCard as BoardCardType } from '@/types/boards';
 import { BoardCard } from './BoardCard';
 import { CardEditor } from './CardEditor';
@@ -24,6 +25,15 @@ export function BoardList({
 }: BoardListProps) {
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editingCard, setEditingCard] = useState<BoardCardType | undefined>(undefined);
+
+  // Make list droppable
+  const { setNodeRef, isOver } = useDroppable({
+    id: list.id,
+    data: {
+      type: 'list',
+      list,
+    },
+  });
 
   async function handleToggleCollapse() {
     await onUpdateList(list.id, { collapsed: !list.collapsed });
@@ -109,7 +119,12 @@ export function BoardList({
       {/* Cards Container - Only visible when not collapsed */}
       {!list.collapsed && (
         <>
-          <div className="flex-1 overflow-y-auto p-2 space-y-2">
+          <div
+            ref={setNodeRef}
+            className={`flex-1 overflow-y-auto p-2 space-y-2 transition-colors ${
+              isOver ? 'bg-ind-accent/10' : ''
+            }`}
+          >
             {sortedCards.map((card) => (
               <div key={card.id} onClick={() => handleOpenEditCard(card)}>
                 <BoardCard
@@ -123,7 +138,9 @@ export function BoardList({
             {/* Empty State */}
             {sortedCards.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-xs text-ind-text-muted">No cards yet</p>
+                <p className="text-xs text-ind-text-muted">
+                  {isOver ? 'Drop card here' : 'No cards yet'}
+                </p>
               </div>
             )}
           </div>
