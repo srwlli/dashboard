@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, ExternalLink } from 'lucide-react';
 import { DndContext, closestCorners, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Board, BoardCard, BoardCanvasProps, UpdateListRequest, CreateCardRequest, UpdateCardRequest } from '@/types/boards';
 import { BoardList } from './BoardList';
@@ -228,6 +228,21 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   }
 
   /**
+   * Open board in new window
+   */
+  function handleOpenNewWindow() {
+    if (!boardId) return;
+
+    // Check if running in Electron
+    if (typeof window !== 'undefined' && (window as any).electronAPI) {
+      (window as any).electronAPI.openAssistantWindow(boardId);
+    } else {
+      // Fallback to web browser new tab
+      window.open(`/assistant-standalone?boardId=${boardId}`, '_blank');
+    }
+  }
+
+  /**
    * Handle drag end event
    * Moves cards between lists
    */
@@ -324,8 +339,18 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
               </div>
             )}
           </div>
-          <div className="text-sm text-ind-text-muted">
-            {board.lists.length} lists
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-ind-text-muted">
+              {board.lists.length} lists
+            </div>
+            <button
+              onClick={handleOpenNewWindow}
+              className="px-3 py-1.5 text-xs font-medium bg-ind-border hover:bg-ind-accent hover:text-black text-ind-text transition-colors flex items-center gap-1.5"
+              title="Open in New Window"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              New Window
+            </button>
           </div>
         </div>
       </div>
