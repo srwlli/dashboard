@@ -151,6 +151,12 @@ export interface AgentOutputs {
   primary_output: string;        // Path to main deliverable
   format: string;                // Output format (markdown, json, code, etc.)
   workorders_created?: string[]; // Workorder IDs created by this agent
+  files_created?: string[];      // Files created during execution (may include metadata like line counts)
+  files_modified?: string[];     // Files modified during execution (may include metadata)
+  total_lines_added?: number;    // Total lines of code added
+  total_functions_added?: number;// Total functions added
+  breaking_changes?: number;     // Number of breaking changes
+  typescript_compilation?: string; // TypeScript compilation status
 }
 
 /**
@@ -415,8 +421,7 @@ async function extractWorkordersCreated(
  * Extract files modified during session execution
  *
  * Scans agent subdirectories for files modified during execution.
- * Currently looks at agent.outputs.primary_output paths.
- * Future: Could scan outputs/ directory for all modified files.
+ * Aggregates from agent.outputs.files_created, files_modified, and primary_output.
  *
  * @param sessionPath - Path to session directory
  * @param agents - Array of AgentInfo objects (must be enriched with outputs field)
@@ -426,23 +431,34 @@ async function extractFilesModified(
   _sessionPath: string,
   agents: AgentInfo[]
 ): Promise<string[]> {
-  const files: string[] = [];
+  const filesSet = new Set<string>(); // Use Set to avoid duplicates
 
   for (const agent of agents) {
     // Check primary output
     if (agent.outputs?.primary_output) {
-      files.push(agent.outputs.primary_output);
+      filesSet.add(agent.outputs.primary_output);
     }
 
-    // Future enhancement: Scan agent/outputs/ directory for all files
-    // const outputsDir = path.join(sessionPath, agent.agent_id, 'outputs');
-    // if (directoryExists(outputsDir)) {
-    //   const outputFiles = fs.readdirSync(outputsDir);
-    //   files.push(...outputFiles.map(f => path.join(agent.agent_id, 'outputs', f)));
-    // }
+    // Check files_created array (from agent outputs)
+    if (agent.outputs?.files_created && Array.isArray(agent.outputs.files_created)) {
+      for (const file of agent.outputs.files_created) {
+        // Handle both "path" and "path (metadata)" formats
+        const cleanPath = file.split(' (')[0].trim();
+        filesSet.add(cleanPath);
+      }
+    }
+
+    // Check files_modified array (from agent outputs)
+    if (agent.outputs?.files_modified && Array.isArray(agent.outputs.files_modified)) {
+      for (const file of agent.outputs.files_modified) {
+        // Handle both "path" and "path (metadata)" formats
+        const cleanPath = file.split(' (')[0].trim();
+        filesSet.add(cleanPath);
+      }
+    }
   }
 
-  return files;
+  return Array.from(filesSet);
 }
 
 /**
