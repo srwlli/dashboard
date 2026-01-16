@@ -239,8 +239,12 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   function handleOpenNewWindow() {
     if (!boardId) return;
 
-    // Check if running in Electron
-    if (typeof window !== 'undefined' && (window as any).electronAPI) {
+    // Check if running in Electron with the openAssistantWindow method
+    if (
+      typeof window !== 'undefined' &&
+      (window as any).electronAPI &&
+      typeof (window as any).electronAPI.openAssistantWindow === 'function'
+    ) {
       (window as any).electronAPI.openAssistantWindow(boardId);
     } else {
       // Fallback to web browser new tab

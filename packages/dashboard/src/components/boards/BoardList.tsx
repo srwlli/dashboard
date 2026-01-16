@@ -25,6 +25,7 @@ export function BoardList({
 }: BoardListProps) {
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editingCard, setEditingCard] = useState<BoardCardType | undefined>(undefined);
+  const [showMenu, setShowMenu] = useState(false);
 
   // Make list droppable
   const { setNodeRef, isOver } = useDroppable({
@@ -101,10 +102,36 @@ export function BoardList({
             {cards.length}
           </span>
 
-          {/* Menu Button (Placeholder for MENU-002) */}
-          <button className="flex-shrink-0 p-1 hover:bg-ind-border transition-colors">
-            <MoreVertical className="w-4 h-4 text-ind-text-muted" />
-          </button>
+          {/* Menu Button */}
+          <div className="relative flex-shrink-0">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-1 hover:bg-ind-border transition-colors"
+            >
+              <MoreVertical className="w-4 h-4 text-ind-text-muted" />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowMenu(false)}
+                />
+                <div className="absolute right-0 top-full mt-1 bg-ind-panel border-2 border-ind-border shadow-xl z-20 min-w-[150px]">
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      onDeleteList(list.id);
+                    }}
+                    className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                  >
+                    Delete List
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Optional Color Accent */}
