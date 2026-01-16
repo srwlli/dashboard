@@ -61,7 +61,76 @@ export { convertGraphToElements, getConversionStats } from './adapter/graph-to-e
  */
 export { scanCurrentElements, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS } from './scanner/scanner.js';
 
+/**
+ * Error Reporting module - Structured error handling for scanner
+ *
+ * @example
+ * ```typescript
+ * import { createScanError, formatScanError, printScanErrors } from '@coderef/core';
+ *
+ * // Create structured error
+ * try {
+ *   fs.readFileSync(file, 'utf-8');
+ * } catch (err) {
+ *   const scanError = createScanError(err, file, 'read');
+ *   console.error(formatScanError(scanError));
+ * }
+ * ```
+ *
+ * @see {@link createScanError} - Create structured error
+ * @see {@link formatScanError} - Format error as string
+ * @see {@link printScanErrors} - Print all errors from scan result
+ */
+export {
+  createScanError,
+  createScanErrorWithContext,
+  formatScanError,
+  printScanErrors,
+  initScanStats,
+  finalizeScanStats
+} from './scanner/error-reporter.js';
+export type {
+  ScanError,
+  ScanErrorType,
+  ScanErrorSeverity,
+  ScanStats,
+  ScanResult
+} from './scanner/error-reporter.js';
+
 // Note: ScanOptions and ElementData are exported from ./types/types.js on line 28
+
+/**
+ * Configuration Presets module - Quick setup for common project types
+ *
+ * @example
+ * ```typescript
+ * import { loadPreset, detectPreset, applyPreset } from '@coderef/core';
+ *
+ * // Load a preset
+ * const preset = loadPreset('react');
+ * await scanCurrentElements('./src', preset.langs, { exclude: preset.exclude });
+ *
+ * // Auto-detect project type
+ * const presets = detectPreset('./my-project');
+ * console.log(presets); // ['nextjs', 'monorepo']
+ *
+ * // Apply preset with custom excludes
+ * const config = applyPreset('nextjs', ['custom/**']);
+ * ```
+ *
+ * @see {@link loadPreset} - Load preset by name
+ * @see {@link detectPreset} - Auto-detect project type
+ * @see {@link applyPreset} - Apply preset with custom excludes
+ * @see {@link SCAN_PRESETS} - All available presets
+ */
+export {
+  loadPreset,
+  detectPreset,
+  mergePresets,
+  applyPreset,
+  SCAN_PRESETS
+} from './config/presets.js';
+export type { ScanPreset } from './config/presets.js';
 
 /**
  * File Generation module - Generate .coderef output files

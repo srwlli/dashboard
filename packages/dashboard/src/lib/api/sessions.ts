@@ -395,7 +395,7 @@ async function readAgentSubdirectory(
  * @returns Array of workorder IDs created during session
  */
 async function extractWorkordersCreated(
-  sessionPath: string,
+  _sessionPath: string,
   agents: AgentInfo[]
 ): Promise<string[]> {
   const workorders: string[] = [];
@@ -407,6 +407,87 @@ async function extractWorkordersCreated(
   }
 
   return workorders;
+}
+
+/**
+ * Extract files modified during session execution
+ *
+ * Scans agent subdirectories for files modified during execution.
+ * Currently looks at agent.outputs.primary_output paths.
+ * Future: Could scan outputs/ directory for all modified files.
+ *
+ * @param sessionPath - Path to session directory
+ * @param agents - Array of AgentInfo objects (must be enriched with outputs field)
+ * @returns Array of file paths modified during session
+ */
+async function extractFilesModified(
+  _sessionPath: string,
+  agents: AgentInfo[]
+): Promise<string[]> {
+  const files: string[] = [];
+
+  for (const agent of agents) {
+    // Check primary output
+    if (agent.outputs?.primary_output) {
+      files.push(agent.outputs.primary_output);
+    }
+
+    // Future enhancement: Scan agent/outputs/ directory for all files
+    // const outputsDir = path.join(sessionPath, agent.agent_id, 'outputs');
+    // if (directoryExists(outputsDir)) {
+    //   const outputFiles = fs.readdirSync(outputsDir);
+    //   files.push(...outputFiles.map(f => path.join(agent.agent_id, 'outputs', f)));
+    // }
+  }
+
+  return files;
+}
+
+/**
+ * Extract resource sheets accessed during session execution
+ *
+ * Scans agent subdirectories for resource sheet references.
+ * Reads resources/index.md from each agent subdirectory and extracts
+ * links to *-RESOURCE-SHEET.md files.
+ *
+ * @param sessionPath - Path to session directory
+ * @param agents - Array of AgentInfo objects (must be enriched with resources field)
+ * @returns Array of resource sheet paths accessed during session
+ */
+async function extractResourceSheets(
+  sessionPath: string,
+  agents: AgentInfo[]
+): Promise<string[]> {
+  const resourceSheets: string[] = [];
+
+  for (const agent of agents) {
+    // Check if agent has resources/index.md
+    const resourcesIndexPath = path.join(sessionPath, agent.agent_id, 'resources', 'index.md');
+
+    if (!fs.existsSync(resourcesIndexPath)) {
+      continue;
+    }
+
+    try {
+      const indexContent = fs.readFileSync(resourcesIndexPath, 'utf-8');
+
+      // Extract links to *-RESOURCE-SHEET.md files
+      // Pattern: [title](path/to/file-RESOURCE-SHEET.md)
+      const resourceSheetPattern = /\[.*?\]\((.*?-RESOURCE-SHEET\.md)\)/gi;
+      const matches = indexContent.matchAll(resourceSheetPattern);
+
+      for (const match of matches) {
+        const resourceSheetPath = match[1];
+        if (!resourceSheets.includes(resourceSheetPath)) {
+          resourceSheets.push(resourceSheetPath);
+        }
+      }
+    } catch (error) {
+      console.error(`Failed to read resources/index.md for agent ${agent.agent_id}:`, error);
+    }
+  }
+
+  return resourceSheets;
 }
 
 /**
@@ -460,8 +541,10 @@ export async function getSessionById(featureName: string): Promise<SessionDetail
     const aggregation = calculateAggregation(enrichedAgents);
     const calculatedStatus = calculateSessionStatus(enrichedAgents);
 
-    // Extract workorders created during session
+    // Extract Phase 2 data from agent subdirectories
     const createdWorkorders = await extractWorkordersCreated(sessionPath, enrichedAgents);
+    const filesModified = await extractFilesModified(sessionPath, enrichedAgents);
+    const resourceSheets = await extractResourceSheets(sessionPath, enrichedAgents);
 
     const sessionDetail: SessionDetail = {
       workorder_id: commData.workorder_id || 'UNKNOWN',
@@ -477,11 +560,15 @@ export async function getSessionById(featureName: string): Promise<SessionDetail
       aggregation: aggregation,
       instructions_file: commData.instructions_file,
 
-      // Hierarchical session fields
+      // Hierarchical session fields (Phase 1)
       phases: commData.phases,  // Session-level phase tracking
-      created_workorders: createdWorkorders.length > 0 ? createdWorkorders : undefined,
       completed_at: commData.completed_at,
-      duration: commData.duration
+      duration: commData.duration,
+
+      // Hierarchical session fields (Phase 2)
+      created_workorders: createdWorkorders.length > 0 ? createdWorkorders : undefined,
+      files_modified: filesModified.length > 0 ? filesModified : undefined,
+      resource_sheets: resourceSheets.length > 0 ? resourceSheets : undefined
     };
 
     return sessionDetail;

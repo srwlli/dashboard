@@ -16,6 +16,9 @@ import { RefreshCw, User, Users, CheckCircle } from 'lucide-react';
 import type { SessionDetail as SessionDetailType } from '@/lib/api/sessions';
 import AgentCard from './AgentCard';
 import SessionMetricsCard from './SessionMetricsCard';
+import WorkordersCreatedSection from './WorkordersCreatedSection';
+import FilesModifiedSection from './FilesModifiedSection';
+import ResourceSheetsSection from './ResourceSheetsSection';
 
 interface SessionDetailProps {
   session: SessionDetailType;
@@ -252,6 +255,19 @@ export default function SessionDetail({
             ))}
           </div>
         </div>
+
+        {/* Phase 2 Sections: Deliverables & Resources */}
+        {session.created_workorders && session.created_workorders.length > 0 && (
+          <WorkordersCreatedSection workorders={session.created_workorders} />
+        )}
+
+        {session.files_modified && session.files_modified.length > 0 && (
+          <FilesModifiedSection files={session.files_modified} />
+        )}
+
+        {session.resource_sheets && session.resource_sheets.length > 0 && (
+          <ResourceSheetsSection resourceSheets={session.resource_sheets} />
+        )}
 
         {/* Parallel Execution Info */}
         {session.parallel_execution?.enabled && (

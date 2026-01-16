@@ -36,7 +36,8 @@
       "Bash(timeout 10 bash:*)",
       "Bash(NUL)",
       "Bash(nul)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
