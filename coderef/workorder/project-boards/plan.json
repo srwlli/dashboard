@@ -1,0 +1,575 @@
+{
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-PROJECT-BOARDS-001",
+    "feature_name": "project-boards",
+    "version": "1.0.0",
+    "created_at": "2026-01-16T00:00:00.000Z",
+    "updated_at": "2026-01-16T00:00:00.000Z",
+    "status": "pending",
+    "schema_version": "2.0.0"
+  },
+  "FEATURE_OVERVIEW": {
+    "title": "Project Boards - Trello-like Kanban System",
+    "description": "Implement a full-featured Kanban board system with drag & drop lists and cards. Boards can exist standalone or be linked to projects/directories. Supports rich card features including markdown descriptions, tags, and file/URL attachments.",
+    "motivation": "Provide a visual task management system within the dashboard to organize work across multiple projects, similar to Trello or GitHub Projects.",
+    "target_users": ["Dashboard users managing multiple projects", "Developers organizing feature work", "Teams coordinating tasks"],
+    "success_criteria": [
+      "Users can create/manage multiple boards",
+      "Drag & drop works smoothly for cards and lists",
+      "Boards persist across sessions in ~/.coderef-dashboard/boards/",
+      "New window mode works like Notes widget",
+      "Card attachments support files, folders, and URLs",
+      "UI follows existing dashboard design patterns"
+    ]
+  },
+  "REQUIREMENTS": {
+    "functional": [
+      "Create/edit/delete boards with custom names",
+      "Optionally link boards to projects or directories",
+      "Create/edit/delete lists within boards",
+      "Drag & drop lists to reorder",
+      "Collapse/expand lists (title-only vs full view)",
+      "Double-click list titles to edit inline",
+      "Create/edit/delete cards within lists",
+      "Drag & drop cards between lists and within lists",
+      "Card title and markdown description editing",
+      "Card tags for categorization",
+      "Add file/folder/URL attachments to cards via right-click",
+      "Right-click context menus for cards and lists",
+      "Board picker/selector UI",
+      "Board settings to change linking",
+      "Open board in new window (Electron + web)",
+      "Standalone route for popup window"
+    ],
+    "non_functional": [
+      "Smooth 60fps drag & drop animations",
+      "Auto-save changes within 500ms",
+      "Support for 100+ cards per board without lag",
+      "Responsive design (mobile/tablet/desktop)",
+      "Keyboard shortcuts for common actions",
+      "Accessibility (keyboard navigation, ARIA labels)"
+    ],
+    "out_of_scope": [
+      "AI-powered features (session/workorder conversion)",
+      "Real-time collaboration",
+      "Board templates",
+      "Card due dates / calendar view",
+      "File uploads (attachments are references only)",
+      "Board sharing/permissions"
+    ]
+  },
+  "DEPENDENCIES": {
+    "external_dependencies": [
+      {
+        "name": "@dnd-kit/core",
+        "version": "^6.0.0",
+        "purpose": "Core drag & drop functionality"
+      },
+      {
+        "name": "@dnd-kit/sortable",
+        "version": "^8.0.0",
+        "purpose": "Sortable lists and cards"
+      },
+      {
+        "name": "@dnd-kit/utilities",
+        "version": "^3.2.0",
+        "purpose": "DnD utility functions"
+      }
+    ],
+    "internal_dependencies": [
+      "ProjectsContext - For project linking dropdown",
+      "CodeRefApi.file - For file/folder attachments",
+      "react-markdown - For card description rendering",
+      "Tailwind CSS - For styling",
+      "Electron IPC - For new window functionality"
+    ]
+  },
+  "ARCHITECTURE": {
+    "data_models": [
+      {
+        "name": "Board",
+        "file": "packages/dashboard/src/types/boards.ts",
+        "description": "Top-level board with optional project/directory linking",
+        "fields": {
+          "id": "string (UUID)",
+          "name": "string (user-defined)",
+          "projectId": "string | null (optional link to project)",
+          "linkedPath": "string | null (optional directory path)",
+          "lists": "BoardList[] (ordered lists)",
+          "createdAt": "string (ISO 8601)",
+          "updatedAt": "string (ISO 8601)"
+        }
+      },
+      {
+        "name": "BoardList",
+        "file": "packages/dashboard/src/types/boards.ts",
+        "description": "Vertical column container",
+        "fields": {
+          "id": "string (UUID)",
+          "title": "string (editable)",
+          "collapsed": "boolean (UI state)",
+          "order": "number (position)",
+          "cardIds": "string[] (card references)",
+          "color": "string | undefined (optional accent)",
+          "createdAt": "string (ISO 8601)"
+        }
+      },
+      {
+        "name": "BoardCard",
+        "file": "packages/dashboard/src/types/boards.ts",
+        "description": "Individual task card",
+        "fields": {
+          "id": "string (UUID)",
+          "listId": "string (parent list)",
+          "title": "string (required)",
+          "description": "string | undefined (markdown)",
+          "order": "number (position in list)",
+          "attachments": "CardAttachment[]",
+          "tags": "string[] | undefined",
+          "createdAt": "string (ISO 8601)",
+          "updatedAt": "string (ISO 8601)"
+        }
+      },
+      {
+        "name": "CardAttachment",
+        "file": "packages/dashboard/src/types/boards.ts",
+        "description": "File/folder/URL reference",
+        "fields": {
+          "id": "string (UUID)",
+          "type": "'file' | 'folder' | 'url'",
+          "path": "string | undefined (for file/folder)",
+          "displayName": "string",
+          "url": "string | undefined (for URL type)",
+          "addedAt": "string (ISO 8601)"
+        }
+      }
+    ],
+    "file_structure": [
+      "~/.coderef-dashboard/boards/ - Root boards directory",
+      "~/.coderef-dashboard/boards/board-{id}/board.json - Board + lists metadata",
+      "~/.coderef-dashboard/boards/board-{id}/cards/list-{listId}.json - Cards per list"
+    ],
+    "component_hierarchy": [
+      "AssistantPage (/assistant)",
+      "  └── BoardPicker (board selector/creator)",
+      "      └── BoardCanvas (main board view)",
+      "          ├── BoardHeader (name, settings, new window)",
+      "          ├── ListsContainer (horizontal scroll)",
+      "          │   ├── BoardList (draggable column)",
+      "          │   │   ├── ListHeader (title, collapse, menu)",
+      "          │   │   ├── CardList (droppable area)",
+      "          │   │   │   └── BoardCard (draggable card)",
+      "          │   │   └── AddCardButton",
+      "          │   └── AddListButton",
+      "          └── BoardSettings (link to project/directory)"
+    ],
+    "api_routes": [
+      "GET    /api/boards - List all boards",
+      "POST   /api/boards - Create board",
+      "GET    /api/boards/[id] - Get board with all data",
+      "PATCH  /api/boards/[id] - Update board (rename/relink)",
+      "DELETE /api/boards/[id] - Delete board",
+      "POST   /api/boards/[id]/lists - Create list",
+      "PATCH  /api/boards/[id]/lists/[listId] - Update list",
+      "DELETE /api/boards/[id]/lists/[listId] - Delete list",
+      "POST   /api/boards/[id]/cards - Create card",
+      "PATCH  /api/boards/[id]/cards/[cardId] - Update card",
+      "DELETE /api/boards/[id]/cards/[cardId] - Delete card"
+    ]
+  },
+  "IMPLEMENTATION_PLAN": {
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Setup & Dependencies",
+        "description": "Install dependencies and create type definitions",
+        "estimated_hours": 0.5,
+        "tasks": [
+          {
+            "task_id": "SETUP-001",
+            "title": "Install @dnd-kit dependencies",
+            "description": "Install @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities via npm",
+            "files_to_modify": ["packages/dashboard/package.json"],
+            "command": "cd packages/dashboard && npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities",
+            "acceptance_criteria": ["Dependencies appear in package.json", "npm install completes without errors"],
+            "estimated_hours": 0.25
+          },
+          {
+            "task_id": "SETUP-002",
+            "title": "Create TypeScript type definitions",
+            "description": "Define Board, BoardList, BoardCard, CardAttachment interfaces in packages/dashboard/src/types/boards.ts",
+            "files_to_create": ["packages/dashboard/src/types/boards.ts"],
+            "acceptance_criteria": ["All 4 interfaces defined with proper fields", "Types exported for use in components"],
+            "estimated_hours": 0.25
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "name": "Backend API Routes",
+        "description": "Create all API routes for boards, lists, and cards",
+        "estimated_hours": 3,
+        "tasks": [
+          {
+            "task_id": "API-001",
+            "title": "Create GET /api/boards route",
+            "description": "List all boards from ~/.coderef-dashboard/boards/, return array with metadata (id, name, projectId, listCount)",
+            "files_to_create": ["packages/dashboard/src/app/api/boards/route.ts"],
+            "acceptance_criteria": ["Returns empty array if no boards exist", "Returns all boards with correct metadata", "Handles filesystem errors gracefully"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "API-002",
+            "title": "Create POST /api/boards route",
+            "description": "Create new board directory and board.json file. Generate UUID for board ID. Initialize with empty lists array.",
+            "files_to_modify": ["packages/dashboard/src/app/api/boards/route.ts"],
+            "acceptance_criteria": ["Creates ~/.coderef-dashboard/boards/board-{id}/ directory", "Creates board.json with name, projectId, linkedPath fields", "Returns created board object"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "API-003",
+            "title": "Create GET /api/boards/[id] route",
+            "description": "Load board.json and all card files from cards/ subdirectory. Assemble complete board with lists and cards.",
+            "files_to_create": ["packages/dashboard/src/app/api/boards/[id]/route.ts"],
+            "acceptance_criteria": ["Returns board with lists", "Returns cards organized by listId", "Returns 404 if board doesn't exist"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "API-004",
+            "title": "Create PATCH /api/boards/[id] route",
+            "description": "Update board name, projectId, or linkedPath. Persist changes to board.json.",
+            "files_to_modify": ["packages/dashboard/src/app/api/boards/[id]/route.ts"],
+            "acceptance_criteria": ["Updates only provided fields", "Validates board exists", "Returns updated board"],
+            "estimated_hours": 0.25
+          },
+          {
+            "task_id": "API-005",
+            "title": "Create DELETE /api/boards/[id] route",
+            "description": "Delete entire board directory recursively (board.json + cards/ subdirectory).",
+            "files_to_modify": ["packages/dashboard/src/app/api/boards/[id]/route.ts"],
+            "acceptance_criteria": ["Deletes board directory", "Returns success confirmation", "Handles non-existent boards gracefully"],
+            "estimated_hours": 0.25
+          },
+          {
+            "task_id": "API-006",
+            "title": "Create list management routes",
+            "description": "POST /api/boards/[id]/lists - Create list in board.json. PATCH/DELETE for updating/removing lists.",
+            "files_to_create": ["packages/dashboard/src/app/api/boards/[id]/lists/route.ts"],
+            "acceptance_criteria": ["Creates list with UUID and order", "Updates list title/order/collapsed state", "Deletes list and associated cards file"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "API-007",
+            "title": "Create card management routes",
+            "description": "POST /api/boards/[id]/cards - Create card in cards/{listId}.json. PATCH/DELETE for updating/removing cards.",
+            "files_to_create": ["packages/dashboard/src/app/api/boards/[id]/cards/route.ts"],
+            "acceptance_criteria": ["Creates card with UUID and order", "Updates card title/description/attachments/tags", "Moves card to different list (changes listId)", "Deletes card from list file"],
+            "estimated_hours": 0.5
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "Core Components (No Drag & Drop)",
+        "description": "Build static board UI components before adding interactivity",
+        "estimated_hours": 3,
+        "tasks": [
+          {
+            "task_id": "COMP-001",
+            "title": "Create BoardPicker component",
+            "description": "Dropdown to select existing board or create new board. Shows board name with optional project/directory indicator.",
+            "files_to_create": ["packages/dashboard/src/components/boards/BoardPicker.tsx"],
+            "acceptance_criteria": ["Lists all boards from API", "Shows 'Create Board' option", "Opens creation modal", "Emits selected board ID"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "COMP-002",
+            "title": "Create BoardCreationModal component",
+            "description": "Modal with board name input and optional project/directory linking (radio buttons + dropdowns/file picker).",
+            "files_to_create": ["packages/dashboard/src/components/boards/BoardCreationModal.tsx"],
+            "acceptance_criteria": ["Validates board name (required)", "Provides 3 linking options: None, Project, Directory", "Calls POST /api/boards on submit"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "COMP-003",
+            "title": "Create BoardCanvas component",
+            "description": "Main board container. Loads board data, renders lists in horizontal layout with scroll. No drag & drop yet.",
+            "files_to_create": ["packages/dashboard/src/components/boards/BoardCanvas.tsx"],
+            "acceptance_criteria": ["Fetches board data from API", "Renders BoardHeader", "Renders lists horizontally", "Shows loading/error states"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "COMP-004",
+            "title": "Create BoardList component",
+            "description": "Vertical column with title, collapse toggle, and cards. Static rendering only (no drag yet).",
+            "files_to_create": ["packages/dashboard/src/components/boards/BoardList.tsx"],
+            "acceptance_criteria": ["Shows list title", "Collapse/expand functionality", "Renders cards in order", "Shows 'Add Card' button"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "COMP-005",
+            "title": "Create BoardCard component",
+            "description": "Card with title, description preview, tags, attachment count. Click to expand. No drag yet.",
+            "files_to_create": ["packages/dashboard/src/components/boards/BoardCard.tsx"],
+            "acceptance_criteria": ["Shows card title", "Truncates long descriptions", "Shows tag badges", "Shows attachment icon with count"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "COMP-006",
+            "title": "Create ListHeader component",
+            "description": "List title with inline editing (double-click), collapse button, context menu (3-dot icon).",
+            "files_to_create": ["packages/dashboard/src/components/boards/ListHeader.tsx"],
+            "acceptance_criteria": ["Double-click title to edit", "Saves on Enter/blur", "Collapse button toggles list", "Context menu shows Rename/Delete"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "COMP-007",
+            "title": "Create CardEditor modal",
+            "description": "Full card editing UI: title input, markdown editor for description, tag input, attachment list, save/cancel buttons.",
+            "files_to_create": ["packages/dashboard/src/components/boards/CardEditor.tsx"],
+            "acceptance_criteria": ["Edits card title", "Markdown editor for description (use existing react-markdown)", "Add/remove tags", "Add/remove attachments", "Calls PATCH /api/boards/[id]/cards"],
+            "estimated_hours": 0.5
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Drag & Drop Integration",
+        "description": "Add @dnd-kit drag & drop for cards and lists",
+        "estimated_hours": 3,
+        "tasks": [
+          {
+            "task_id": "DND-001",
+            "title": "Setup DndContext in BoardCanvas",
+            "description": "Wrap lists in <DndContext> with sensors (pointer, touch, keyboard) and collision detection.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardCanvas.tsx"],
+            "acceptance_criteria": ["DndContext wraps lists", "Sensors configured for mouse/touch/keyboard", "Collision detection set to closestCenter"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "DND-002",
+            "title": "Make BoardCard draggable",
+            "description": "Use useSortable hook from @dnd-kit/sortable. Add drag handle UI (entire card or grip icon).",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardCard.tsx"],
+            "acceptance_criteria": ["Card has drag listeners", "Shows drag overlay during drag", "Cursor changes to grab/grabbing"],
+            "estimated_hours": 0.75
+          },
+          {
+            "task_id": "DND-003",
+            "title": "Make CardList droppable",
+            "description": "Use SortableContext with verticalListSortingStrategy. Handle drop events to update card order/listId.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardList.tsx"],
+            "acceptance_criteria": ["Cards reorder within list", "Cards move between lists", "Visual drop indicator shown"],
+            "estimated_hours": 1
+          },
+          {
+            "task_id": "DND-004",
+            "title": "Implement onDragEnd handler",
+            "description": "Calculate new card position (listId, order). Call PATCH /api/boards/[id]/cards to persist. Update local state optimistically.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardCanvas.tsx"],
+            "acceptance_criteria": ["Calculates correct order index", "Persists to API", "Rollback on API error", "Smooth animation during reorder"],
+            "estimated_hours": 0.75
+          },
+          {
+            "task_id": "DND-005",
+            "title": "Make lists draggable",
+            "description": "Use useSortable for BoardList. Drag by ListHeader. Reorder lists horizontally.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardList.tsx", "packages/dashboard/src/components/boards/BoardCanvas.tsx"],
+            "acceptance_criteria": ["Drag list by header", "Horizontal reordering", "Persists list order to API", "Cards stay with list during drag"],
+            "estimated_hours": 1
+          }
+        ]
+      },
+      {
+        "phase": 5,
+        "name": "Card Attachments & Context Menus",
+        "description": "Add file/folder/URL attachments and right-click menus",
+        "estimated_hours": 2,
+        "tasks": [
+          {
+            "task_id": "ATT-001",
+            "title": "Create AttachmentPicker component",
+            "description": "Modal with 3 options: File, Folder, URL. Uses file picker for file/folder, text input for URL.",
+            "files_to_create": ["packages/dashboard/src/components/boards/AttachmentPicker.tsx"],
+            "acceptance_criteria": ["File picker opens for 'File' option", "Folder picker opens for 'Folder' option", "Text input for URL", "Validates URL format"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "ATT-002",
+            "title": "Add attachments to CardEditor",
+            "description": "Show attachment list in CardEditor. 'Add Attachment' button opens AttachmentPicker. Delete button per attachment.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/CardEditor.tsx"],
+            "acceptance_criteria": ["Lists all attachments with icons", "Add button opens picker", "Delete button removes attachment", "Shows file paths/URLs"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "MENU-001",
+            "title": "Create CardContextMenu component",
+            "description": "Right-click menu with: Edit, Delete, Add Attachment, Copy Card. Use native context menu or library like react-contexify.",
+            "files_to_create": ["packages/dashboard/src/components/boards/CardContextMenu.tsx"],
+            "acceptance_criteria": ["Shows on right-click", "Edit opens CardEditor", "Delete shows confirmation", "Add Attachment opens picker"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "MENU-002",
+            "title": "Create ListContextMenu component",
+            "description": "Right-click menu for lists: Rename, Delete, Change Color. Accessible via 3-dot icon in ListHeader.",
+            "files_to_create": ["packages/dashboard/src/components/boards/ListContextMenu.tsx"],
+            "acceptance_criteria": ["Rename opens inline editor", "Delete confirms and removes list", "Color picker changes list accent"],
+            "estimated_hours": 0.5
+          }
+        ]
+      },
+      {
+        "phase": 6,
+        "name": "New Window Support",
+        "description": "Add standalone route and Electron integration",
+        "estimated_hours": 1,
+        "tasks": [
+          {
+            "task_id": "WIN-001",
+            "title": "Create /assistant-standalone route",
+            "description": "Standalone page that renders BoardCanvas without sidebar/header. Takes boardId from URL params.",
+            "files_to_create": ["packages/dashboard/src/app/assistant-standalone/page.tsx"],
+            "acceptance_criteria": ["Renders BoardCanvas fullscreen", "Reads boardId from query param", "No sidebar/header shown"],
+            "estimated_hours": 0.25
+          },
+          {
+            "task_id": "WIN-002",
+            "title": "Add Electron IPC handler",
+            "description": "Add window:openBoards handler to packages/electron-app/src/main.ts. Opens new BrowserWindow with /assistant-standalone?boardId={id}.",
+            "files_to_modify": ["packages/electron-app/src/main.ts", "packages/electron-app/src/preload.ts"],
+            "acceptance_criteria": ["IPC handler creates new window", "Loads correct board in new window", "Window is independent of main window"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "WIN-003",
+            "title": "Add 'New Window' button to BoardHeader",
+            "description": "Button in BoardHeader (next to board name). Calls window.electronAPI.openBoards(boardId) in Electron, window.open() in web.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardHeader.tsx"],
+            "acceptance_criteria": ["Button shows in header", "Opens new window with same board", "Works in both Electron and web"],
+            "estimated_hours": 0.25
+          }
+        ]
+      },
+      {
+        "phase": 7,
+        "name": "Polish & Refinement",
+        "description": "Add keyboard shortcuts, accessibility, mobile responsive",
+        "estimated_hours": 2,
+        "tasks": [
+          {
+            "task_id": "POL-001",
+            "title": "Add keyboard shortcuts",
+            "description": "Cmd/Ctrl+N: New card, Cmd/Ctrl+L: New list, Cmd/Ctrl+E: Edit card, Del: Delete selected card/list.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardCanvas.tsx"],
+            "acceptance_criteria": ["Shortcuts work when board focused", "Shows shortcut hints in UI", "Doesn't conflict with browser shortcuts"],
+            "estimated_hours": 0.5
+          },
+          {
+            "task_id": "POL-002",
+            "title": "Add ARIA labels and keyboard navigation",
+            "description": "Add aria-label to all interactive elements. Tab navigation through cards/lists. Arrow keys to move between cards.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardCard.tsx", "packages/dashboard/src/components/boards/BoardList.tsx"],
+            "acceptance_criteria": ["Screen reader announces card titles", "Tab key navigates through UI", "Arrow keys move focus between cards"],
+            "estimated_hours": 0.75
+          },
+          {
+            "task_id": "POL-003",
+            "title": "Mobile responsive design",
+            "description": "Stack lists vertically on mobile. Touch-optimized drag & drop. Swipe to collapse lists.",
+            "files_to_modify": ["packages/dashboard/src/components/boards/BoardCanvas.tsx", "packages/dashboard/src/components/boards/BoardList.tsx"],
+            "acceptance_criteria": ["Lists stack on screens < 768px", "Touch drag works smoothly", "Buttons are touch-sized (44x44px min)"],
+            "estimated_hours": 0.75
+          }
+        ]
+      },
+      {
+        "phase": 8,
+        "name": "Integration & Testing",
+        "description": "Update main /assistant route and add tests",
+        "estimated_hours": 1.5,
+        "tasks": [
+          {
+            "task_id": "INT-001",
+            "title": "Update /assistant page route",
+            "description": "Replace placeholder in packages/dashboard/src/app/assistant/page.tsx with BoardPicker + BoardCanvas.",
+            "files_to_modify": ["packages/dashboard/src/app/assistant/page.tsx"],
+            "acceptance_criteria": ["BoardPicker shows at top", "BoardCanvas renders selected board", "No console errors"],
+            "estimated_hours": 0.25
+          },
+          {
+            "task_id": "TEST-001",
+            "title": "Write unit tests for board utilities",
+            "description": "Test card reordering logic, list reordering, board state updates.",
+            "files_to_create": ["packages/dashboard/src/components/boards/__tests__/board-utils.test.ts"],
+            "acceptance_criteria": ["Tests for reorder calculations", "Tests for state updates", "95%+ code coverage"],
+            "estimated_hours": 0.75
+          },
+          {
+            "task_id": "TEST-002",
+            "title": "Manual testing checklist",
+            "description": "Test all features: create board, add lists/cards, drag & drop, attachments, new window, persistence.",
+            "acceptance_criteria": ["All features work in Electron", "All features work in web browser", "No data loss on reload", "Drag & drop smooth at 60fps"],
+            "estimated_hours": 0.5
+          }
+        ]
+      }
+    ],
+    "total_estimated_hours": 16.5
+  },
+  "TESTING_STRATEGY": {
+    "unit_tests": [
+      "Board state management utilities",
+      "Card/list reordering algorithms",
+      "API route handlers"
+    ],
+    "integration_tests": [
+      "BoardCanvas with API mocks",
+      "Drag & drop interactions",
+      "Context menu actions"
+    ],
+    "manual_testing": [
+      "Create/edit/delete boards",
+      "Drag & drop cards and lists",
+      "Collapse/expand lists",
+      "Add attachments",
+      "Open in new window",
+      "Mobile responsive behavior"
+    ]
+  },
+  "RISKS_AND_MITIGATIONS": [
+    {
+      "risk": "Drag & drop performance with 100+ cards",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Use React.memo for cards, virtualize long lists if needed, optimize re-renders"
+    },
+    {
+      "risk": "Data loss if API save fails during drag",
+      "likelihood": "Low",
+      "impact": "High",
+      "mitigation": "Optimistic updates with rollback, show save status indicator, localStorage backup"
+    },
+    {
+      "risk": "Context menu conflicts with browser right-click",
+      "likelihood": "Medium",
+      "impact": "Low",
+      "mitigation": "Use preventDefault(), test across browsers, provide fallback keyboard shortcuts"
+    }
+  ],
+  "ROLLBACK_PLAN": "Feature is entirely new code - rollback is simple deletion of /assistant route changes and new API routes. No database migrations or data to clean up. Boards stored in ~/.coderef-dashboard/boards/ can be manually deleted if needed.",
+  "PERFORMANCE_TARGETS": {
+    "drag_latency": "< 16ms (60fps)",
+    "api_response": "< 200ms for card/list updates",
+    "initial_load": "< 1s for board with 100 cards",
+    "memory_usage": "< 100MB for largest board"
+  },
+  "ACCESSIBILITY_REQUIREMENTS": [
+    "WCAG 2.1 Level AA compliance",
+    "Keyboard-only navigation support",
+    "Screen reader compatibility",
+    "High contrast mode support",
+    "Focus indicators on all interactive elements"
+  ]
+}

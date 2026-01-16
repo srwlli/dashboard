@@ -1,0 +1,66 @@
+{
+  "project_name": "coderef-dashboard",
+  "project_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+  "analyzed_at": "2026-01-16T00:00:00.000Z",
+  "codebase_summary": {
+    "total_elements": 5178,
+    "elements_by_type": {
+      "component": 231,
+      "method": 4051,
+      "constant": 160,
+      "function": 508,
+      "class": 198,
+      "hook": 30
+    },
+    "tech_stack": {
+      "framework": "Next.js 16 (App Router)",
+      "ui_library": "React 19",
+      "styling": "Tailwind CSS",
+      "state_management": "React Context API",
+      "build_tool": "npm workspaces monorepo"
+    }
+  },
+  "relevant_patterns": {
+    "page_routes": [
+      "/assistant (already exists, will be redesigned)",
+      "/notes (reference for widget pattern)",
+      "/notes-standalone (reference for standalone window)"
+    ],
+    "widgets": [
+      "notes widget - Multi-tab editor with standalone mode",
+      "coderef-explorer - File tree navigation"
+    ],
+    "storage_patterns": [
+      "~/.coderef-dashboard/projects.json - Central project registry",
+      "Notes use per-project coderef/notes/ directories",
+      "New pattern: ~/.coderef-dashboard/boards/ for centralized board storage"
+    ],
+    "window_patterns": [
+      "Electron IPC for new windows (window:openNotes)",
+      "Standalone routes without sidebar/header",
+      "PageCard wrapper for main routes"
+    ]
+  },
+  "existing_apis": {
+    "projects": "/api/coderef/projects (GET, POST, DELETE)",
+    "files": "/api/coderef/file (GET, PUT, DELETE, PATCH)",
+    "notes": "/api/coderef/notes (GET)"
+  },
+  "integration_points": {
+    "projects_context": "packages/dashboard/src/contexts/ProjectsContext.tsx",
+    "api_access": "packages/dashboard/src/lib/coderef/api-access.ts",
+    "electron_preload": "packages/electron-app/src/preload.ts",
+    "electron_main": "packages/electron-app/src/main.ts"
+  },
+  "dependencies_to_add": [
+    "@dnd-kit/core - Core drag & drop library",
+    "@dnd-kit/sortable - Sortable lists",
+    "@dnd-kit/utilities - DnD utility functions"
+  ],
+  "risks_and_gaps": [
+    "No existing drag & drop implementation - new pattern to establish",
+    "Board state management will need careful design for performance",
+    "Context menu implementation may need new utility components",
+    "Markdown rendering already exists (react-markdown) - reuse for card descriptions"
+  ]
+}

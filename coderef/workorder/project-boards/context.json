@@ -1,0 +1,36 @@
+{
+  "feature_name": "project-boards",
+  "workorder_id": "WO-PROJECT-BOARDS-001",
+  "description": "Trello-like board system with drag & drop lists and cards for project/task management. Boards can be standalone or linked to projects/directories.",
+  "goal": "Create a Kanban-style board interface where users can organize tasks with lists and cards, supporting drag & drop, collapsible lists, and rich card features including attachments",
+  "requirements": [
+    "Standalone boards (can exist without project linking)",
+    "Optional linking to projects or directories",
+    "Drag & drop for cards between lists",
+    "Drag & drop for list reordering",
+    "Collapsible lists (title-only or full view)",
+    "Editable list titles (double-click)",
+    "Card features: title, description (markdown), tags",
+    "Card attachments: files, folders, URLs",
+    "Right-click context menus for cards",
+    "New window support (reuse Notes pattern)",
+    "Storage in ~/.coderef-dashboard/boards/",
+    "Board picker/creator UI",
+    "Board settings to change linking"
+  ],
+  "out_of_scope": [
+    "AI features (no session conversion)",
+    "AI features (no workorder conversion)",
+    "AI auto-suggestions",
+    "AI file path detection",
+    "Session linking in attachments"
+  ],
+  "constraints": [
+    "Reuse Notes window pattern for new window functionality",
+    "Use @dnd-kit/core for drag & drop library",
+    "Follow existing dashboard UI patterns",
+    "Store boards centrally in ~/.coderef-dashboard/boards/",
+    "Support both /assistant (main) and /assistant-standalone (popup) routes"
+  ],
+  "created_at": "2026-01-16T00:00:00.000Z"
+}
