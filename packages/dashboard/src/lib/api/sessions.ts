@@ -144,13 +144,28 @@ export interface AgentResources {
 }
 
 /**
+ * Workorder entry in agent outputs (supports two formats)
+ * Format 1: String - "WO-ID (path/)"
+ * Format 2: Object - { workorder_id, feature_name, location, ... }
+ */
+export interface WorkorderEntry {
+  workorder_id?: string;
+  id?: string;
+  feature_name?: string;
+  location?: string;
+  plan_path?: string;
+  status?: string;
+  created_at?: string;
+}
+
+/**
  * Agent output specifications
  * Defines what the agent produces
  */
 export interface AgentOutputs {
   primary_output: string;        // Path to main deliverable
   format: string;                // Output format (markdown, json, code, etc.)
-  workorders_created?: string[]; // Workorder IDs created by this agent
+  workorders_created?: (string | WorkorderEntry)[]; // Workorder IDs or objects created by this agent
   files_created?: string[];      // Files created during execution (may include metadata like line counts)
   files_modified?: string[];     // Files modified during execution (may include metadata)
   total_lines_added?: number;    // Total lines of code added
@@ -437,19 +452,60 @@ async function extractWorkordersCreated(
   for (const agent of agents) {
     if (agent.outputs?.workorders_created) {
       for (const workorderEntry of agent.outputs.workorders_created) {
-        // Parse format: "WO-ID (path/to/workorder/)"
-        const match = workorderEntry.match(/^(.+?)\s*\((.+?)\)$/);
+        let workorderId: string;
+        let workorderPath: string;
+        let metadata: WorkorderMetadata | undefined;
 
-        if (match) {
-          const [, workorderId, workorderPath] = match;
+        // Handle both string and object formats
+        if (typeof workorderEntry === 'string') {
+          // Format 1: String format "WO-ID (path/to/workorder/)"
+          const match = workorderEntry.match(/^(.+?)\s*\((.+?)\)$/);
 
-          // Read context.json from workorder directory
-          let metadata: WorkorderMetadata | undefined;
+          if (match) {
+            const [, id, pathMatch] = match;
+            workorderId = id.trim();
+            workorderPath = pathMatch.trim();
+          } else {
+            // Fallback for simple format (just ID)
+            workorderId = workorderEntry.trim();
+            workorderPath = '';
+          }
 
-          // Try to resolve workorder path (could be relative to agent home project)
+          // Try to resolve workorder path and read context.json
+          if (workorderPath) {
+            const possiblePaths = [
+              path.join(agent.agent_path || '', workorderPath, 'context.json'),
+              path.join(workorderPath, 'context.json'),
+            ];
+
+            for (const contextPath of possiblePaths) {
+              if (fs.existsSync(contextPath)) {
+                const contextData = safeJSONParse<WorkorderMetadata>(contextPath);
+                if (contextData) {
+                  metadata = contextData;
+                  break;
+                }
+              }
+            }
+          }
+        } else if (typeof workorderEntry === 'object' && workorderEntry !== null) {
+          // Format 2: Object format { workorder_id, feature_name, location, ... }
+          workorderId = workorderEntry.workorder_id || workorderEntry.id || 'Unknown';
+
+          // Extract path from location (absolute path) or plan_path (relative)
+          if (workorderEntry.location) {
+            workorderPath = workorderEntry.location;
+          } else if (workorderEntry.plan_path) {
+            // Extract directory from plan_path (e.g., "coderef/workorder/scanner-integration/plan.json" -> "coderef/workorder/scanner-integration/")
+            workorderPath = workorderEntry.plan_path.replace(/\/[^\/]+$/, '/');
+          } else {
+            workorderPath = '';
+          }
+
+          // Try to read context.json from location or relative path
           const possiblePaths = [
-            path.join(agent.agent_path || '', workorderPath, 'context.json'),
             path.join(workorderPath, 'context.json'),
+            path.join(agent.agent_path || '', workorderPath, 'context.json'),
           ];
 
           for (const contextPath of possiblePaths) {
@@ -461,20 +517,16 @@ async function extractWorkordersCreated(
               }
             }
           }
-
-          workorders.push({
-            id: workorderId.trim(),
-            path: workorderPath.trim(),
-            metadata
-          });
         } else {
-          // Fallback for simple format (just ID)
-          workorders.push({
-            id: workorderEntry.trim(),
-            path: '',
-            metadata: undefined
-          });
+          // Unknown format, skip
+          continue;
         }
+
+        workorders.push({
+          id: workorderId,
+          path: workorderPath,
+          metadata
+        });
       }
     }
   }
