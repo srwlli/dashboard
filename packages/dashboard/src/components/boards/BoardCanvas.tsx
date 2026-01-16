@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Plus, ExternalLink } from 'lucide-react';
+import { Plus, ExternalLink, X } from 'lucide-react';
 import { DndContext, closestCorners, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Board, BoardCard, BoardCanvasProps, UpdateListRequest, CreateCardRequest, UpdateCardRequest } from '@/types/boards';
 import { BoardList } from './BoardList';
@@ -18,6 +18,8 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   const [cards, setCards] = useState<Record<string, BoardCard[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showCreateListModal, setShowCreateListModal] = useState(false);
+  const [newListTitle, setNewListTitle] = useState('');
 
   // Drag & drop sensors
   const sensors = useSensors(
@@ -57,11 +59,13 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
     }
   }
 
-  async function handleCreateList() {
-    if (!board) return;
+  function openCreateListModal() {
+    setNewListTitle('');
+    setShowCreateListModal(true);
+  }
 
-    const title = prompt('Enter list title:');
-    if (!title || !title.trim()) return;
+  async function handleCreateList() {
+    if (!board || !newListTitle.trim()) return;
 
     try {
       const response = await fetch(`/api/boards/${boardId}/lists`, {
@@ -70,7 +74,7 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: title.trim(),
+          title: newListTitle.trim(),
           order: board.lists.length, // Add at the end
         }),
       });
@@ -80,12 +84,14 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
       if (data.success) {
         // Refresh board data
         fetchBoard();
+        setShowCreateListModal(false);
+        setNewListTitle('');
       } else {
-        alert(data.error?.message || 'Failed to create list');
+        setError(data.error?.message || 'Failed to create list');
       }
     } catch (err) {
       console.error('Failed to create list:', err);
-      alert('Failed to create list');
+      setError('Failed to create list');
     }
   }
 
@@ -384,7 +390,7 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
             {/* Add List Button */}
             <div className="flex-shrink-0 w-[300px]">
               <button
-                onClick={handleCreateList}
+                onClick={openCreateListModal}
                 className="w-full h-full min-h-[100px] bg-ind-panel/50 border-2 border-dashed border-ind-border hover:border-ind-accent hover:bg-ind-panel transition-colors flex flex-col items-center justify-center gap-2"
               >
                 <Plus className="w-6 h-6 text-ind-accent" />
@@ -394,6 +400,57 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
           </div>
         </DndContext>
       </div>
+
+      {/* Create List Modal */}
+      {showCreateListModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4">
+          <div className="bg-ind-panel border-2 border-ind-border shadow-xl max-w-md w-full">
+            <div className="border-b-2 border-ind-border p-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-ind-text">Create New List</h3>
+              <button
+                onClick={() => setShowCreateListModal(false)}
+                className="p-1 hover:bg-ind-border transition-colors"
+              >
+                <X className="w-5 h-5 text-ind-text-muted" />
+              </button>
+            </div>
+            <div className="p-4">
+              <label htmlFor="list-title" className="block text-sm font-medium text-ind-text mb-2">
+                List Title
+              </label>
+              <input
+                id="list-title"
+                type="text"
+                value={newListTitle}
+                onChange={(e) => setNewListTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newListTitle.trim()) {
+                    handleCreateList();
+                  }
+                }}
+                placeholder="Enter list title..."
+                autoFocus
+                className="w-full px-3 py-2 bg-ind-bg border-2 border-ind-border text-ind-text placeholder:text-ind-text-muted focus:border-ind-accent outline-none transition-colors"
+              />
+            </div>
+            <div className="border-t-2 border-ind-border p-4 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowCreateListModal(false)}
+                className="px-4 py-2 text-sm font-medium text-ind-text-muted hover:bg-ind-border transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateList}
+                disabled={!newListTitle.trim()}
+                className="px-6 py-2 text-sm font-medium bg-ind-accent hover:bg-ind-accent-hover text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Create List
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
