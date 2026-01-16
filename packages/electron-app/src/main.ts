@@ -233,6 +233,36 @@ ipcMain.handle('window:openNotes', () => {
   return { success: true };
 });
 
+// Open assistant/boards in new window
+ipcMain.handle('window:openAssistant', (_event, boardId?: string) => {
+  const assistantWindow = new BrowserWindow({
+    width: 1400,
+    height: 900,
+    minWidth: 1000,
+    minHeight: 700,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+    icon: path.join(__dirname, '../assets/icon.png'),
+  });
+
+  const baseUrl = isDev
+    ? 'http://localhost:3004/assistant-standalone'
+    : `http://localhost:${PORT}/assistant-standalone`;
+
+  const fullUrl = boardId ? `${baseUrl}?boardId=${boardId}` : baseUrl;
+
+  assistantWindow.loadURL(fullUrl);
+
+  if (isDev) {
+    assistantWindow.webContents.openDevTools();
+  }
+
+  return { success: true };
+});
+
 // Set always on top for focused window
 ipcMain.handle('window:setAlwaysOnTop', (event, alwaysOnTop: boolean) => {
   const win = BrowserWindow.fromWebContents(event.sender);
