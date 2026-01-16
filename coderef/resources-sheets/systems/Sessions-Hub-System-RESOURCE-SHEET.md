@@ -1,17 +1,22 @@
 ---
 agent: Claude Sonnet 4.5
-date: "2026-01-11"
+date: "2026-01-16"
 task: DOCUMENT
 subject: Sessions Hub System
 parent_project: coderef-dashboard
 category: other
-version: 1.0.0
+version: 1.1.0
 related_files:
   - packages/dashboard/src/lib/api/sessions.ts
   - packages/dashboard/src/components/SessionsHub/index.tsx
   - packages/dashboard/src/components/SessionsHub/SessionCreation/index.tsx
   - packages/dashboard/src/app/api/sessions/create/route.ts
   - packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionMonitoringContainer.tsx
+  - packages/dashboard/src/components/SessionsHub/SessionMonitoring/SessionDetail.tsx
+  - packages/dashboard/src/components/SessionsHub/SessionMonitoring/AgentCard.tsx
+  - packages/dashboard/src/components/SessionsHub/SessionMonitoring/WorkordersCreatedSection.tsx
+  - packages/dashboard/src/components/SessionsHub/SessionMonitoring/FilesModifiedSection.tsx
+  - packages/dashboard/src/components/SessionsHub/SessionMonitoring/ResourceSheetsSection.tsx
 status: APPROVED
 ---
 
