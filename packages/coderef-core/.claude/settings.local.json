@@ -16,7 +16,9 @@
       "Bash(nul)",
       "Bash(npm test:*)",
       "Bash(test:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "mcp__papertrail__validate_document",
+      "Bash(/dev/null)"
     ]
   },
   "enabledMcpjsonServers": [
