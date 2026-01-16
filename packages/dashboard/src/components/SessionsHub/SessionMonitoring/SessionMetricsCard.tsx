@@ -17,7 +17,7 @@
 import React from 'react';
 import { BarChart3 } from 'lucide-react';
 import type { SessionDetail } from '@/lib/api/sessions';
-import { calculateDuration } from '@/lib/api/sessions';
+import { calculateDuration } from '@/lib/utils/time';
 
 interface SessionMetricsCardProps {
   session: SessionDetail;

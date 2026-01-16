@@ -245,44 +245,8 @@ function calculateSessionStatus(agents: AgentInfo[]): SessionStatus {
  * @param completed - ISO 8601 timestamp when session completed (optional)
  * @returns Human-readable duration string (e.g., "2h 30m", "45m", "N/A")
  */
-export function calculateDuration(created: string, completed?: string): string {
-  if (!completed) {
-    return 'N/A';
-  }
-
-  try {
-    const start = new Date(created).getTime();
-    const end = new Date(completed).getTime();
-
-    if (isNaN(start) || isNaN(end)) {
-      return 'N/A';
-    }
-
-    // Handle invalid duration (completed before created or same time)
-    if (end <= start) {
-      return 'N/A';
-    }
-
-    const durationMs = end - start;
-    const durationMinutes = Math.floor(durationMs / (1000 * 60));
-
-    if (durationMinutes < 60) {
-      return `${durationMinutes}m`;
-    }
-
-    const hours = Math.floor(durationMinutes / 60);
-    const minutes = durationMinutes % 60;
-
-    if (minutes === 0) {
-      return `${hours}h`;
-    }
-
-    return `${hours}h ${minutes}m`;
-  } catch (error) {
-    console.error('Failed to calculate duration:', error);
-    return 'N/A';
-  }
-}
+// Re-export calculateDuration from utils for backward compatibility
+export { calculateDuration } from '../utils/time';
 
 /**
  * Safe JSON parse with error handling
