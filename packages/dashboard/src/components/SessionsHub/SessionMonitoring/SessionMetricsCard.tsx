@@ -51,7 +51,7 @@ export default function SessionMetricsCard({
     const [phaseKey, phaseInfo] = activeEntry;
     return {
       key: phaseKey,
-      name: phaseInfo.description || phaseKey,
+      name: phaseInfo.name || phaseKey,
       progress: phaseInfo.progress || 0
     };
   })();

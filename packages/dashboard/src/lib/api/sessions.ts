@@ -167,12 +167,14 @@ export interface PhaseGate {
  * Tracks multi-phase execution progress
  */
 export interface PhaseInfo {
+  name: string;                  // Phase name (e.g., "Core Enhancements")
   status: 'not_started' | 'in_progress' | 'complete';
-  progress: number;              // Percentage complete (0-100)
+  progress: string | number;     // Progress string (e.g., "11/11 tasks complete (100%)") or percentage
   lead_agents: string[];         // Agent IDs responsible for this phase
   started?: string;              // ISO 8601 timestamp when phase started
   completed?: string;            // ISO 8601 timestamp when phase completed
-  description: string;           // What this phase accomplishes
+  description?: string;          // Optional detailed description
+  gate_criteria?: string[];      // Phase gate criteria
   success_metrics?: SuccessMetric;
   dependencies?: string[];       // Phase IDs that must complete first (e.g., ["phase_1"])
 }
