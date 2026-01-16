@@ -2,6 +2,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import * as os from 'os';
+import { Worker } from 'worker_threads';
 import { glob } from 'glob';
 import { minimatch } from 'minimatch';
 import { ElementData, ScanOptions } from '../types/types.js';
@@ -355,6 +357,106 @@ function shouldExcludePath(filePath: string, excludePatterns: string[]): boolean
 }
 
 /**
+ * PHASE 2: Parallel Processing
+ * Helper function to scan files in parallel using worker threads
+ * @param files Array of file paths to scan
+ * @param lang Language extension (ts, js, py, etc.)
+ * @param options Scan options
+ * @returns Array of elements from all workers
+ */
+async function scanFilesInParallel(
+  files: string[],
+  lang: string,
+  options: ScanOptions
+): Promise<ElementData[]> {
+  // Determine worker count
+  const workerCount = typeof options.parallel === 'object' && options.parallel.workers
+    ? options.parallel.workers
+    : options.workerPoolSize || Math.max(1, os.cpus().length - 1);
+
+  if (workerCount <= 1 || files.length < workerCount * 2) {
+    // Not worth parallelizing for small file counts
+    // Fall back to sequential processing
+    return [];
+  }
+
+  // Split files into chunks for each worker
+  const chunks: string[][] = Array.from({ length: workerCount }, () => []);
+  files.forEach((file, index) => {
+    chunks[index % workerCount].push(file);
+  });
+
+  // Create workers and process chunks in parallel
+  const workerPromises = chunks
+    .filter(chunk => chunk.length > 0)
+    .map((chunk, index) => {
+      return new Promise<ElementData[]>((resolve, reject) => {
+        // Try multiple paths for worker file (compiled vs source)
+        let workerPath = path.join(__dirname, 'scanner-worker.js');
+        if (!fs.existsSync(workerPath)) {
+          // Fallback for test environment (TypeScript source)
+          workerPath = path.join(__dirname, 'scanner-worker.ts');
+        }
+        if (!fs.existsSync(workerPath)) {
+          // Reject if worker file not found
+          reject(new Error('Worker file not found: ' + workerPath));
+          return;
+        }
+
+        const worker = new Worker(workerPath);
+
+        let hasResult = false;
+
+        worker.on('message', (message: any) => {
+          if (message.type === 'result') {
+            hasResult = true;
+            worker.terminate();
+            resolve(message.elements || []);
+          } else if (message.type === 'error') {
+            hasResult = true;
+            worker.terminate();
+            reject(new Error(message.error));
+          }
+        });
+
+        worker.on('error', (error) => {
+          if (!hasResult) {
+            worker.terminate();
+            reject(error);
+          }
+        });
+
+        worker.on('exit', (code) => {
+          if (!hasResult && code !== 0) {
+            reject(new Error(`Worker stopped with exit code ${code}`));
+          }
+        });
+
+        // Send scan task to worker
+        worker.postMessage({
+          type: 'scan',
+          files: chunk,
+          lang,
+          options
+        });
+      });
+    });
+
+  try {
+    // Wait for all workers to complete
+    const results = await Promise.all(workerPromises);
+
+    // Flatten and return all elements
+    return results.flat();
+  } catch (error) {
+    // If parallel processing fails, return empty array
+    // Caller will fall back to sequential mode
+    console.error('Parallel processing failed:', error);
+    return [];
+  }
+}
+
+/**
  * Scans the current codebase for code elements (functions, classes, components, hooks)
  * @param dir Directory to scan
  * @param lang File extension to scan (or array of extensions) - defaults to all 10 supported languages
@@ -519,8 +621,44 @@ export async function scanCurrentElements(
     if (verbose) {
       console.log(`Found ${files.length} files to process:`, files);
     }
-    
-    // Process files
+
+    // PHASE 2: Parallel Processing - Try parallel mode if enabled
+    if (options.parallel && allLangs.length === 1) {
+      // Only use parallel mode for single-language scans to simplify worker logic
+      const currentLang = allLangs[0];
+
+      if (verbose) {
+        console.log(`Attempting parallel processing for ${files.length} ${currentLang} files`);
+      }
+
+      try {
+        const parallelElements = await scanFilesInParallel(files, currentLang, options);
+
+        if (parallelElements.length > 0) {
+          // Parallel processing succeeded
+          if (verbose) {
+            console.log(`Parallel processing completed: ${parallelElements.length} elements found`);
+          }
+
+          // Add all elements from parallel scan
+          for (const element of parallelElements) {
+            scanner.addElement(element);
+          }
+
+          // Skip sequential processing
+          return scanner.getElements();
+        } else if (verbose) {
+          console.log('Parallel processing returned no results, falling back to sequential mode');
+        }
+      } catch (error) {
+        if (verbose) {
+          console.log('Parallel processing failed, falling back to sequential mode:', error);
+        }
+        // Fall through to sequential processing
+      }
+    }
+
+    // Process files (sequential mode or fallback from parallel)
     for (const file of files) {
       try {
         // Check cache first
