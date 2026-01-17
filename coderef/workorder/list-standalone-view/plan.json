@@ -4,10 +4,11 @@
     "feature_name": "list-standalone-view",
     "created_at": "2026-01-17T00:00:00Z",
     "format_version": "2.0.0",
-    "status": "pending",
+    "status": "complete",
     "description": "Implementation plan for opening individual board lists in isolated standalone windows",
     "validation_score": null,
-    "approved": false
+    "approved": true,
+    "completed_at": "2026-01-17T00:00:00Z"
   },
 
   "OVERVIEW": {
