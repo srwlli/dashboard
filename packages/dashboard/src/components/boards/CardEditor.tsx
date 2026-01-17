@@ -12,11 +12,12 @@ import { X, Plus, Tag as TagIcon } from 'lucide-react';
 import type { CardEditorProps, CardAttachment } from '@/types/boards';
 import { AttachmentPicker } from './AttachmentPicker';
 
-export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
+export function CardEditor({ card, listId, boardLists, onSave, onClose }: CardEditorProps) {
   const [title, setTitle] = useState(card?.title || '');
   const [description, setDescription] = useState(card?.description || '');
   const [tags, setTags] = useState<string[]>(card?.tags || []);
   const [attachments, setAttachments] = useState<CardAttachment[]>(card?.attachments || []);
+  const [targetListId, setTargetListId] = useState(card?.listId || listId);
   const [newTag, setNewTag] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -36,16 +37,23 @@ export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
     try {
       if (isEditing) {
         // Update existing card
-        await onSave({
+        const updates: any = {
           title: title.trim(),
           description: description.trim() || undefined,
           tags,
           attachments,
-        });
+        };
+
+        // Include listId if card is being moved to a different list
+        if (targetListId !== card?.listId) {
+          updates.listId = targetListId;
+        }
+
+        await onSave(updates);
       } else {
         // Create new card
         await onSave({
-          listId,
+          listId: targetListId, // Use targetListId instead of listId for new cards
           title: title.trim(),
           description: description.trim() || undefined,
           order: 0, // Will be set by parent
@@ -196,6 +204,32 @@ export function CardEditor({ card, listId, onSave, onClose }: CardEditorProps) {
               </button>
             </div>
           </div>
+
+          {/* Move to List - Only show when boardLists is provided (list-standalone view) */}
+          {boardLists && boardLists.length > 1 && (
+            <div>
+              <label
+                htmlFor="target-list"
+                className="block text-sm font-medium text-ind-text mb-2"
+              >
+                Move to List <span className="text-xs text-ind-text-muted font-normal">(optional)</span>
+              </label>
+              <select
+                id="target-list"
+                value={targetListId}
+                onChange={(e) => setTargetListId(e.target.value)}
+                disabled={saving}
+                className="w-full px-3 py-2 bg-ind-bg border-2 border-ind-border text-ind-text focus:border-ind-accent outline-none transition-colors disabled:opacity-50"
+              >
+                {boardLists.map((list) => (
+                  <option key={list.id} value={list.id}>
+                    {list.title}
+                    {list.id === listId && ' (current)'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Attachments */}
           <div>

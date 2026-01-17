@@ -199,6 +199,7 @@ export interface BoardCanvasProps {
 
 export interface BoardListProps {
   boardId?: string; // Optional for standalone list view
+  boardLists?: BoardList[]; // Optional - for list-standalone view to enable card movement
   list: BoardList;
   cards: BoardCard[];
   onUpdateList: (listId: string, updates: UpdateListRequest) => Promise<void>;
@@ -222,6 +223,7 @@ export interface BoardPickerProps {
 export interface CardEditorProps {
   card?: BoardCard; // undefined for new cards
   listId: string;
+  boardLists?: BoardList[]; // Optional - for list-standalone view to enable card movement
   onSave: (data: CreateCardRequest | UpdateCardRequest) => Promise<void>;
   onClose: () => void;
 }

@@ -16,6 +16,7 @@ import { CardEditor } from './CardEditor';
 
 export function BoardList({
   boardId,
+  boardLists,
   list,
   cards,
   onUpdateList,
@@ -228,6 +229,7 @@ export function BoardList({
         <CardEditor
           card={editingCard}
           listId={list.id}
+          boardLists={boardLists}
           onSave={handleSaveCard}
           onClose={handleCloseEditor}
         />

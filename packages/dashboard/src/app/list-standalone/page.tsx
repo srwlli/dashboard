@@ -244,6 +244,7 @@ function ListStandaloneContent() {
       {/* Full-Height List */}
       <div className="flex-1 overflow-hidden flex justify-center p-4">
         <BoardList
+          boardLists={board?.lists}
           list={list}
           cards={cards}
           onUpdateList={handleUpdateList}
