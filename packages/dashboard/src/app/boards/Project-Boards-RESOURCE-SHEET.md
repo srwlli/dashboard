@@ -5,7 +5,7 @@ task: DOCUMENT
 subject: ProjectBoards
 parent_project: coderef-dashboard
 category: component
-version: "1.1.0"
+version: "1.2.0"
 related_files:
   - packages/dashboard/src/types/boards.ts
   - packages/dashboard/src/components/boards/BoardCanvas.tsx
@@ -18,6 +18,7 @@ related_files:
   - packages/dashboard/src/app/api/boards/route.ts
   - packages/dashboard/src/app/boards/page.tsx
   - packages/dashboard/src/app/boards-standalone/page.tsx
+  - packages/dashboard/src/app/list-standalone/page.tsx
   - packages/electron-app/src/main.ts
   - packages/electron-app/src/preload.ts
 status: APPROVED
@@ -518,6 +519,42 @@ export default function BoardsStandalonePage() {
 
 **Why**: Without Suspense, `useSearchParams()` causes a brief flash of the global layout (sidebar/header) during hydration. The Suspense boundary ensures the route renders cleanly without layout flicker.
 
+### 7.4 List Standalone View
+
+The `/list-standalone` route provides true isolation for individual lists, enabling focus mode and multi-monitor workflows:
+
+```typescript
+// Open list in new window
+function handleOpenListWindow(boardId: string, listId: string) {
+  if (
+    typeof window !== 'undefined' &&
+    (window as any).electronAPI &&
+    typeof (window as any).electronAPI.openListWindow === 'function'
+  ) {
+    // Electron mode
+    (window as any).electronAPI.openListWindow(boardId, listId);
+  } else {
+    // Web fallback
+    window.open(`/list-standalone?boardId=${boardId}&listId=${listId}`, '_blank');
+  }
+}
+```
+
+**Key Features:**
+- **Isolated View**: Only the selected list is visible, no other lists or global nav
+- **Card Movement Dropdown**: Since drag & drop between lists isn't available in isolated view, CardEditor includes a "Move to List" dropdown when `boardLists` prop is provided
+- **Breadcrumb Header**: Shows "Board Name › List Title" for context
+- **Full CRUD Operations**: All card operations (create, edit, delete, move) work normally
+
+**Implementation Details:**
+- Route: `/list-standalone?boardId=X&listId=Y`
+- Uses same Suspense wrapper pattern as boards-standalone
+- Passes `board.lists` to BoardList component to enable card movement dropdown
+- Menu item available in BoardList header dropdown (MoreVertical menu)
+
+**Card Movement:**
+When `boardLists` is provided to CardEditor, a "Move to List" dropdown appears between tags and attachments sections. When a card is saved with a different `targetListId`, the update includes `listId` in the request.
+
 ---
 
 ## 8. Testing
@@ -605,10 +642,11 @@ export default function BoardsStandalonePage() {
 
 ### 12.1 Integration Gotchas
 
-1. **RootClientWrapper must include `/boards-standalone`** in STANDALONE_ROUTES
-2. **Electron IPC method `openBoardWindow` must exist** or fallback fails
+1. **RootClientWrapper must include `/boards-standalone` and `/list-standalone`** in STANDALONE_ROUTES
+2. **Electron IPC methods `openBoardWindow` and `openListWindow` must exist** or fallback fails
 3. **BoardPicker re-fetches boards on every open** - no caching
-4. **Suspense wrapper required for `/boards-standalone`** to prevent hydration flash
+4. **Suspense wrapper required for `/boards-standalone` and `/list-standalone`** to prevent hydration flash
+5. **CardEditor requires `boardLists` prop** for card movement dropdown in list-standalone view
 
 ### 12.2 Configuration Mistakes
 
@@ -627,6 +665,45 @@ export default function BoardsStandalonePage() {
 ---
 
 ## 13. Changelog
+
+### Version 1.2.0 (2026-01-17)
+
+**List Standalone View (WO-LIST-STANDALONE-VIEW-001):**
+- New `/list-standalone` route for opening individual lists in isolated windows
+- Enables true focus mode and multi-monitor workflows
+- Accepts `boardId` and `listId` query parameters
+- Shows breadcrumb header: "Board Name › List Title"
+- Excludes global layout (no sidebar/header) via STANDALONE_ROUTES
+
+**Card Movement Dropdown:**
+- Added "Move to List" dropdown to CardEditor component
+- Appears when `boardLists` prop is provided
+- Located between tags and attachments sections
+- Enables card movement when drag & drop is not available
+- Shows "(current)" indicator next to current list
+
+**Integration Points:**
+- Added `boardId` and `boardLists` props to BoardListProps interface
+- Added `boardLists` prop to CardEditorProps interface
+- list-standalone page passes `board.lists` to BoardList component
+- BoardList passes `boardLists` to CardEditor component
+- BoardList header dropdown includes "Open in New Window" menu item
+
+**Electron Integration:**
+- New IPC handler: `window:openList(boardId, listId)`
+- Exposed `openListWindow()` method in preload.ts
+- Window dimensions: 800x900 (min: 600x700)
+
+**Files Modified:**
+- packages/dashboard/src/app/list-standalone/page.tsx (new)
+- packages/dashboard/src/components/RootClientWrapper.tsx
+- packages/dashboard/src/components/boards/BoardList.tsx
+- packages/dashboard/src/components/boards/CardEditor.tsx
+- packages/dashboard/src/types/boards.ts
+- packages/electron-app/src/main.ts
+- packages/electron-app/src/preload.ts
+
+**Breaking Changes:** None
 
 ### Version 1.1.0 (2026-01-17)
 
