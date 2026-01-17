@@ -263,6 +263,36 @@ ipcMain.handle('window:openBoard', (_event, boardId?: string) => {
   return { success: true };
 });
 
+// Open list in new window
+ipcMain.handle('window:openList', (_event, boardId: string, listId: string) => {
+  const listWindow = new BrowserWindow({
+    width: 800,
+    height: 900,
+    minWidth: 600,
+    minHeight: 700,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+    icon: path.join(__dirname, '../assets/icon.png'),
+  });
+
+  const baseUrl = isDev
+    ? 'http://localhost:3004/list-standalone'
+    : `http://localhost:${PORT}/list-standalone`;
+
+  const fullUrl = `${baseUrl}?boardId=${boardId}&listId=${listId}`;
+
+  listWindow.loadURL(fullUrl);
+
+  if (isDev) {
+    listWindow.webContents.openDevTools();
+  }
+
+  return { success: true };
+});
+
 // Set always on top for focused window
 ipcMain.handle('window:setAlwaysOnTop', (event, alwaysOnTop: boolean) => {
   const win = BrowserWindow.fromWebContents(event.sender);
