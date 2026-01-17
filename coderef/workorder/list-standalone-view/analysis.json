@@ -1,0 +1,140 @@
+{
+  "feature_name": "list-standalone-view",
+  "project_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+  "analyzed_at": "2026-01-17T00:00:00Z",
+  "coderef_version": "2.0.0",
+
+  "project_structure": {
+    "total_elements": 5506,
+    "total_files": 408,
+    "monorepo": true,
+    "packages": ["dashboard", "coderef-core", "electron-app"],
+    "primary_package": "dashboard",
+    "framework": "Next.js 16 App Router",
+    "language": "TypeScript/React 19"
+  },
+
+  "technology_stack": {
+    "frontend": ["React 19", "Next.js 16", "TypeScript", "Tailwind CSS"],
+    "state_management": ["React Hooks", "Context API"],
+    "routing": "Next.js App Router",
+    "build_tools": ["npm workspaces", "Next.js"],
+    "desktop": "Electron"
+  },
+
+  "related_components": {
+    "existing_standalone_routes": [
+      "/notes-standalone",
+      "/boards-standalone"
+    ],
+    "board_components": [
+      "packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "packages/dashboard/src/components/boards/BoardList.tsx",
+      "packages/dashboard/src/components/boards/BoardCard.tsx",
+      "packages/dashboard/src/components/boards/CardEditor.tsx",
+      "packages/dashboard/src/components/boards/BoardPicker.tsx"
+    ],
+    "layout_components": [
+      "packages/dashboard/src/components/RootClientWrapper.tsx"
+    ],
+    "electron_files": [
+      "packages/electron-app/src/main.ts",
+      "packages/electron-app/src/preload.ts"
+    ]
+  },
+
+  "coding_patterns": {
+    "handler_naming": "handle* prefix for event handlers",
+    "component_structure": "Functional components with hooks",
+    "state_management": "useState for local state, Context for shared state",
+    "api_calls": "Async/await with try-catch",
+    "suspense_usage": "Wrap useSearchParams() in Suspense to prevent hydration flash",
+    "electron_ipc": "ipcMain.handle() in main.ts, ipcRenderer.invoke() in preload.ts"
+  },
+
+  "key_patterns_identified": [
+    {
+      "pattern": "Standalone Route Pattern",
+      "files": [
+        "packages/dashboard/src/app/boards-standalone/page.tsx",
+        "packages/dashboard/src/app/notes-standalone/page.tsx"
+      ],
+      "description": "Routes excluded from global layout via STANDALONE_ROUTES array, wrapped in Suspense for hydration safety"
+    },
+    {
+      "pattern": "Electron IPC Window Opening",
+      "files": [
+        "packages/electron-app/src/main.ts (window:openBoard handler)",
+        "packages/electron-app/src/preload.ts (openBoardWindow method)",
+        "packages/dashboard/src/components/boards/BoardCanvas.tsx (handleOpenNewWindow)"
+      ],
+      "description": "Three-layer pattern: UI calls preload method, preload invokes IPC, main creates BrowserWindow"
+    },
+    {
+      "pattern": "Query Parameter Handling",
+      "files": ["packages/dashboard/src/app/boards-standalone/page.tsx"],
+      "description": "useSearchParams() in Suspense wrapper, extract boardId/listId from query params"
+    }
+  ],
+
+  "foundation_docs_status": {
+    "ARCHITECTURE.md": "exists",
+    "API.md": "exists",
+    "COMPONENTS.md": "exists",
+    "SCHEMA.md": "exists",
+    "CLAUDE.md": "exists",
+    "Project-Boards-RESOURCE-SHEET.md": "exists (v1.1.0, recently updated)"
+  },
+
+  "test_coverage": {
+    "components": "minimal (manual testing only)",
+    "api_routes": "none",
+    "electron": "none"
+  },
+
+  "complexity_assessment": {
+    "overall": "low",
+    "reasoning": "Reuses existing BoardList component, follows established patterns from boards-standalone",
+    "estimated_files_to_modify": 5,
+    "estimated_new_files": 1
+  },
+
+  "risks_and_gaps": [
+    {
+      "risk": "Card movement without drag & drop",
+      "mitigation": "Implement dropdown in CardEditor to select destination list",
+      "severity": "medium"
+    },
+    {
+      "risk": "Hydration flash on list-standalone route",
+      "mitigation": "Use Suspense wrapper (proven pattern from boards-standalone fix)",
+      "severity": "low"
+    },
+    {
+      "risk": "Electron IPC naming collision",
+      "mitigation": "Use unique handler name window:openList (different from window:openBoard)",
+      "severity": "low"
+    }
+  ],
+
+  "dependencies": {
+    "no_new_dependencies": true,
+    "reuses_existing": [
+      "react",
+      "next",
+      "lucide-react",
+      "electron (desktop only)"
+    ]
+  },
+
+  "recommended_approach": {
+    "strategy": "Incremental enhancement following established patterns",
+    "phases": [
+      "Phase 1: Create /list-standalone route with Suspense wrapper",
+      "Phase 2: Add Electron IPC integration",
+      "Phase 3: Add menu item to BoardList header",
+      "Phase 4: Update documentation"
+    ],
+    "estimated_complexity": "4-6 hours (simple, follows proven patterns)"
+  }
+}

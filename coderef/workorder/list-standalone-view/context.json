@@ -1,0 +1,36 @@
+{
+  "feature_name": "list-standalone-view",
+  "description": "Add ability to open individual board lists in isolated standalone windows. Provides true single-list focus mode for multi-monitor workflows and task concentration. Route: /list-standalone?boardId=X&listId=Y",
+  "goal": "Enable users to open a single board list in a dedicated window without the rest of the board, providing maximum focus and supporting multi-monitor workflows where specific lists can be displayed on separate screens",
+  "requirements": [
+    "Create /list-standalone route with Suspense wrapper to prevent hydration flash",
+    "Accept boardId and listId query parameters",
+    "Display single BoardList component in vertical layout",
+    "Reuse existing BoardList component for consistency",
+    "Add list header with board context breadcrumb",
+    "Support all existing card operations (create, edit, delete)",
+    "Implement dropdown-based card movement between lists (no drag and drop in single-list view)",
+    "Add 'Open in New Window' menu item to BoardList header menu",
+    "Create Electron IPC handler window:openList for desktop app",
+    "Expose openListWindow() method in preload.ts",
+    "Update RootClientWrapper STANDALONE_ROUTES array to include /list-standalone",
+    "Provide web browser fallback via window.open() for non-Electron environments"
+  ],
+  "out_of_scope": [
+    "Drag and drop between lists (isolated list has no other lists visible)",
+    "Real-time sync between board and list windows",
+    "List templates or presets",
+    "Multiple list selection",
+    "Keyboard shortcuts specific to list view",
+    "List-level permissions or access control"
+  ],
+  "constraints": [
+    "Must reuse existing BoardList component without modifications",
+    "Must follow same Suspense pattern as boards-standalone to prevent layout flash",
+    "Must maintain consistency with existing boards UI/UX",
+    "Must work in both Electron and web browser environments",
+    "No breaking changes to existing board or list functionality",
+    "Must integrate with existing filesystem-based board persistence"
+  ],
+  "created_at": "2026-01-17T00:00:00Z"
+}

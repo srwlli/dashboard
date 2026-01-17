@@ -1,0 +1,341 @@
+{
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-LIST-STANDALONE-VIEW-001",
+    "feature_name": "list-standalone-view",
+    "created_at": "2026-01-17T00:00:00Z",
+    "format_version": "2.0.0",
+    "status": "pending",
+    "description": "Implementation plan for opening individual board lists in isolated standalone windows",
+    "validation_score": null,
+    "approved": false
+  },
+
+  "OVERVIEW": {
+    "feature_summary": "Add /list-standalone route to open individual board lists in dedicated windows, providing true focus mode for multi-monitor workflows",
+    "business_value": "Enables users to display specific task lists on separate monitors, improving focus and productivity in multi-screen setups",
+    "success_criteria": [
+      "Individual lists can be opened in new windows via menu option",
+      "List windows work in both Electron and web browser",
+      "No hydration flash on route load",
+      "All card operations (create, edit, delete, move) work correctly",
+      "Follows same UX patterns as existing standalone routes"
+    ]
+  },
+
+  "ARCHITECTURE_DECISIONS": {
+    "route_pattern": {
+      "decision": "Use /list-standalone?boardId=X&listId=Y query parameter pattern",
+      "rationale": "Matches boards-standalone pattern, allows bookmarking, works with Electron window.loadURL()",
+      "alternatives_considered": [
+        "Dynamic route /list-standalone/[boardId]/[listId] - rejected (less flexible for optional params)"
+      ]
+    },
+    "component_reuse": {
+      "decision": "Reuse existing BoardList component without modifications",
+      "rationale": "Maintains consistency, reduces testing surface, no duplication",
+      "impact": "Need to handle card movement differently (dropdown vs drag & drop)"
+    },
+    "hydration_safety": {
+      "decision": "Wrap content in Suspense boundary",
+      "rationale": "Proven fix from boards-standalone, prevents layout flash from useSearchParams()",
+      "implementation": "Same pattern as BoardsStandalonePage"
+    },
+    "electron_integration": {
+      "decision": "New IPC handler window:openList separate from window:openBoard",
+      "rationale": "Clear separation of concerns, different URL patterns",
+      "backward_compatibility": "No impact on existing board window functionality"
+    }
+  },
+
+  "IMPLEMENTATION_PLAN": {
+    "phase_1_setup": {
+      "description": "Project setup and route creation",
+      "tasks": [
+        {
+          "id": "SETUP-001",
+          "description": "Create list-standalone route directory",
+          "file": "packages/dashboard/src/app/list-standalone/",
+          "action": "create_directory",
+          "success_criteria": "Directory exists"
+        }
+      ]
+    },
+    "phase_2_core_implementation": {
+      "description": "Implement list standalone page with Suspense wrapper",
+      "tasks": [
+        {
+          "id": "IMPL-001",
+          "description": "Create ListStandalonePage with Suspense wrapper and ListStandaloneContent component",
+          "file": "packages/dashboard/src/app/list-standalone/page.tsx",
+          "action": "create_file",
+          "implementation_details": {
+            "imports": [
+              "import { useState, useEffect, Suspense } from 'react'",
+              "import { useSearchParams } from 'next/navigation'",
+              "import { BoardList } from '@/components/boards/BoardList'",
+              "import type { Board, BoardCard } from '@/types/boards'"
+            ],
+            "components": [
+              "ListStandaloneContent() - inner component with useSearchParams()",
+              "ListStandalonePage() - outer component with Suspense wrapper"
+            ],
+            "state_management": [
+              "const [board, setBoard] = useState<Board | null>(null)",
+              "const [listCards, setListCards] = useState<BoardCard[]>([])",
+              "const [loading, setLoading] = useState(true)"
+            ],
+            "data_fetching": [
+              "Fetch board via GET /api/boards/{boardId}",
+              "Filter cards for listId from response.data.cards[listId]",
+              "Find list metadata from board.lists"
+            ],
+            "layout": "Vertical flex layout with list header breadcrumb and full-height BoardList"
+          },
+          "success_criteria": "Page renders single list without hydration flash"
+        },
+        {
+          "id": "IMPL-002",
+          "description": "Update RootClientWrapper STANDALONE_ROUTES array to include /list-standalone",
+          "file": "packages/dashboard/src/components/RootClientWrapper.tsx",
+          "action": "modify",
+          "line_number": 32,
+          "change": "Add '/list-standalone' to STANDALONE_ROUTES array",
+          "before": "const STANDALONE_ROUTES = ['/notes-standalone', '/boards-standalone'];",
+          "after": "const STANDALONE_ROUTES = ['/notes-standalone', '/boards-standalone', '/list-standalone'];",
+          "success_criteria": "List standalone route excludes global layout (no sidebar/header)"
+        }
+      ]
+    },
+    "phase_3_electron_integration": {
+      "description": "Add Electron IPC handlers for opening list windows",
+      "tasks": [
+        {
+          "id": "ELEC-001",
+          "description": "Add window:openList IPC handler in Electron main process",
+          "file": "packages/electron-app/src/main.ts",
+          "action": "modify",
+          "implementation_details": {
+            "handler_name": "window:openList",
+            "parameters": ["boardId: string", "listId: string"],
+            "window_config": {
+              "width": 800,
+              "height": 900,
+              "minWidth": 600,
+              "minHeight": 700
+            },
+            "url_pattern": "/list-standalone?boardId={boardId}&listId={listId}"
+          },
+          "success_criteria": "IPC handler creates new window with correct URL"
+        },
+        {
+          "id": "ELEC-002",
+          "description": "Expose openListWindow() method in preload.ts",
+          "file": "packages/electron-app/src/preload.ts",
+          "action": "modify",
+          "implementation_details": {
+            "method_signature": "openListWindow: (boardId: string, listId: string) => Promise<{ success: boolean }>",
+            "invoke_target": "window:openList",
+            "typescript_definition": "Add to Window interface in declare global block"
+          },
+          "success_criteria": "window.electronAPI.openListWindow() is available in renderer"
+        }
+      ]
+    },
+    "phase_4_ui_integration": {
+      "description": "Add menu option to open list in new window",
+      "tasks": [
+        {
+          "id": "UI-001",
+          "description": "Add 'Open in New Window' menu item to BoardList header dropdown",
+          "file": "packages/dashboard/src/components/boards/BoardList.tsx",
+          "action": "modify",
+          "line_range": "106-134 (menu dropdown section)",
+          "implementation_details": {
+            "menu_location": "BoardList header menu (MoreVertical dropdown)",
+            "handler_function": "handleOpenListWindow()",
+            "electron_check": "Check window.electronAPI?.openListWindow exists",
+            "fallback": "window.open() for web browser",
+            "icon": "ExternalLink from lucide-react"
+          },
+          "success_criteria": "Menu item visible, click opens list in new window"
+        },
+        {
+          "id": "UI-002",
+          "description": "Add card movement dropdown to CardEditor for moving cards between lists",
+          "file": "packages/dashboard/src/components/boards/CardEditor.tsx",
+          "action": "modify",
+          "implementation_details": {
+            "reason": "In list-standalone view, no drag & drop available (no other lists visible)",
+            "ui_element": "Dropdown/select showing all lists in the board",
+            "placement": "Below tags input, above attachments section",
+            "label": "Move to List",
+            "behavior": "Updates card.listId when changed",
+            "data_source": "board.lists[] from API"
+          },
+          "success_criteria": "Cards can be moved to different lists via dropdown"
+        }
+      ]
+    },
+    "phase_5_documentation": {
+      "description": "Update project documentation",
+      "tasks": [
+        {
+          "id": "DOC-001",
+          "description": "Update Project-Boards-RESOURCE-SHEET.md with list-standalone feature",
+          "file": "packages/dashboard/src/app/boards/Project-Boards-RESOURCE-SHEET.md",
+          "action": "modify",
+          "updates": [
+            "Add list-standalone to related_files in frontmatter",
+            "Update version to 1.2.0",
+            "Add section 7.4: List Standalone View",
+            "Update Integration Points table",
+            "Add changelog entry for v1.2.0"
+          ],
+          "success_criteria": "Documentation reflects new feature"
+        }
+      ]
+    }
+  },
+
+  "TESTING_STRATEGY": {
+    "unit_tests": {
+      "scope": "none",
+      "rationale": "Component reuses existing BoardList, manual testing sufficient for v1"
+    },
+    "integration_tests": {
+      "scope": "none",
+      "rationale": "Follows proven patterns, manual testing workflow covers integration"
+    },
+    "manual_testing": {
+      "required": true,
+      "test_cases": [
+        {
+          "test_id": "MT-001",
+          "description": "Open list in new window from BoardList menu",
+          "steps": [
+            "Open board with multiple lists",
+            "Click MoreVertical menu on a list",
+            "Click 'Open in New Window'",
+            "Verify new window opens with only that list visible"
+          ],
+          "expected": "List opens in isolated window, no hydration flash"
+        },
+        {
+          "test_id": "MT-002",
+          "description": "Card CRUD operations in list-standalone",
+          "steps": [
+            "Open list in standalone window",
+            "Create new card",
+            "Edit existing card",
+            "Delete card"
+          ],
+          "expected": "All operations work, changes persist to filesystem"
+        },
+        {
+          "test_id": "MT-003",
+          "description": "Move card to different list via dropdown",
+          "steps": [
+            "Open list-standalone window",
+            "Open CardEditor for a card",
+            "Select different list from 'Move to List' dropdown",
+            "Save card"
+          ],
+          "expected": "Card moves to new list, updates reflected in board view"
+        },
+        {
+          "test_id": "MT-004",
+          "description": "Electron vs web browser fallback",
+          "steps": [
+            "Test in Electron app (should use IPC)",
+            "Test in web browser (should use window.open)"
+          ],
+          "expected": "Both environments open new window successfully"
+        }
+      ]
+    }
+  },
+
+  "DEPENDENCIES": {
+    "new_packages": [],
+    "version_changes": [],
+    "peer_dependencies": "none"
+  },
+
+  "ROLLBACK_PLAN": {
+    "strategy": "Git revert of all commits",
+    "affected_files": [
+      "packages/dashboard/src/app/list-standalone/page.tsx (new file - delete)",
+      "packages/dashboard/src/components/RootClientWrapper.tsx (revert STANDALONE_ROUTES change)",
+      "packages/electron-app/src/main.ts (remove window:openList handler)",
+      "packages/electron-app/src/preload.ts (remove openListWindow method)",
+      "packages/dashboard/src/components/boards/BoardList.tsx (remove menu item)",
+      "packages/dashboard/src/components/boards/CardEditor.tsx (remove dropdown)"
+    ],
+    "data_migration": "none",
+    "breaking_changes": "none"
+  },
+
+  "RISK_ASSESSMENT": {
+    "technical_risks": [
+      {
+        "risk": "Hydration flash on list-standalone route",
+        "likelihood": "low",
+        "impact": "medium",
+        "mitigation": "Use proven Suspense wrapper pattern from boards-standalone"
+      },
+      {
+        "risk": "Card movement UX confusion without drag & drop",
+        "likelihood": "medium",
+        "impact": "low",
+        "mitigation": "Clear dropdown label, matches standard UX patterns"
+      }
+    ],
+    "integration_risks": [
+      {
+        "risk": "Electron IPC method name collision",
+        "likelihood": "low",
+        "impact": "low",
+        "mitigation": "Unique handler name window:openList (different from existing)"
+      }
+    ],
+    "deployment_risks": []
+  },
+
+  "PERFORMANCE_CONSIDERATIONS": {
+    "bundle_size_impact": "+2KB (new route, minimal code)",
+    "runtime_performance": "Same as BoardList component (no change)",
+    "memory_usage": "One additional window (user-controlled)",
+    "optimization_opportunities": "none"
+  },
+
+  "SECURITY_CONSIDERATIONS": {
+    "authentication": "Inherits from parent board (no changes)",
+    "authorization": "none (boards are local filesystem-based)",
+    "data_validation": "Reuses existing board/card validation",
+    "xss_prevention": "Inherits from BoardList component (no new inputs)"
+  },
+
+  "ESTIMATED_EFFORT": {
+    "total_hours": "4-6 hours",
+    "breakdown": {
+      "route_creation": "1 hour",
+      "electron_integration": "1 hour",
+      "ui_integration": "1.5 hours",
+      "card_movement_dropdown": "1 hour",
+      "testing": "1 hour",
+      "documentation": "0.5 hours"
+    },
+    "complexity": "low (follows established patterns)"
+  },
+
+  "COMPLETION_CRITERIA": [
+    "All tasks marked complete (SETUP-001, IMPL-001, IMPL-002, ELEC-001, ELEC-002, UI-001, UI-002, DOC-001)",
+    "Manual test cases MT-001 through MT-004 pass",
+    "No hydration flash when opening list-standalone route",
+    "List windows open in both Electron and web browser",
+    "Cards can be created, edited, deleted, and moved in list-standalone view",
+    "Documentation updated with new feature",
+    "No console errors or warnings",
+    "Validation score >= 90/100"
+  ]
+}
