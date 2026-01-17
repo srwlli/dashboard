@@ -5,7 +5,7 @@ task: DOCUMENT
 subject: Sessions Hub System
 parent_project: coderef-dashboard
 category: other
-version: 1.2.0
+version: 1.3.0
 related_files:
   - packages/dashboard/src/lib/api/sessions.ts
   - packages/dashboard/src/components/SessionsHub/index.tsx
@@ -18,8 +18,19 @@ related_files:
   - packages/dashboard/src/components/SessionsHub/SessionMonitoring/FilesModifiedSection.tsx
   - packages/dashboard/src/components/SessionsHub/SessionMonitoring/ResourceSheetsSection.tsx
   - packages/dashboard/src/app/sessions/resource-sheet-index.md
+  - packages/dashboard/schemas/communication-schema.json
+  - .claude/commands/create-session.md
 status: APPROVED
 changelog:
+  - version: 1.3.0
+    date: 2026-01-17
+    changes:
+      - "Added: Schema validation requirements - communication.json outputs field structure documented"
+      - "Added: MCP tool documentation - mcp__papertrail__validate_communication usage and validation checks"
+      - "Updated: communication.json schema now includes required outputs object with files_created[], files_modified[], workorders_created[], primary_output"
+      - "Added: Common errors section documenting git_metrics misuse and array vs number typing"
+      - "Added: Validation workflow documentation - 5-step agent completion process with automated validation"
+      - "Added: Integration points - session generator pre-population, instruction template validator call, active session updates"
   - version: 1.2.0
     date: 2026-01-17
     changes:
@@ -166,6 +177,17 @@ SessionsHub (index.tsx)
     agent_number: number;          // 1-based index
     role: string;
     status: 'pending' | 'not_started' | 'in_progress' | 'complete' | 'blocked';
+    outputs: {                     // REQUIRED: Agent work tracking (v1.3.0+)
+      files_created: string[];     // MUST be array (NOT number) - format: "path/file.ext (description)"
+      files_modified: string[];    // MUST be array (NOT number) - format: "path/file.ext (changes)"
+      workorders_created: Array<{  // Workorders created during execution
+        workorder_id: string;
+        feature_name: string;
+        location: string;
+        status: string;
+      }>;
+      primary_output: string;      // Path to main deliverable
+    };
     assigned_instructions: number;
     assigned_attachments: number;
     output_files: string[];
@@ -177,6 +199,14 @@ SessionsHub (index.tsx)
   status: 'created' | 'not_started' | 'in_progress' | 'complete';
 }
 ```
+
+**Schema Location:** `packages/dashboard/schemas/communication-schema.json`
+
+**Common Errors (Prevented by Validation):**
+- ❌ `outputs.files_created` as number instead of array
+- ❌ `outputs.files_modified` as number instead of array
+- ❌ `git_metrics` object (invalid structure)
+- ❌ Missing required `outputs` object
 
 #### `instructions.json` Schema
 
@@ -196,6 +226,49 @@ SessionsHub (index.tsx)
     constraint: number;
   };
 }
+```
+
+#### Schema Validation Requirements
+
+**MCP Tool:** `mcp__papertrail__validate_communication`
+
+**Purpose:** Automated validation of `communication.json` structure to prevent data misinterpretation errors.
+
+**Usage:** Agents MUST call this tool in step_5 (completion phase) before marking work as complete.
+
+```typescript
+// Example usage in agent workflow
+mcp__papertrail__validate_communication({
+  file_path: "path/to/communication.json"
+});
+```
+
+**Validation Checks:**
+1. **Required Fields:** `session_id`, `stub_id`, `feature_name`, `created_at`, `agents`, `status`
+2. **Agent Structure:** Each agent must have `agent_id`, `agent_number`, `role`, `status`, `outputs`
+3. **Outputs Validation:**
+   - `files_created` MUST be array of strings (NOT number)
+   - `files_modified` MUST be array of strings (NOT number)
+   - `workorders_created` MUST be array of objects
+   - `primary_output` must be string
+4. **Forbidden Fields:** No `git_metrics` object (common error - agents creating counts instead of arrays)
+5. **Format Validation:**
+   - `session_id` format: `^[A-Z]+-[0-9]+-[0-9]+$`
+   - `stub_id` format: `^[A-Z]+-[0-9]+$`
+   - `workorder_id` format: `^WO-[A-Z0-9-]+-[0-9]+$`
+
+**Integration Points:**
+- **Session Generator** (`api/sessions/create/route.ts`): Pre-populates `outputs` field with empty arrays
+- **Instruction Template** (`.claude/commands/create-session.md`): Includes step_5 validator call + checklist
+- **Active Sessions:** All scanner-complete-integration agent instructions.json files updated with validation requirements
+
+**Validation Workflow:**
+```
+1. Agent completes all tasks
+2. Agent updates communication.json with outputs
+3. Agent runs mcp__papertrail__validate_communication
+4. If validation fails → Fix errors → Re-validate
+5. If validation passes → Mark agent status='complete'
 ```
 
 ### 3.3 Storage Configuration
