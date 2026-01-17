@@ -54,12 +54,15 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { PanelLeftClose, PanelLeft } from 'lucide-react';
 import type { Project, TreeNode } from '@/lib/coderef/types';
 import type { FavoritesData, FavoriteGroup } from '@/lib/coderef/favorites-types';
 import { createEmptyFavoritesData } from '@/lib/coderef/favorites-types';
 import { ViewModeToggle, type ViewMode } from '@/components/coderef/ViewModeToggle';
 import { ProjectSelector } from '@/components/coderef/ProjectSelector';
 import { ResizableSidebar } from '@/components/coderef/ResizableSidebar';
+import { QuickFileSearch } from '@/components/coderef/QuickFileSearch';
+import { TreeActionsToolbar } from '@/components/coderef/TreeActionsToolbar';
 import { useExplorer } from '@/contexts/ExplorerContext';
 // DORMANT: FileTypeFilter - will be used for multi-project aggregation in future
 // import { FileTypeFilter, type FileType, FILE_TYPE_OPTIONS } from '@/components/coderef/FileTypeFilter';
@@ -96,6 +99,9 @@ export function CodeRefExplorerWidget() {
   const [initialProjectId, setInitialProjectId] = useState<string | undefined>(undefined);
   const [isScrolled, setIsScrolled] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Favorites state - persisted per project in localStorage
   const [favoritesData, setFavoritesData] = useState<FavoritesData>(createEmptyFavoritesData());
@@ -260,6 +266,15 @@ export function CodeRefExplorerWidget() {
     // Note: setViewMode in context already clears selection
   };
 
+  const handleRefreshTree = () => {
+    // Increment key to force FileTree remount and reload
+    setRefreshKey(prev => prev + 1);
+  };
+
+  const handleToggleSidebar = () => {
+    setIsSidebarCollapsed(prev => !prev);
+  };
+
   const handleToggleFavorite = (path: string, groupName?: string) => {
     setFavoritesData((prev) => {
       const existingIndex = prev.favorites.findIndex(f => f.path === path);
@@ -350,6 +365,8 @@ export function CodeRefExplorerWidget() {
         minWidth={240}
         maxWidth={600}
         storageKey="coderef-explorer-sidebar-width"
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={handleToggleSidebar}
       >
         {/* Controls section - stays fixed at top */}
         <div className={`flex-shrink-0 sticky top-0 z-10 bg-ind-panel/80 backdrop-blur-sm border-b border-ind-border transition-shadow ${isScrolled ? 'shadow-md' : ''}`}>
@@ -360,6 +377,18 @@ export function CodeRefExplorerWidget() {
               selectedProjectId={selectedProject?.id}
               onProjectChange={handleProjectChange}
               initialProjectId={initialProjectId}
+            />
+
+            {/* Quick File Search - Phase 2 feature */}
+            <QuickFileSearch
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search files..."
+            />
+
+            {/* Tree Actions Toolbar - Phase 2 feature */}
+            <TreeActionsToolbar
+              onRefresh={handleRefreshTree}
             />
 
             {/* DORMANT: Sort Dropdown - will be used for multi-project view in future */}
@@ -387,6 +416,7 @@ export function CodeRefExplorerWidget() {
         >
           {/* File tree - same project, different root based on view mode */}
           <FileTree
+            key={`tree-${selectedProject?.id}-${refreshKey}`}
             project={selectedProject}
             selectedPath={selectedFile?.path}
             onFileClick={handleFileClick}
@@ -396,6 +426,7 @@ export function CodeRefExplorerWidget() {
               viewMode === 'dotcoderef' ? '.coderef' :
               undefined
             }
+            searchQuery={searchQuery}
             onToggleFavorite={handleToggleFavorite}
             isFavorite={isFavorite}
             showOnlyFavorites={viewMode === 'favorites'}
@@ -409,7 +440,21 @@ export function CodeRefExplorerWidget() {
       </ResizableSidebar>
 
       {/* Right column - file viewer only (page-level header removed to avoid redundancy with FileViewer header) */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Sidebar collapse/expand toggle button - Phase 2 feature */}
+        <button
+          onClick={handleToggleSidebar}
+          className="absolute top-4 left-4 z-20 p-2 rounded bg-ind-panel border border-ind-border hover:bg-ind-accent hover:text-black transition-colors shadow-lg"
+          aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+        >
+          {isSidebarCollapsed ? (
+            <PanelLeft className="h-5 w-5" />
+          ) : (
+            <PanelLeftClose className="h-5 w-5" />
+          )}
+        </button>
+
         {/* File viewer */}
         <FileViewer
           project={selectedProject}

@@ -50,6 +50,12 @@ interface FileTreeProps {
   filterPath?: string;
 
   /**
+   * Optional search query for filtering files/folders by name (Phase 2 feature)
+   * Filters tree nodes by fuzzy matching against file/folder names
+   */
+  searchQuery?: string;
+
+  /**
    * Callback to toggle favorite status
    * @param path - File/directory path to favorite/unfavorite
    * @param groupName - Optional group name for assignment
@@ -146,6 +152,7 @@ export function FileTree({
   onFileClick,
   loading: externalLoading,
   filterPath,
+  searchQuery,
   onToggleFavorite,
   isFavorite,
   showOnlyFavorites = false,
@@ -256,6 +263,29 @@ export function FileTree({
     return filtered;
   };
 
+  // Filter tree by search query (Phase 2 feature)
+  const filterTreeBySearch = (nodes: TreeNode[], query: string): TreeNode[] => {
+    if (!query) return nodes;
+
+    const normalizedQuery = query.toLowerCase();
+    const filtered: TreeNode[] = [];
+
+    for (const node of nodes) {
+      const nodeMatches = node.name.toLowerCase().includes(normalizedQuery);
+      const childrenFiltered = node.children ? filterTreeBySearch(node.children, query) : [];
+
+      // Include node if it matches OR if any of its children match
+      if (nodeMatches || childrenFiltered.length > 0) {
+        filtered.push({
+          ...node,
+          children: childrenFiltered.length > 0 ? childrenFiltered : node.children,
+        });
+      }
+    }
+
+    return filtered;
+  };
+
   // Build directory submenu for move operation
   const buildDirectorySubmenu = (
     treeNodes: TreeNode[],
@@ -331,6 +361,11 @@ export function FileTree({
   // Hide index.json in .coderef tab (file is 15MB, exceeds 10MB limit)
   if (filterPath === '.coderef') {
     displayTree = displayTree.filter(node => node.name !== 'index.json');
+  }
+
+  // Apply search filter if specified (Phase 2 feature)
+  if (searchQuery) {
+    displayTree = filterTreeBySearch(displayTree, searchQuery);
   }
 
   // Then apply favorites filter if specified

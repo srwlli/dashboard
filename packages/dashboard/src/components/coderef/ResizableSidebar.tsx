@@ -52,6 +52,10 @@ export interface ResizableSidebarProps {
   storageKey: string;
   /** Optional className for additional styling */
   className?: string;
+  /** Collapsed state (external control) */
+  isCollapsed?: boolean;
+  /** Callback when collapse state changes */
+  onToggleCollapse?: () => void;
 }
 
 /**
@@ -67,6 +71,8 @@ export function ResizableSidebar({
   maxWidth,
   storageKey,
   className = '',
+  isCollapsed = false,
+  onToggleCollapse,
 }: ResizableSidebarProps) {
   const { width, handleMouseDown } = useSidebarResize({
     defaultWidth,
@@ -75,27 +81,31 @@ export function ResizableSidebar({
     storageKey,
   });
 
+  const displayWidth = isCollapsed ? 0 : width;
+
   return (
     <div
-      className={`relative flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col ${className}`}
-      style={{ width: `${width}px` }}
+      className={`relative flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col transition-all duration-200 ${className}`}
+      style={{ width: `${displayWidth}px` }}
     >
-      {/* Sidebar content */}
-      {children}
+      {/* Sidebar content - hide when collapsed */}
+      {!isCollapsed && children}
 
-      {/* Drag handle - positioned on right edge */}
-      <div
-        className="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize group hover:bg-ind-accent transition-colors flex items-center justify-center"
-        onMouseDown={handleMouseDown}
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="Resize sidebar"
-      >
-        {/* Grip icon - visible on hover */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <GripVertical className="h-4 w-4 text-ind-text-muted" />
+      {/* Drag handle - positioned on right edge, hidden when collapsed */}
+      {!isCollapsed && (
+        <div
+          className="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize group hover:bg-ind-accent transition-colors flex items-center justify-center"
+          onMouseDown={handleMouseDown}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize sidebar"
+        >
+          {/* Grip icon - visible on hover */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <GripVertical className="h-4 w-4 text-ind-text-muted" />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
