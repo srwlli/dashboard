@@ -218,7 +218,7 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
   const isMermaid = fileData.extension === '.mmd';
   const isHtml = fileData.extension === '.html' || fileData.extension === '.htm';
   const isCode =
-    ['.ts', '.tsx', '.js', '.jsx', '.py', '.java', '.c', '.cpp', '.rs', '.go'].includes(
+    ['.ts', '.tsx', '.js', '.jsx', '.py', '.java', '.c', '.cpp', '.rs', '.go', '.csv'].includes(
       fileData.extension
     );
 
@@ -238,6 +238,7 @@ export function FileViewer({ project, filePath, className = '' }: FileViewerProp
       '.json': 'json',
       '.md': 'markdown',
       '.mmd': 'mermaid',
+      '.csv': 'csv',
     };
     return langMap[ext] || 'text';
   };

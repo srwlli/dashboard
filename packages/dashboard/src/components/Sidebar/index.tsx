@@ -9,7 +9,7 @@ const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
   { label: 'Prompts', href: '/prompts', icon: Layers },
   { label: 'Sessions Hub', href: '/sessions', icon: Users },
-  { label: 'Assistant', href: '/assistant', icon: Zap },
+  { label: 'Boards', href: '/boards', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },
   { label: 'Notes', href: '/notes', icon: FileText },
   { label: 'Metrics', href: '/metrics', icon: BarChart3 },

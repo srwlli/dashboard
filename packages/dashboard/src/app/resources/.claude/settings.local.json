@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python update-resources-csv-v2.py:*)",
+      "Bash(python update-resources-csv.py:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "coderef-personas",
+    "coderef-context",
+    "coderef-docs",
+    "coderef-workflow",
+    "coderef-testing",
+    "papertrail"
+  ]
+}

@@ -20,7 +20,9 @@
       "mcp__papertrail__validate_document",
       "Bash(/dev/null)",
       "Bash(git ls-tree:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "mcp__coderef-context__coderef_context",
+      "mcp__coderef-context__coderef_scan"
     ]
   },
   "enabledMcpjsonServers": [

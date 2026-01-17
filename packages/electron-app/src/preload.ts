@@ -40,7 +40,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // Window operations
   openNotesWindow: () => ipcRenderer.invoke('window:openNotes'),
-  openAssistantWindow: (boardId?: string) => ipcRenderer.invoke('window:openAssistant', boardId),
+  openBoardWindow: (boardId?: string) => ipcRenderer.invoke('window:openBoard', boardId),
   setAlwaysOnTop: (alwaysOnTop: boolean) => ipcRenderer.invoke('window:setAlwaysOnTop', alwaysOnTop),
 
   // IPC communication
@@ -93,7 +93,7 @@ declare global {
       }) => Promise<{ filePath?: string; canceled: boolean }>;
       readFile: (filePath: string) => Promise<{ content?: string; filename?: string; error?: string }>;
       openNotesWindow: () => Promise<{ success: boolean }>;
-      openAssistantWindow: (boardId?: string) => Promise<{ success: boolean }>;
+      openBoardWindow: (boardId?: string) => Promise<{ success: boolean }>;
       setAlwaysOnTop: (alwaysOnTop: boolean) => Promise<{ success: boolean }>;
       send: (channel: string, ...args: any[]) => void;
       receive: (channel: string, func: (...args: any[]) => void) => () => void;

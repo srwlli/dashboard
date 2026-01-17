@@ -233,9 +233,9 @@ ipcMain.handle('window:openNotes', () => {
   return { success: true };
 });
 
-// Open assistant/boards in new window
-ipcMain.handle('window:openAssistant', (_event, boardId?: string) => {
-  const assistantWindow = new BrowserWindow({
+// Open board in new window
+ipcMain.handle('window:openBoard', (_event, boardId?: string) => {
+  const boardWindow = new BrowserWindow({
     width: 1400,
     height: 900,
     minWidth: 1000,
@@ -249,15 +249,15 @@ ipcMain.handle('window:openAssistant', (_event, boardId?: string) => {
   });
 
   const baseUrl = isDev
-    ? 'http://localhost:3004/assistant-standalone'
-    : `http://localhost:${PORT}/assistant-standalone`;
+    ? 'http://localhost:3004/boards-standalone'
+    : `http://localhost:${PORT}/boards-standalone`;
 
   const fullUrl = boardId ? `${baseUrl}?boardId=${boardId}` : baseUrl;
 
-  assistantWindow.loadURL(fullUrl);
+  boardWindow.loadURL(fullUrl);
 
   if (isDev) {
-    assistantWindow.webContents.openDevTools();
+    boardWindow.webContents.openDevTools();
   }
 
   return { success: true };

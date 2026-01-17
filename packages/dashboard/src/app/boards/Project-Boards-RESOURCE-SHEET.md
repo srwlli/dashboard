@@ -1,11 +1,11 @@
 ---
 agent: claude_sonnet_4_5
-date: "2026-01-16"
+date: "2026-01-17"
 task: DOCUMENT
 subject: ProjectBoards
 parent_project: coderef-dashboard
 category: component
-version: "1.0.0"
+version: "1.1.0"
 related_files:
   - packages/dashboard/src/types/boards.ts
   - packages/dashboard/src/components/boards/BoardCanvas.tsx
@@ -16,6 +16,10 @@ related_files:
   - packages/dashboard/src/components/boards/AttachmentPicker.tsx
   - packages/dashboard/src/components/boards/BoardCreationModal.tsx
   - packages/dashboard/src/app/api/boards/route.ts
+  - packages/dashboard/src/app/boards/page.tsx
+  - packages/dashboard/src/app/boards-standalone/page.tsx
+  - packages/electron-app/src/main.ts
+  - packages/electron-app/src/preload.ts
 status: APPROVED
 ---
 
@@ -101,8 +105,8 @@ UI Render (updated state)
 
 | Integration | Direction | Contract | Purpose |
 |-------------|-----------|----------|---------|
-| RootClientWrapper | Inbound | STANDALONE_ROUTES array | Layout exclusion for `/assistant-standalone` |
-| Electron IPC | Outbound | `window.electronAPI.openAssistantWindow()` | New window support |
+| RootClientWrapper | Inbound | STANDALONE_ROUTES array | Layout exclusion for `/boards-standalone` |
+| Electron IPC | Outbound | `window.electronAPI.openBoardWindow()` | New window support |
 | Projects Context | Inbound | `useProjects()` hook | Project linking in board creation |
 | @dnd-kit | Inbound | DndContext, useDraggable, useDroppable | Drag & drop functionality |
 | Next.js API Routes | Bidirectional | REST API (GET/POST/PATCH/DELETE) | CRUD operations |
@@ -480,16 +484,39 @@ function handleOpenNewWindow(boardId: string) {
   if (
     typeof window !== 'undefined' &&
     (window as any).electronAPI &&
-    typeof (window as any).electronAPI.openAssistantWindow === 'function'
+    typeof (window as any).electronAPI.openBoardWindow === 'function'
   ) {
     // Electron mode
-    (window as any).electronAPI.openAssistantWindow(boardId);
+    (window as any).electronAPI.openBoardWindow(boardId);
   } else {
     // Web fallback
-    window.open(`/assistant-standalone?boardId=${boardId}`, '_blank');
+    window.open(`/boards-standalone?boardId=${boardId}`, '_blank');
   }
 }
 ```
+
+### 7.3 Suspense Wrapper (Hydration Flash Fix)
+
+The `/boards-standalone` route uses a Suspense boundary to prevent hydration mismatches from `useSearchParams()`:
+
+```typescript
+import { Suspense } from 'react';
+
+function BoardsStandaloneContent() {
+  const searchParams = useSearchParams(); // Client-side hook
+  // ... component logic
+}
+
+export default function BoardsStandalonePage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <BoardsStandaloneContent />
+    </Suspense>
+  );
+}
+```
+
+**Why**: Without Suspense, `useSearchParams()` causes a brief flash of the global layout (sidebar/header) during hydration. The Suspense boundary ensures the route renders cleanly without layout flicker.
 
 ---
 
@@ -578,9 +605,10 @@ function handleOpenNewWindow(boardId: string) {
 
 ### 12.1 Integration Gotchas
 
-1. **RootClientWrapper must include `/assistant-standalone`** in STANDALONE_ROUTES
-2. **Electron IPC method `openAssistantWindow` must exist** or fallback fails
+1. **RootClientWrapper must include `/boards-standalone`** in STANDALONE_ROUTES
+2. **Electron IPC method `openBoardWindow` must exist** or fallback fails
 3. **BoardPicker re-fetches boards on every open** - no caching
+4. **Suspense wrapper required for `/boards-standalone`** to prevent hydration flash
 
 ### 12.2 Configuration Mistakes
 
@@ -598,6 +626,46 @@ function handleOpenNewWindow(boardId: string) {
 
 ---
 
+## 13. Changelog
+
+### Version 1.1.0 (2026-01-17)
+
+**Route Rename: `/assistant` → `/boards`**
+- Renamed primary route from `/assistant` to `/boards` for semantic clarity
+- Renamed standalone route from `/assistant-standalone` to `/boards-standalone`
+- Updated navigation labels in Sidebar, MobileNav, and Header components
+- Updated RootClientWrapper STANDALONE_ROUTES array
+
+**Electron IPC Refactor:**
+- Renamed IPC handler: `window:openAssistant` → `window:openBoard`
+- Renamed API method: `openAssistantWindow()` → `openBoardWindow()`
+- Updated TypeScript definitions in preload.ts
+- Updated BoardCanvas component to use new method names
+
+**Hydration Flash Fix:**
+- Wrapped `/boards-standalone` in React Suspense boundary
+- Prevents flash of global layout during `useSearchParams()` hydration
+- Added loading spinner fallback for clean initial render
+
+**Backward Compatibility:**
+- Created redirect at `/assistant` → `/boards`
+- Created redirect at `/assistant-standalone` → `/boards-standalone` (preserves boardId param)
+- Old bookmarks and Electron windows continue to work
+
+**Breaking Changes:** None (redirects maintain compatibility)
+
+### Version 1.0.0 (2026-01-16)
+
+**Initial Release:**
+- Complete Trello-like kanban board system
+- Drag & drop with @dnd-kit
+- Filesystem-based persistence
+- Electron new window support
+- Mobile responsive design
+- Rich content (markdown, tags, attachments)
+
+---
+
 ## Conclusion
 
 This document defines the authoritative specification for the ProjectBoards feature in coderef-dashboard. It covers architectural design, state management, persistence contracts, API endpoints, performance characteristics, and known limitations. Developers must consult this document before making architectural changes to ensure refactor safety and maintain system integrity.
@@ -608,4 +676,4 @@ This document defines the authoritative specification for the ProjectBoards feat
 - Increment version number for breaking changes
 - Archive old behavior in appendices if needed
 
-**Last Updated:** 2026-01-16 by Claude Sonnet 4.5
+**Last Updated:** 2026-01-17 by Claude Sonnet 4.5

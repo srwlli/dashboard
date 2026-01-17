@@ -80,6 +80,7 @@ const TEXT_EXTENSIONS = new Set([
   '.dockerignore',
   '.editorconfig',
   '.mmd', // Mermaid diagram files
+  '.csv', // CSV data files
 ]);
 
 /**
@@ -100,6 +101,7 @@ function getMimeType(ext: string): string {
     '.yml': 'application/yaml',
     '.yaml': 'application/yaml',
     '.mmd': 'text/vnd.mermaid',
+    '.csv': 'text/csv',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -133,7 +135,7 @@ const WRITE_ALLOWED_EXTENSIONS = new Set([
   '.py', '.java', '.c', '.cpp', '.rs', '.go', '.rb', '.php',
 
   // Data and config
-  '.json', '.yaml', '.yml', '.toml', '.ini', '.env',
+  '.json', '.yaml', '.yml', '.toml', '.ini', '.env', '.csv',
 
   // Markup and data
   '.xml', '.svg',

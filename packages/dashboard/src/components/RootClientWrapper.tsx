@@ -29,7 +29,7 @@ import { WorkflowProvider } from '@/contexts/WorkflowContext';
  */
 
 // Routes that should not have the global layout (sidebar, header)
-const STANDALONE_ROUTES = ['/notes-standalone', '/assistant-standalone'];
+const STANDALONE_ROUTES = ['/notes-standalone', '/boards-standalone'];
 
 export function RootClientWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();

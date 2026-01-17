@@ -1,0 +1,333 @@
+Type,Server,Category,Name,Description,Status,Path
+Command,assistant,Personas,/coderef-docs-agent,Alias for coderef-personas - Activate docs specialist,alias,C:\Users\willh\.claude\commands\coderef-docs-agent.md
+Command,assistant,Workflow,/coderef-foundation-docs,Alias for coderef-workflow - Generate foundation docs,alias,C:\Users\willh\.claude\commands\coderef-foundation-docs.md
+Command,assistant,Workflow,/generate-agent-communication,Alias for coderef-workflow - Generate agent communication file,alias,C:\Users\willh\.claude\commands\generate-agent-communication.md
+Command,assistant,Workflow,/generate-deliverables,Alias for coderef-workflow - Generate deliverables template,alias,C:\Users\willh\.claude\commands\generate-deliverables.md
+Command,assistant,Documentation,/generate-docs,Alias for coderef-docs - Generate documentation,alias,C:\Users\willh\.claude\commands\generate-docs.md
+Command,assistant,Workflow,/generate-handoff-context,Alias for coderef-workflow - Generate handoff context,alias,C:\Users\willh\.claude\commands\generate-handoff-context.md
+Command,assistant,Documentation,/generate-user-docs,Alias for coderef-docs - Generate user documentation,alias,C:\Users\willh\.claude\commands\generate-user-docs.md
+Command,assistant,Documentation,/update-docs,Alias for coderef-docs - Update documentation,alias,C:\Users\willh\.claude\commands\update-docs.md
+Command,assistant,Documentation,/update-foundation-docs,Alias for coderef-docs - Update foundation docs,alias,C:\Users\willh\.claude\commands\update-foundation-docs.md
+Command,assistant,Workflow,/aggregate-agent-deliverables,Alias for coderef-workflow - Aggregate agent deliverables,alias,C:\Users\willh\.claude\commands\aggregate-agent-deliverables.md
+Command,assistant,Workflow,/archive-feature,Alias for coderef-workflow - Archive completed feature,alias,C:\Users\willh\.claude\commands\archive-feature.md
+Command,assistant,Workflow,/assign-agent-task,Alias for coderef-workflow - Assign task to agent,alias,C:\Users\willh\.claude\commands\assign-agent-task.md
+Command,assistant,Documentation,/audit-codebase,Alias for coderef-docs - Audit codebase for violations,alias,C:\Users\willh\.claude\commands\audit-codebase.md
+Command,assistant,Personas,/ava,"Activate Ava, the Frontend Specialist persona",alias,C:\Users\willh\.claude\commands\ava.md
+Command,assistant,Documentation,/check-consistency,Alias for coderef-docs - Check consistency against standards,alias,C:\Users\willh\.claude\commands\check-consistency.md
+Command,assistant,Personas,/coderef-assistant,"Activate CodeRef Assistant, the Orchestrator persona",alias,C:\Users\willh\.claude\commands\coderef-assistant.md
+Command,assistant,Personas,/coderef-context-agent,Alias for coderef-personas - Activate context specialist,alias,C:\Users\willh\.claude\commands\coderef-context-agent.md
+Command,assistant,Personas,/coderef-mcp-lead,Alias for coderef-personas - Activate MCP lead,alias,C:\Users\willh\.claude\commands\coderef-mcp-lead.md
+Command,assistant,Personas,/coderef-testing-agent,Alias for coderef-personas - Activate testing specialist,alias,C:\Users\willh\.claude\commands\coderef-testing-agent.md
+Command,assistant,Testing,/compare-runs,Alias for coderef-testing - Compare test runs,alias,C:\Users\willh\.claude\commands\compare-runs.md
+Command,assistant,Documentation,/create-resource-sheet,Alias for coderef-docs - Create resource sheet,alias,C:\Users\willh\.claude\commands\create-resource-sheet.md
+Command,assistant,Management,/debug-ui,Debug UI issues using Chrome DevTools MCP with Ava's frontend expertise,alias,C:\Users\willh\.claude\commands\debug-ui.md
+Command,assistant,Testing,/detect-flaky,Alias for coderef-testing - Detect flaky tests,alias,C:\Users\willh\.claude\commands\detect-flaky.md
+Command,assistant,Testing,/discover-tests,Alias for coderef-testing - Discover tests,alias,C:\Users\willh\.claude\commands\discover-tests.md
+Command,assistant,Documentation,/establish-standards,Alias for coderef-docs - Establish project standards,alias,C:\Users\willh\.claude\commands\establish-standards.md
+Command,assistant,Workflow,/features-inventory,Alias for coderef-workflow - Generate features inventory,alias,C:\Users\willh\.claude\commands\features-inventory.md
+Command,assistant,Management,/fix,Alias for coderef-personas - Quick fixes,alias,C:\Users\willh\.claude\commands\fix.md
+Command,assistant,Workflow,/gather-context,Alias for coderef-workflow - Gather feature context,alias,C:\Users\willh\.claude\commands\gather-context.md
+Command,assistant,Documentation,/get-template,Alias for coderef-docs - Get documentation template,alias,C:\Users\willh\.claude\commands\get-template.md
+Command,assistant,Workflow,/git-release,Alias for coderef-workflow - Create git release,alias,C:\Users\willh\.claude\commands\git-release.md
+Command,assistant,Testing,/list-frameworks,Alias for coderef-testing - List test frameworks,alias,C:\Users\willh\.claude\commands\list-frameworks.md
+Command,assistant,Documentation,/list-templates,Alias for coderef-docs - List all templates,alias,C:\Users\willh\.claude\commands\list-templates.md
+Command,assistant,Personas,/lloyd,Alias for coderef-personas - Activate Lloyd (general purpose),alias,C:\Users\willh\.claude\commands\lloyd.md
+Command,assistant,Personas,/marcus,Alias for coderef-personas - Activate Marcus (code architect),alias,C:\Users\willh\.claude\commands\marcus.md
+Command,assistant,Personas,/quinn,Alias for coderef-personas - Activate Quinn (testing specialist),alias,C:\Users\willh\.claude\commands\quinn.md
+Command,assistant,Documentation,/record-changes,Alias for coderef-docs - Record changelog changes,alias,C:\Users\willh\.claude\commands\record-changes.md
+Command,assistant,Personas,/research-scout,Alias for coderef-personas - Activate Research Scout,alias,C:\Users\willh\.claude\commands\research-scout.md
+Command,assistant,Documentation,/resource-sheet-catalog,Alias for coderef-docs - Show resource sheet catalog,alias,C:\Users\willh\.claude\commands\resource-sheet-catalog.md
+Command,assistant,Testing,/run-by-pattern,Alias for coderef-testing - Run tests by pattern,alias,C:\Users\willh\.claude\commands\run-by-pattern.md
+Command,assistant,Testing,/run-parallel,Alias for coderef-testing - Run tests in parallel,alias,C:\Users\willh\.claude\commands\run-parallel.md
+Command,assistant,Testing,/run-test-file,Alias for coderef-testing - Run specific test file,alias,C:\Users\willh\.claude\commands\run-test-file.md
+Command,assistant,Testing,/run-tests,Alias for coderef-testing - Run all tests,alias,C:\Users\willh\.claude\commands\run-tests.md
+Command,assistant,Workflow,/stub,Alias for coderef-workflow - Create feature stub,alias,C:\Users\willh\.claude\commands\stub.md
+Command,assistant,Personas,/taylor,"Activate Taylor, the General Purpose Agent persona",alias,C:\Users\willh\.claude\commands\taylor.md
+Command,assistant,Testing,/test-coverage,Alias for coderef-testing - Analyze test coverage,alias,C:\Users\willh\.claude\commands\test-coverage.md
+Command,assistant,Testing,/test-health,Alias for coderef-testing - Check test health,alias,C:\Users\willh\.claude\commands\test-health.md
+Command,assistant,Testing,/test-performance,Alias for coderef-testing - Analyze test performance,alias,C:\Users\willh\.claude\commands\test-performance.md
+Command,assistant,Testing,/test-report,Alias for coderef-testing - Generate test report,alias,C:\Users\willh\.claude\commands\test-report.md
+Command,assistant,Testing,/test-results,Alias for coderef-testing - Get test results,alias,C:\Users\willh\.claude\commands\test-results.md
+Command,assistant,Testing,/test-trends,Alias for coderef-testing - Analyze test trends,alias,C:\Users\willh\.claude\commands\test-trends.md
+Command,assistant,Testing,/testing-proof,Alias for coderef-testing - Generate testing proof,alias,C:\Users\willh\.claude\commands\testing-proof.md
+Command,assistant,Workflow,/track-agent-status,Alias for coderef-workflow - Track agent status,alias,C:\Users\willh\.claude\commands\track-agent-status.md
+Command,assistant,Workflow,/update-deliverables,Alias for coderef-workflow - Update deliverables with metrics,alias,C:\Users\willh\.claude\commands\update-deliverables.md
+Command,assistant,Workflow,/update-task-status,Alias for coderef-workflow - Update task status,alias,C:\Users\willh\.claude\commands\update-task-status.md
+Command,assistant,Workflow,/verify-agent-completion,Alias for coderef-workflow - Verify agent completion,alias,C:\Users\willh\.claude\commands\verify-agent-completion.md
+Command,assistant,Personas,/coderef-personas-agent,Alias for coderef-personas - Activate personas specialist,alias,C:\Users\willh\.claude\commands\coderef-personas-agent.md
+Command,assistant,Management,/create-persona,Alias for coderef-personas - Create custom persona,alias,C:\Users\willh\.claude\commands\create-persona.md
+Command,assistant,Management,/use-persona,Alias for coderef-personas - Use specific persona,alias,C:\Users\willh\.claude\commands\use-persona.md
+Command,assistant,Utility,/archive-file,Archive files by project,active,C:\Users\willh\Desktop\assistant\.claude\commands\archive-file.md
+Command,assistant,Workflow,/align-plan,Alias for coderef-workflow - Align plan with todos,alias,C:\Users\willh\.claude\commands\align-plan.md
+Command,assistant,Workflow,/analyze-for-planning,Alias for coderef-workflow - Analyze project for planning,alias,C:\Users\willh\.claude\commands\analyze-for-planning.md
+Command,assistant,Workflow,/audit-plans,Alias for coderef-workflow - Audit all plans,alias,C:\Users\willh\.claude\commands\audit-plans.md
+Command,assistant,Workflow,/complete-workorder,Alias for coderef-workflow - Complete workorder,alias,C:\Users\willh\.claude\commands\complete-workorder.md
+Command,assistant,Workflow,/create-plan,Alias for coderef-workflow - Create implementation plan,alias,C:\Users\willh\.claude\commands\create-plan.md
+Command,assistant,Workflow,/create-session,Create a new multi-agent session with communication.json and instructions.json,alias,C:\Users\willh\.claude\commands\create-session.md
+Command,assistant,Workflow,/create-workorder,Alias for coderef-workflow - Create new workorder,alias,C:\Users\willh\.claude\commands\create-workorder.md
+Command,assistant,Workflow,/generate-plan-review,Alias for coderef-workflow - Generate plan review report,alias,C:\Users\willh\.claude\commands\generate-plan-review.md
+Command,assistant,Workflow,/get-planning-template,Alias for coderef-workflow - Get planning template,alias,C:\Users\willh\.claude\commands\get-planning-template.md
+Command,assistant,Workflow,/get-workorder-log,Alias for coderef-workflow - Query workorder log,alias,C:\Users\willh\.claude\commands\get-workorder-log.md
+Command,assistant,Workflow,/log-workorder,Alias for coderef-workflow - Log workorder entry,alias,C:\Users\willh\.claude\commands\log-workorder.md
+Command,assistant,Workflow,/validate-plan,Alias for coderef-workflow - Validate implementation plan,alias,C:\Users\willh\.claude\commands\validate-plan.md
+Command,coderef-dashboard,Utility,/widget-architect,Widget architecture tool,active,C:\Users\willh\Desktop\coderef-dashboard\.claude\commands\widget-architect.md
+Command,coderef-docs,Documentation,/audit-codebase,Audit codebase for violations,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\audit-codebase.md
+Command,coderef-docs,Documentation,/check-consistency,Check consistency against standards,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\check-consistency.md
+Command,coderef-docs,Documentation,/create-resource-sheet,Create resource sheet,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\create-resource-sheet.md
+Command,coderef-docs,Documentation,/establish-standards,Establish project standards,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\establish-standards.md
+Command,coderef-docs,Documentation,/generate-docs,Generate documentation,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\generate-docs.md
+Command,coderef-docs,Documentation,/generate-user-docs,Generate user documentation,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\generate-user-docs.md
+Command,coderef-docs,Documentation,/get-template,Get documentation template,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\get-template.md
+Command,coderef-docs,Documentation,/list-templates,List all templates,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\list-templates.md
+Command,coderef-docs,Documentation,/record-changes,Record changelog changes,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\record-changes.md
+Command,coderef-docs,Documentation,/resource-sheet-catalog,Show resource sheet catalog,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\resource-sheet-catalog.md
+Command,coderef-docs,Documentation,/update-docs,Update documentation,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\update-docs.md
+Command,coderef-docs,Documentation,/update-foundation-docs,Update foundation docs,active,C:\Users\willh\.mcp-servers\coderef-docs\.claude\commands\update-foundation-docs.md
+Command,coderef-personas,Management,/create-persona,Create custom persona,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\create-persona.md
+Command,coderef-personas,Management,/debug-ui,Debug UI issues,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\debug-ui.md
+Command,coderef-personas,Management,/fix,Quick fixes,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\fix.md
+Command,coderef-personas,Management,/use-persona,Use specific persona,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\use-persona.md
+Command,coderef-personas,Personas,/ava,Activate Ava (frontend specialist),active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\ava.md
+Command,coderef-personas,Personas,/coderef-assistant,Activate CodeRef Assistant (orchestrator),active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\coderef-assistant.md
+Command,coderef-personas,Personas,/coderef-context-agent,Activate context specialist,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\coderef-context-agent.md
+Command,coderef-personas,Personas,/coderef-docs-agent,Activate docs specialist,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\coderef-docs-agent.md
+Command,coderef-personas,Personas,/coderef-mcp-lead,Activate MCP lead,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\coderef-mcp-lead.md
+Command,coderef-personas,Personas,/coderef-personas-agent,Activate personas specialist,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\coderef-personas-agent.md
+Command,coderef-personas,Personas,/coderef-testing-agent,Activate testing specialist,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\coderef-testing-agent.md
+Command,coderef-personas,Personas,/lloyd,Activate Lloyd (general purpose),active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\lloyd.md
+Command,coderef-personas,Personas,/marcus,Activate Marcus (code architect),active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\marcus.md
+Command,coderef-personas,Personas,/quinn,Activate Quinn (testing specialist),active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\quinn.md
+Command,coderef-personas,Personas,/research-scout,Activate Research Scout,active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\research-scout.md
+Command,coderef-personas,Personas,/taylor,Activate Taylor (general purpose),active,C:\Users\willh\.mcp-servers\coderef-personas\.claude\commands\taylor.md
+Command,coderef-testing,Testing,/compare-runs,Compare test runs,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\compare-runs.md
+Command,coderef-testing,Testing,/detect-flaky,Detect flaky tests,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\detect-flaky.md
+Command,coderef-testing,Testing,/discover-tests,Discover tests,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\discover-tests.md
+Command,coderef-testing,Testing,/list-frameworks,List test frameworks,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\list-frameworks.md
+Command,coderef-testing,Testing,/run-by-pattern,Run tests by pattern,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\run-by-pattern.md
+Command,coderef-testing,Testing,/run-parallel,Run tests in parallel,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\run-parallel.md
+Command,coderef-testing,Testing,/run-test-file,Run specific test file,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\run-test-file.md
+Command,coderef-testing,Testing,/run-tests,Run all tests,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\run-tests.md
+Command,coderef-testing,Testing,/test-coverage,Analyze test coverage,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\test-coverage.md
+Command,coderef-testing,Testing,/test-health,Check test health,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\test-health.md
+Command,coderef-testing,Testing,/test-performance,Analyze test performance,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\test-performance.md
+Command,coderef-testing,Testing,/test-report,Generate test report,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\test-report.md
+Command,coderef-testing,Testing,/test-results,Get test results,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\test-results.md
+Command,coderef-testing,Testing,/test-trends,Analyze test trends,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\test-trends.md
+Command,coderef-testing,Testing,/testing-proof,Generate testing proof,active,C:\Users\willh\.mcp-servers\coderef-testing\.claude\commands\testing-proof.md
+Command,coderef-workflow,Workflow,/aggregate-agent-deliverables,Aggregate agent deliverables,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\aggregate-agent-deliverables.md
+Command,coderef-workflow,Workflow,/align-plan,Align plan with todos,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\align-plan.md
+Command,coderef-workflow,Workflow,/analyze-for-planning,Analyze project for planning,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\analyze-for-planning.md
+Command,coderef-workflow,Workflow,/archive-feature,Archive completed feature,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\archive-feature.md
+Command,coderef-workflow,Workflow,/assign-agent-task,Assign task to agent,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\assign-agent-task.md
+Command,coderef-workflow,Workflow,/audit-plans,Audit all plans,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\audit-plans.md
+Command,coderef-workflow,Workflow,/coderef-foundation-docs,Generate foundation docs,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\coderef-foundation-docs.md
+Command,coderef-workflow,Workflow,/complete-workorder,Complete workorder,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\complete-workorder.md
+Command,coderef-workflow,Workflow,/create-plan,Create implementation plan,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\create-plan.md
+Command,coderef-workflow,Workflow,/create-session,Create multi-agent session with real-time file tracking and git verification,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\create-session.md
+Command,coderef-workflow,Workflow,/create-workorder,Create new workorder,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\create-workorder.md
+Command,coderef-workflow,Workflow,/features-inventory,Generate features inventory,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\features-inventory.md
+Command,coderef-workflow,Workflow,/gather-context,Gather feature context,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\gather-context.md
+Command,coderef-workflow,Workflow,/generate-agent-communication,Generate agent communication file,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\generate-agent-communication.md
+Command,coderef-workflow,Workflow,/generate-deliverables,Generate deliverables template,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\generate-deliverables.md
+Command,coderef-workflow,Workflow,/generate-handoff-context,Generate handoff context,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\generate-handoff-context.md
+Command,coderef-workflow,Workflow,/generate-plan-review,Generate plan review report,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\generate-plan-review.md
+Command,coderef-workflow,Workflow,/get-planning-template,Get planning template,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\get-planning-template.md
+Command,coderef-workflow,Workflow,/get-workorder-log,Query workorder log,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\get-workorder-log.md
+Command,coderef-workflow,Workflow,/git-release,Create git release,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\git-release.md
+Command,coderef-workflow,Workflow,/log-workorder,Log workorder entry,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\log-workorder.md
+Command,coderef-workflow,Workflow,/stub,Create feature stub,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\stub.md
+Command,coderef-workflow,Workflow,/track-agent-status,Track agent status,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\track-agent-status.md
+Command,coderef-workflow,Workflow,/update-deliverables,Update deliverables with metrics,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\update-deliverables.md
+Command,coderef-workflow,Workflow,/update-task-status,Update task status,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\update-task-status.md
+Command,coderef-workflow,Workflow,/validate-plan,Validate implementation plan,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\validate-plan.md
+Command,coderef-workflow,Workflow,/verify-agent-completion,Verify agent completion,active,C:\Users\willh\.mcp-servers\coderef-workflow\.claude\commands\verify-agent-completion.md
+Output,System,Data Format,CSV,Tabular data format (tools-and-commands.csv),active,.csv
+Output,System,Data Format,JSON,Structured data format for machine-readable output (index.json plan.json communication.json),active,.json
+Output,System,Documentation,Markdown,Human-readable documentation format (README.md ARCHITECTURE.md API.md),active,.md
+Output,System,Visualization,GraphViz DOT,Graph description language for complex visualizations (.dot),active,dependency-trees|call-graphs|module-relationships
+Output,System,Visualization,Mermaid Diagrams,Visual diagrams for architecture and dependencies (.mmd),active,architecture.mmd|dependencies.mmd|workflows.mmd
+Output,System,Web Format,HTML,Interactive documentation with navigation and styling (.html),active,documentation-websites|interactive-reports|user-guides
+Output,coderef-context,Visualization,DOT,Graphviz graph format (export with coderef_export),active,.dot
+Output,coderef-context,Visualization,Mermaid,Dependency graph diagrams (flowchart sequence class),active,.mmd
+Output,coderef-dashboard,Web,HTML,Dashboard UI (index.html workorders dashboard),active,.html
+Schema,papertrail,Documentation,base-frontmatter-schema.json,Universal Documentation Standards (UDS) base schema - required fields for ALL markdown documents in CodeRef ecosystem,active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\base-frontmatter-schema.json
+Schema,papertrail,Documentation,foundation-doc-frontmatter-schema.json,"Validates YAML front matter for foundation docs (README, ARCHITECTURE, API, SCHEMA, COMPONENTS) generated by coderef-docs. Extends base-frontmatter-schema.json with workorder tracking and doc_type fields.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\foundation-doc-frontmatter-schema.json
+Schema,papertrail,Documentation,infrastructure-doc-frontmatter-schema.json,"Validates YAML front matter for infrastructure documentation (deployment guides, CI/CD, monitoring, configuration). Infrastructure docs describe system setup, deployment, and operations.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\infrastructure-doc-frontmatter-schema.json
+Schema,papertrail,Documentation,migration-doc-frontmatter-schema.json,"Validates YAML front matter for migration documentation (migration guides, deprecation notices, upgrade paths). Migration docs describe how to transition from old to new systems.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\migration-doc-frontmatter-schema.json
+Schema,papertrail,Documentation,resource-sheet-metadata-schema.json,Validates YAML front matter in resource/reference sheets for UDS and RSMS compliance,active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\resource-sheet-metadata-schema.json
+Schema,papertrail,Documentation,script-frontmatter-schema.json,Validates YAML frontmatter in script and test files for triangular bidirectional references,active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\script-frontmatter-schema.json
+Schema,papertrail,Documentation,session-doc-frontmatter-schema.json,"Validates YAML front matter for session documentation (communication.json, instructions.json, session summaries). Session docs coordinate multi-agent work.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\session-doc-frontmatter-schema.json
+Schema,papertrail,Documentation,standards-doc-frontmatter-schema.json,"Validates YAML front matter for standards documentation (global-documentation-standards.md, resource-sheet-standards.md, etc.). Standards docs define policies, conventions, and enforcement rules.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\standards-doc-frontmatter-schema.json
+Schema,papertrail,Documentation,system-doc-frontmatter-schema.json,"Validates YAML front matter for system documentation (CLAUDE.md, SESSION-INDEX.md, etc.). System docs describe codebase architecture, session management, and project history.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\system-doc-frontmatter-schema.json
+Schema,papertrail,Documentation,user-facing-doc-frontmatter-schema.json,"Validates YAML front matter for user-facing documentation (guides, tutorials, FAQs in coderef/user/). User docs are allowed to contain emojis per EMOJI-TIMESTAMP-POLICY.md.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\user-facing-doc-frontmatter-schema.json
+Schema,papertrail,Documentation,workorder-doc-frontmatter-schema.json,Validates YAML front matter for workorder docs generated by coderef-workflow,active,C:\Users\willh\.mcp-servers\papertrail\schemas\documentation\workorder-doc-frontmatter-schema.json
+Schema,papertrail,Mcp,error-responses-schema.json,JSON Schema definitions for error response factory - consistent error formatting across all MCP tools,active,C:\Users\willh\.mcp-servers\papertrail\schemas\mcp\error-responses-schema.json
+Schema,papertrail,Mcp,mcp-client-schema.json,Type definitions and validation contracts for MCP inter-server communication client,active,C:\Users\willh\.mcp-servers\papertrail\schemas\mcp\mcp-client-schema.json
+Schema,papertrail,Mcp,server-schema.json,Type definitions and validation contracts for coderef-workflow MCP server,active,C:\Users\willh\.mcp-servers\papertrail\schemas\mcp\server-schema.json
+Schema,papertrail,Mcp,tool-handlers-schema.json,Type definitions and validation contracts for coderef-workflow MCP tool handlers,active,C:\Users\willh\.mcp-servers\papertrail\schemas\mcp\tool-handlers-schema.json
+Schema,papertrail,Mcp,type-defs-schema.json,JSON Schema definitions for all 71 TypedDicts in type_defs.py - the canonical type system for coderef-workflow MCP server,active,C:\Users\willh\.mcp-servers\papertrail\schemas\mcp\type-defs-schema.json
+Schema,papertrail,Planning,constants-schema.json,"JSON Schema definitions for centralized constants - paths, files, enums, and validation rules",active,C:\Users\willh\.mcp-servers\papertrail\schemas\planning\constants-schema.json
+Schema,papertrail,Planning,plan-validator-schema.json,Type definitions and validation contracts for PlanValidator class,active,C:\Users\willh\.mcp-servers\papertrail\schemas\planning\plan-validator-schema.json
+Schema,papertrail,Planning,planning-analyzer-schema.json,Type definitions and validation contracts for PlanningAnalyzer class,active,C:\Users\willh\.mcp-servers\papertrail\schemas\planning\planning-analyzer-schema.json
+Schema,papertrail,Planning,planning-generator-schema.json,Type definitions and validation contracts for PlanningGenerator class,active,C:\Users\willh\.mcp-servers\papertrail\schemas\planning\planning-generator-schema.json
+Schema,papertrail,Schemas,stub-schema.json,Canonical schema for stub.json files across orchestrator and dashboard,active,C:\Users\willh\.mcp-servers\papertrail\schemas\stub-schema.json
+Schema,papertrail,Security,validation-schema.json,JSON Schema definitions for validation functions - security boundary for all tool inputs,active,C:\Users\willh\.mcp-servers\papertrail\schemas\security\validation-schema.json
+Schema,papertrail,Sessions,agent-communication-schema.json,Agent-specific task tracking within a session subdirectory. Used in hierarchical multi-agent sessions where each agent has their own workspace.,active,C:\Users\willh\.mcp-servers\papertrail\schemas\sessions\agent-communication-schema.json
+Schema,papertrail,Sessions,agent-instructions-schema.json,"Detailed execution steps for agent within session subdirectory. Provides step-by-step guidance, task specifications, and context templates for autonomous agent execution.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\sessions\agent-instructions-schema.json
+Schema,papertrail,Sessions,communication-schema.json,"Agent roster and status tracking for multi-agent sessions in the CodeRef ecosystem. Supports 1-N agents (flexible agent count, not fixed roster). Optional phase tracking for multi-phase sessions.",active,C:\Users\willh\.mcp-servers\papertrail\schemas\sessions\communication-schema.json
+Schema,papertrail,Workflow,analysis-json-schema.json,Schema for project analysis files generated by coderef-workflow analyze_project_for_planning. Contains structured analysis data for planning decisions.,active,C:\Users\willh\.mcp-servers\papertrail\schemas\workflow\analysis-json-schema.json
+Schema,papertrail,Workflow,execution-log-json-schema.json,Schema for task execution logs generated by coderef-workflow. Tracks task progress for plan.json tasks with workorder traceability.,active,C:\Users\willh\.mcp-servers\papertrail\schemas\workflow\execution-log-json-schema.json
+Schema,papertrail,Workflow,plan.schema.json,JSON Schema for plan.json implementation plans,active,C:\Users\willh\.mcp-servers\papertrail\schemas\planning\plan.schema.json
+Script,Orchestrator,Structure Creators,create-coderef-structure.py,Create coderef/ directory structure (workorder/ archived/ foundation/ user/ standards/),active,C:\Users\willh\Desktop\assistant\scripts\
+Script,System,Data Processing,extract-context.py,Extract context from source files,active,C:\Users\willh\Desktop\projects\coderef-system\scripts\
+Script,System,Data Processing,parse_coderef_data.py,Preprocess large index files (summarizes .coderef/index.json for large codebases),active,C:\Users\willh\Desktop\projects\coderef-system\packages\
+Script,System,Documentation Generators,diagram-generator.py,Generate visual diagrams from codebase structure (Mermaid/DOT),active,C:\Users\willh\Desktop\projects\coderef-system\scripts\
+Script,System,Documentation Generators,enhance-standards.py,Generate UI/behavior/UX standards using .coderef/ data,active,C:\Users\willh\Desktop\projects\coderef-system\scripts\
+Script,System,Documentation Generators,generate_docs.py,Generate foundation docs from .coderef/ data (README ARCHITECTURE API SCHEMA COMPONENTS),active,C:\Users\willh\Desktop\projects\coderef-system\.coderef\
+Script,System,Structure Creators,create-coderef-structure.py,Create coderef/ directory structure,active,C:\Users\willh\Desktop\assistant\scripts
+Script,System,Structure Creators,create-foundation-docs.py,Generate foundation docs (README ARCHITECTURE API),active,C:\Users\willh\Desktop\assistant\scripts
+Script,System,Structure Creators,populate-coderef.py,Generate complete .coderef/ structure (all 16 files: reports/ diagrams/ exports/),active,C:\Users\willh\Desktop\projects\coderef-system\scripts\
+Script,System,Structure Creators,scan-all.py,Generate minimal .coderef/ structure (2-3 files: index.json context.md),active,C:\Users\willh\Desktop\projects\coderef-system\scripts
+Script,Workflow,Documentation Generators,coderef_foundation_generator.py,Generate foundation docs (hybrid approach - uses .coderef/ data + source analysis),active,C:\Users\willh\.mcp-servers\coderef-workflow\generators\
+Script,Workflow,Documentation Generators,foundation_generator.py,Generate foundation docs (traditional approach - reads source files directly),active,C:\Users\willh\.mcp-servers\coderef-workflow\generators\
+Script,Workflow,Documentation Generators,mermaid_formatter.py,Format Mermaid diagrams,active,C:\Users\willh\.mcp-servers\coderef-workflow\generators\
+Script,Workflow,Documentation Generators,standards_generator.py,Generate standards (MCP tool integration with .coderef/ fast path),active,C:\Users\willh\.mcp-servers\coderef-workflow\generators\
+Script,coderef-context,Data Processing,export-graph.py,Export dependency graph (JSON JSON-LD Mermaid DOT),active,C:\Users\willh\.mcp-servers\coderef-context\src\coderef_context
+Script,coderef-docs,Documentation Generators,generate-api.py,Generate API.md from template,active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-architecture.py,Generate ARCHITECTURE.md from template,active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-components.py,Generate COMPONENTS.md from template,active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-features.py,Generate FEATURES.md (workorder inventory),active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-my-guide.py,Generate my-guide.md (60-80 line reference),active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-quickref.py,Generate quickref.md interactive guide,active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-readme.py,Generate README.md from template,active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-schema.py,Generate SCHEMA.md from template,active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,coderef-docs,Documentation Generators,generate-user-guide.py,Generate USER-GUIDE.md (comprehensive onboarding),active,C:\Users\willh\.mcp-servers\coderef-docs\generators
+Script,papertrail,Data Processing,check-document-health.py,Calculate health score (0-100) for document,active,C:\Users\willh\.mcp-servers\papertrail\scripts
+Script,papertrail,Data Processing,validate-all-docs.py,Validate all docs in directory against UDS,active,C:\Users\willh\.mcp-servers\papertrail\scripts
+Tab,coderef-dashboard,UI Navigation,Commands,Slash commands reference (68 commands),active,C:\Users\willh\Desktop\coderef-dashboard\packages\dashboard\src\components\resources\CommandsTab.tsx
+Tab,coderef-dashboard,UI Navigation,Output,Output formats and file structure,active,C:\Users\willh\Desktop\coderef-dashboard\packages\dashboard\src\components\resources\OutputTab.tsx
+Tab,coderef-dashboard,UI Navigation,Scripts,Utility scripts and automation,active,C:\Users\willh\Desktop\coderef-dashboard\packages\dashboard\src\components\resources\ScriptsTab.tsx
+Tab,coderef-dashboard,UI Navigation,Setup,Installation and configuration,active,C:\Users\willh\Desktop\coderef-dashboard\packages\dashboard\src\components\resources\SetupTab.tsx
+Tab,coderef-dashboard,UI Navigation,Tools,MCP tools reference (89 tools),active,C:\Users\willh\Desktop\coderef-dashboard\packages\dashboard\src\components\resources\ToolsTab.tsx
+Tab,coderef-dashboard,UI Navigation,Workflows,Multi-step workflows,active,C:\Users\willh\Desktop\coderef-dashboard\packages\dashboard\src\components\resources\WorkflowsTab.tsx
+Tool,coderef-context,Code Intelligence,coderef_complexity,Get complexity metrics for a code element,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_context,"Generate comprehensive codebase context with visual architecture diagram. Returns project metadata, stats, and ready-to-render Mermaid diagram in single call.",active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_coverage,Analyze test coverage in the codebase,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_diagram,Generate visual dependency diagrams (Mermaid or Graphviz),active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_drift,Detect drift between CodeRef index and current code,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_export,"Export coderef data in various formats (JSON, JSON-LD, Mermaid, DOT)",active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_impact,Analyze impact of modifying or deleting a code element,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_incremental_scan,"Perform incremental scan (only re-scan files with detected drift, merge with existing index)",active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_patterns,Discover code patterns and test coverage gaps,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_query,"Query code relationships (what-calls, what-imports, shortest-path, etc)",active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_scan,"Scan project and discover all code elements (functions, classes, components, hooks)",active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_tag,Add CodeRef2 tags to source files for better tracking and validation,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,coderef_validate,Validate CodeRef2 references in codebase,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-context,Code Intelligence,validate_coderef_outputs,Validate .coderef/ files against schemas using Papertrail MCP validation,active,C:\Users\willh\.mcp-servers\coderef-context\server.py
+Tool,coderef-docs,Documentation,add_changelog_entry,"Add a new entry to the project changelog. Requires all change details including version, type, title, description, files, reason, and impact.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,audit_codebase,"Audit codebase for standards violations using established standards documents. Scans all source files, compares against standards, and generates comprehensive compliance report with violations, severity levels, and fix suggestions.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,check_consistency,Check code changes against established standards for consistency violations. Lightweight quality gate for pre-commit checks and CI/CD pipelines. Only scans modified files. Auto-detects changes via git or accepts explicit file list.,active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,check_document_health,"Calculate health score (0-100) for document based on 4 factors: Traceability (40%% - has workorder_id, feature_id, MCP attribution), Completeness (30%% - required sections present), Freshness (20%% - document age), Validation (10%% - passes schema). Phase 3: Papertrail integration.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,coderef_foundation_docs,"[DEPRECATED] Use generate_foundation_docs instead. CONSOLIDATE-002 (WO-GENERATION-ENHANCEMENT-001): This tool is deprecated and will be removed in v5.0.0. It has been superseded by generate_foundation_docs which offers better MCP integration, drift detection, and sequential generation. Migration: Replace coderef_foundation_docs(path) with generate_foundation_docs(path).",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,establish_standards,Scan codebase to discover UI/UX/behavior patterns and generate standards documentation. Creates 4 markdown files in coderef/standards/. Run ONCE per project to establish baseline standards for consistency validation (Tools #9 and #10).,active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,generate_features,"USER-005 (WO-GENERATION-ENHANCEMENT-001): Generate FEATURES.md - features inventory with workorder tracking. Scans coderef/workorder/ and coderef/archived/ directories, extracts workorder IDs and status from plan.json files, generates executive summary with metrics and feature lifecycle documentation.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,generate_foundation_docs,"Generate foundation documentation (README, ARCHITECTURE, API, COMPONENTS, SCHEMA) for a project. Returns templates and generation plan - Claude will generate and save the actual documents.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,generate_individual_doc,[INTERNAL] Generate a single individual documentation file. Called by generate_foundation_docs for sequential generation. Not recommended for direct use - use generate_foundation_docs instead. CONSOLIDATE-001 (WO-GENERATION-ENHANCEMENT-001): Marked as internal tool.,active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,generate_my_guide,"USER-003 (WO-GENERATION-ENHANCEMENT-001): Generate my-guide.md - concise 60-80 line reference with MCP tools and slash commands. Auto-discovers tools from .coderef/index.json and commands from .claude/commands/. Categorizes by function (Documentation, Changelog, Standards, etc.).",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,generate_quickref_interactive,"Interactive workflow to generate a universal quickref guide for ANY application (CLI, Web, API, Desktop, Library). Returns interview questions for AI to ask user. AI guides conversation, user answers in plain English, then AI generates scannable quickref.md (150-250 lines) following proven pattern.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,generate_resource_sheet,"Generate composable module-based technical documentation for code elements. Replaces rigid templates with ~30-40 small modules that compose intelligently. Auto-detects code characteristics, selects appropriate modules, and generates markdown + JSON schema + JSDoc outputs. WO-RESOURCE-SHEET-MCP-TOOL-001",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,generate_user_guide,"USER-004 (WO-GENERATION-ENHANCEMENT-001): Generate USER-GUIDE.md - comprehensive 10-section onboarding guide with Prerequisites, Installation, Architecture, Tools Reference, Commands, Workflows, Best Practices, Troubleshooting, and Quick Reference. Leverages .coderef/ data for 75%+ auto-fill.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,get_template,Retrieves the content of a specific documentation template,active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,list_templates,"Lists all available documentation templates (README, ARCHITECTURE, API, COMPONENTS, SCHEMA)",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,record_changes,"Smart agentic changelog recording with git auto-detection. Auto-detects changed files (git diff --staged), suggests change_type from commit messages, calculates severity from scope, and shows preview for agent confirmation before creating entry.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-docs,Documentation,validate_document,"Validate document against UDS (Universal Documentation Standards) schema. Checks for required sections, metadata format (workorder_id, timestamps), and returns validation errors/warnings with severity levels. Phase 3: Papertrail integration.",active,C:\Users\willh\.mcp-servers\coderef-docs\server.py
+Tool,coderef-personas,Personas,clear_persona,Deactivate the current persona and return to default state.,active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-personas,Personas,create_custom_persona,"Create a custom persona through guided workflow with automatic system prompt generation and validation. Users provide expertise, communication style, and use cases - the system generates a complete persona definition.",active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-personas,Personas,execute_plan_interactive,Execute plan with guided step-by-step or batch mode. Part of docs-expert v2.0 Phase 1.,active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-personas,Personas,generate_todo_list,Convert plan task breakdown to TodoWrite format for Lloyd. Part of docs-expert v2.0 Phase 1.,active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-personas,Personas,get_active_persona,Get information about the currently active persona.,active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-personas,Personas,list_personas,List all available personas with their descriptions.,active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-personas,Personas,track_plan_execution,Sync plan progress with todo status in real-time. Part of docs-expert v2.0 Phase 1.,active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-personas,Personas,use_persona,Activate an expert persona to gain specialized knowledge and behavior. Returns the persona's system prompt and expertise.,active,C:\Users\willh\.mcp-servers\coderef-personas\server.py
+Tool,coderef-testing,Analysis,analyze_coverage,Coverage analysis,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Analysis,analyze_test_performance,Performance analysis,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Analysis,detect_flaky_tests,Find flaky tests,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Analysis,validate_test_health,Health check,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Discovery,discover_tests,Find all tests,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Discovery,list_test_frameworks,List frameworks,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Execution,run_all_tests,Execute entire suite,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Execution,run_test_category,Run by pattern,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Execution,run_test_file,Run specific file,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Execution,run_tests_in_parallel,Parallel execution,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Management,aggregate_results,Aggregate runs,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Management,compare_test_runs,Compare runs,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Management,generate_test_report,Generate reports,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-testing,Management,get_test_results,Retrieve results,active,C:\Users\willh\.mcp-servers\coderef-testing\src\coderef_testing\server.py
+Tool,coderef-workflow,Advanced Tools,assess_risk,AI-powered risk assessment,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Advanced Tools,coderef_foundation_docs,Unified foundation docs,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Advanced Tools,generate_features_inventory,Generate features inventory,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Advanced Tools,generate_handoff_context,Generate agent handoff,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Advanced Tools,update_all_documentation,Agentic doc updates,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Archival & Inventory,archive_feature,Archive completed features,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Archival & Inventory,audit_plans,Audit all plans,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Archival & Inventory,get_workorder_log,Query workorder log,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Archival & Inventory,log_workorder,Log workorder entry,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Changelog Management,add_changelog_entry,Add changelog entry,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Changelog Management,get_changelog,Get project changelog,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Changelog Management,update_changelog,Agentic changelog update,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Documentation Templates,generate_foundation_docs,Generate foundation documentation,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Documentation Templates,generate_individual_doc,Generate single doc file,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Documentation Templates,get_template,Retrieve specific template,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Documentation Templates,list_templates,List all documentation templates,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Execution & Tracking,execute_plan,Generate TodoWrite task list,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Execution & Tracking,finalize_plan_from_agent,Finalize plan from Task agent,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Execution & Tracking,generate_deliverables_template,Generate deliverables template,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Execution & Tracking,update_deliverables,Update with git metrics,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Execution & Tracking,update_task_status,Update task progress,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Multi-Agent Coordination,aggregate_agent_deliverables,Aggregate metrics,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Multi-Agent Coordination,assign_agent_task,Assign task to agent,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Multi-Agent Coordination,generate_agent_communication,Generate communication.json,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Multi-Agent Coordination,track_agent_status,Track agent status,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Multi-Agent Coordination,verify_agent_completion,Verify completion,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Planning,analyze_project_for_planning,Automate prep phase,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Planning,create_plan,Create implementation plan,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Planning,gather_context,Gather feature requirements,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Planning,generate_plan_review_report,Generate review report,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Planning,get_planning_template,Get planning template,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Planning,validate_implementation_plan,Validate plan quality,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Standards & Quality,audit_codebase,Audit for standards violations,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Standards & Quality,check_consistency,Pre-commit consistency check,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Standards & Quality,establish_standards,Scan and generate standards,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,coderef-workflow,Standards & Quality,generate_quickref_interactive,Generate universal quickref,active,C:\Users\willh\.mcp-servers\coderef-workflow\src\coderef_workflow\server.py
+Tool,papertrail,UDS Validation,check_all_docs,Validate all docs,active,C:\Users\willh\.mcp-servers\papertrail\src\papertrail\server.py
+Tool,papertrail,UDS Validation,check_all_resource_sheets,Validate all sheets,active,C:\Users\willh\.mcp-servers\papertrail\src\papertrail\server.py
+Tool,papertrail,UDS Validation,validate_document,Validate any document,active,C:\Users\willh\.mcp-servers\papertrail\src\papertrail\server.py
+Tool,papertrail,UDS Validation,validate_resource_sheet,Validate resource sheet,active,C:\Users\willh\.mcp-servers\papertrail\src\papertrail\server.py
+Validator,papertrail,Core,BaseUDSValidator,Base class for all UDS validators,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\base.py
+Validator,papertrail,Core,BaseValidator,Base validator class with common validation logic,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\base.py
+Validator,papertrail,Core,GeneralMarkdownValidator,Validator for general markdown documents.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\general.py
+Validator,papertrail,Core,GeneralValidator,General-purpose document validator,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\general.py
+Validator,papertrail,Core,StubValidator,Validator for stub.json files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\stub.py
+Validator,papertrail,Core,ValidatorFactory,Factory pattern for creating appropriate validators,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\factory.py
+Validator,papertrail,Documentation,FoundationDocValidator,Validates foundation documentation generated by coderef-docs,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\foundation.py
+Validator,papertrail,Documentation,QuickrefValidator,Validates quickref/quickstart documents,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\user_facing.py
+Validator,papertrail,Documentation,ResourceSheetValidator,Validator for resource sheet documentation files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\resource_sheet.py
+Validator,papertrail,Documentation,StandardsDocValidator,Validator for standards documentation files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\standards.py
+Validator,papertrail,Documentation,UserFacingDocValidator,Validator for user-facing documentation files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\user_facing.py
+Validator,papertrail,Documentation,UserGuideValidator,Validates user guide documents (doc_type: guide),active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\user_facing.py
+Validator,papertrail,Session,InfrastructureDocValidator,Validator for infrastructure documentation files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\infrastructure.py
+Validator,papertrail,Session,MigrationDocValidator,Validator for migration documentation files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\migration.py
+Validator,papertrail,Session,SessionDocValidator,Validator for session documentation files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\session.py
+Validator,papertrail,Session,SystemDocValidator,Validator for system documentation files.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\system.py
+Validator,papertrail,Utility,EmojiChecker,Check and validate emoji usage in documents,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\emoji_checker.py
+Validator,papertrail,Workflow,AnalysisValidator,Validator for project analysis JSON files,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\analysis.py
+Validator,papertrail,Workflow,ExecutionLogValidator,Validator for execution log JSON files,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\execution_log.py
+Validator,papertrail,Workflow,PlanValidator,Validates implementation plans against schema and quality checklist.,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\plan.py
+Validator,papertrail,Workflow,WorkorderDocValidator,Validates workorder documentation generated by coderef-workflow,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\workorder.py
+Validator,papertrail,Workflow,WorkorderValidator,Validate workorder structure and completeness,active,C:\Users\willh\.mcp-servers\papertrail\papertrail\validators\workorder.py
+Workflow,Multi-Component,Feature Implementation,Complete Feature Implementation,End-to-end workflow from planning to completion (3 phases: Plan Execute Complete),active,/create-workorder → /execute-plan → /complete-workorder
+Workflow,Multi-Component,Multi-Agent,Multi-Agent Coordination,Coordinate multiple agents on complex features (3 phases: Setup Execution Completion),active,/generate-agent-communication â†’ /assign-agent-task â†’ /verify-agent-completion
+Workflow,System,Release,Git Release Workflow,Tag version update changelog create release (3 phases: Prepare Tag Publish),active,git tag → /add-changelog-entry → gh release create
+Workflow,coderef-docs,Documentation,Documentation Update,Update foundation docs when code changes (3 phases: Scan Generate Validate),active,/scan-codebase → /generate-foundation-docs → /validate-document
+Workflow,coderef-workflow,Coordination,Multi-Agent Session,Create and manage multi-agent session (4 steps: Structure Agents Execute Track),active,/create-session → agent execution → /track-plan-execution
+Workflow,coderef-workflow,Version Control,Git Release,Version release with changelog and git tags,active,/record-changes â†’ git tag â†’ git push

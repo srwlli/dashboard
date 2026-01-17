@@ -239,16 +239,16 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   function handleOpenNewWindow() {
     if (!boardId) return;
 
-    // Check if running in Electron with the openAssistantWindow method
+    // Check if running in Electron with the openBoardWindow method
     if (
       typeof window !== 'undefined' &&
       (window as any).electronAPI &&
-      typeof (window as any).electronAPI.openAssistantWindow === 'function'
+      typeof (window as any).electronAPI.openBoardWindow === 'function'
     ) {
-      (window as any).electronAPI.openAssistantWindow(boardId);
+      (window as any).electronAPI.openBoardWindow(boardId);
     } else {
       // Fallback to web browser new tab
-      window.open(`/assistant-standalone?boardId=${boardId}`, '_blank');
+      window.open(`/boards-standalone?boardId=${boardId}`, '_blank');
     }
   }
 

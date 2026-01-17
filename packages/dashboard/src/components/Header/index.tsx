@@ -11,7 +11,7 @@ const breadcrumbMap: Record<string, { label: string; href: string }> = {
   '/sessions': { label: 'Sessions Hub', href: '/sessions' },
   '/settings': { label: 'Settings', href: '/settings' },
   '/user': { label: 'User', href: '/user' },
-  '/assistant': { label: 'Assistant', href: '/assistant' },
+  '/boards': { label: 'Boards', href: '/boards' },
   '/explorer': { label: 'Explorer', href: '/explorer' },
   '/notes': { label: 'Notes', href: '/notes' },
   '/metrics': { label: 'Metrics', href: '/metrics' },
