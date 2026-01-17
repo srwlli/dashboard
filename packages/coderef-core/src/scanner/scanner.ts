@@ -228,11 +228,12 @@ class Scanner {
   public processFile(file: string, content: string, patterns: Array<{ type: ElementData['type'], pattern: RegExp, nameGroup: number }>, includeComments: boolean): void {
     this.currentFile = file;
     const lines = content.split('\n');
-    
+
     for (const { type, pattern, nameGroup } of patterns) {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        if (!includeComments && isLineCommented(line)) {
+        // P1.2: Pass line index and all lines for context-aware comment detection
+        if (!includeComments && isLineCommented(line, i, lines)) {
           continue;
         }
         this.processLine(line, i + 1, file, pattern, type, nameGroup);
@@ -267,8 +268,8 @@ const TYPE_PRIORITY: Record<ElementData['type'], number> = {
   'component': 5,   // React components (PascalCase functions)
   'hook': 4,        // React hooks (use* functions)
   'class': 3,       // Class declarations
-  'method': 2,      // Class methods
-  'function': 1,    // Generic functions
+  'function': 2,    // Generic functions (higher than method to preserve AST accuracy)
+  'method': 1,      // Class methods (lower priority - regex pattern is too broad)
   'unknown': 0      // Fallback
 };
 
@@ -651,6 +652,11 @@ export async function scanCurrentElements(
       }
     }
 
+    // PHASE 5: Initialize progress tracking
+    let filesProcessed = 0;
+    const totalFiles = files.length;
+    const onProgress = options.onProgress;
+
     // Process files (sequential mode or fallback from parallel)
     for (const file of files) {
       try {
@@ -666,6 +672,20 @@ export async function scanCurrentElements(
           }
           for (const element of cached.elements) {
             scanner.addElement(element);
+          }
+
+          // PHASE 5: Report progress for cached files
+          filesProcessed++;
+          if (onProgress) {
+            const elementsFound = scanner.getElements().length;
+            const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
+            onProgress({
+              currentFile: file,
+              filesProcessed,
+              totalFiles,
+              elementsFound,
+              percentComplete
+            });
           }
           continue;
         }
@@ -702,16 +722,28 @@ export async function scanCurrentElements(
               console.log(`Using AST mode for: ${file}`);
             }
 
-            // Import JSCallDetector dynamically to avoid circular dependencies
+            // FIX-AST: Use TypeScript parser for .ts/.tsx files, Acorn for .js files
+            let astElements: any[];
+
+            if (currentLang === 'ts') {
+              // Use ASTElementScanner (TypeScript compiler API) for TypeScript files
+              const { ASTElementScanner } = await import('../analyzer/ast-element-scanner.js');
+              const astScanner = new ASTElementScanner(dir);
+              astElements = astScanner.scanFile(file);
+            } else {
+              // Use JSCallDetector (Acorn parser) for JavaScript files
+              const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
+              const detector = new JSCallDetector();
+              astElements = detector.detectElements(file);
+            }
+
+            // Import JSCallDetector for imports/calls detection (works for both TS and JS)
             const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
             const detector = new JSCallDetector();
 
             // PHASE 4: Extract imports and calls from file
             const fileImports = detector.detectImports(file);
             const fileCalls = detector.detectCalls(file);
-
-            // Use AST-based element detection
-            const astElements = detector.detectElements(file);
 
             // Add AST-detected elements to scanner with imports and calls
             for (const element of astElements) {
@@ -808,9 +840,36 @@ export async function scanCurrentElements(
         if (verbose) {
           console.log(`Cached ${fileElements.length} elements for: ${file}`);
         }
+
+        // PHASE 5: Report progress after successful file processing
+        filesProcessed++;
+        if (onProgress) {
+          const elementsFound = scanner.getElements().length;
+          const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
+          onProgress({
+            currentFile: file,
+            filesProcessed,
+            totalFiles,
+            elementsFound,
+            percentComplete
+          });
+        }
       } catch (error) {
         if (verbose) {
           console.error(`Error processing file ${file}:`, error);
+        }
+        // PHASE 5: Report progress even on error
+        filesProcessed++;
+        if (onProgress) {
+          const elementsFound = scanner.getElements().length;
+          const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
+          onProgress({
+            currentFile: file,
+            filesProcessed,
+            totalFiles,
+            elementsFound,
+            percentComplete
+          });
         }
       }
     }
@@ -860,13 +919,152 @@ export function getScanCacheStats(): {
 }
 
 /**
- * Checks if a line is commented out
+ * Context-aware comment detection
+ * P1.2: Improved to handle JSDoc, template strings, and regex literals
+ *
+ * @param line - The line to check
+ * @param lineIndex - The line number (0-indexed)
+ * @param allLines - All lines in the file (for multi-line comment detection)
+ * @returns true if the line is a comment and should be skipped
  */
-export function isLineCommented(line: string): boolean {
+export function isLineCommented(line: string, lineIndex?: number, allLines?: string[]): boolean {
   // Remove leading whitespace
   const trimmed = line.trim();
-  // Check for single-line comments
-  return trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*');
+
+  // Empty lines are not comments
+  if (trimmed.length === 0) {
+    return false;
+  }
+
+  // Check if we're inside a template string first (before checking comment syntax)
+  if (lineIndex !== undefined && allLines !== undefined) {
+    if (isInsideTemplateString(lineIndex, allLines)) {
+      return false; // Inside template string - not a comment
+    }
+  }
+
+  // Single-line comments
+  if (trimmed.startsWith('//')) {
+    return true;
+  }
+
+  // JSDoc and multi-line comments
+  if (trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')) {
+    // If we have context, check if we're inside a multi-line comment block
+    if (lineIndex !== undefined && allLines !== undefined) {
+      return isInsideMultiLineComment(lineIndex, allLines);
+    }
+    // Without context, assume it's a comment
+    return true;
+  }
+
+  // Check for code that looks like it might be in a template string or regex
+  // Template strings: `...${code}...`
+  // Regex literals: /pattern/flags
+  // These should NOT be filtered even if they contain comment-like syntax
+  if (containsCodeContext(trimmed)) {
+    return false;
+  }
+
+  return false;
+}
+
+/**
+ * Checks if a line is inside a multi-line comment block
+ * Handles multi-line and JSDoc comment blocks
+ */
+function isInsideMultiLineComment(lineIndex: number, allLines: string[]): boolean {
+  let inComment = false;
+
+  for (let i = 0; i <= lineIndex; i++) {
+    const line = allLines[i];
+
+    // Check for comment start
+    if (line.includes('/*')) {
+      inComment = true;
+    }
+
+    // Check for comment end on the same line or after
+    if (inComment && line.includes('*/')) {
+      // If comment starts and ends on same line, check if current line is after the end
+      const startIdx = line.indexOf('/*');
+      const endIdx = line.indexOf('*/');
+
+      if (i === lineIndex) {
+        // Current line - check if we're between /* and */
+        const trimmed = line.trim();
+        if (trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')) {
+          return true;
+        }
+      }
+
+      // Comment ends on this line
+      if (i < lineIndex || (i === lineIndex && endIdx < startIdx)) {
+        inComment = false;
+      }
+    }
+  }
+
+  return inComment;
+}
+
+/**
+ * Checks if a line is inside a multi-line template string
+ * Handles template strings that span multiple lines: `...${code}...`
+ */
+function isInsideTemplateString(lineIndex: number, allLines: string[]): boolean {
+  let inTemplate = false;
+  let templateChar = '';
+
+  for (let i = 0; i <= lineIndex; i++) {
+    const line = allLines[i];
+
+    // Count backticks (template strings)
+    for (let j = 0; j < line.length; j++) {
+      const char = line[j];
+      const prevChar = j > 0 ? line[j - 1] : '';
+
+      // Check for unescaped backtick
+      if (char === '`' && prevChar !== '\\') {
+        if (!inTemplate) {
+          inTemplate = true;
+          templateChar = '`';
+        } else if (templateChar === '`') {
+          inTemplate = false;
+          templateChar = '';
+        }
+      }
+    }
+  }
+
+  return inTemplate;
+}
+
+/**
+ * Checks if the line contains code context (template strings, regex literals)
+ * These should NOT be filtered as comments even if they contain //, /*, etc.
+ */
+function containsCodeContext(trimmed: string): boolean {
+  // Template string detection: contains backticks or ${
+  if (trimmed.includes('`') || trimmed.includes('${')) {
+    return true;
+  }
+
+  // Regex literal detection: /pattern/flags format
+  // Must have balanced slashes and be a valid regex context
+  const regexPattern = /\/[^\/\n]+\/[gimsuvy]*/;
+  if (regexPattern.test(trimmed)) {
+    // Make sure it's not a division operator (e.g., "a / b")
+    // Regex literals typically appear after =, (, [, {, :, or at start of expression
+    const beforeSlash = trimmed.substring(0, trimmed.indexOf('/'));
+    if (beforeSlash.trim().length === 0 ||
+        /[=(\[{:,]$/.test(beforeSlash.trim()) ||
+        /^(const|let|var|return|if|while)\s/.test(trimmed)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**

@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat(boards): Phase 7 - Mobile responsive design (POL-003)\n\nComprehensive mobile responsiveness improvements:\n\nBoardCanvas:\n- Responsive header padding (p-3 on mobile, p-4 on desktop)\n- Smaller title font on mobile (text-lg vs text-2xl)\n- Truncated titles and badges with max-widths\n- Hide button text on mobile, show icon only\n- Hide \"lists\" text on small screens\n\nBoardList:\n- Responsive width (280px on mobile, 300px on sm+)\n\nCardEditor Modal:\n- Responsive padding (p-2 on mobile, p-4 on desktop)\n- Taller max-height on mobile (90vh vs 80vh)\n- Smaller header/content/footer padding on mobile\n- Smaller title font on mobile\n\nBoardCreationModal:\n- Responsive padding throughout\n- Smaller title font on mobile\n- Better touch targets on small screens\n\nAll components now provide better experience on mobile/tablet devices\nwhile maintaining desktop functionality.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "mcp__papertrail__validate_resource_sheet"
     ],
     "deny": [],
     "ask": []

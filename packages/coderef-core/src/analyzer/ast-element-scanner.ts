@@ -61,7 +61,7 @@ export class ASTElementScanner {
       this.cache.set(filePath, elements);
       return elements;
     } catch (error) {
-      // File may not be readable
+      // File may not be readable or parseable
       return [];
     }
   }
@@ -229,6 +229,37 @@ export class ASTElementScanner {
         exported: isExported,
       });
 
+      // FIX-AST: Check for class decorators BEFORE returning
+      let decorators: readonly ts.Decorator[] | undefined;
+      if (typeof (ts as any).canHaveDecorators === 'function' && (ts as any).canHaveDecorators(node)) {
+        decorators = (ts as any).getDecorators(node);
+      } else if ((node as any).decorators) {
+        decorators = (node as any).decorators;
+      }
+
+      if (decorators && decorators.length > 0) {
+        for (const decorator of decorators) {
+          let decoratorName = '';
+          if (ts.isIdentifier(decorator.expression)) {
+            decoratorName = decorator.expression.text;
+          } else if (ts.isCallExpression(decorator.expression) &&
+                     ts.isIdentifier(decorator.expression.expression)) {
+            decoratorName = decorator.expression.expression.text;
+          }
+
+          if (decoratorName) {
+            const decoratorLineInfo = sourceFile.getLineAndCharacterOfPosition(decorator.getStart());
+            elements.push({
+              type: 'decorator',
+              name: decoratorName,
+              file: filePath,
+              line: decoratorLineInfo.line + 1,
+              exported: false,
+            });
+          }
+        }
+      }
+
       // Visit class members with class context
       node.members.forEach(member => {
         this.visitNode(member, sourceFile, elements, filePath, exportedNames, name);
@@ -297,6 +328,85 @@ export class ASTElementScanner {
             });
           }
         }
+      });
+    }
+
+    // FIX-AST: Interface declaration: interface Foo {}
+    if (ts.isInterfaceDeclaration(node) && node.name) {
+      const name = node.name.text;
+      const isExported = hasExportModifier || exportedNames.has(name);
+
+      elements.push({
+        type: 'interface',
+        name,
+        file: filePath,
+        line,
+        exported: isExported,
+      });
+    }
+
+    // FIX-AST: Type alias declaration: type Foo = ...
+    if (ts.isTypeAliasDeclaration(node) && node.name) {
+      const name = node.name.text;
+      const isExported = hasExportModifier || exportedNames.has(name);
+
+      elements.push({
+        type: 'type',
+        name,
+        file: filePath,
+        line,
+        exported: isExported,
+      });
+    }
+
+    // FIX-AST: Decorators (@Component, @Injectable, etc.)
+    // Support both new API (TS 5.0+) and legacy API
+    let decorators: readonly ts.Decorator[] | undefined;
+
+    if (typeof (ts as any).canHaveDecorators === 'function' && (ts as any).canHaveDecorators(node)) {
+      decorators = (ts as any).getDecorators(node);
+    } else if ((node as any).decorators) {
+      // Legacy API (TypeScript < 5.0)
+      decorators = (node as any).decorators;
+    }
+
+    if (decorators && decorators.length > 0) {
+      for (const decorator of decorators) {
+        let decoratorName = '';
+
+        // @Decorator
+        if (ts.isIdentifier(decorator.expression)) {
+          decoratorName = decorator.expression.text;
+        }
+        // @Decorator()
+        else if (ts.isCallExpression(decorator.expression) &&
+                 ts.isIdentifier(decorator.expression.expression)) {
+          decoratorName = decorator.expression.expression.text;
+        }
+
+        if (decoratorName) {
+          const decoratorLineInfo = sourceFile.getLineAndCharacterOfPosition(decorator.getStart());
+          elements.push({
+            type: 'decorator',
+            name: decoratorName,
+            file: filePath,
+            line: decoratorLineInfo.line + 1,
+            exported: false, // Decorators aren't directly exported
+          });
+        }
+      }
+    }
+
+    // FIX-AST: Class properties: class { foo: string; }
+    if (ts.isPropertyDeclaration(node) && node.name && currentClass) {
+      const propertyName = ts.isIdentifier(node.name) ? node.name.text : node.name.getText();
+
+      elements.push({
+        type: 'property',
+        name: propertyName, // FIX: Use property name without class prefix for consistency with tests
+        file: filePath,
+        line,
+        exported: false, // Properties inherit export from class
       });
     }
 

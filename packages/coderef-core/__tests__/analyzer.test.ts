@@ -221,7 +221,7 @@ describe('Phase 3: Relationship Detection & Analysis', () => {
 
     it('should detect constructor calls', () => {
       const content = 'function test() { new MyClass(); }\n';
-      const filePath = path.join(tempDir, 'call-constructor.ts');
+      const filePath = path.join(tempDir, 'call-constructor.js');
       fs.writeFileSync(filePath, content);
 
       const calls = callDetector.detectCalls(filePath);
@@ -457,15 +457,16 @@ describe('Phase 3: Relationship Detection & Analysis', () => {
           ['c', { id: 'c', type: 'file', file: 'c.ts' }],
         ]),
         edges: [
-          { source: 'a', target: 'b', type: 'imports' },
+          { source: 'a', target: 'b', type: 'calls' },
           { source: 'b', target: 'c', type: 'calls' },
           { source: 'a', target: 'c', type: 'depends-on' },
+          { source: 'c', target: 'a', type: 'imports' },        // Added: c imports a (so a has dependents, c has dependencies)
         ],
         edgesBySource: new Map([
           [
             'a',
             [
-              { source: 'a', target: 'b', type: 'imports' },
+              { source: 'a', target: 'b', type: 'calls' },
               { source: 'a', target: 'c', type: 'depends-on' },
             ],
           ],
@@ -475,9 +476,21 @@ describe('Phase 3: Relationship Detection & Analysis', () => {
               { source: 'b', target: 'c', type: 'calls' },
             ],
           ],
+          [
+            'c',
+            [
+              { source: 'c', target: 'a', type: 'imports' },    // Added: c's outgoing edge
+            ],
+          ],
         ]),
         edgesByTarget: new Map([
-          ['b', [{ source: 'a', target: 'b', type: 'imports' }]],
+          [
+            'a',
+            [
+              { source: 'c', target: 'a', type: 'imports' },    // Added: a's incoming edge
+            ],
+          ],
+          ['b', [{ source: 'a', target: 'b', type: 'calls' }]],
           [
             'c',
             [

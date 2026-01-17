@@ -205,6 +205,127 @@ const elements = await scanCurrentElements('./src', ['ts', 'tsx'], {
 ]
 ```
 
+**ScanOptions Interface** (Phase 4 & 5 Extensions):
+```typescript
+interface ScanOptions {
+  /** Scan recursively into subdirectories */
+  recursive?: boolean;
+  /** Glob patterns for file inclusion */
+  include?: string | string[];
+  /** Glob patterns for file exclusion */
+  exclude?: string | string[];
+  /** Languages to scan (file extensions) */
+  langs?: string[];
+  /** Whether to show verbose output */
+  verbose?: boolean;
+
+  // Phase 1: AST Integration
+  /** Use AST-based parsing (95%+ accuracy) instead of regex (85%) */
+  useAST?: boolean;
+  /** Fallback to regex if AST parsing fails (default: true) */
+  fallbackToRegex?: boolean;
+
+  // Phase 2: Parallel Processing
+  /** Enable parallel file processing with worker threads */
+  parallel?: boolean | { workers?: number };
+
+  // Phase 4: Relationship Tracking
+  /** Extract import statements (ESM, CommonJS, dynamic) */
+  trackImports?: boolean; // Enabled when useAST is true
+  /** Extract function call relationships */
+  trackCalls?: boolean;   // Enabled when useAST is true
+
+  // Phase 5: Progress Reporting
+  /** Callback for progress updates during scanning */
+  onProgress?: (progress: {
+    currentFile: string;
+    filesProcessed: number;
+    totalFiles: number;
+    elementsFound: number;
+    percentComplete: number;
+  }) => void;
+}
+```
+
+**ElementData Interface** (Extended with Phase 4 fields):
+```typescript
+interface ElementData {
+  type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'constant' | 'interface' | 'type' | 'decorator' | 'property' | 'unknown';
+  name: string;
+  file: string;
+  line: number;
+  exported?: boolean;
+  parameters?: string[];
+  calls?: string[]; // Functions/methods called by this element
+
+  // Phase 4: Relationship Tracking
+  imports?: Array<{
+    source: string;          // Module path (e.g., './utils', 'react')
+    specifiers?: string[];   // Named imports (e.g., ['useState', 'useEffect'])
+    default?: string;        // Default import name
+    namespace?: string;      // Namespace import (e.g., import * as React)
+    dynamic?: boolean;       // True for dynamic import() calls (Phase 5)
+    line: number;            // Line number of import
+  }>;
+  dependencies?: string[];   // Resolved module/file paths
+  calledBy?: string[];       // Elements that call this element
+}
+```
+
+**Phase 4 Example - Relationship Tracking:**
+```typescript
+import { scanCurrentElements } from 'coderef-core';
+
+// Scan with import and call tracking
+const elements = await scanCurrentElements('./src', 'ts', {
+  useAST: true, // Required for relationship tracking
+  recursive: true
+});
+
+// Elements now include imports and calls
+console.log(elements[0]);
+/*
+{
+  type: "function",
+  name: "processData",
+  file: "src/utils/data.ts",
+  line: 10,
+  exports: true,
+  imports: [
+    { source: "lodash", specifiers: ["map", "filter"], line: 1 },
+    { source: "./validator", default: "validate", line: 2 },
+    { source: "./module", dynamic: true, line: 15 }  // Dynamic import()
+  ],
+  calls: ["validate", "map", "filter"],
+  calledBy: ["main", "handler"]
+}
+*/
+```
+
+**Phase 5 Example - Progress Reporting:**
+```typescript
+import { scanCurrentElements } from 'coderef-core';
+
+// Track progress during scan
+await scanCurrentElements('./src', ['ts', 'tsx'], {
+  useAST: true,
+  recursive: true,
+  onProgress: (progress) => {
+    console.log(`[${progress.percentComplete}%] ${progress.currentFile}`);
+    console.log(`  Processed: ${progress.filesProcessed}/${progress.totalFiles}`);
+    console.log(`  Elements found: ${progress.elementsFound}`);
+  }
+});
+
+// Output:
+// [25%] src/auth/login.ts
+//   Processed: 10/40
+//   Elements found: 15
+// [50%] src/models/User.ts
+//   Processed: 20/40
+//   Elements found: 28
+```
+
 **Error Response:**
 ```typescript
 {

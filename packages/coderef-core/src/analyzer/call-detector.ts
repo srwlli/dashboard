@@ -98,6 +98,14 @@ export class CallDetector {
       }
     }
 
+    // Handle constructor calls (new expressions)
+    if (ts.isNewExpression(node)) {
+      const call = this.parseNewExpression(node, filePath, parentContext);
+      if (call) {
+        calls.push(call);
+      }
+    }
+
     // Track function/method context
     let currentContext = parentContext;
 
@@ -164,12 +172,6 @@ export class CallDetector {
           callType = 'method';
         }
       }
-    } else if (ts.isNewExpression(node)) {
-      // Constructor call: new ClassName()
-      if (ts.isIdentifier(expression)) {
-        calleeFunction = expression.text;
-        callType = 'constructor';
-      }
     }
 
     // Skip if we couldn't extract a callee function name
@@ -202,6 +204,47 @@ export class CallDetector {
       line: lineAndCharacter.line + 1,
       column: lineAndCharacter.character,
       isNested: this.isNestedCall(node),
+    };
+  }
+
+  /**
+   * Parse a new expression node (constructor call) into CallExpression
+   */
+  private parseNewExpression(
+    node: ts.NewExpression,
+    filePath: string,
+    context?: { functionName?: string; className?: string }
+  ): CallExpression | null {
+    const expression = node.expression;
+    let calleeFunction = '';
+
+    // Extract constructor name
+    if (ts.isIdentifier(expression)) {
+      calleeFunction = expression.text;
+    } else if (ts.isPropertyAccessExpression(expression)) {
+      // Handle namespaced constructors: new MyNamespace.MyClass()
+      calleeFunction = expression.name.text;
+    }
+
+    // Skip if we couldn't extract a constructor name
+    if (!calleeFunction) {
+      return null;
+    }
+
+    // Get line and column information
+    const sourceFile = node.getSourceFile();
+    const lineAndCharacter = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+
+    return {
+      callerFunction: context?.functionName,
+      callerClass: context?.className,
+      calleeFunction,
+      calleeObject: undefined,
+      callType: 'constructor',
+      isAsync: false,
+      line: lineAndCharacter.line + 1,
+      column: lineAndCharacter.character,
+      isNested: false,
     };
   }
 

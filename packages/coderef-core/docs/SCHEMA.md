@@ -16,10 +16,28 @@ The fundamental data structure representing discovered code elements in the code
 
 ```typescript
 interface ElementData {
-  type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'unknown';
+  // Core fields
+  type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'constant' | 'interface' | 'type' | 'decorator' | 'property' | 'unknown';
   name: string;        // Element identifier (alphanumeric + underscore)
   file: string;        // Normalized file path (forward slashes)
   line: number;        // 1-based line number (positive integer)
+
+  // Optional metadata (Phase 1: AST Integration)
+  exported?: boolean;              // Whether element is exported
+  parameters?: string[];           // Function/method parameters from AST
+
+  // Phase 4: Relationship Tracking
+  calls?: string[];                // Functions/methods called by this element
+  imports?: Array<{                // Import statements in this file
+    source: string;                // Module path (e.g., './utils', 'react')
+    specifiers?: string[];         // Named imports (e.g., ['useState', 'useEffect'])
+    default?: string;              // Default import name
+    namespace?: string;            // Namespace import (e.g., import * as React)
+    dynamic?: boolean;             // True for dynamic import() calls (Phase 5)
+    line: number;                  // Line number of import
+  }>;
+  dependencies?: string[];         // Resolved module/file paths
+  calledBy?: string[];            // Elements that call this element (reverse relationship)
 }
 ```
 
@@ -28,6 +46,11 @@ interface ElementData {
 - `name`: Required, non-empty string matching `[a-zA-Z0-9_$]+`
 - `file`: Required, normalized path without extensions
 - `line`: Required, positive integer ≥ 1
+- `parameters`: Optional array of parameter names
+- `calls`: Optional array of function names called by this element
+- `imports`: Optional array of import statements (populated when `useAST: true`)
+- `dependencies`: Optional array of resolved dependency paths
+- `calledBy`: Optional array of caller element names
 
 **JSON Schema:**
 ```json
@@ -190,6 +213,7 @@ Configuration options for code scanning operations.
 
 ```typescript
 interface ScanOptions {
+  // Basic options
   include?: string | string[];    // Glob patterns for inclusion
   exclude?: string | string[];    // Glob patterns for exclusion
   recursive?: boolean;            // Scan subdirectories
@@ -202,6 +226,25 @@ interface ScanOptions {
   }>;
   includeComments?: boolean;      // Scan commented code
   verbose?: boolean;             // Enable debug output
+
+  // Phase 1: AST Integration
+  useAST?: boolean;              // Use AST-based parsing (95%+ accuracy) vs regex (85%)
+  fallbackToRegex?: boolean;     // Fallback to regex if AST parsing fails (default: true)
+
+  // Phase 2: Parallel Processing
+  parallel?: boolean | {         // Enable parallel file processing
+    workers?: number;            // Number of worker threads (default: CPU cores - 1)
+  };
+  workerPoolSize?: number;       // Deprecated: use parallel.workers instead
+
+  // Phase 5: Progress Reporting
+  onProgress?: (progress: {      // Callback for progress updates during scanning
+    currentFile: string;
+    filesProcessed: number;
+    totalFiles: number;
+    elementsFound: number;
+    percentComplete: number;     // 0-100
+  }) => void;
 }
 ```
 
