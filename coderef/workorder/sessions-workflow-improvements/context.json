@@ -1,0 +1,34 @@
+{
+  "workorder_id": "WO-SESSIONS-WORKFLOW-IMPROVEMENTS-001",
+  "feature_name": "sessions-workflow-improvements",
+  "created_at": "2026-01-17T00:00:00.000Z",
+  "description": "Complete Phase 2-6 of Sessions Hub Enhancement: Pre-populate outputs field in session generator, add JSON structure examples and validation checklist to instruction templates, create communication schema for Papertrail validation, update active session instructions, and document validation requirements",
+  "goal": "Prevent future agent misinterpretation of data structures by improving workflow automation, providing clear examples, and adding automated validation",
+  "requirements": [
+    "Pre-populate outputs field (files_created, files_modified, workorders_created, primary_output) in session generator",
+    "Add explicit JSON structure examples to create-session.md instruction template",
+    "Add completion verification checklist to instruction template Step 5",
+    "Create communication-schema.json for Papertrail MCP validation",
+    "Create mcp__papertrail__validate_communication tool for automated validation",
+    "Update 3 active scanner-complete-integration agent instructions.json files",
+    "Document schema requirements in Sessions Hub resource sheet",
+    "Test validation on existing communication.json files",
+    "Create validation test suite"
+  ],
+  "out_of_scope": [
+    "Retroactive data fixes for git_metrics in existing sessions",
+    "Manual file tracking for completed agents",
+    "UI changes to dashboard components"
+  ],
+  "constraints": [
+    "No breaking changes to existing session API",
+    "Maintain backward compatibility with sessions lacking outputs field",
+    "Generator changes apply to new sessions only",
+    "Communication schema requires Papertrail MCP server update"
+  ],
+  "technical_context": {
+    "root_cause": "Instructions ambiguous - agents misinterpreted data structure requirements, created git_metrics object with counts instead of outputs.files_created[] arrays",
+    "current_state": "Phase 1 complete - agent status extraction fixed, resource sheet index created",
+    "target_state": "Complete workflow improvements preventing future structure misinterpretation through automation, examples, and validation"
+  }
+}

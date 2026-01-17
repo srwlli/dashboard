@@ -1,0 +1,544 @@
+{
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-SESSIONS-WORKFLOW-IMPROVEMENTS-001",
+    "feature_name": "sessions-workflow-improvements",
+    "version": "1.0.0",
+    "created": "2026-01-17T00:00:00.000Z",
+    "author": "Claude Code AI",
+    "status": "planning",
+    "progress": {
+      "phase_0_complete": [],
+      "phase_1_complete": [],
+      "phase_2_pending": ["GEN-001"],
+      "phase_3_pending": ["INST-001", "INST-002"],
+      "phase_4_pending": ["SCHEMA-001", "VAL-001", "INST-003"],
+      "phase_5_pending": ["UPDATE-001"],
+      "phase_6_pending": ["DOC-001", "TEST-001", "TEST-002"],
+      "total_tasks": 10,
+      "completed_tasks": 0,
+      "completion_percentage": "0%"
+    }
+  },
+
+  "CONTEXT": {
+    "problem_statement": "Agent misinterpretation of data structure requirements led to incorrect communication.json format (counts vs arrays). Phase 1 fixed dashboard data accuracy, but workflow improvements needed to prevent future errors.",
+    "current_state": "Session generator creates basic agent structure without outputs field. Instructions lack explicit JSON examples. No automated validation for communication.json structure.",
+    "target_state": "Generator pre-populates outputs structure. Instructions include clear JSON examples and verification checklist. Papertrail validates communication.json structure automatically.",
+    "success_metrics": [
+      "New sessions have outputs arrays pre-populated",
+      "Instructions include JSON structure examples",
+      "Validation catches structure errors before completion",
+      "Zero structure misinterpretation in future sessions"
+    ]
+  },
+
+  "TECHNICAL_APPROACH": {
+    "architecture_pattern": "Template-based generation with schema validation",
+    "key_design_decisions": [
+      "Pre-populate outputs in generator (prevent creation errors)",
+      "Add visual JSON examples in instructions (reduce ambiguity)",
+      "Create Papertrail schema validation (automated enforcement)",
+      "Update active sessions (immediate benefit, not just future)"
+    ],
+    "integration_points": [
+      "Session generator (route.ts)",
+      "Instruction template (create-session.md)",
+      "Papertrail MCP server (external)",
+      "Active session instructions"
+    ]
+  },
+
+  "PHASES": [
+    {
+      "phase_id": "phase_2",
+      "name": "Generator Pre-Population",
+      "description": "Update session generator to pre-populate outputs field in agent structure",
+      "tasks": ["GEN-001"],
+      "dependencies": [],
+      "estimated_duration": "30 minutes"
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "Instruction Template Updates",
+      "description": "Add JSON examples and verification checklist to instruction template",
+      "tasks": ["INST-001", "INST-002"],
+      "dependencies": [],
+      "estimated_duration": "1 hour"
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "Schema Validation Infrastructure",
+      "description": "Create communication schema and validation tooling",
+      "tasks": ["SCHEMA-001", "VAL-001", "INST-003"],
+      "dependencies": [],
+      "estimated_duration": "2 hours (Note: VAL-001 requires Papertrail MCP update)"
+    },
+    {
+      "phase_id": "phase_5",
+      "name": "Active Session Updates",
+      "description": "Apply improvements to currently running sessions",
+      "tasks": ["UPDATE-001"],
+      "dependencies": ["phase_3"],
+      "estimated_duration": "30 minutes"
+    },
+    {
+      "phase_id": "phase_6",
+      "name": "Documentation & Testing",
+      "description": "Document schema requirements and test validation",
+      "tasks": ["DOC-001", "TEST-001", "TEST-002"],
+      "dependencies": ["phase_4"],
+      "estimated_duration": "1 hour"
+    }
+  ],
+
+  "IMPLEMENTATION_TASKS": [
+    {
+      "task_id": "GEN-001",
+      "phase": "phase_2",
+      "type": "implementation",
+      "title": "Pre-Populate Outputs Field in Session Generator",
+      "description": "Update generateCommunicationJson() function in route.ts to add outputs object with empty arrays to each agent structure",
+      "file": "packages/dashboard/src/app/api/sessions/create/route.ts",
+      "location": "Line 174-183 in generateCommunicationJson() function",
+      "changes": [
+        "Add outputs field to agent mapping",
+        "Include files_created: [] (empty array)",
+        "Include files_modified: [] (empty array)",
+        "Include workorders_created: [] (empty array)",
+        "Include primary_output: '' (empty string)"
+      ],
+      "code_example": {
+        "before": "agents: agents.map((agent, index) => ({\n  agent_id: agent.agentId,\n  agent_number: index + 1,\n  role: agent.role,\n  status: 'pending',\n  ...\n}))",
+        "after": "agents: agents.map((agent, index) => ({\n  agent_id: agent.agentId,\n  agent_number: index + 1,\n  role: agent.role,\n  status: 'pending',\n  outputs: {\n    files_created: [],\n    files_modified: [],\n    workorders_created: [],\n    primary_output: ''\n  },\n  ...\n}))"
+      },
+      "acceptance_criteria": [
+        "Outputs field exists in generated communication.json",
+        "All four arrays/strings are present",
+        "New sessions show pre-populated structure",
+        "Backward compatible with sessions lacking outputs"
+      ],
+      "testing_notes": "Create test session, verify outputs structure exists in communication.json",
+      "estimated_effort": "30 minutes"
+    },
+    {
+      "task_id": "INST-001",
+      "phase": "phase_3",
+      "type": "documentation",
+      "title": "Add Explicit JSON Examples to Instructions Template",
+      "description": "Update create-session.md template with step_4_example showing exact JSON structure",
+      "file": "C:\\Users\\willh\\.claude\\commands\\create-session.md",
+      "location": "execution_steps section, add new step_4_example field after step_4",
+      "changes": [
+        "Add step_4_example with literal JSON structure",
+        "Show nested outputs object with arrays",
+        "Include example file entries with format",
+        "Add warning about arrays vs counts",
+        "Use proper JSON syntax with escaping"
+      ],
+      "example_content": "\"step_4_example\": \"Update communication.json outputs field with this EXACT structure:\\n\\n{\\n  \\\"outputs\\\": {\\n    \\\"files_created\\\": [\\n      \\\"path/file.ts (123 lines - description)\\\"\\n    ],\\n    \\\"files_modified\\\": [\\n      \\\"path/other.ts (Updated feature X)\\\"\\n    ]\\n  }\\n}\\n\\nIMPORTANT: files_created and files_modified must be ARRAYS of strings, NOT numbers.\"",
+      "acceptance_criteria": [
+        "Template includes step_4_example field",
+        "JSON structure is syntactically correct",
+        "Example shows array format clearly",
+        "Warning about counts vs arrays included"
+      ],
+      "testing_notes": "Validate JSON syntax, verify template renders correctly",
+      "estimated_effort": "30 minutes"
+    },
+    {
+      "task_id": "INST-002",
+      "phase": "phase_3",
+      "type": "documentation",
+      "title": "Add Completion Verification Checklist",
+      "description": "Enhance step_5 in create-session.md with explicit verification checklist",
+      "file": "C:\\Users\\willh\\.claude\\commands\\create-session.md",
+      "location": "execution_steps section, enhance step_5",
+      "changes": [
+        "Add verification checklist to step_5",
+        "Check: Is outputs.files_created an ARRAY?",
+        "Check: Is outputs.files_modified an ARRAY?",
+        "Check: NOT storing counts like {files_created: 7}",
+        "Check: Each entry format: 'path/file.ext (description)'",
+        "Check: Run validation tool if available",
+        "Check: Fix structure if validation fails"
+      ],
+      "example_content": "\"step_5_verification\": \"BEFORE marking status='complete', verify:\\n☐ outputs.files_created is an ARRAY (check with: Array.isArray(outputs.files_created))\\n☐ outputs.files_modified is an ARRAY (check with: Array.isArray(outputs.files_modified))\\n☐ NOT storing counts like {files_created: 7} - this is WRONG\\n☐ Each entry format: 'path/file.ext (description)'\\n☐ Run validation: [call Papertrail validate_communication if available]\\n☐ If validation fails, FIX structure before proceeding\"",
+      "acceptance_criteria": [
+        "Step 5 includes verification checklist",
+        "Array type checks specified",
+        "Format requirements clear",
+        "Validation step included"
+      ],
+      "testing_notes": "Verify checklist clarity, ensure all checks are actionable",
+      "estimated_effort": "30 minutes"
+    },
+    {
+      "task_id": "SCHEMA-001",
+      "phase": "phase_4",
+      "type": "implementation",
+      "title": "Create Communication Schema File",
+      "description": "Create communication-schema.json defining structure requirements for agent communication.json files",
+      "file": "communication-schema.json",
+      "location": "To be determined - either Papertrail MCP server or local dashboard",
+      "changes": [
+        "Define root required fields: workorder_id, agent_id, phase, role, status",
+        "Define tasks array structure",
+        "Define outputs object schema",
+        "Specify files_created as array of strings (required)",
+        "Specify files_modified as array of strings (required)",
+        "Specify workorders_created as array (objects or strings)",
+        "Specify primary_output as string",
+        "Define status enum: not_started, in_progress, complete",
+        "Add phase field format specification"
+      ],
+      "schema_structure": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": ["workorder_id", "agent_id", "status", "outputs"],
+        "properties": {
+          "workorder_id": {"type": "string"},
+          "agent_id": {"type": "string"},
+          "phase": {"type": "string"},
+          "role": {"type": "string"},
+          "status": {"enum": ["not_started", "in_progress", "complete"]},
+          "outputs": {
+            "type": "object",
+            "required": ["files_created", "files_modified"],
+            "properties": {
+              "files_created": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "files_modified": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "workorders_created": {"type": "array"},
+              "primary_output": {"type": "string"}
+            }
+          }
+        }
+      },
+      "acceptance_criteria": [
+        "Schema file created with valid JSON Schema syntax",
+        "All required fields specified",
+        "Array types enforced for files_created/files_modified",
+        "Status enum defined",
+        "Schema validates correct structures"
+      ],
+      "testing_notes": "Validate schema with JSON Schema validator tool",
+      "estimated_effort": "1 hour"
+    },
+    {
+      "task_id": "VAL-001",
+      "phase": "phase_4",
+      "type": "implementation",
+      "title": "Create Validation MCP Tool (Papertrail)",
+      "description": "Implement mcp__papertrail__validate_communication tool for automated validation",
+      "file": "External - Papertrail MCP server codebase",
+      "location": "Papertrail MCP server tools directory",
+      "changes": [
+        "Create validate_communication function",
+        "Load communication-schema.json",
+        "Accept file_path parameter (absolute path)",
+        "Read and parse communication.json file",
+        "Validate against schema",
+        "Check array types (not numbers)",
+        "Check required fields present",
+        "Check format correctness",
+        "Return validation results: score, errors, warnings",
+        "Include helpful error messages"
+      ],
+      "tool_signature": {
+        "name": "mcp__papertrail__validate_communication",
+        "parameters": {
+          "file_path": "Absolute path to communication.json file"
+        },
+        "returns": {
+          "score": "0-100",
+          "errors": "Array of error messages",
+          "warnings": "Array of warning messages",
+          "is_valid": "Boolean"
+        }
+      },
+      "acceptance_criteria": [
+        "Tool available in Papertrail MCP",
+        "Validates against communication-schema.json",
+        "Returns detailed error messages",
+        "Catches array vs count errors",
+        "Integrates with existing Papertrail validation tools"
+      ],
+      "testing_notes": "Test with valid and invalid communication.json files",
+      "estimated_effort": "1 hour",
+      "notes": "Requires Papertrail MCP server update - coordinate with maintainer"
+    },
+    {
+      "task_id": "INST-003",
+      "phase": "phase_4",
+      "type": "documentation",
+      "title": "Update Instructions to Call Validator",
+      "description": "Add validation tool call to step_5 in create-session.md template",
+      "file": "C:\\Users\\willh\\.claude\\commands\\create-session.md",
+      "location": "execution_steps section, step_5",
+      "changes": [
+        "Add validation tool call to step_5",
+        "Call mcp__papertrail__validate_communication before marking complete",
+        "Check validation results",
+        "Require fixing errors if validation fails",
+        "Do not proceed to complete status until validation passes"
+      ],
+      "example_content": "\"step_5\": \"... (2) VALIDATE communication.json: Call mcp__papertrail__validate_communication with file path, check score >= 90, if validation fails: review errors, fix structure issues, re-validate until passing, (3) UPDATE communication.json: status='complete' ...\"",
+      "acceptance_criteria": [
+        "Step 5 includes validation call",
+        "Validation is mandatory",
+        "Error fixing process specified",
+        "Re-validation loop defined"
+      ],
+      "testing_notes": "Verify validation is called, errors are addressed",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["VAL-001"]
+    },
+    {
+      "task_id": "UPDATE-001",
+      "phase": "phase_5",
+      "type": "implementation",
+      "title": "Update Active Session Instructions",
+      "description": "Apply instruction improvements to 3 active scanner-complete-integration agent instructions.json files",
+      "files": [
+        "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\scanner-complete-integration\\coderef-docs\\instructions.json",
+        "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\scanner-complete-integration\\coderef-workflow\\instructions.json",
+        "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\scanner-complete-integration\\coderef-core\\instructions.json"
+      ],
+      "location": "execution_steps section in each file",
+      "changes": [
+        "Update step_4 with JSON structure examples from INST-001",
+        "Update step_5 with verification checklist from INST-002",
+        "Add validation call if Papertrail tool available",
+        "Maintain existing session-specific context"
+      ],
+      "acceptance_criteria": [
+        "All 3 agent instructions updated",
+        "JSON examples included",
+        "Verification checklist added",
+        "Session-specific content preserved"
+      ],
+      "testing_notes": "Verify JSON syntax valid, instructions still accurate for session context",
+      "estimated_effort": "30 minutes",
+      "dependencies": ["INST-001", "INST-002"]
+    },
+    {
+      "task_id": "DOC-001",
+      "phase": "phase_6",
+      "type": "documentation",
+      "title": "Document Schema Requirements in Resource Sheet",
+      "description": "Add Communication Schema Requirements section to Sessions-Hub-System-RESOURCE-SHEET.md",
+      "file": "coderef/resources-sheets/systems/Sessions-Hub-System-RESOURCE-SHEET.md",
+      "location": "Add new section after State Ownership table",
+      "changes": [
+        "Add section: Communication Schema Requirements",
+        "Document schema location",
+        "Explain validation process",
+        "List required fields",
+        "Show examples of correct vs incorrect structures",
+        "Link to schema file",
+        "Document validation tool usage"
+      ],
+      "section_content": {
+        "title": "Communication Schema Requirements",
+        "subsections": [
+          "Schema Location and Purpose",
+          "Required Fields",
+          "Outputs Structure Specification",
+          "Validation Process",
+          "Common Errors and Fixes",
+          "Examples: Correct vs Incorrect"
+        ]
+      },
+      "acceptance_criteria": [
+        "New section added to resource sheet",
+        "Schema requirements clearly documented",
+        "Examples included",
+        "Validation process explained"
+      ],
+      "testing_notes": "Verify documentation clarity and accuracy",
+      "estimated_effort": "30 minutes",
+      "dependencies": ["SCHEMA-001"]
+    },
+    {
+      "task_id": "TEST-001",
+      "phase": "phase_6",
+      "type": "testing",
+      "title": "Test Validation on Existing Communication Files",
+      "description": "Run validation tool on scanner-complete-integration agent communication.json files to verify detection of structure errors",
+      "files": [
+        "scanner-complete-integration/coderef-core/communication.json",
+        "scanner-complete-integration/coderef-docs/communication.json",
+        "scanner-complete-integration/coderef-workflow/communication.json"
+      ],
+      "location": "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\",
+      "changes": [
+        "Run mcp__papertrail__validate_communication on each file",
+        "Document validation results",
+        "Identify detected errors (git_metrics vs outputs)",
+        "Verify validator catches real structure errors",
+        "Document which files pass/fail"
+      ],
+      "expected_results": {
+        "coderef-core": "PASS - has correct outputs structure",
+        "coderef-docs": "FAIL - git_metrics instead of outputs arrays",
+        "coderef-workflow": "FAIL - missing files_created/files_modified arrays"
+      },
+      "acceptance_criteria": [
+        "Validation run on all 3 files",
+        "Results documented",
+        "Structure errors detected",
+        "Validator accuracy confirmed"
+      ],
+      "testing_notes": "Document exact validation output for each file",
+      "estimated_effort": "15 minutes",
+      "dependencies": ["VAL-001"]
+    },
+    {
+      "task_id": "TEST-002",
+      "phase": "phase_6",
+      "type": "testing",
+      "title": "Create Validation Test Suite",
+      "description": "Create comprehensive test suite for communication.json validation",
+      "file": "test-communication-validation.ts or similar",
+      "location": "Dashboard or Papertrail test directory",
+      "changes": [
+        "Create test file for validation scenarios",
+        "Test: Valid structure with arrays passes",
+        "Test: Invalid structure with counts fails",
+        "Test: Missing outputs object fails",
+        "Test: Wrong field types fail",
+        "Test: Correct format variations pass",
+        "Test: Empty arrays are valid",
+        "Test: Optional fields handled correctly"
+      ],
+      "test_cases": [
+        {
+          "name": "Valid structure passes",
+          "input": "outputs: {files_created: [], files_modified: []}",
+          "expected": "PASS"
+        },
+        {
+          "name": "Counts instead of arrays fails",
+          "input": "git_metrics: {files_created: 7}",
+          "expected": "FAIL with helpful error"
+        },
+        {
+          "name": "Missing outputs fails",
+          "input": "No outputs field",
+          "expected": "FAIL"
+        },
+        {
+          "name": "Wrong types fail",
+          "input": "outputs: {files_created: 'string'}",
+          "expected": "FAIL"
+        }
+      ],
+      "acceptance_criteria": [
+        "Test suite created",
+        "All test cases implemented",
+        "Tests pass with validator",
+        "Edge cases covered",
+        "Documentation for running tests"
+      ],
+      "testing_notes": "Run test suite as part of CI/CD",
+      "estimated_effort": "30 minutes",
+      "dependencies": ["VAL-001"]
+    }
+  ],
+
+  "VALIDATION_CRITERIA": {
+    "phase_2_complete": [
+      "Session generator creates outputs field",
+      "New sessions have pre-populated arrays",
+      "Backward compatibility maintained"
+    ],
+    "phase_3_complete": [
+      "Instructions include JSON examples",
+      "Verification checklist in step_5",
+      "Template validates correctly"
+    ],
+    "phase_4_complete": [
+      "Communication schema created",
+      "Validation tool functional",
+      "Instructions call validator"
+    ],
+    "phase_5_complete": [
+      "3 active session instructions updated",
+      "JSON examples propagated",
+      "Checklists added"
+    ],
+    "phase_6_complete": [
+      "Schema documented in resource sheet",
+      "Validation tested on real files",
+      "Test suite created and passing"
+    ]
+  },
+
+  "RISK_ASSESSMENT": [
+    {
+      "risk": "Papertrail MCP update required for validation tool",
+      "impact": "High - blocks automated validation",
+      "mitigation": "Coordinate with Papertrail maintainer, implement local validation as fallback",
+      "likelihood": "Medium"
+    },
+    {
+      "risk": "Active session instructions may conflict with running work",
+      "impact": "Medium - could confuse currently executing agents",
+      "mitigation": "Update only if sessions are idle, clearly document changes",
+      "likelihood": "Low"
+    },
+    {
+      "risk": "Backward compatibility issues with old sessions",
+      "impact": "Low - old sessions still readable",
+      "mitigation": "Make outputs field optional in schema, handle missing gracefully",
+      "likelihood": "Low"
+    }
+  ],
+
+  "DEPENDENCIES": [
+    {
+      "dependency": "Papertrail MCP Server",
+      "type": "external",
+      "required_for": ["VAL-001", "INST-003", "TEST-001"],
+      "status": "pending",
+      "notes": "Requires coordination with Papertrail maintainer for schema and validation tool"
+    },
+    {
+      "dependency": ".claude/commands/create-session.md",
+      "type": "internal",
+      "required_for": ["INST-001", "INST-002", "INST-003"],
+      "status": "available",
+      "notes": "Master template for session creation"
+    },
+    {
+      "dependency": "Active scanner-complete-integration session",
+      "type": "internal",
+      "required_for": ["UPDATE-001", "TEST-001"],
+      "status": "available",
+      "notes": "Sessions currently in progress"
+    }
+  ],
+
+  "SUCCESS_METRICS": {
+    "code_quality": [
+      "Zero TypeScript errors in modified files",
+      "Schema validates with JSON Schema validator",
+      "All tests passing"
+    ],
+    "functionality": [
+      "New sessions have outputs arrays",
+      "Validation catches structure errors",
+      "Active sessions benefit from improvements"
+    ],
+    "documentation": [
+      "Schema requirements documented",
+      "Examples clear and accurate",
+      "Test results recorded"
+    ]
+  }
+}
