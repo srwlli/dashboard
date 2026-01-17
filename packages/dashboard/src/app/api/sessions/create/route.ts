@@ -176,6 +176,12 @@ async function generateCommunicationJson(
       agent_number: index + 1,
       role: agent.role,
       status: 'pending',
+      outputs: {
+        files_created: [],
+        files_modified: [],
+        workorders_created: [],
+        primary_output: ''
+      },
       assigned_instructions: agent.instructions.length,
       assigned_attachments: agent.attachments.length,
       output_files: agent.outputFiles,
