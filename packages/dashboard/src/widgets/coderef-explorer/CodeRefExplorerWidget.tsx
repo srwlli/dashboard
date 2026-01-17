@@ -53,12 +53,13 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Project, TreeNode } from '@/lib/coderef/types';
 import type { FavoritesData, FavoriteGroup } from '@/lib/coderef/favorites-types';
 import { createEmptyFavoritesData } from '@/lib/coderef/favorites-types';
 import { ViewModeToggle, type ViewMode } from '@/components/coderef/ViewModeToggle';
 import { ProjectSelector } from '@/components/coderef/ProjectSelector';
+import { ResizableSidebar } from '@/components/coderef/ResizableSidebar';
 import { useExplorer } from '@/contexts/ExplorerContext';
 // DORMANT: FileTypeFilter - will be used for multi-project aggregation in future
 // import { FileTypeFilter, type FileType, FILE_TYPE_OPTIONS } from '@/components/coderef/FileTypeFilter';
@@ -93,9 +94,19 @@ export function CodeRefExplorerWidget() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isRestoringProject, setIsRestoringProject] = useState(true);
   const [initialProjectId, setInitialProjectId] = useState<string | undefined>(undefined);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Favorites state - persisted per project in localStorage
   const [favoritesData, setFavoritesData] = useState<FavoritesData>(createEmptyFavoritesData());
+
+  // Handle scroll for visual hierarchy shadow effect
+  const handleScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const scrollTop = scrollContainerRef.current.scrollTop;
+      setIsScrolled(scrollTop > 0);
+    }
+  }, []);
 
   // Load saved project ID from localStorage on mount
   useEffect(() => {
@@ -333,10 +344,15 @@ export function CodeRefExplorerWidget() {
 
   return (
     <div className="h-full flex overflow-hidden bg-ind-bg">
-      {/* Page Sidebar - fixed 320px width with overflow clipping prevents width expansion from long file names */}
-      <div className="w-80 min-w-80 max-w-80 basis-80 flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col">
-        {/* Controls section */}
-        <div className="flex-shrink-0 sticky top-0 z-10 bg-ind-panel">
+      {/* Resizable Sidebar - drag handle allows width adjustment (240px-600px) */}
+      <ResizableSidebar
+        defaultWidth={320}
+        minWidth={240}
+        maxWidth={600}
+        storageKey="coderef-explorer-sidebar-width"
+      >
+        {/* Controls section - stays fixed at top */}
+        <div className={`flex-shrink-0 sticky top-0 z-10 bg-ind-panel/80 backdrop-blur-sm border-b border-ind-border transition-shadow ${isScrolled ? 'shadow-md' : ''}`}>
           {/* Top controls area with padding */}
           <div className="p-4 space-y-3">
             {/* Project Selector - visible in both modes */}
@@ -363,27 +379,34 @@ export function CodeRefExplorerWidget() {
           <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
         </div>
 
-        {/* File tree - same project, different root based on view mode */}
-        <FileTree
-          project={selectedProject}
-          selectedPath={selectedFile?.path}
-          onFileClick={handleFileClick}
-          className="flex-1"
-          filterPath={
-            viewMode === 'coderef' ? 'coderef' :
-            viewMode === 'dotcoderef' ? '.coderef' :
-            undefined
-          }
-          onToggleFavorite={handleToggleFavorite}
-          isFavorite={isFavorite}
-          showOnlyFavorites={viewMode === 'favorites'}
-          favoritesData={favoritesData}
-          onCreateGroup={createGroup}
-          onDeleteGroup={deleteGroup}
-          onRenameGroup={renameGroup}
-          onAssignToGroup={assignToGroup}
-        />
-      </div>
+        {/* Scroll container - only FileTree scrolls */}
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto overflow-x-hidden"
+        >
+          {/* File tree - same project, different root based on view mode */}
+          <FileTree
+            project={selectedProject}
+            selectedPath={selectedFile?.path}
+            onFileClick={handleFileClick}
+            className=""
+            filterPath={
+              viewMode === 'coderef' ? 'coderef' :
+              viewMode === 'dotcoderef' ? '.coderef' :
+              undefined
+            }
+            onToggleFavorite={handleToggleFavorite}
+            isFavorite={isFavorite}
+            showOnlyFavorites={viewMode === 'favorites'}
+            favoritesData={favoritesData}
+            onCreateGroup={createGroup}
+            onDeleteGroup={deleteGroup}
+            onRenameGroup={renameGroup}
+            onAssignToGroup={assignToGroup}
+          />
+        </div>
+      </ResizableSidebar>
 
       {/* Right column - file viewer only (page-level header removed to avoid redundancy with FileViewer header) */}
       <div className="flex-1 flex flex-col overflow-hidden">
