@@ -1,0 +1,223 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://coderef-dashboard.com/schemas/communication.json",
+  "title": "Agent Communication Schema",
+  "description": "JSON Schema for multi-agent session communication.json files. Defines structure for tracking agent coordination, outputs, and execution state.",
+  "type": "object",
+  "required": [
+    "session_id",
+    "stub_id",
+    "feature_name",
+    "created_at",
+    "agents",
+    "status"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Unique session identifier (e.g., 'STUB-042-1234567890')",
+      "pattern": "^[A-Z]+-[0-9]+-[0-9]+$"
+    },
+    "stub_id": {
+      "type": "string",
+      "description": "Associated stub identifier (e.g., 'STUB-042')",
+      "pattern": "^[A-Z]+-[0-9]+$"
+    },
+    "feature_name": {
+      "type": "string",
+      "description": "Feature name in kebab-case (e.g., 'scanner-complete-integration')",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "description": "ISO 8601 timestamp of session creation",
+      "format": "date-time"
+    },
+    "agents": {
+      "type": "array",
+      "description": "Array of agent definitions with coordination metadata",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/Agent"
+      }
+    },
+    "total_agents": {
+      "type": "integer",
+      "description": "Total number of agents in session",
+      "minimum": 1
+    },
+    "coordination_mode": {
+      "type": "string",
+      "description": "How agents coordinate execution",
+      "enum": ["parallel", "sequential", "hybrid"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Overall session status",
+      "enum": ["created", "in_progress", "complete", "failed"]
+    }
+  },
+  "definitions": {
+    "Agent": {
+      "type": "object",
+      "required": [
+        "agent_id",
+        "agent_number",
+        "role",
+        "status",
+        "outputs"
+      ],
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "description": "Unique agent identifier (e.g., 'coderef-core', 'coderef-docs')",
+          "minLength": 1
+        },
+        "agent_number": {
+          "type": "integer",
+          "description": "Sequential agent number (1-based)",
+          "minimum": 1
+        },
+        "role": {
+          "type": "string",
+          "description": "Agent's role description",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "description": "Current agent execution status",
+          "enum": ["pending", "not_started", "in_progress", "complete", "failed"]
+        },
+        "outputs": {
+          "type": "object",
+          "description": "Agent output tracking - CRITICAL: files_created and files_modified MUST be arrays of strings, NOT numbers",
+          "required": [
+            "files_created",
+            "files_modified",
+            "workorders_created",
+            "primary_output"
+          ],
+          "properties": {
+            "files_created": {
+              "type": "array",
+              "description": "NEW files created by agent. Each entry format: 'path/file.ext (123 lines - description)'. MUST be array, NOT number.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "files_modified": {
+              "type": "array",
+              "description": "EXISTING files modified by agent. Each entry format: 'path/file.ext (description of changes)'. MUST be array, NOT number.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "workorders_created": {
+              "type": "array",
+              "description": "Workorders created by agent during execution",
+              "items": {
+                "$ref": "#/definitions/WorkorderReference"
+              }
+            },
+            "primary_output": {
+              "type": "string",
+              "description": "Path to primary output file (e.g., 'outputs/summary.md')"
+            }
+          },
+          "additionalProperties": false,
+          "not": {
+            "anyOf": [
+              {
+                "properties": {
+                  "files_created": {
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "files_modified": {
+                    "type": "number"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "assigned_instructions": {
+          "type": "integer",
+          "description": "Number of instruction blocks assigned",
+          "minimum": 0
+        },
+        "assigned_attachments": {
+          "type": "integer",
+          "description": "Number of attachments assigned",
+          "minimum": 0
+        },
+        "output_files": {
+          "type": "array",
+          "description": "Expected output file paths",
+          "items": {
+            "type": "string"
+          }
+        },
+        "depends_on": {
+          "type": "array",
+          "description": "Agent IDs this agent depends on",
+          "items": {
+            "type": "string"
+          }
+        },
+        "execution_wave": {
+          "type": "integer",
+          "description": "Execution wave number (1=first, 2=after wave 1, etc.)",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "WorkorderReference": {
+      "type": "object",
+      "required": [
+        "workorder_id",
+        "feature_name",
+        "location",
+        "status"
+      ],
+      "properties": {
+        "workorder_id": {
+          "type": "string",
+          "description": "Workorder identifier (e.g., 'WO-SCANNER-INTEGRATION-001')",
+          "pattern": "^WO-[A-Z0-9-]+-[0-9]+$"
+        },
+        "feature_name": {
+          "type": "string",
+          "description": "Feature name in kebab-case",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string",
+          "description": "Absolute path to workorder directory",
+          "minLength": 1
+        },
+        "plan_path": {
+          "type": "string",
+          "description": "Path to plan.json file (optional)"
+        },
+        "status": {
+          "type": "string",
+          "description": "Workorder execution status",
+          "enum": ["in_progress", "complete", "pending"]
+        },
+        "created_at": {
+          "type": "string",
+          "description": "ISO 8601 timestamp of workorder creation",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
