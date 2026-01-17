@@ -429,7 +429,8 @@ async function readAgentSubdirectory(
     phase_gate: agentCommData.phase_gate,
     started: agentCommData.started,
     phase: agentCommData.phase,
-    workorder_id: agentCommData.workorder_id || undefined
+    workorder_id: agentCommData.workorder_id || undefined,
+    status: agentCommData.status  // Agent-level status as source of truth
   };
 }
 

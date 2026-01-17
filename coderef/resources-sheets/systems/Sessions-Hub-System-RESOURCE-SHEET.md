@@ -1,11 +1,11 @@
 ---
 agent: Claude Sonnet 4.5
-date: "2026-01-16"
+date: "2026-01-17"
 task: DOCUMENT
 subject: Sessions Hub System
 parent_project: coderef-dashboard
 category: other
-version: 1.1.0
+version: 1.2.0
 related_files:
   - packages/dashboard/src/lib/api/sessions.ts
   - packages/dashboard/src/components/SessionsHub/index.tsx
@@ -17,7 +17,15 @@ related_files:
   - packages/dashboard/src/components/SessionsHub/SessionMonitoring/WorkordersCreatedSection.tsx
   - packages/dashboard/src/components/SessionsHub/SessionMonitoring/FilesModifiedSection.tsx
   - packages/dashboard/src/components/SessionsHub/SessionMonitoring/ResourceSheetsSection.tsx
+  - packages/dashboard/src/app/sessions/resource-sheet-index.md
 status: APPROVED
+changelog:
+  - version: 1.2.0
+    date: 2026-01-17
+    changes:
+      - "Fixed: Agent status extraction - readAgentSubdirectory() now includes status field from agent communication.json"
+      - "Added: Resource sheet index at packages/dashboard/src/app/sessions/resource-sheet-index.md for quick reference"
+      - "Improved: Agent-level status now prioritized as source of truth for session monitoring"
 ---
 
 # Sessions Hub System — Authoritative Documentation
