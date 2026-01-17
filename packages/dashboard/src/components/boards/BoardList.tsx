@@ -8,13 +8,14 @@
  */
 
 import { useState } from 'react';
-import { Plus, ChevronDown, ChevronRight, MoreVertical } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight, MoreVertical, ExternalLink } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import type { BoardListProps, BoardCard as BoardCardType } from '@/types/boards';
 import { BoardCard } from './BoardCard';
 import { CardEditor } from './CardEditor';
 
 export function BoardList({
+  boardId,
   list,
   cards,
   onUpdateList,
@@ -48,6 +49,22 @@ export function BoardList({
   function handleOpenEditCard(card: BoardCardType) {
     setEditingCard(card);
     setShowCardEditor(true);
+  }
+
+  function handleOpenListWindow() {
+    if (!boardId || !list.id) return;
+
+    // Check if running in Electron with the openListWindow method
+    if (
+      typeof window !== 'undefined' &&
+      (window as any).electronAPI &&
+      typeof (window as any).electronAPI.openListWindow === 'function'
+    ) {
+      (window as any).electronAPI.openListWindow(boardId, list.id);
+    } else {
+      // Fallback to web browser new tab
+      window.open(`/list-standalone?boardId=${boardId}&listId=${list.id}`, '_blank');
+    }
   }
 
   function handleCloseEditor() {
@@ -118,7 +135,19 @@ export function BoardList({
                   className="fixed inset-0 z-10"
                   onClick={() => setShowMenu(false)}
                 />
-                <div className="absolute right-0 top-full mt-1 bg-ind-panel border-2 border-ind-border shadow-xl z-20 min-w-[150px]">
+                <div className="absolute right-0 top-full mt-1 bg-ind-panel border-2 border-ind-border shadow-xl z-20 min-w-[180px]">
+                  {boardId && (
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        handleOpenListWindow();
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-ind-text hover:bg-ind-accent/10 transition-colors flex items-center gap-2"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Open in New Window
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setShowMenu(false);

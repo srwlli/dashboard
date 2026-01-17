@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pwsh C:Userswillh.mcp-serverspapertrailvalidatorssessionsvalidate.ps1 -Verbose)",
+      "Bash(pwsh -File:*)"
+    ]
+  },
   "enabledMcpjsonServers": [
     "coderef-personas",
     "coderef-context",

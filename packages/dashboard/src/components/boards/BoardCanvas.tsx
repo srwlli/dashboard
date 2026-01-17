@@ -380,6 +380,7 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
               return (
                 <BoardList
                   key={list.id}
+                  boardId={boardId}
                   list={list}
                   cards={listCards}
                   onUpdateList={handleUpdateList}

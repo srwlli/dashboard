@@ -21,7 +21,7 @@ DASHBOARD = Path(r"C:\Users\willh\Desktop\coderef-dashboard")
 CODEREF_SYSTEM = Path(r"C:\Users\willh\Desktop\projects\coderef-system")
 CLAUDE_COMMANDS = Path(r"C:\Users\willh\.claude\commands")
 
-OUTPUT_CSV = RESOURCES_DIR / "FINAL-tools-and-commands.csv"
+OUTPUT_CSV = RESOURCES_DIR / "scanned-resources-temp.csv"
 
 
 class ResourceScanner:
@@ -549,8 +549,8 @@ class ResourceScanner:
             writer.writeheader()
             writer.writerows(sorted_resources)
 
-        print(f"\n✓ CSV written to: {output_path}")
-        print(f"✓ Total rows: {len(sorted_resources)}")
+        print(f"\n[OK] CSV written to: {output_path}")
+        print(f"[OK] Total rows: {len(sorted_resources)}")
 
         # Print breakdown
         type_counts = {}

@@ -198,6 +198,7 @@ export interface BoardCanvasProps {
 }
 
 export interface BoardListProps {
+  boardId?: string; // Optional for standalone list view
   list: BoardList;
   cards: BoardCard[];
   onUpdateList: (listId: string, updates: UpdateListRequest) => Promise<void>;
