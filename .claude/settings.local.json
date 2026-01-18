@@ -13,7 +13,8 @@
       "Bash(npm run type-check:*)",
       "Bash(npm test:*)",
       "Bash(python:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git rev-parse:*)"
     ],
     "deny": [],
     "ask": []

@@ -6,9 +6,9 @@ subject: fuzzyMatch
 parent_project: coderef-dashboard
 category: utility
 version: 1.0.0
-created: 2026-01-17
-updated: 2026-01-17
-status: active
+created: "2026-01-17"
+updated: "2026-01-17"
+status: APPROVED
 complexity: low
 loc: 48
 dependencies: []

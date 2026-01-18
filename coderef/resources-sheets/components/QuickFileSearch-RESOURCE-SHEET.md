@@ -6,9 +6,9 @@ subject: QuickFileSearch
 parent_project: coderef-dashboard
 category: component
 version: 1.0.0
-created: 2026-01-17
-updated: 2026-01-17
-status: active
+created: "2026-01-17"
+updated: "2026-01-17"
+status: APPROVED
 complexity: medium
 loc: 118
 dependencies: ["React", "lucide-react"]
