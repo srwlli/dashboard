@@ -1,3 +1,12 @@
+---
+agent: papertrail
+date: "2026-01-17"
+task: UPDATE
+project: coderef-dashboard
+version: 1.1.0
+status: Production
+---
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -92,10 +101,101 @@ export default function CodeRefExplorerLayout({ children }: { children: ReactNod
 - `selectedFile` - Active file in FileViewer
 - `favoritesData` - Per-project favorites with optional groups
 - `isRestoringProject` - Flag to prevent localStorage corruption during restoration
+- `searchQuery` - **NEW Phase 2:** Current search filter for file tree
+- `refreshKey` - **NEW Phase 2:** Forces FileTree remount when incremented
+- `isSidebarCollapsed` - **NEW Phase 2:** Sidebar collapse state (0px width when true)
 
 **localStorage Keys:**
 - `coderef-explorer-selected-project` - Global selected project ID
 - `coderef-favorites-{projectId}` - Per-project favorites data
+- `coderef-explorer-sidebar-width` - User's sidebar width preference (240-600px)
+- `coderef-explorer-sidebar-collapsed` - **NEW Phase 2:** Sidebar collapse state
+
+### ResizableSidebar Component
+
+**Location:** `packages/dashboard/src/components/coderef/ResizableSidebar.tsx`
+
+**Comprehensive Documentation:** See `coderef/resources-sheets/components/ResizableSidebar-RESOURCE-SHEET.md`
+
+**Key Features:**
+- User-adjustable sidebar width (240px min, 600px max, 320px default)
+- Drag handle on right edge for resizing
+- Width persists across sessions via localStorage
+- Smooth resize with bounds checking
+- Dedicated scroll container for FileTree (controls stay visible)
+
+**Props:**
+- `defaultWidth?: number` - Initial sidebar width (default: 320)
+- `minWidth?: number` - Minimum allowed width (default: 240)
+- `maxWidth?: number` - Maximum allowed width (default: 600)
+- `storageKey?: string` - localStorage key (default: 'coderef-explorer-sidebar-width')
+- `children: ReactNode` - Sidebar content
+- `isCollapsed?: boolean` - **NEW Phase 2:** Collapse state (default: false)
+- `onToggleCollapse?: () => void` - **NEW Phase 2:** Toggle callback
+
+**useSidebarResize Hook:**
+- Manages resize state and drag interactions
+- Handles localStorage persistence
+- Provides width, drag handlers, and reset function
+- Debounces localStorage writes to avoid excessive I/O
+
+### QuickFileSearch Component - NEW Phase 2
+
+**Location:** `packages/dashboard/src/components/coderef/QuickFileSearch.tsx`
+
+**Comprehensive Documentation:** See `coderef/resources-sheets/components/QuickFileSearch-RESOURCE-SHEET.md`
+
+**Key Features:**
+- Real-time file tree filtering with fuzzy matching
+- Keyboard shortcut: ⌘K (Mac) / Ctrl+K (Windows/Linux)
+- Clear button appears when text present
+- Keyboard hint badge when empty
+- Case-insensitive substring matching
+
+**Props:**
+- `value: string` - Current search query (controlled input)
+- `onChange: (value: string) => void` - Callback when search changes
+- `placeholder?: string` - Input placeholder (default: "Search files...")
+
+**Integration:**
+```tsx
+<QuickFileSearch value={searchQuery} onChange={setSearchQuery} />
+<FileTree searchQuery={searchQuery} {...props} />
+```
+
+### TreeActionsToolbar Component - NEW Phase 2
+
+**Location:** `packages/dashboard/src/components/coderef/TreeActionsToolbar.tsx`
+
+**Comprehensive Documentation:** See `coderef/resources-sheets/components/TreeActionsToolbar-RESOURCE-SHEET.md`
+
+**Key Features:**
+- Three action buttons: Expand All, Collapse All, Refresh
+- Icon-only design with ARIA labels
+- Hover states with Tailwind ind-* tokens
+
+**Phase 2 Status:**
+- ✅ **Refresh Button:** Fully functional (increments refreshKey)
+- ⚠️ **Expand/Collapse All:** UI-only (not wired, deferred to Phase 3)
+
+**Props:**
+- `onExpandAll?: () => void` - Expand all callback (not implemented)
+- `onCollapseAll?: () => void` - Collapse all callback (not implemented)
+- `onRefresh?: () => void` - Refresh callback (✅ functional)
+
+### fuzzyMatch Utility - NEW Phase 2
+
+**Location:** `packages/dashboard/src/lib/coderef/fuzzyMatch.ts`
+
+**Comprehensive Documentation:** See `coderef/resources-sheets/utilities/fuzzyMatch-Utility-RESOURCE-SHEET.md`
+
+**Key Functions:**
+- `fuzzyMatch(query: string, target: string): boolean` - Case-insensitive substring match
+- `matchesFilePath(query: string, filePath: string): boolean` - Match against filename OR full path
+
+**Algorithm:** Simple substring matching (not advanced Levenshtein distance)
+
+**Performance:** O(n*m) where n = target length, m = query length
 
 ### FileTree Component
 
@@ -107,6 +207,7 @@ export default function CodeRefExplorerLayout({ children }: { children: ReactNod
 - Recursive tree rendering with FileTreeNode
 - Hybrid local/API access via hybrid router
 - Folder filtering (e.g., show only `coderef/` directory)
+- **NEW Phase 2:** Search filtering with fuzzy matching
 - Favorites-only view with FavoritesList
 - Access mode indicator (Local vs API)
 - Move submenu for file operations across projects
@@ -115,6 +216,11 @@ export default function CodeRefExplorerLayout({ children }: { children: ReactNod
 - **Projects Mode:** Full project tree
 - **CodeRef Mode:** Filtered to `coderef/` subdirectory
 - **Favorites Mode:** Grouped favorites with drag-and-drop
+
+**Search Filtering (Phase 2):**
+- Filters tree by `searchQuery` prop using `filterTreeBySearch()`
+- Shows parent folders if children match
+- Empty query shows all nodes
 
 ---
 
@@ -155,6 +261,135 @@ If adding a new view mode beyond Projects/CodeRef/Favorites:
 2. Add mode to `ViewModeToggle` component
 3. Handle mode in `CodeRefExplorerWidget` (filtering logic, state clearing)
 4. Update tests in `__tests__/CodeRefExplorerWidget.state.test.tsx`
+
+### Changing Sidebar Width Constraints
+
+To adjust the resizable sidebar min/max bounds or default width:
+
+1. **Modify default width:**
+   ```tsx
+   // In CodeRefExplorerWidget.tsx
+   <ResizableSidebar defaultWidth={400}> {/* Changed from 320 */}
+   ```
+
+2. **Adjust min/max bounds:**
+   ```tsx
+   <ResizableSidebar minWidth={200} maxWidth={800}>
+   ```
+
+3. **Change localStorage key:**
+   ```tsx
+   <ResizableSidebar storageKey="my-custom-sidebar-width">
+   ```
+
+**Note:** Existing users with saved widths will keep their preference until they manually resize or clear localStorage.
+
+**Reset user's saved width:**
+```javascript
+localStorage.removeItem('coderef-explorer-sidebar-width');
+```
+
+### Using Quick File Search (⌘K/Ctrl+K) - NEW Phase 2
+
+**Keyboard Shortcut:**
+- **Mac:** ⌘K
+- **Windows/Linux:** Ctrl+K
+
+**User Flow:**
+1. Press ⌘K to focus search input
+2. Type search term (e.g., "Button")
+3. FileTree filters in real-time showing matching files/folders
+4. Click X button or clear text to reset filter
+
+**Implementation:**
+```tsx
+// Search state managed in CodeRefExplorerWidget
+const [searchQuery, setSearchQuery] = useState('');
+
+<QuickFileSearch value={searchQuery} onChange={setSearchQuery} />
+<FileTree searchQuery={searchQuery} {...props} />
+```
+
+**Fuzzy Matching:**
+- Case-insensitive substring matching
+- "btn" matches "Button.tsx"
+- Shows parent folders if children match
+
+### Expanding/Collapsing All Tree Nodes - NEW Phase 2
+
+**Status:** UI-only (buttons present but not functional)
+
+**Why not implemented in Phase 2:**
+- FileTreeNode uses internal `isExpanded` state (not lifted to parent)
+- Would require refactoring FileTree to manage all expansion state
+- Deferred to Phase 3
+
+**Refresh Button (Functional):**
+```tsx
+const [refreshKey, setRefreshKey] = useState(0);
+
+const handleRefresh = () => {
+  setRefreshKey(prev => prev + 1);
+};
+
+<TreeActionsToolbar onRefresh={handleRefresh} />
+<FileTree key={refreshKey} {...props} />
+```
+
+### Collapsing Sidebar for Focus Mode - NEW Phase 2
+
+**Collapse/Expand Sidebar:**
+
+**Keyboard Shortcut:** None currently (only button click)
+
+**User Flow:**
+1. Click floating toggle button in top-left of FileViewer area
+2. Sidebar collapses to 0px width with 200ms animation
+3. Click button again to restore to previous width
+
+**Implementation:**
+```tsx
+const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+const handleToggleCollapse = () => {
+  setIsSidebarCollapsed(prev => !prev);
+};
+
+<ResizableSidebar
+  isCollapsed={isSidebarCollapsed}
+  onToggleCollapse={handleToggleCollapse}
+  {...props}
+>
+  {/* Sidebar content */}
+</ResizableSidebar>
+
+{/* Toggle button in FileViewer area */}
+<button onClick={handleToggleCollapse} aria-label="Toggle sidebar">
+  {isSidebarCollapsed ? <PanelLeft /> : <PanelLeftClose />}
+</button>
+```
+
+**Persistence:**
+```javascript
+// Collapse state saved to localStorage
+localStorage.getItem('coderef-explorer-sidebar-collapsed'); // "true" or "false"
+
+// Reset collapse state
+localStorage.removeItem('coderef-explorer-sidebar-collapsed');
+```
+
+---
+
+## Keyboard Shortcuts (Phase 2)
+
+| Shortcut | Action | Component |
+|----------|--------|-----------|
+| ⌘K / Ctrl+K | Focus file search | QuickFileSearch |
+
+**Future Shortcuts (Not Implemented):**
+- Escape: Clear search and blur input
+- ⌘B / Ctrl+B: Toggle sidebar collapse
+- Arrow keys: Navigate tree nodes
 
 ---
 
@@ -288,11 +523,18 @@ The explorer supports two access modes (automatically detected):
 1. **Non-virtualized tree rendering** - Slow for projects with 1000+ files
 2. **localStorage synchronous API** - Could cause jank for large favorites data
 3. **Move submenu building** - Loads all project trees (preloaded once, cached)
+4. **Sidebar resize drag** - Layout recalculations at 60fps during resize
 
 **Optimization Opportunities:**
 - Add react-window for virtual scrolling
 - Memoize filtered tree
 - Debounce localStorage writes
+
+**Sidebar Resize Performance:**
+- Drag events throttled via requestAnimationFrame (~16ms, 60fps)
+- localStorage writes debounced to 200ms (only saves on drag end)
+- Width changes applied directly to CSS (no React re-renders during drag)
+- Future: Consider CSS transform for smoother resize on slower devices
 
 ---
 

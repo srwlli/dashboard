@@ -2,8 +2,8 @@
 
 Comprehensive documentation for the CodeRef Explorer system and all related components.
 
-**Last Updated:** 2026-01-16
-**Total Resource Sheets:** 9
+**Last Updated:** 2026-01-17
+**Total Resource Sheets:** 13 (Phase 2: +3 new components)
 
 ---
 
@@ -39,7 +39,121 @@ Comprehensive documentation for the CodeRef Explorer system and all related comp
 
 ---
 
-### 2. FileTree Component
+### 2. ResizableSidebar Component
+**File:** `coderef/resources-sheets/components/ResizableSidebar-RESOURCE-SHEET.md`
+**Component:** `packages/dashboard/src/components/coderef/ResizableSidebar.tsx`
+**Hook:** `packages/dashboard/src/hooks/useSidebarResize.ts`
+**Complexity:** Low-Medium
+
+**Coverage:**
+- User-adjustable sidebar width (240-600px range, 320px default)
+- Drag handle on right edge for resize interactions
+- Width persistence via localStorage
+- useSidebarResize custom hook (resize logic, bounds checking, persistence)
+- Dedicated scroll container for FileTree
+- Performance considerations (throttling, debouncing)
+
+**Key Features:**
+- **Props:** defaultWidth, minWidth, maxWidth, storageKey, children
+- **Resize Bounds:** 240px min, 600px max (configurable)
+- **localStorage Key:** `coderef-explorer-sidebar-width`
+- **Performance:** Resize throttled to 60fps, localStorage writes debounced to 200ms
+- **Scroll Container:** FileTree has independent scroll region, controls stay visible
+
+**Key Sections:**
+- Component API Documentation (props, hook API)
+- Architecture Overview (drag handle, resize logic, persistence)
+- Integration Points (CodeRefExplorerWidget wrapper)
+- Performance Considerations (throttling, debouncing, layout recalculations)
+- Testing Strategy (resize bounds, persistence, drag interactions)
+
+---
+
+### 3. QuickFileSearch Component - NEW Phase 2
+**File:** `coderef/resources-sheets/components/QuickFileSearch-RESOURCE-SHEET.md`
+**Component:** `packages/dashboard/src/components/coderef/QuickFileSearch.tsx`
+**Lines:** 118
+**Complexity:** Medium
+
+**Coverage:**
+- Real-time file tree filtering with fuzzy matching
+- Keyboard shortcut (⌘K/Ctrl+K) for focus
+- Clear button and keyboard hint badge
+- Controlled component pattern (parent manages searchQuery state)
+- Integration with FileTree for search filtering
+
+**Key Features:**
+- **Keyboard Shortcut:** ⌘K (Mac) / Ctrl+K (Windows/Linux)
+- **Icons:** Search icon (left), X clear button (right, conditional)
+- **Fuzzy Matching:** Uses fuzzyMatch utility for case-insensitive substring matching
+- **Real-Time Filtering:** onChange fires on every keystroke (no debouncing)
+- **Accessibility:** ARIA labels, keyboard navigation
+
+**Props:**
+- `value: string` - Current search query (controlled input)
+- `onChange: (value: string) => void` - Callback when search changes
+- `placeholder?: string` - Input placeholder text
+
+---
+
+### 4. TreeActionsToolbar Component - NEW Phase 2
+**File:** `coderef/resources-sheets/components/TreeActionsToolbar-RESOURCE-SHEET.md`
+**Component:** `packages/dashboard/src/components/coderef/TreeActionsToolbar.tsx`
+**Lines:** 94
+**Complexity:** Low
+
+**Coverage:**
+- Three action buttons: Expand All, Collapse All, Refresh
+- Icon-only design with tooltips (ARIA labels)
+- Phase 2 status: Only Refresh is functional, Expand/Collapse All deferred to Phase 3
+- Integration with FileTree via refreshKey pattern
+
+**Key Features:**
+- **Refresh Button:** ✅ Fully functional - increments refreshKey to force FileTree remount
+- **Expand/Collapse All:** ⚠️ UI-only (not wired, deferred to Phase 3)
+- **Why Expand/Collapse All Not Implemented:** FileTreeNode uses internal isExpanded state (not lifted)
+
+**Props:**
+- `onExpandAll?: () => void` - Expand all callback (not implemented)
+- `onCollapseAll?: () => void` - Collapse all callback (not implemented)
+- `onRefresh?: () => void` - Refresh callback (✅ functional)
+
+**Icons:**
+- ChevronDown (Expand All)
+- ChevronRight (Collapse All)
+- RotateCw (Refresh)
+
+---
+
+### 5. fuzzyMatch Utility - NEW Phase 2
+**File:** `coderef/resources-sheets/utilities/fuzzyMatch-Utility-RESOURCE-SHEET.md`
+**Module:** `packages/dashboard/src/lib/coderef/fuzzyMatch.ts`
+**Lines:** 48
+**Complexity:** Low
+
+**Coverage:**
+- Case-insensitive substring matching for file tree search
+- Two functions: `fuzzyMatch()` and `matchesFilePath()`
+- Algorithm details, performance considerations, usage examples
+- No advanced fuzzy matching (Levenshtein distance, etc.)
+
+**Key Functions:**
+- `fuzzyMatch(query: string, target: string): boolean` - Basic substring match
+- `matchesFilePath(query: string, filePath: string): boolean` - Match filename OR full path
+
+**Algorithm:**
+- Simple substring matching (O(n*m) complexity)
+- Empty query returns true (show all results)
+- Case-insensitive via `.toLowerCase()`
+
+**Performance:**
+- Single fuzzyMatch call: ~0.001ms (1 microsecond)
+- Full tree filter (1,000 nodes): ~1-2ms
+- Acceptable for real-time search without debouncing
+
+---
+
+### 6. FileTree Component
 **File:** `coderef/resources-sheets/components/FileTree-RESOURCE-SHEET.md`
 **Component:** `packages/dashboard/src/components/coderef/FileTree.tsx`
 **Lines:** 770+
@@ -69,7 +183,7 @@ Comprehensive documentation for the CodeRef Explorer system and all related comp
 
 ---
 
-### 3. FileViewer Component
+### 4. FileViewer Component
 **File:** `coderef/resources-sheets/components/FileViewer-RESOURCE-SHEET.md`
 **Component:** `packages/dashboard/src/components/coderef/FileViewer.tsx`
 **Lines:** 490
@@ -100,7 +214,7 @@ Comprehensive documentation for the CodeRef Explorer system and all related comp
 
 ---
 
-### 4. ProjectSelector Component
+### 5. ProjectSelector Component
 **File:** `coderef/resources-sheets/components/ProjectSelector-RESOURCE-SHEET.md`
 **Component:** `packages/dashboard/src/components/ProjectSelector/index.tsx`
 **Complexity:** Medium
@@ -131,7 +245,7 @@ Comprehensive documentation for the CodeRef Explorer system and all related comp
 
 ## Supporting Infrastructure
 
-### 5. Hybrid Router
+### 6. Hybrid Router
 **File:** `coderef/resources-sheets/middleware/Hybrid-Router-RESOURCE-SHEET.md`
 **Module:** `packages/dashboard/src/lib/coderef/hybrid-router.ts`
 **Lines:** 150
@@ -163,7 +277,7 @@ Comprehensive documentation for the CodeRef Explorer system and all related comp
 
 ---
 
-### 6. Projects Context
+### 7. Projects Context
 **File:** `coderef/resources-sheets/components/Projects-Context-RESOURCE-SHEET.md`
 **Context:** `packages/dashboard/src/contexts/ProjectsContext.tsx`
 **Complexity:** Medium
@@ -195,7 +309,7 @@ interface ProjectsContextState {
 
 ---
 
-### 7. Right-Click Context Menu
+### 8. Right-Click Context Menu
 **File:** `coderef/resources-sheets/components/Right-Click-Context-Menu-RESOURCE-SHEET.md`
 **Component:** `packages/dashboard/src/components/ContextMenu/index.tsx`
 **Complexity:** Medium
@@ -227,7 +341,7 @@ interface ProjectsContextState {
 
 ## Additional Related Sheets
 
-### 8. Electron IPC Analysis
+### 9. Electron IPC Analysis
 **File:** `coderef/resources-sheets/analysis/Electron-IPC-Analysis-RESOURCE-SHEET.md`
 **Type:** Analysis Document
 
@@ -245,7 +359,7 @@ interface ProjectsContextState {
 
 ---
 
-### 9. Unified Storage
+### 10. Unified Storage
 **File:** `coderef/resources-sheets/Unified-Storage-RESOURCE-SHEET.md`
 **Type:** System Documentation
 
@@ -260,6 +374,7 @@ interface ProjectsContextState {
 - **localStorage:**
   - `coderef-explorer-selected-project` - Global selected project ID
   - `coderef-favorites-{projectId}` - Per-project favorites data
+  - `coderef-explorer-sidebar-width` - User's sidebar width preference (240-600px)
 
 - **IndexedDB (Web only):**
   - `FileSystemDirectoryHandle` objects for project paths
@@ -274,19 +389,23 @@ interface ProjectsContextState {
 
 ## Summary Table
 
-| Resource Sheet              | Category   | Lines | Complexity | Primary Focus                                  |
-|-----------------------------|------------|-------|------------|------------------------------------------------|
-| CodeRef-Explorer-Widget     | Component  | 900+  | Very High  | State management, persistence, favorites       |
-| FileTree                    | Component  | 770+  | High       | Recursive rendering, filtering, hybrid routing |
-| FileViewer                  | Component  | 490   | Medium     | File content display, syntax highlighting      |
-| ProjectSelector             | Component  | -     | Medium     | Project selection, cross-platform              |
-| Hybrid-Router               | Middleware | 150   | High       | Local/API abstraction                          |
-| Projects-Context            | Context    | -     | Medium     | Global state, caching                          |
-| Right-Click-Context-Menu    | Component  | -     | Medium     | Context menu actions                           |
-| Electron-IPC-Analysis       | Analysis   | -     | -          | Platform integration                           |
-| Unified-Storage             | System     | -     | -          | Persistence layer                              |
+| Resource Sheet              | Category   | Lines | Complexity  | Primary Focus                                  |
+|-----------------------------|------------|-------|-------------|------------------------------------------------|
+| CodeRef-Explorer-Widget     | Component  | 900+  | Very High   | State management, persistence, favorites       |
+| ResizableSidebar            | Component  | 900+  | Low-Medium  | Resize UX, collapse toggle, persistence        |
+| QuickFileSearch             | Component  | 420   | Medium      | Search input, keyboard shortcut, fuzzy match   |
+| TreeActionsToolbar          | Component  | 310   | Low         | Tree actions (refresh functional, expand/collapse UI-only) |
+| fuzzyMatch                  | Utility    | 290   | Low         | Substring matching for search filtering        |
+| FileTree                    | Component  | 770+  | High        | Recursive rendering, filtering, hybrid routing |
+| FileViewer                  | Component  | 490   | Medium      | File content display, syntax highlighting      |
+| ProjectSelector             | Component  | -     | Medium      | Project selection, cross-platform              |
+| Hybrid-Router               | Middleware | 150   | High        | Local/API abstraction                          |
+| Projects-Context            | Context    | -     | Medium      | Global state, caching                          |
+| Right-Click-Context-Menu    | Component  | -     | Medium      | Context menu actions                           |
+| Electron-IPC-Analysis       | Analysis   | -     | -           | Platform integration                           |
+| Unified-Storage             | System     | -     | -           | Persistence layer                              |
 
-**Total Documentation:** 2,310+ lines of comprehensive technical documentation
+**Total Documentation:** 4,230+ lines of comprehensive technical documentation (Phase 2: +1,020 lines)
 
 ---
 
@@ -294,17 +413,24 @@ interface ProjectsContextState {
 
 ```
 CodeRefExplorerWidget (Main Widget)
-├── ProjectSelector (Project Selection)
-│   └── ProjectsContext (Global State)
-├── ViewModeToggle (View Mode Tabs)
-├── FileTree (Tree Rendering)
-│   ├── Hybrid Router (Data Loading)
-│   │   ├── Electron IPC (Local Mode)
-│   │   └── File API (API Mode)
-│   ├── FileTreeNode (Recursive Rendering)
-│   ├── ContextMenu (Right-Click Actions)
-│   └── FavoritesList (Favorites View)
+├── ResizableSidebar (Wrapper with drag handle, collapse toggle, 240-600px)
+│   ├── useSidebarResize Hook (resize logic + persistence)
+│   ├── QuickFileSearch (NEW Phase 2: Search with ⌘K shortcut)
+│   │   └── fuzzyMatch Utility (substring matching)
+│   ├── TreeActionsToolbar (NEW Phase 2: Expand/Collapse/Refresh buttons)
+│   ├── ProjectSelector (Project Selection)
+│   │   └── ProjectsContext (Global State)
+│   ├── ViewModeToggle (View Mode Tabs)
+│   └── FileTree (Tree Rendering with scroll + search filtering)
+│       ├── Hybrid Router (Data Loading)
+│       │   ├── Electron IPC (Local Mode)
+│       │   └── File API (API Mode)
+│       ├── fuzzyMatch Utility (NEW Phase 2: Search filtering)
+│       ├── FileTreeNode (Recursive Rendering)
+│       ├── ContextMenu (Right-Click Actions)
+│       └── FavoritesList (Favorites View)
 └── FileViewer (Content Display)
+    ├── Collapse Toggle Button (NEW Phase 2: Floating button)
     └── Hybrid Router (File Content Loading)
 ```
 
@@ -313,8 +439,12 @@ CodeRefExplorerWidget (Main Widget)
 ## Quick Reference: Where to Look
 
 **For State Management:** → CodeRef-Explorer-Widget-RESOURCE-SHEET.md (Section: State Management)
+**For File Search:** → QuickFileSearch-RESOURCE-SHEET.md (Phase 2 feature)
+**For Tree Actions:** → TreeActionsToolbar-RESOURCE-SHEET.md (Phase 2 feature)
+**For Fuzzy Matching:** → fuzzyMatch-Utility-RESOURCE-SHEET.md (Phase 2 feature)
+**For Collapse Toggle:** → ResizableSidebar-RESOURCE-SHEET.md (Section: Phase 2 Collapse Feature)
 **For File Loading:** → Hybrid-Router-RESOURCE-SHEET.md
-**For Filtering Logic:** → FileTree-RESOURCE-SHEET.md (Section: Filtering Logic)
+**For Filtering Logic:** → FileTree-RESOURCE-SHEET.md (Section: Filtering Logic + Search Filtering Phase 2)
 **For File Display:** → FileViewer-RESOURCE-SHEET.md
 **For Project Selection:** → ProjectSelector-RESOURCE-SHEET.md
 **For Context Menus:** → Right-Click-Context-Menu-RESOURCE-SHEET.md
@@ -325,6 +455,36 @@ CodeRefExplorerWidget (Main Widget)
 ---
 
 ## Recent Updates
+
+### 2026-01-17 - Phase 2: Navigation Enhancements
+- ✅ **Quick File Search Added**
+  - QuickFileSearch component: Real-time file tree filtering with fuzzy matching
+  - Keyboard shortcut: ⌘K (Mac) / Ctrl+K (Windows/Linux) to focus search
+  - fuzzyMatch utility: Case-insensitive substring matching (O(n*m) complexity)
+  - Integration: Search query passed to FileTree for recursive filtering
+  - Performance: ~1-2ms for 1,000 nodes (acceptable without debouncing)
+
+- ✅ **Tree Actions Toolbar Added**
+  - TreeActionsToolbar component: Three action buttons (Expand All, Collapse All, Refresh)
+  - Refresh button: ✅ Fully functional - increments refreshKey to force FileTree remount
+  - Expand/Collapse All: ⚠️ UI-only (not wired, deferred to Phase 3)
+  - Integration: Parent manages refreshKey state, FileTree has `key={refreshKey}` prop
+
+- ✅ **Collapsible Sidebar Toggle Added**
+  - ResizableSidebar: New isCollapsed prop and collapse toggle support
+  - Floating toggle button: Located in FileViewer area (remains accessible when collapsed)
+  - Animation: 200ms smooth transition (transition-all duration-200)
+  - Width restoration: Expands to previous user width (default 320px)
+  - localStorage key: `coderef-explorer-sidebar-collapsed`
+  - Behavior: When collapsed, width = 0px, content hidden, drag handle hidden
+
+### 2026-01-17 - Phase 1: Resizable Sidebar
+- ✅ **Resizable Sidebar Added (Phase 1 UX Improvements)**
+  - ResizableSidebar component: User-adjustable sidebar width (240-600px)
+  - useSidebarResize hook: Resize logic, bounds checking, localStorage persistence
+  - Dedicated scroll container: FileTree has independent scroll region
+  - Performance optimizations: Throttled resize (60fps), debounced localStorage writes (200ms)
+  - localStorage key: `coderef-explorer-sidebar-width`
 
 ### 2026-01-16
 - ✅ **CSV Support Added**

@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(pwsh C:Userswillh.mcp-serverspapertrailvalidatorssessionsvalidate.ps1 -Verbose)",
-      "Bash(pwsh -File:*)"
+      "Bash(pwsh -File:*)",
+      "Bash(Get-Date -Format \"yyyy-MM-dd HH:mm:ss\")"
     ]
   },
   "enabledMcpjsonServers": [

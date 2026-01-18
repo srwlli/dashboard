@@ -1,0 +1,337 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ResizableSidebar - Visual Regression & Accessibility Snapshot Tests matches snapshot with complex children 1`] = `
+<div
+  class="relative flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col "
+  style="width: 600px;"
+>
+  <div>
+    <header>
+      Header
+    </header>
+    <nav>
+      Navigation
+    </nav>
+    <main>
+      Main Content
+    </main>
+    <footer>
+      Footer
+    </footer>
+  </div>
+  <div
+    aria-label="Resize sidebar"
+    aria-orientation="vertical"
+    class="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize group hover:bg-ind-accent transition-colors flex items-center justify-center"
+    role="separator"
+  >
+    <div
+      class="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+    >
+      <svg
+        class="lucide lucide-grip-vertical h-4 w-4 text-ind-text-muted"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="9"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="19"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="19"
+          r="1"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ResizableSidebar - Visual Regression & Accessibility Snapshot Tests matches snapshot with custom className 1`] = `
+<div
+  class="relative flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col custom-sidebar-class"
+  style="width: 600px;"
+>
+  <div>
+    Sidebar Content
+  </div>
+  <div
+    aria-label="Resize sidebar"
+    aria-orientation="vertical"
+    class="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize group hover:bg-ind-accent transition-colors flex items-center justify-center"
+    role="separator"
+  >
+    <div
+      class="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+    >
+      <svg
+        class="lucide lucide-grip-vertical h-4 w-4 text-ind-text-muted"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="9"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="19"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="19"
+          r="1"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ResizableSidebar - Visual Regression & Accessibility Snapshot Tests matches snapshot with default width 1`] = `
+<div
+  class="relative flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col "
+  style="width: 320px;"
+>
+  <div>
+    Sidebar Content
+  </div>
+  <div
+    aria-label="Resize sidebar"
+    aria-orientation="vertical"
+    class="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize group hover:bg-ind-accent transition-colors flex items-center justify-center"
+    role="separator"
+  >
+    <div
+      class="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+    >
+      <svg
+        class="lucide lucide-grip-vertical h-4 w-4 text-ind-text-muted"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="9"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="19"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="19"
+          r="1"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ResizableSidebar - Visual Regression & Accessibility Snapshot Tests matches snapshot with maximum width 1`] = `
+<div
+  class="relative flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col "
+  style="width: 600px;"
+>
+  <div>
+    Sidebar Content
+  </div>
+  <div
+    aria-label="Resize sidebar"
+    aria-orientation="vertical"
+    class="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize group hover:bg-ind-accent transition-colors flex items-center justify-center"
+    role="separator"
+  >
+    <div
+      class="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+    >
+      <svg
+        class="lucide lucide-grip-vertical h-4 w-4 text-ind-text-muted"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="9"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="19"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="19"
+          r="1"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ResizableSidebar - Visual Regression & Accessibility Snapshot Tests matches snapshot with minimum width 1`] = `
+<div
+  class="relative flex-shrink-0 flex-grow-0 overflow-hidden border-r border-ind-border bg-ind-panel flex flex-col "
+  style="width: 240px;"
+>
+  <div>
+    Sidebar Content
+  </div>
+  <div
+    aria-label="Resize sidebar"
+    aria-orientation="vertical"
+    class="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize group hover:bg-ind-accent transition-colors flex items-center justify-center"
+    role="separator"
+  >
+    <div
+      class="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+    >
+      <svg
+        class="lucide lucide-grip-vertical h-4 w-4 text-ind-text-muted"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="9"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="9"
+          cy="19"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="12"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="5"
+          r="1"
+        />
+        <circle
+          cx="15"
+          cy="19"
+          r="1"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;

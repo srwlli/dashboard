@@ -372,23 +372,26 @@ export function CodeRefExplorerWidget() {
         <div className={`flex-shrink-0 sticky top-0 z-10 bg-ind-panel/80 backdrop-blur-sm border-b border-ind-border transition-shadow ${isScrolled ? 'shadow-md' : ''}`}>
           {/* Top controls area with padding */}
           <div className="p-4 space-y-3">
-            {/* Project Selector - visible in both modes */}
-            <ProjectSelector
-              selectedProjectId={selectedProject?.id}
-              onProjectChange={handleProjectChange}
-              initialProjectId={initialProjectId}
-            />
+            {/* Project Selector with Refresh button inline */}
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <ProjectSelector
+                  selectedProjectId={selectedProject?.id}
+                  onProjectChange={handleProjectChange}
+                  initialProjectId={initialProjectId}
+                />
+              </div>
+              {/* Tree Actions Toolbar (Refresh button) - Phase 2 feature */}
+              <TreeActionsToolbar
+                onRefresh={handleRefreshTree}
+              />
+            </div>
 
             {/* Quick File Search - Phase 2 feature */}
             <QuickFileSearch
               value={searchQuery}
               onChange={setSearchQuery}
               placeholder="Search files..."
-            />
-
-            {/* Tree Actions Toolbar - Phase 2 feature */}
-            <TreeActionsToolbar
-              onRefresh={handleRefreshTree}
             />
 
             {/* DORMANT: Sort Dropdown - will be used for multi-project view in future */}

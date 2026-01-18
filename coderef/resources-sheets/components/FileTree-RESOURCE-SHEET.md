@@ -1,14 +1,16 @@
 ---
 agent: Claude Sonnet 4.5
-date: "2026-01-12"
+date: "2026-01-17"
 task: UPDATE
 subject: FileTree
 parent_project: coderef-dashboard
 category: component
-version: 1.0.0
+version: 1.1.0
 related_files:
   - packages/dashboard/src/components/coderef/FileTree.tsx
 status: APPROVED
+workorder_id: WO-EXPLORER-SIDEBAR-UX-001
+feature_id: explorer-sidebar-ux-improvements
 ---
 
 # FileTree - Resource Sheet
@@ -32,12 +34,13 @@ status: APPROVED
 
 **Element:** FileTree
 **Category:** UI Component
-**Purpose:** Hierarchical file/directory tree component with support for favorites management, folder filtering, and hybrid local/API access modes
+**Purpose:** Hierarchical file/directory tree component with support for favorites management, folder filtering, search filtering (Phase 2), and hybrid local/API access modes
 
 **Key Responsibilities:**
 - Load project tree data via hybrid router (local filesystem or API)
 - Render recursive file/directory hierarchy using FileTreeNode
 - Filter tree to specific subfolder (e.g., show only `coderef/` directory)
+- **NEW Phase 2:** Filter tree by search query using fuzzy matching
 - Display favorites-only view using FavoritesList component
 - Show access mode indicator (Local vs API)
 - Handle loading, error, and empty states
@@ -101,6 +104,7 @@ FileTree (this component)
 
 **Internal Dependencies:**
 - `@/lib/coderef/hybrid-router` - loadProjectTree() function
+- `@/lib/coderef/fuzzyMatch` - **NEW Phase 2:** matchesFilePath() for search filtering
 - `@/lib/coderef/types` - Project, TreeNode, AccessMode interfaces
 - `@/lib/coderef/favorites-types` - FavoritesData interface
 - `@/contexts/ProjectsContext` - useProjects() hook for project list
@@ -270,6 +274,68 @@ const filterTreeToFolder = (nodes: TreeNode[], folderName: string): TreeNode[] =
 <FileTree filterPath="coderef" />
 // Shows only coderef/ directory contents, hides rest of project
 ```
+
+### Search Filtering (searchQuery) - NEW Phase 2
+
+**Purpose:** Filter tree by search query using fuzzy matching
+
+**Algorithm:**
+```typescript
+const filterTreeBySearch = (nodes: TreeNode[], query: string): TreeNode[] => {
+  if (!query) return nodes; // Empty query shows all
+
+  return nodes.filter(node => {
+    // Match node name (case-insensitive substring)
+    if (matchesFilePath(query, node.path)) {
+      return true;
+    }
+
+    // Recursively filter children
+    if (node.children) {
+      const filteredChildren = filterTreeBySearch(node.children, query);
+      if (filteredChildren.length > 0) {
+        // Include node if any children match
+        node.children = filteredChildren;
+        return true;
+      }
+    }
+
+    return false;
+  });
+};
+```
+
+**Complexity:** O(n) where n = total nodes in tree
+
+**Key Features:**
+- **Case-insensitive:** Matches "button" against "Button.tsx"
+- **Substring matching:** "comp" matches "MyComponent.tsx"
+- **Recursive filtering:** Shows parent folders if children match
+- **Empty query fallback:** Shows all nodes when search is cleared
+
+**Integration with QuickFileSearch:**
+```tsx
+// Parent component (CodeRefExplorerWidget)
+const [searchQuery, setSearchQuery] = useState('');
+
+<QuickFileSearch value={searchQuery} onChange={setSearchQuery} />
+
+<FileTree
+  project={selectedProject}
+  searchQuery={searchQuery}  // Passed to FileTree
+  {...otherProps}
+/>
+```
+
+**Performance Considerations:**
+- Filters on every keystroke (no debouncing in Phase 2)
+- Acceptable performance for typical project sizes (<10k files)
+- Future optimization: Add 100ms debounce if needed for very large trees
+
+**User Experience:**
+- **Real-time feedback:** Results update instantly as user types
+- **Clear indication:** Empty results state if no matches found
+- **Parent context:** Shows parent folders of matching files (helps user locate file)
 
 ### Favorites Filtering (showOnlyFavorites)
 

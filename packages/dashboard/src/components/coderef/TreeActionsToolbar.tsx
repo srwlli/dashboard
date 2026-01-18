@@ -82,11 +82,11 @@ export function TreeActionsToolbar({
       {onRefresh && (
         <button
           onClick={onRefresh}
-          className="p-1.5 rounded hover:bg-ind-panel text-ind-text-muted hover:text-ind-accent transition-colors"
+          className="p-1.5 rounded flex-shrink-0 bg-ind-accent text-ind-panel hover:bg-ind-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
           aria-label="Refresh tree"
           title="Refresh (Reload from filesystem)"
         >
-          <RotateCw className="h-4 w-4" />
+          <RotateCw className="w-3.5 h-3.5" />
         </button>
       )}
     </div>
