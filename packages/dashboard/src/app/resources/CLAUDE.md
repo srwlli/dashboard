@@ -1,32 +1,34 @@
 # Resources Page - AI Context Documentation
 
 **Component:** Resources Page (Dashboard)
-**Version:** 2.0.0
+**Version:** 3.0.0 - Dynamic CSV-Driven Architecture
 **Status:** ✅ Production
 **Created:** 2026-01-16
-**Last Updated:** 2026-01-17
+**Last Updated:** 2026-01-18
+**Workorder:** WO-CSV-ECOSYSTEM-SYNC-001 (Phase 3, Task 1)
 
 ---
 
 ## Quick Summary
 
-**Resources Page** is the comprehensive catalog and single source of truth for all CodeRef ecosystem resources. It displays tools, commands, scripts, validators, schemas, and other resources across 6 MCP servers and the dashboard project.
+**Resources Page** is the comprehensive catalog and single source of truth for all CodeRef ecosystem resources. It displays tools, commands, scripts, validators, schemas, and other resources across 7 MCP servers and the dashboard project.
 
-**Core Innovation:** Centralized resource inventory with automated scanning, deduplication, and categorization. The `tools-and-commands.csv` file serves as the definitive registry of all 306+ resources ecosystem-wide.
+**Core Innovation (v3.0.0):** **Fully dynamic UI** that reads directly from CSV in real-time. NO hardcoded data. Changes to CSV reflect instantly in the UI through API polling.
 
-**Latest Update (v2.0.0):**
-- ✅ Comprehensive ecosystem scan (9 resource types)
-- ✅ Single source of truth CSV (306 resources)
-- ✅ 100% data quality (no missing fields, no duplicates)
-- ✅ Automated scanning and merge pipeline
-- ✅ Resource sheet index with 57 documents
+**Latest Update (v3.0.0 - Dynamic Architecture):**
+- ✅ **Dynamic CSV reading** - No hardcoded TypeScript constants
+- ✅ **Real-time updates** - 30s polling from `/api/resources`
+- ✅ **Advanced filtering** - Type, Server, Category, Status dropdowns
+- ✅ **Full-text search** - Name and Description fields
+- ✅ **346 resources displayed** - All resource types visible
+- ✅ **Automatic grouping** - Resources grouped by Type
+- ✅ **Performance optimized** - Client-side filtering with useMemo
 
-**Key Files:**
-- **coderef/tools-and-commands.csv** = Single source of truth (306 resources)
-- **coderef/RESOURCE-SHEET-INDEX.md** = Catalog of 57 resource sheets
-- **coderef/build-source-of-truth.py** = Automated ecosystem scanner
-- **coderef/merge-and-dedupe.py** = Smart merge and deduplication
-- **coderef/validate-csv.py** = Data quality validation
+**Key Files (v3.0.0):**
+- **page.tsx** = Main page (client component, removed all tabs)
+- **components/resources/DynamicResourcesTable.tsx** = Dynamic table with filtering
+- **app/api/resources/route.ts** = API endpoint serving CSV data
+- **coderef/tools-and-commands.csv** = Single source of truth (346 resources)
 
 ---
 
@@ -76,7 +78,7 @@ Merge process removes duplicates by:
 - Deduplicating by (Type, Server, Name) tuple
 - Keeping MCP server versions over user-level duplicates
 
-### Data Flow
+### Data Flow (v3.0.0 - Dynamic Architecture)
 ```
 Ecosystem Sources (MCP servers, scripts, schemas, etc.)
   ↓
@@ -86,10 +88,23 @@ scanned-resources-temp.csv (217 resources)
   ↓
 coderef/merge-and-dedupe.py (combine with existing tools)
   ↓
-coderef/tools-and-commands.csv (306 resources - single source of truth)
+coderef/tools-and-commands.csv (346 resources - single source of truth)
   ↓
-Resources Page UI (display, search, filter)
+/api/resources (Next.js API route - reads CSV with csv-parse)
+  ↓ (30s polling)
+DynamicResourcesTable.tsx (React component - fetches from API)
+  ↓
+Resources Page UI (real-time display, filtering, search)
 ```
+
+**Key Architecture Changes in v3.0.0:**
+- ❌ **Removed:** Hardcoded TypeScript constants in tab components
+- ❌ **Removed:** CommandsTab, ToolsTab, ScriptsTab, WorkflowsTab, SetupTab, OutputTab
+- ✅ **Added:** `/api/resources` API route (server-side CSV parsing)
+- ✅ **Added:** `DynamicResourcesTable.tsx` (client-side filtering and display)
+- ✅ **Added:** Real-time updates via 30s polling with automatic refresh
+- ✅ **Added:** Advanced filtering (4 dimensions: Type, Server, Category, Status)
+- ✅ **Added:** Full-text search across Name and Description fields
 
 ---
 
@@ -294,6 +309,60 @@ Type,Server,Category,Name,Description,Status,Path,Created,LastUpdated
 ---
 
 ## Recent Changes
+
+### v3.0.0 - Dynamic CSV-Driven Architecture (2026-01-18)
+**Workorder:** WO-CSV-ECOSYSTEM-SYNC-001 (Phase 3, Task 1)
+
+**Core Change:** Transformed Resources page from static hardcoded UI to fully dynamic CSV-driven architecture.
+
+**Files Created:**
+- ✅ `app/api/resources/route.ts` - API endpoint serving CSV data
+- ✅ `components/resources/DynamicResourcesTable.tsx` - Dynamic table component with filtering
+
+**Files Removed/Deprecated:**
+- ❌ Removed hardcoded data from `page.tsx`
+- ❌ Deprecated: `CommandsTab.tsx`, `ToolsTab.tsx`, `ScriptsTab.tsx`, `WorkflowsTab.tsx`, `SetupTab.tsx`, `OutputTab.tsx`
+
+**Features Added:**
+- ✅ Real-time updates via 30s polling
+- ✅ Advanced filtering (Type, Server, Category, Status)
+- ✅ Full-text search (Name, Description)
+- ✅ Automatic grouping by Type
+- ✅ Resource count badges
+- ✅ Active filter indicators
+- ✅ Manual refresh button
+- ✅ Last updated timestamp
+- ✅ File path links with external link icon
+
+**Technical Implementation:**
+```typescript
+// API Route (Server-Side)
+app/api/resources/route.ts
+- Reads CSV from filesystem using fs.readFileSync()
+- Parses with csv-parse/sync library
+- Returns JSON with 346 resources
+- Handles monorepo path resolution (tries multiple paths)
+
+// Client Component
+components/resources/DynamicResourcesTable.tsx
+- Fetches from /api/resources every 30s
+- Client-side filtering with useMemo (performance optimized)
+- useState for filter state (searchQuery, selectedType, etc.)
+- useEffect for polling and auto-refresh
+- Grouped display by resource Type
+```
+
+**Benefits:**
+- 🚀 Zero manual UI updates - CSV changes auto-reflected
+- 🚀 All 346 resources visible (was ~100 with hardcoded tabs)
+- 🚀 All 10 resource types displayed (was 6 types)
+- 🚀 Better UX with real-time search and filtering
+- 🚀 Single source of truth (CSV) now actually used by UI
+
+**Migration Impact:**
+- Users can now see ALL resources in one view
+- No need to update TypeScript code when adding new resources
+- CSV updates from automation workflows immediately visible
 
 ### v2.0.0 - Single Source of Truth
 - ✅ Created comprehensive ecosystem scanner (build-source-of-truth.py)

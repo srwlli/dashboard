@@ -1,33 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { Terminal, Wrench, FileCode, GitBranch, Settings, FileOutput } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { PageCard } from '@/components/PageCard';
-import TabNavigation from '@/components/TabNavigation';
-import CommandsTab from '@/components/resources/CommandsTab';
-import ToolsTab from '@/components/resources/ToolsTab';
-import ScriptsTab from '@/components/resources/ScriptsTab';
-import WorkflowsTab from '@/components/resources/WorkflowsTab';
-import SetupTab from '@/components/resources/SetupTab';
-import OutputTab from '@/components/resources/OutputTab';
+import DynamicResourcesTable from '@/components/resources/DynamicResourcesTable';
 
 /**
- * Resources Page
- * CodeRef resources: commands, tools, scripts, workflows, and documentation
+ * Resources Page - Dynamic CSV-Driven
+ *
+ * Displays all resources from coderef/tools-and-commands.csv
+ * - 346+ resources across 10 types
+ * - Real-time updates (30s polling)
+ * - Advanced filtering (Type, Server, Category, Status)
+ * - Search by name/description
+ *
+ * CSV Location: packages/dashboard/src/app/resources/coderef/tools-and-commands.csv
+ * API Route: /api/resources
  */
 export default function ResourcesPage() {
-  const [activeTab, setActiveTab] = useState<string>('commands');
-
-  const tabs = [
-    { id: 'commands', label: 'Commands', icon: Terminal },
-    { id: 'tools', label: 'Tools', icon: Wrench },
-    { id: 'scripts', label: 'Scripts', icon: FileCode },
-    { id: 'workflows', label: 'Workflows', icon: GitBranch },
-    { id: 'setup', label: 'Setup', icon: Settings },
-    { id: 'output', label: 'Output', icon: FileOutput },
-  ];
-
   return (
     <PageLayout>
       <PageCard>
@@ -38,24 +27,12 @@ export default function ResourcesPage() {
               Resources
             </h1>
             <p className="text-xs sm:text-sm md:text-base text-ind-text-muted">
-              Complete reference for CodeRef commands, tools, workflows, and documentation.
+              Complete reference for CodeRef ecosystem: commands, tools, scripts, workflows, schemas, and documentation.
             </p>
           </div>
 
-          {/* Tab Navigation */}
-          <TabNavigation
-            tabs={tabs}
-            activeTabId={activeTab}
-            onTabChange={setActiveTab}
-          />
-
-          {/* Tab Content */}
-          {activeTab === 'commands' && <CommandsTab />}
-          {activeTab === 'tools' && <ToolsTab />}
-          {activeTab === 'scripts' && <ScriptsTab />}
-          {activeTab === 'workflows' && <WorkflowsTab />}
-          {activeTab === 'setup' && <SetupTab />}
-          {activeTab === 'output' && <OutputTab />}
+          {/* Dynamic Resources Table */}
+          <DynamicResourcesTable refreshInterval={30000} />
         </div>
       </PageCard>
     </PageLayout>
