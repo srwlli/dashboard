@@ -6,7 +6,7 @@ from pathlib import Path
 from collections import Counter
 
 RESOURCES_DIR = Path(__file__).parent
-FINAL_CSV = RESOURCES_DIR / "FINAL-tools-and-commands.csv"
+FINAL_CSV = RESOURCES_DIR / "tools-and-commands.csv"
 
 def validate_csv():
     """Validate CSV structure and contents"""
