@@ -7,12 +7,12 @@
  * Supports drag & drop (Phase 4) and context menu (Phase 5)
  */
 
-import { useDraggable } from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { BoardCardProps } from '@/types/boards';
 
 export function BoardCard({ card, onUpdate, onDelete }: BoardCardProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card.id,
     data: {
       type: 'card',
@@ -21,7 +21,8 @@ export function BoardCard({ card, onUpdate, onDelete }: BoardCardProps) {
   });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
+    transform: CSS.Transform.toString(transform),
+    transition,
     opacity: isDragging ? 0.5 : 1,
   };
 

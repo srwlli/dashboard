@@ -9,7 +9,8 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, ExternalLink, X } from 'lucide-react';
-import { DndContext, closestCorners, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCorners, DragEndEvent, DragOverEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import type { Board, BoardCard, BoardCanvasProps, UpdateListRequest, CreateCardRequest, UpdateCardRequest } from '@/types/boards';
 import { BoardList } from './BoardList';
 
@@ -254,12 +255,12 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
 
   /**
    * Handle drag end event
-   * Moves cards between lists
+   * Supports both reordering within a list and moving between lists
    */
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    if (!over) return;
+    if (!over || active.id === over.id) return;
 
     const activeData = active.data.current;
     const overData = over.data.current;
@@ -268,21 +269,96 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
     if (activeData?.type !== 'card') return;
 
     const draggedCard = activeData.card as BoardCard;
-    const targetListId = overData?.type === 'list' ? over.id as string : null;
+    const sourceListId = draggedCard.listId;
 
-    if (!targetListId) return;
+    // Determine the target list ID and position
+    let targetListId: string;
+    let targetCardId: string | null = null;
 
-    // Check if card is being moved to a different list
-    if (draggedCard.listId === targetListId) return;
+    if (overData?.type === 'card') {
+      // Dropped on another card - use that card's list
+      targetListId = overData.card.listId;
+      targetCardId = over.id as string;
+    } else if (overData?.type === 'list') {
+      // Dropped on empty list area
+      targetListId = over.id as string;
+    } else {
+      // Shouldn't happen with proper setup, but handle gracefully
+      console.warn('Unknown drop target:', over.id);
+      return;
+    }
 
-    // Update card's listId via API
-    try {
-      await handleUpdateCard(draggedCard.id, {
-        listId: targetListId,
-      });
-    } catch (err) {
-      console.error('Failed to move card:', err);
-      alert('Failed to move card');
+    const sourceCards = cards[sourceListId] || [];
+    const targetCards = cards[targetListId] || [];
+
+    // Find the index of the dragged card in source list
+    const oldIndex = sourceCards.findIndex((c) => c.id === draggedCard.id);
+    if (oldIndex === -1) return;
+
+    if (sourceListId === targetListId && targetCardId) {
+      // Reordering within the same list
+      const newIndex = sourceCards.findIndex((c) => c.id === targetCardId);
+      if (newIndex === -1 || oldIndex === newIndex) return;
+
+      const reorderedCards = arrayMove(sourceCards, oldIndex, newIndex);
+
+      // Build batch update payload with new order values
+      const cardOrders = reorderedCards.map((card, index) => ({
+        cardId: card.id,
+        order: index,
+      }));
+
+      // Send single atomic batch update request
+      try {
+        const response = await fetch(
+          `/api/boards/${boardId}/lists/${sourceListId}/reorder`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cardOrders }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Refresh to get updated state
+          await fetchBoard();
+        } else {
+          console.error('Reorder failed:', data.error);
+          alert(data.error?.message || 'Failed to reorder cards');
+        }
+      } catch (err) {
+        console.error('Failed to reorder cards:', err);
+        alert('Failed to reorder cards');
+      }
+    } else {
+      // Moving to a different list or dropped on empty list area
+      try {
+        let newOrder: number;
+
+        if (targetCardId) {
+          // Dropped on a specific card - insert at that position
+          newOrder = targetCards.findIndex((c) => c.id === targetCardId);
+          if (newOrder === -1) newOrder = targetCards.length;
+        } else {
+          // Dropped on empty list area - add to end
+          newOrder = targetCards.length;
+        }
+
+        await handleUpdateCard(draggedCard.id, {
+          listId: targetListId,
+          order: newOrder,
+        });
+
+        // Refresh to get updated state
+        await fetchBoard();
+      } catch (err) {
+        console.error('Failed to move card:', err);
+        alert('Failed to move card');
+      }
     }
   }
 

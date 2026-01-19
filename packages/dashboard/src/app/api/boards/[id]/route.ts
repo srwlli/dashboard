@@ -67,7 +67,8 @@ async function loadCards(boardId: string): Promise<Record<string, BoardCard[]>> 
         const cardFile = path.join(cardsDir, file);
         const data = await fs.readFile(cardFile, 'utf-8');
         const listCards: BoardCard[] = JSON.parse(data);
-        cards[listId] = listCards;
+        // Sort cards by order field to ensure consistent ordering
+        cards[listId] = listCards.sort((a, b) => a.order - b.order);
       }
     }
   } catch (error: any) {

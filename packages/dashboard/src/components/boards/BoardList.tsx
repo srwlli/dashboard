@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import { Plus, ChevronDown, ChevronRight, MoreVertical, ExternalLink } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { BoardListProps, BoardCard as BoardCardType } from '@/types/boards';
 import { BoardCard } from './BoardCard';
 import { CardEditor } from './CardEditor';
@@ -182,15 +183,20 @@ export function BoardList({
               isOver ? 'bg-ind-accent/10' : ''
             }`}
           >
-            {sortedCards.map((card) => (
-              <div key={card.id} onClick={() => handleOpenEditCard(card)}>
-                <BoardCard
-                  card={card}
-                  onUpdate={(updates) => onUpdateCard(card.id, updates)}
-                  onDelete={() => onDeleteCard(card.id)}
-                />
-              </div>
-            ))}
+            <SortableContext
+              items={sortedCards.map((card) => card.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {sortedCards.map((card) => (
+                <div key={card.id} onClick={() => handleOpenEditCard(card)}>
+                  <BoardCard
+                    card={card}
+                    onUpdate={(updates) => onUpdateCard(card.id, updates)}
+                    onDelete={() => onDeleteCard(card.id)}
+                  />
+                </div>
+              ))}
+            </SortableContext>
 
             {/* Empty State */}
             {sortedCards.length === 0 && (

@@ -59,7 +59,9 @@ async function loadListCards(boardId: string, listId: string): Promise<BoardCard
 
   try {
     const data = await fs.readFile(cardFile, 'utf-8');
-    return JSON.parse(data);
+    const cards: BoardCard[] = JSON.parse(data);
+    // Sort cards by order field to ensure consistent ordering
+    return cards.sort((a, b) => a.order - b.order);
   } catch (error: any) {
     if (error.code === 'ENOENT') {
       return [];
@@ -186,8 +188,31 @@ export async function PATCH(
 
       card.updatedAt = now;
 
+      // Reindex cards to ensure sequential ordering and prevent duplicates
+      // Sort by order first
+      const sortedCards = cards.sort((a, b) => a.order - b.order);
+
+      // Check for duplicates or gaps and fix them
+      let needsReindex = false;
+      for (let i = 0; i < sortedCards.length; i++) {
+        if (sortedCards[i].order !== i) {
+          needsReindex = true;
+          break;
+        }
+      }
+
+      if (needsReindex) {
+        // Reindex all cards to 0, 1, 2, 3...
+        for (let i = 0; i < sortedCards.length; i++) {
+          if (sortedCards[i].order !== i) {
+            sortedCards[i].order = i;
+            sortedCards[i].updatedAt = now;
+          }
+        }
+      }
+
       // Save updated cards
-      await saveListCards(id, listId, cards);
+      await saveListCards(id, listId, sortedCards);
     }
 
     // Update board's updatedAt timestamp

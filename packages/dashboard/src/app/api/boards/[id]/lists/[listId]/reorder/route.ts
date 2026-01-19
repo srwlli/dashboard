@@ -1,7 +1,7 @@
 /**
- * /api/boards/[id]/lists/[listId]/cards
+ * /api/boards/[id]/lists/[listId]/reorder
  *
- * Create cards within a list
+ * Batch reorder cards within a list (atomic operation)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -9,7 +9,7 @@ import { createErrorResponse, createSuccessResponse, ErrorCodes, HttpStatus } fr
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
-import type { Board, BoardCard, CreateCardRequest } from '@/types/boards';
+import type { Board, BoardCard } from '@/types/boards';
 
 /**
  * Get path to boards storage directory
@@ -81,8 +81,8 @@ async function saveListCards(boardId: string, listId: string, cards: BoardCard[]
 }
 
 /**
- * POST /api/boards/[id]/lists/[listId]/cards
- * Create a new card in the list
+ * POST /api/boards/[id]/lists/[listId]/reorder
+ * Atomically reorder all cards in a list
  */
 export async function POST(
   request: NextRequest,
@@ -90,26 +90,15 @@ export async function POST(
 ): Promise<NextResponse> {
   try {
     const { id, listId } = await params;
-    const body: CreateCardRequest = await request.json();
-    const { title, description, order, tags } = body;
+    const body: { cardOrders: Array<{ cardId: string; order: number }> } = await request.json();
+    const { cardOrders } = body;
 
-    // Validate required fields
-    if (!title || title.trim() === '') {
+    // Validate request
+    if (!cardOrders || !Array.isArray(cardOrders)) {
       const errorResponse = createErrorResponse(
         {
           code: 'VALIDATION_ERROR',
-          message: 'Missing required field: title',
-        },
-        { received: body }
-      );
-      return NextResponse.json(errorResponse, { status: HttpStatus.BAD_REQUEST });
-    }
-
-    if (order === undefined || order === null) {
-      const errorResponse = createErrorResponse(
-        {
-          code: 'VALIDATION_ERROR',
-          message: 'Missing required field: order',
+          message: 'Missing or invalid field: cardOrders (must be an array)',
         },
         { received: body }
       );
@@ -141,37 +130,49 @@ export async function POST(
       return NextResponse.json(errorResponse, { status: HttpStatus.NOT_FOUND });
     }
 
-    // Generate unique card ID
-    const cardId = `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-    // Create new card
-    const now = new Date().toISOString();
-    const newCard: BoardCard = {
-      id: cardId,
-      listId,
-      title: title.trim(),
-      description: description?.trim(),
-      order,
-      attachments: [],
-      tags: tags || [],
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    // Load existing cards for this list
+    // Load existing cards
     const cards = await loadListCards(id, listId);
-    cards.push(newCard);
 
-    // Save updated cards
-    await saveListCards(id, listId, cards);
+    // Create a map of cardId -> new order
+    const orderMap = new Map<string, number>();
+    for (const { cardId, order } of cardOrders) {
+      orderMap.set(cardId, order);
+    }
+
+    // Update order for each card and track changes
+    const now = new Date().toISOString();
+    let updatedCount = 0;
+
+    for (const card of cards) {
+      const newOrder = orderMap.get(card.id);
+      if (newOrder !== undefined && card.order !== newOrder) {
+        card.order = newOrder;
+        card.updatedAt = now;
+        updatedCount++;
+      }
+    }
+
+    // Validate that orders are sequential (0, 1, 2, ...)
+    const sortedCards = cards.sort((a, b) => a.order - b.order);
+    for (let i = 0; i < sortedCards.length; i++) {
+      if (sortedCards[i].order !== i) {
+        // Reindex to fix gaps or duplicates
+        sortedCards[i].order = i;
+        sortedCards[i].updatedAt = now;
+      }
+    }
+
+    // Save updated cards atomically (single file write)
+    await saveListCards(id, listId, sortedCards);
 
     // Update board's updatedAt timestamp
     board.updatedAt = now;
     await saveBoard(board);
 
     const response = createSuccessResponse({
-      card: newCard,
-      created: true,
+      reordered: true,
+      updatedCount,
+      totalCards: sortedCards.length,
     });
 
     return NextResponse.json(response, { status: HttpStatus.OK });
