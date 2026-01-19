@@ -10,11 +10,16 @@ import { BoardCanvas } from '@/components/boards/BoardCanvas';
  * Trello-like board interface for managing projects
  */
 export default function AssistantPage() {
-  // Initialize selected board from localStorage
-  const [selectedBoardId, setSelectedBoardId] = useState<string>(() => {
-    if (typeof window === 'undefined') return '';
-    return localStorage.getItem('coderef-dashboard-selected-board') || '';
-  });
+  // Initialize to empty string (matches server-side render)
+  const [selectedBoardId, setSelectedBoardId] = useState<string>('');
+
+  // Load from localStorage after mount (client-side only, avoids hydration mismatch)
+  useEffect(() => {
+    const savedBoardId = localStorage.getItem('coderef-dashboard-selected-board');
+    if (savedBoardId) {
+      setSelectedBoardId(savedBoardId);
+    }
+  }, []);
 
   // Persist selected board to localStorage
   useEffect(() => {
