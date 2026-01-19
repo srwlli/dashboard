@@ -52,6 +52,11 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
       if (data.success) {
         setBoard(data.data.board);
         setCards(data.data.cards);
+        // Reset all modal/editing states after data refresh
+        setShowCreateListModal(false);
+        setIsEditingBoardName(false);
+        setEditedBoardName('');
+        setShowBoardMenu(false);
       } else {
         setError(data.error?.message || 'Failed to load board');
       }

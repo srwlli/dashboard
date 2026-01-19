@@ -96,7 +96,9 @@ export function BoardPicker({ onSelectBoard, selectedBoardId }: BoardPickerProps
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-ind-panel border-2 border-ind-border shadow-xl z-50 max-h-[400px] overflow-y-auto">
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 right-0 mt-1 bg-ind-panel border-2 border-ind-border shadow-xl z-50 max-h-[400px] overflow-y-auto">
           {/* Board List */}
           {boards.length === 0 ? (
             <div className="p-4 text-center">
@@ -159,6 +161,7 @@ export function BoardPicker({ onSelectBoard, selectedBoardId }: BoardPickerProps
             </div>
           </button>
         </div>
+        </>
       )}
 
       {/* Create Board Modal */}

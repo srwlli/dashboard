@@ -38,6 +38,11 @@ export function BoardList({
     }
   }, [cards, editingCard]);
 
+  // Reset menu state when cards data changes (e.g., after deletion)
+  useEffect(() => {
+    setShowMenu(false);
+  }, [cards]);
+
   // Make list droppable
   const { setNodeRef, isOver } = useDroppable({
     id: list.id,
