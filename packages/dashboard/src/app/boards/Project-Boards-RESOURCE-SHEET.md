@@ -1,11 +1,11 @@
 ---
 agent: claude_sonnet_4_5
-date: "2026-01-17"
+date: "2026-01-19"
 task: DOCUMENT
 subject: ProjectBoards
 parent_project: coderef-dashboard
 category: component
-version: "1.2.0"
+version: "1.3.0"
 related_files:
   - packages/dashboard/src/types/boards.ts
   - packages/dashboard/src/components/boards/BoardCanvas.tsx
@@ -16,6 +16,7 @@ related_files:
   - packages/dashboard/src/components/boards/AttachmentPicker.tsx
   - packages/dashboard/src/components/boards/BoardCreationModal.tsx
   - packages/dashboard/src/app/api/boards/route.ts
+  - packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts
   - packages/dashboard/src/app/boards/page.tsx
   - packages/dashboard/src/app/boards-standalone/page.tsx
   - packages/dashboard/src/app/list-standalone/page.tsx
@@ -666,6 +667,73 @@ When `boardLists` is provided to CardEditor, a "Move to List" dropdown appears b
 
 ## 13. Changelog
 
+### Version 1.3.0 (2026-01-19)
+
+**Card Reordering Fix - Atomic Batch Updates:**
+- Fixed critical bug where cards wouldn't stay in position after dragging within a list
+- Root cause: Duplicate order values from race conditions in parallel API updates
+- Created new batch reorder API endpoint: `POST /api/boards/[id]/lists/[listId]/reorder`
+- Single atomic file write prevents race conditions
+- Automatic validation and sequential reindexing (0, 1, 2, 3...)
+- Updated BoardCanvas.tsx to use batch endpoint instead of individual PATCH calls
+
+**Optimistic Updates - Zero Flash on Card Movement:**
+- Implemented optimistic UI updates for card reordering
+- Cards update instantly in local state before API call completes
+- Eliminated flash/re-render that occurred after drag operations
+- Automatic rollback to original state on API failure
+- Smooth, native-app-like drag experience
+
+**Board Management UI:**
+- Added three-dot menu (⋮) button in board header
+- "Rename Board" option with inline editing
+  - Click to edit board name directly in header
+  - Save with Enter key or Save button
+  - Cancel with Escape key or Cancel button
+  - Updates via PATCH /api/boards/[id]
+- "Delete Board" option with confirmation dialog
+  - Confirmation prevents accidental deletion
+  - Permanently removes board and all data
+  - Redirects to /boards page after deletion
+  - Uses DELETE /api/boards/[id]
+- Professional inline editing experience with keyboard shortcuts
+
+**Board Selection Persistence:**
+- Added localStorage persistence for selected board
+- Key: `'coderef-dashboard-selected-board'`
+- Last selected board persists across page refreshes
+- Last selected board persists when navigating away and returning
+- Last selected board persists across browser sessions
+- SSR-safe with typeof window check
+- Follows existing codebase patterns (ThemeContext, AccentColorContext)
+
+**Enhanced API Routes:**
+- All API routes now sort cards by order field for consistent ordering
+- Added reindex validation to single-card PATCH route as safety net
+- Prevents duplicate order values from any code path
+
+**Migration from useDraggable to useSortable:**
+- BoardCard.tsx: Changed to useSortable hook for proper within-list sorting
+- BoardList.tsx: Added SortableContext wrapper with verticalListSortingStrategy
+- Enables proper vertical reordering with @dnd-kit/sortable
+
+**Files Modified:**
+- packages/dashboard/src/components/boards/BoardCanvas.tsx
+- packages/dashboard/src/components/boards/BoardCard.tsx
+- packages/dashboard/src/components/boards/BoardList.tsx
+- packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts (new)
+- packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts
+- packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts
+- packages/dashboard/src/app/api/boards/[id]/route.ts
+- packages/dashboard/src/app/boards/page.tsx
+
+**Breaking Changes:** None
+
+**Performance Improvements:**
+- Single batch API call instead of N parallel calls for card reordering
+- Zero unnecessary re-renders during drag operations
+- Faster perceived performance with optimistic updates
+
 ### Version 1.2.0 (2026-01-17)
 
 **List Standalone View (WO-LIST-STANDALONE-VIEW-001):**
@@ -753,4 +821,4 @@ This document defines the authoritative specification for the ProjectBoards feat
 - Increment version number for breaking changes
 - Archive old behavior in appendices if needed
 
-**Last Updated:** 2026-01-17 by Claude Sonnet 4.5
+**Last Updated:** 2026-01-19 by Claude Sonnet 4.5
