@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Plus, ExternalLink, X } from 'lucide-react';
+import { Plus, ExternalLink, X, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { DndContext, closestCorners, DragEndEvent, DragOverEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import type { Board, BoardCard, BoardCanvasProps, UpdateListRequest, CreateCardRequest, UpdateCardRequest } from '@/types/boards';
@@ -21,6 +21,9 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   const [error, setError] = useState('');
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [newListTitle, setNewListTitle] = useState('');
+  const [showBoardMenu, setShowBoardMenu] = useState(false);
+  const [isEditingBoardName, setIsEditingBoardName] = useState(false);
+  const [editedBoardName, setEditedBoardName] = useState('');
 
   // Drag & drop sensors
   const sensors = useSensors(
@@ -254,6 +257,96 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
   }
 
   /**
+   * Start editing board name
+   */
+  function handleStartEditBoardName() {
+    if (!board) return;
+    setEditedBoardName(board.name);
+    setIsEditingBoardName(true);
+    setShowBoardMenu(false);
+  }
+
+  /**
+   * Save edited board name
+   */
+  async function handleSaveBoardName() {
+    if (!board || !editedBoardName.trim()) {
+      setIsEditingBoardName(false);
+      return;
+    }
+
+    if (editedBoardName.trim() === board.name) {
+      setIsEditingBoardName(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/boards/${boardId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: editedBoardName.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local board state
+        setBoard((prev) => prev ? { ...prev, name: editedBoardName.trim() } : null);
+        setIsEditingBoardName(false);
+      } else {
+        alert(data.error?.message || 'Failed to rename board');
+      }
+    } catch (err) {
+      console.error('Failed to rename board:', err);
+      alert('Failed to rename board');
+    }
+  }
+
+  /**
+   * Cancel editing board name
+   */
+  function handleCancelEditBoardName() {
+    setIsEditingBoardName(false);
+    setEditedBoardName('');
+  }
+
+  /**
+   * Delete board
+   */
+  async function handleDeleteBoard() {
+    if (!board) return;
+
+    const confirmed = confirm(
+      `Are you sure you want to delete "${board.name}"?\n\nThis will permanently delete the board and all its lists and cards. This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`/api/boards/${boardId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Redirect to boards page (or refresh parent)
+        alert('Board deleted successfully');
+        window.location.href = '/boards';
+      } else {
+        alert(data.error?.message || 'Failed to delete board');
+      }
+    } catch (err) {
+      console.error('Failed to delete board:', err);
+      alert('Failed to delete board');
+    }
+  }
+
+  /**
    * Handle drag end event
    * Supports both reordering within a list and moving between lists
    */
@@ -302,13 +395,29 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
 
       const reorderedCards = arrayMove(sourceCards, oldIndex, newIndex);
 
+      // OPTIMISTIC UPDATE: Update local state immediately (no flash!)
+      const updatedCards = reorderedCards.map((card, index) => ({
+        ...card,
+        order: index,
+        updatedAt: new Date().toISOString(),
+      }));
+
+      // Store original state for rollback on error
+      const originalCards = cards;
+
+      // Apply optimistic update immediately
+      setCards((prev) => ({
+        ...prev,
+        [sourceListId]: updatedCards,
+      }));
+
       // Build batch update payload with new order values
       const cardOrders = reorderedCards.map((card, index) => ({
         cardId: card.id,
         order: index,
       }));
 
-      // Send single atomic batch update request
+      // Send single atomic batch update request (in background)
       try {
         const response = await fetch(
           `/api/boards/${boardId}/lists/${sourceListId}/reorder`,
@@ -323,15 +432,17 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
 
         const data = await response.json();
 
-        if (data.success) {
-          // Refresh to get updated state
-          await fetchBoard();
-        } else {
+        if (!data.success) {
+          // Rollback on error
           console.error('Reorder failed:', data.error);
+          setCards(originalCards);
           alert(data.error?.message || 'Failed to reorder cards');
         }
+        // Success: No need to refetch - optimistic update already applied!
       } catch (err) {
+        // Rollback on network error
         console.error('Failed to reorder cards:', err);
+        setCards(originalCards);
         alert('Failed to reorder cards');
       }
     } else {
@@ -409,7 +520,38 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
       <div className="border-b-2 border-ind-border p-3 md:p-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg md:text-2xl font-bold text-ind-text truncate">{board.name}</h1>
+            {/* Editable Board Name */}
+            {isEditingBoardName ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={editedBoardName}
+                  onChange={(e) => setEditedBoardName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveBoardName();
+                    if (e.key === 'Escape') handleCancelEditBoardName();
+                  }}
+                  onBlur={handleSaveBoardName}
+                  autoFocus
+                  className="text-lg md:text-2xl font-bold text-ind-text bg-ind-bg border-2 border-ind-accent px-2 py-1 outline-none flex-1"
+                />
+                <button
+                  onClick={handleSaveBoardName}
+                  className="px-2 py-1 text-xs bg-ind-accent hover:bg-ind-accent-hover text-black transition-colors"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCancelEditBoardName}
+                  className="px-2 py-1 text-xs bg-ind-border hover:bg-red-500/20 text-ind-text transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <h1 className="text-lg md:text-2xl font-bold text-ind-text truncate">{board.name}</h1>
+            )}
+
             {(board.projectId || board.linkedPath) && (
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 {board.projectId && (
@@ -437,6 +579,46 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
               <ExternalLink className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">New Window</span>
             </button>
+
+            {/* Board Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowBoardMenu(!showBoardMenu)}
+                className="p-1.5 hover:bg-ind-border transition-colors"
+                title="Board Options"
+              >
+                <MoreVertical className="w-4 h-4 text-ind-text-muted" />
+              </button>
+
+              {/* Dropdown Menu */}
+              {showBoardMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowBoardMenu(false)}
+                  />
+                  <div className="absolute right-0 top-full mt-1 bg-ind-panel border-2 border-ind-border shadow-xl z-20 min-w-[180px]">
+                    <button
+                      onClick={handleStartEditBoardName}
+                      className="w-full px-3 py-2 text-left text-sm text-ind-text hover:bg-ind-accent/10 transition-colors flex items-center gap-2"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      Rename Board
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowBoardMenu(false);
+                        handleDeleteBoard();
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2 border-t border-ind-border"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete Board
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
