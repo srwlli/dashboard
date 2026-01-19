@@ -7,7 +7,7 @@
  * Supports collapse/expand, card operations, and drag & drop (Phase 4)
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, ChevronDown, ChevronRight, MoreVertical, ExternalLink } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -29,6 +29,14 @@ export function BoardList({
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editingCard, setEditingCard] = useState<BoardCardType | undefined>(undefined);
   const [showMenu, setShowMenu] = useState(false);
+
+  // Close modal if the card being edited no longer exists (e.g., was deleted)
+  useEffect(() => {
+    if (editingCard && !cards.some(c => c.id === editingCard.id)) {
+      setEditingCard(undefined);
+      setShowCardEditor(false);
+    }
+  }, [cards, editingCard]);
 
   // Make list droppable
   const { setNodeRef, isOver } = useDroppable({
