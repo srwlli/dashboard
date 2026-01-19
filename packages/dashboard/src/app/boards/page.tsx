@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageLayout } from '@/components/PageLayout';
 import { BoardPicker } from '@/components/boards/BoardPicker';
 import { BoardCanvas } from '@/components/boards/BoardCanvas';
@@ -10,7 +10,18 @@ import { BoardCanvas } from '@/components/boards/BoardCanvas';
  * Trello-like board interface for managing projects
  */
 export default function AssistantPage() {
-  const [selectedBoardId, setSelectedBoardId] = useState<string>('');
+  // Initialize selected board from localStorage
+  const [selectedBoardId, setSelectedBoardId] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem('coderef-dashboard-selected-board') || '';
+  });
+
+  // Persist selected board to localStorage
+  useEffect(() => {
+    if (selectedBoardId) {
+      localStorage.setItem('coderef-dashboard-selected-board', selectedBoardId);
+    }
+  }, [selectedBoardId]);
 
   return (
     <PageLayout>
