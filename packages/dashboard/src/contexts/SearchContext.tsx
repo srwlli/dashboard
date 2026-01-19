@@ -49,7 +49,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         // Index project files from configured projects
         const projectsResponse = await fetch('/api/coderef/projects');
         if (projectsResponse.ok) {
-          const { data: projects } = await projectsResponse.json();
+          const response = await projectsResponse.json();
+          const projects = response.data?.projects || [];
 
           for (const project of projects) {
             // Get file tree for each project
