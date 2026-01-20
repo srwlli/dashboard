@@ -1,0 +1,512 @@
+{
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-FILE-BOARD-CTX-001",
+    "feature_name": "add-file-to-board-context-menu",
+    "version": "1.0.0",
+    "created_at": "2026-01-19T00:00:00Z",
+    "created_by": "coderef-planning-workflow",
+    "status": "pending_plan",
+    "project_id": "coderef-dashboard",
+    "assigned_agent": "dashboard-agent",
+    "description": "Add comprehensive 'Add to Board' context menu feature for Explorer files that allows users to add any file AS (new board/list/card) or TO (existing board/list/card) with 3-4 level nested navigation."
+  },
+  "IMPLEMENTATION_PHASES": {
+    "phase_1_setup": {
+      "name": "Setup and Dependencies",
+      "description": "Install dependencies, create types, and prepare project structure",
+      "tasks": [
+        {
+          "task_id": "SETUP-001",
+          "title": "Create TypeScript types for file-to-board conversion",
+          "description": "Create packages/dashboard/src/types/file-board-integration.ts with types: FileToBoardAction, BoardPickerData, ListPickerData, CardPickerData, AddFileToBoardMenuProps, FileData",
+          "file_paths": ["packages/dashboard/src/types/file-board-integration.ts"],
+          "estimated_effort": "1 hour",
+          "dependencies": [],
+          "acceptance_criteria": [
+            "All 4 action types defined in FileToBoardAction enum ('as_board', 'as_list', 'as_card', 'to_card')",
+            "FileData interface includes path, name, extension fields",
+            "Picker data interfaces include id, name, and optional metadata",
+            "Types export successfully from @/types/file-board-integration"
+          ]
+        },
+        {
+          "task_id": "SETUP-002",
+          "title": "Create file-to-board helper utilities",
+          "description": "Create packages/dashboard/src/lib/boards/file-to-board-helpers.ts with conversion functions: createBoardFromFile, createListFromFile, createCardFromFile, attachFileToCard, getFilenameWithoutExtension",
+          "file_paths": ["packages/dashboard/src/lib/boards/file-to-board-helpers.ts"],
+          "estimated_effort": "1.5 hours",
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "createBoardFromFile maps filename (without extension) → board.name",
+            "createCardFromFile includes file path as attachment",
+            "getFilenameWithoutExtension handles edge cases (multiple dots, no extension)",
+            "All functions handle missing file fields gracefully"
+          ]
+        }
+      ]
+    },
+    "phase_2_core_implementation": {
+      "name": "Core Feature Implementation",
+      "description": "Implement main components and hooks for the feature",
+      "tasks": [
+        {
+          "task_id": "IMPL-001",
+          "title": "Create useBoards hook for board data fetching",
+          "description": "Create packages/dashboard/src/hooks/useBoards.ts hook that fetches boards via GET /api/boards with 30s cache TTL and loading/error states",
+          "file_paths": ["packages/dashboard/src/hooks/useBoards.ts"],
+          "estimated_effort": "1.5 hours",
+          "dependencies": ["SETUP-001"],
+          "acceptance_criteria": [
+            "Hook fetches boards from GET /api/boards",
+            "Implements 30s cache TTL to avoid repeated fetches",
+            "Returns { boards, loading, error, refetch } interface",
+            "Cache invalidates on refetch call"
+          ]
+        },
+        {
+          "task_id": "IMPL-002",
+          "title": "Create useBoardHierarchy hook for lazy-loading lists/cards",
+          "description": "Create packages/dashboard/src/hooks/useBoardHierarchy.ts hook that lazy-loads board details (lists + cards) on hover with caching",
+          "file_paths": ["packages/dashboard/src/hooks/useBoardHierarchy.ts"],
+          "estimated_effort": "2 hours",
+          "dependencies": ["IMPL-001"],
+          "acceptance_criteria": [
+            "Hook accepts boardId parameter",
+            "Fetches board details via GET /api/boards/[id]",
+            "Caches result for 30s to avoid duplicate requests",
+            "Returns { lists, cards, loading, error } interface",
+            "Only triggers fetch when boardId changes"
+          ]
+        },
+        {
+          "task_id": "IMPL-003",
+          "title": "Create AddFileToBoardMenu component",
+          "description": "Create packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx component that renders 3-5 level nested menu structure using ContextMenu component with SmartSubmenu",
+          "file_paths": ["packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx"],
+          "estimated_effort": "4 hours",
+          "dependencies": ["IMPL-001", "IMPL-002", "SETUP-002"],
+          "acceptance_criteria": [
+            "Level 1: 'Add to Board' root menu item",
+            "Level 2: 4 action types (Add as New Board | Add as New List | Add as New Card | Add to Existing Card)",
+            "Level 3: Board selection submenu (lazy-loaded from useBoards)",
+            "Level 4: List selection submenu (lazy-loaded from useBoardHierarchy)",
+            "Level 5: Card selection submenu (only for 'Add to Existing Card')",
+            "All submenus use SmartSubmenu for viewport positioning",
+            "Loading spinners shown while fetching board/list/card data"
+          ]
+        },
+        {
+          "task_id": "IMPL-004",
+          "title": "Implement 'Add as New Board' action handler",
+          "description": "In AddFileToBoardMenu.tsx, implement handleAddAsBoard function that calls POST /api/boards, POST /api/boards/[id]/lists, POST /api/boards/[id]/lists/[listId]/cards, and PATCH /api/boards/[id]/lists/[listId]/cards/[cardId] to create board with initial list and card",
+          "file_paths": ["packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx", "packages/dashboard/src/lib/boards/file-to-board-helpers.ts"],
+          "estimated_effort": "2 hours",
+          "dependencies": ["IMPL-003"],
+          "acceptance_criteria": [
+            "Creates board with filename (without extension) as board.name",
+            "Creates initial list titled 'To Do'",
+            "Creates initial card with filename as title",
+            "Attaches file path to card via PATCH endpoint",
+            "Shows success toast on completion",
+            "Shows error toast if any API call fails",
+            "Optionally navigates user to new board on success"
+          ]
+        },
+        {
+          "task_id": "IMPL-005",
+          "title": "Implement 'Add as New List' action handler",
+          "description": "In AddFileToBoardMenu.tsx, implement handleAddAsList function that shows board picker, then calls POST /api/boards/[id]/lists and optionally POST /api/boards/[id]/lists/[listId]/cards",
+          "file_paths": ["packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx"],
+          "estimated_effort": "1.5 hours",
+          "dependencies": ["IMPL-003"],
+          "acceptance_criteria": [
+            "Shows board picker submenu",
+            "Creates list with filename (without extension) as list.title",
+            "Optionally creates first card with filename and file attachment",
+            "Shows success toast on completion",
+            "Shows error toast if API call fails"
+          ]
+        },
+        {
+          "task_id": "IMPL-006",
+          "title": "Implement 'Add as New Card' action handler",
+          "description": "In AddFileToBoardMenu.tsx, implement handleAddAsCard function that shows board→list picker, then calls POST /api/boards/[id]/lists/[listId]/cards and PATCH to attach file",
+          "file_paths": ["packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx"],
+          "estimated_effort": "2 hours",
+          "dependencies": ["IMPL-003", "IMPL-002"],
+          "acceptance_criteria": [
+            "Shows board picker submenu",
+            "Shows list picker submenu for selected board",
+            "Creates card with filename (without extension) as card.title",
+            "Sets card.description to file.path (full path)",
+            "Adds tags: [file.extension]",
+            "Attaches file path to card",
+            "Shows success toast on completion"
+          ]
+        },
+        {
+          "task_id": "IMPL-007",
+          "title": "Implement 'Add to Existing Card' action handler",
+          "description": "In AddFileToBoardMenu.tsx, implement handleAddToCard function that shows board→list→card picker, then calls PATCH /api/boards/[id]/lists/[listId]/cards/[cardId] to append file attachment and add tag",
+          "file_paths": ["packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx"],
+          "estimated_effort": "2.5 hours",
+          "dependencies": ["IMPL-003", "IMPL-002"],
+          "acceptance_criteria": [
+            "Shows board picker submenu",
+            "Shows list picker submenu for selected board",
+            "Shows card picker submenu for selected list",
+            "Appends file path to card.attachments array",
+            "Appends file.extension to card.tags array",
+            "Shows success toast on completion",
+            "Shows error toast if card already has this file attached"
+          ]
+        },
+        {
+          "task_id": "IMPL-008",
+          "title": "Integrate AddFileToBoardMenu into FileTree component",
+          "description": "Modify packages/dashboard/src/components/coderef/FileTree.tsx or FileTreeNode to add 'Add to Board' option to existing right-click context menu that renders AddFileToBoardMenu",
+          "file_paths": ["packages/dashboard/src/components/coderef/FileTree.tsx"],
+          "estimated_effort": "2 hours",
+          "dependencies": ["IMPL-003"],
+          "acceptance_criteria": [
+            "FileTreeNode supports 'Add to Board' in existing context menu",
+            "Right-click file shows context menu with 'Add to Board' option",
+            "Clicking 'Add to Board' opens AddFileToBoardMenu submenu",
+            "Menu closes after successful action",
+            "Menu position respects viewport boundaries",
+            "Integration doesn't break existing context menu items (Add to Favorites, Add to Prompt, Copy Path)"
+          ]
+        }
+      ]
+    },
+    "phase_3_testing": {
+      "name": "Testing and Quality Assurance",
+      "description": "Write comprehensive tests for all components and functions",
+      "tasks": [
+        {
+          "task_id": "TEST-001",
+          "title": "Write unit tests for file-to-board-helpers.ts",
+          "description": "Create packages/dashboard/src/lib/boards/__tests__/file-to-board-helpers.test.ts with tests for all conversion functions",
+          "file_paths": ["packages/dashboard/src/lib/boards/__tests__/file-to-board-helpers.test.ts"],
+          "estimated_effort": "2 hours",
+          "dependencies": ["SETUP-002"],
+          "acceptance_criteria": [
+            "Test createBoardFromFile with valid file data",
+            "Test createListFromFile with valid file data",
+            "Test createCardFromFile with all fields mapped correctly",
+            "Test attachFileToCard appends attachment properly",
+            "Test getFilenameWithoutExtension handles edge cases",
+            "Test error handling for missing file fields",
+            "Coverage >= 90% for all helper functions"
+          ]
+        },
+        {
+          "task_id": "TEST-002",
+          "title": "Write unit tests for useBoards hook",
+          "description": "Create packages/dashboard/src/hooks/__tests__/useBoards.test.ts with tests for fetching, caching, and error handling",
+          "file_paths": ["packages/dashboard/src/hooks/__tests__/useBoards.test.ts"],
+          "estimated_effort": "1.5 hours",
+          "dependencies": ["IMPL-001"],
+          "acceptance_criteria": [
+            "Test successful board fetching",
+            "Test loading state management",
+            "Test error state on API failure",
+            "Test 30s cache TTL behavior",
+            "Test refetch invalidates cache",
+            "Mock fetch with jest.fn()"
+          ]
+        },
+        {
+          "task_id": "TEST-003",
+          "title": "Write unit tests for useBoardHierarchy hook",
+          "description": "Create packages/dashboard/src/hooks/__tests__/useBoardHierarchy.test.ts with tests for lazy-loading lists/cards",
+          "file_paths": ["packages/dashboard/src/hooks/__tests__/useBoardHierarchy.test.ts"],
+          "estimated_effort": "1.5 hours",
+          "dependencies": ["IMPL-002"],
+          "acceptance_criteria": [
+            "Test successful board details fetching",
+            "Test loading state during fetch",
+            "Test error state on API failure",
+            "Test cache behavior (30s TTL)",
+            "Test boardId change triggers new fetch",
+            "Mock GET /api/boards/[id] endpoint"
+          ]
+        },
+        {
+          "task_id": "TEST-004",
+          "title": "Write integration tests for AddFileToBoardMenu component",
+          "description": "Create packages/dashboard/src/components/coderef/__tests__/AddFileToBoardMenu.integration.test.tsx with full flow tests",
+          "file_paths": ["packages/dashboard/src/components/coderef/__tests__/AddFileToBoardMenu.integration.test.tsx"],
+          "estimated_effort": "3 hours",
+          "dependencies": ["IMPL-007"],
+          "acceptance_criteria": [
+            "Test 'Add as New Board' full flow (POST board → POST list → POST card → PATCH card)",
+            "Test 'Add as New List' flow with board selection",
+            "Test 'Add as New Card' flow with board→list selection",
+            "Test 'Add to Existing Card' flow with board→list→card selection",
+            "Test error handling for failed API calls",
+            "Test success toast notifications",
+            "Mock all API endpoints"
+          ]
+        },
+        {
+          "task_id": "TEST-005",
+          "title": "Write integration tests for FileTree context menu",
+          "description": "Create packages/dashboard/src/components/coderef/__tests__/FileTree.context-menu.test.tsx with right-click menu tests",
+          "file_paths": ["packages/dashboard/src/components/coderef/__tests__/FileTree.context-menu.test.tsx"],
+          "estimated_effort": "1 hour",
+          "dependencies": ["IMPL-008"],
+          "acceptance_criteria": [
+            "Test right-click file opens context menu",
+            "Test 'Add to Board' option present in menu",
+            "Test clicking option opens AddFileToBoardMenu",
+            "Test menu closes after action",
+            "Test menu position respects viewport",
+            "Test integration doesn't break existing menu items"
+          ]
+        }
+      ]
+    },
+    "phase_4_documentation": {
+      "name": "Documentation and Polish",
+      "description": "Update documentation and add final polish",
+      "tasks": [
+        {
+          "task_id": "DOC-001",
+          "title": "Create Add-File-To-Board-RESOURCE-SHEET.md",
+          "description": "Create coderef/resources-sheets/features/Add-File-To-Board-RESOURCE-SHEET.md documenting complete architecture, component hierarchy, API flows, and usage examples",
+          "file_paths": ["coderef/resources-sheets/features/Add-File-To-Board-RESOURCE-SHEET.md"],
+          "estimated_effort": "2 hours",
+          "dependencies": ["IMPL-008"],
+          "acceptance_criteria": [
+            "Frontmatter includes workorder_id, feature_id, version",
+            "Architecture section documents 5-level menu structure",
+            "Component Hierarchy section lists all components",
+            "API Flows section documents all 4 use cases",
+            "Usage Examples section shows code snippets",
+            "Data Mapping section documents file-to-board conversions"
+          ]
+        },
+        {
+          "task_id": "DOC-002",
+          "title": "Update Explorer CLAUDE.md with new context menu feature",
+          "description": "Update packages/dashboard/src/app/explorer/CLAUDE.md with documentation for 'Add to Board' context menu feature",
+          "file_paths": ["packages/dashboard/src/app/explorer/CLAUDE.md"],
+          "estimated_effort": "30 minutes",
+          "dependencies": ["DOC-001"],
+          "acceptance_criteria": [
+            "Add 'Add to Board' to Context Menu section",
+            "Document FileTree integration",
+            "Add usage example for file context menu"
+          ]
+        },
+        {
+          "task_id": "DOC-003",
+          "title": "Update Project-Boards-RESOURCE-SHEET.md",
+          "description": "Update packages/dashboard/src/app/boards/Project-Boards-RESOURCE-SHEET.md with Explorer file integration section",
+          "file_paths": ["packages/dashboard/src/app/boards/Project-Boards-RESOURCE-SHEET.md"],
+          "estimated_effort": "30 minutes",
+          "dependencies": ["DOC-001"],
+          "acceptance_criteria": [
+            "Add 'Explorer File Integration' section",
+            "Document how files convert to boards/lists/cards",
+            "Document file path attachment pattern"
+          ]
+        },
+        {
+          "task_id": "DOC-004",
+          "title": "Update FileTree-RESOURCE-SHEET.md",
+          "description": "Update coderef/resources-sheets/components/FileTree-RESOURCE-SHEET.md with board integration capabilities",
+          "file_paths": ["coderef/resources-sheets/components/FileTree-RESOURCE-SHEET.md"],
+          "estimated_effort": "30 minutes",
+          "dependencies": ["DOC-001"],
+          "acceptance_criteria": [
+            "Add 'Board Integration' section",
+            "Document 'Add to Board' context menu feature",
+            "Document file-to-board data mapping"
+          ]
+        }
+      ]
+    }
+  },
+  "TESTING_STRATEGY": {
+    "unit_tests": {
+      "description": "Test individual functions and components in isolation",
+      "files": [
+        "packages/dashboard/src/lib/boards/__tests__/file-to-board-helpers.test.ts",
+        "packages/dashboard/src/hooks/__tests__/useBoards.test.ts",
+        "packages/dashboard/src/hooks/__tests__/useBoardHierarchy.test.ts"
+      ],
+      "coverage_target": "90%",
+      "key_areas": [
+        "File-to-board conversion functions",
+        "Board data fetching and caching",
+        "Lazy-loading hierarchy data",
+        "Error handling for API failures"
+      ]
+    },
+    "integration_tests": {
+      "description": "Test complete flows from user action to API response",
+      "files": [
+        "packages/dashboard/src/components/coderef/__tests__/AddFileToBoardMenu.integration.test.tsx",
+        "packages/dashboard/src/components/coderef/__tests__/FileTree.context-menu.test.tsx"
+      ],
+      "key_flows": [
+        "Add file as new board (4 API calls)",
+        "Add file as new list (board selection)",
+        "Add file as new card (board→list selection)",
+        "Add file to existing card (board→list→card selection)"
+      ]
+    },
+    "manual_tests": {
+      "description": "Manual testing scenarios for UX validation",
+      "scenarios": [
+        "Right-click file in Explorer → verify 'Add to Board' menu appears",
+        "Navigate through 5-level nested menu → verify smooth hover transitions",
+        "Create new board from file → verify file attachment appears in card",
+        "Attach file to existing card → verify file path appears in attachments",
+        "Test error handling → disconnect API and verify error toasts",
+        "Test performance → add file with 50+ boards → verify lazy-loading works",
+        "Test existing context menu items → verify Add to Favorites, Add to Prompt, Copy Path still work"
+      ]
+    }
+  },
+  "DOCUMENTATION_UPDATES": {
+    "new_documents": [
+      {
+        "path": "coderef/resources-sheets/features/Add-File-To-Board-RESOURCE-SHEET.md",
+        "type": "resource_sheet",
+        "description": "Complete feature documentation with architecture, API flows, and usage"
+      }
+    ],
+    "updated_documents": [
+      {
+        "path": "packages/dashboard/src/app/explorer/CLAUDE.md",
+        "changes": "Add 'Add to Board' context menu documentation"
+      },
+      {
+        "path": "packages/dashboard/src/app/boards/Project-Boards-RESOURCE-SHEET.md",
+        "changes": "Add Explorer file integration section"
+      },
+      {
+        "path": "coderef/resources-sheets/components/FileTree-RESOURCE-SHEET.md",
+        "changes": "Add board integration capabilities"
+      }
+    ],
+    "changelog_entry": {
+      "version": "0.9.0",
+      "type": "feature",
+      "title": "Add 'Add to Board' context menu for Explorer files",
+      "description": "Users can now right-click any file in Explorer and add it to boards as new board/list/card or attach to existing cards with 3-5 level nested navigation",
+      "files": [
+        "packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx",
+        "packages/dashboard/src/hooks/useBoards.ts",
+        "packages/dashboard/src/hooks/useBoardHierarchy.ts",
+        "packages/dashboard/src/lib/boards/file-to-board-helpers.ts",
+        "packages/dashboard/src/components/coderef/FileTree.tsx"
+      ]
+    }
+  },
+  "DEPENDENCIES": {
+    "internal": [
+      {
+        "name": "ContextMenu component",
+        "path": "packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "reason": "Required for nested submenu rendering and smart positioning"
+      },
+      {
+        "name": "FileTree component",
+        "path": "packages/dashboard/src/components/coderef/FileTree.tsx",
+        "reason": "Entry point for right-click context menu on files"
+      },
+      {
+        "name": "Boards API routes",
+        "path": "packages/dashboard/src/app/api/boards/**",
+        "reason": "All CRUD operations for boards/lists/cards"
+      }
+    ],
+    "external": [],
+    "prerequisites": [
+      "ContextMenu supports 5-level nesting (verified in ContextMenu.tsx)",
+      "All boards API endpoints exist (verified)",
+      "FileTree has existing context menu infrastructure (verify integration point)"
+    ]
+  },
+  "RISKS_AND_MITIGATION": {
+    "risks": [
+      {
+        "risk": "Performance degradation with 50+ boards in menu",
+        "severity": "medium",
+        "likelihood": "medium",
+        "mitigation": "Implement lazy-loading with 30s cache TTL, only fetch data on hover"
+      },
+      {
+        "risk": "5-level nested menu overwhelming for users",
+        "severity": "medium",
+        "likelihood": "high",
+        "mitigation": "Consider modal dialog alternative for complex flows, add keyboard shortcuts"
+      },
+      {
+        "risk": "API call failure mid-flow leaves partial state (board created but card fails)",
+        "severity": "high",
+        "likelihood": "low",
+        "mitigation": "Wrap all API calls in try-catch, show clear error messages, consider transaction rollback"
+      },
+      {
+        "risk": "Context menu integration conflicts with existing menu items",
+        "severity": "medium",
+        "likelihood": "low",
+        "mitigation": "Test all existing menu items (Add to Favorites, Add to Prompt, Copy Path) after integration"
+      }
+    ]
+  },
+  "SUCCESS_METRICS": {
+    "technical": [
+      "All 5 test files pass with >= 90% coverage",
+      "No console errors during menu navigation",
+      "Lazy-loading reduces initial menu render time by 80%",
+      "All 4 use cases complete successfully in manual testing"
+    ],
+    "user_experience": [
+      "Users can add file to board in <= 3 clicks",
+      "Success toast appears within 500ms of action completion",
+      "Menu navigation feels smooth (no jank during hover)",
+      "Error messages are clear and actionable"
+    ],
+    "performance": [
+      "Menu opens in < 100ms (boards list pre-fetched)",
+      "Submenu expands in < 200ms (lists lazy-loaded)",
+      "API calls complete in < 500ms (average)",
+      "No memory leaks from cache (TTL clears old data)"
+    ]
+  },
+  "ROLLBACK_PLAN": {
+    "steps": [
+      "Remove 'Add to Board' option from FileTree context menu (revert IMPL-008)",
+      "Hide AddFileToBoardMenu component (feature flag or remove import)",
+      "Keep helper functions and hooks (no breaking changes)",
+      "Document rollback in CHANGELOG.md"
+    ],
+    "rollback_triggers": [
+      "Critical bug in API flow causing data corruption",
+      "Performance regression > 500ms menu open time",
+      "User feedback indicates 5-level menu is too complex",
+      "Context menu integration breaks existing features"
+    ]
+  },
+  "TIMELINE": {
+    "phase_1_setup": "2.5 hours",
+    "phase_2_core_implementation": "17 hours",
+    "phase_3_testing": "9 hours",
+    "phase_4_documentation": "3.5 hours",
+    "total_estimated_effort": "32 hours",
+    "recommended_sprint": "1 week (with buffer for testing and polish)"
+  },
+  "APPROVAL": {
+    "requires_approval_from": ["dashboard-agent", "testing-agent"],
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "notes": "Plan pending validation and approval"
+  }
+}

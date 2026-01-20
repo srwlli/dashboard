@@ -1,0 +1,131 @@
+{
+  "feature_name": "add-file-to-board-context-menu",
+  "description": "Add comprehensive 'Add to Board' context menu feature for Explorer files that allows users to add any file AS (new board/list/card) or TO (existing board/list/card) with 3-4 level nested navigation.",
+  "goal": "Enable users to easily convert any file from the Explorer into actionable board items at multiple levels (board/list/card/attachment) depending on scope and context",
+  "requirements": [
+    "Add 'Add to Board' option to file right-click context menu in Explorer",
+    "Support 4 action types: Add as New Board, Add as New List, Add as New Card, Add to Existing Card (as attachment)",
+    "Implement 3-5 level nested menu navigation with board/list/card pickers",
+    "Smart file-to-board data conversion (filename → card title, file path → attachment)",
+    "API integration with all boards CRUD endpoints",
+    "Lazy-load board/list/card data on menu hover for performance",
+    "Attach file path as CardAttachment for traceability",
+    "Success/error toast notifications for user feedback",
+    "Cache board data with 30s TTL during menu interaction",
+    "All API errors show user-friendly error messages"
+  ],
+  "user_stories": [
+    "As a user, I want to right-click a file in Explorer and add it as a new board so I can organize work around that file",
+    "As a user, I want to right-click a file in Explorer and add it as a new list in an existing board so I can categorize file-based work",
+    "As a user, I want to right-click a file in Explorer and add it as a new card in a list so I can create a task for that file",
+    "As a user, I want to right-click a file in Explorer and attach it to an existing card so I can reference related files"
+  ],
+  "out_of_scope": [
+    "Bulk operations: Adding multiple files to board at once",
+    "Drag-and-drop: Dragging file directly onto board canvas",
+    "Auto-board creation: Automatically creating boards from file metadata",
+    "Folder handling: Adding entire folders (files only in this version)",
+    "Smart board suggestions based on file path or project",
+    "Recent boards cache in menu",
+    "Duplicate detection warnings"
+  ],
+  "constraints": [
+    "Must integrate with existing FileTree/FileTreeNode context menu",
+    "Maximum 5-level menu nesting depth",
+    "All API endpoints already exist (verified)",
+    "Must maintain performance with lazy loading",
+    "No breaking changes to existing FileTree or BoardCard components",
+    "Follow existing Tailwind ind-* design token system",
+    "Must work with both local (Electron) and API (browser) file access modes"
+  ],
+  "acceptance_criteria": [
+    "User can right-click any file in Explorer and see 'Add to Board' menu option",
+    "Menu shows 4 action types with proper nesting",
+    "Selecting 'Add as New Board' creates board with file details and attaches file",
+    "Selecting 'Add as New List' shows board picker, creates list with file reference",
+    "Selecting 'Add as New Card' shows board→list picker, creates card with file attachment",
+    "Selecting 'Add to Existing Card' shows board→list→card picker, attaches file to selected card",
+    "All API errors show user-friendly error messages",
+    "Menu closes after successful action",
+    "User receives success feedback (toast notification)",
+    "File path is always attached as CardAttachment for traceability"
+  ],
+  "technical_context": {
+    "integration_point": {
+      "component": "FileTree / FileTreeNode",
+      "location": "packages/dashboard/src/components/coderef/FileTree.tsx",
+      "context_menu": "Right-click file in Explorer triggers context menu",
+      "data_source": "File path from FileNode (selectedFile state)"
+    },
+    "use_cases": {
+      "add_as_board": {
+        "scenario": "Important file needs its own board for tracking related work",
+        "flow": "Right-click file → Add to Board → Add as New Board → Creates board + initial list + card with file attached",
+        "api_calls": ["POST /api/boards", "POST /api/boards/[id]/lists", "POST /api/boards/[id]/lists/[listId]/cards", "PATCH /api/boards/[id]/lists/[listId]/cards/[cardId]"],
+        "data_mapping": {
+          "board.name": "filename (without extension)",
+          "initial_list_title": "To Do",
+          "initial_card_title": "filename",
+          "card.attachments": "[{ type: 'file', path: file.path, displayName: filename }]"
+        }
+      },
+      "add_as_list": {
+        "scenario": "File represents a category or phase within existing board",
+        "flow": "Right-click file → Add to Board → Add as New List → Select Board → Creates list referencing file",
+        "api_calls": ["GET /api/boards", "POST /api/boards/[id]/lists", "POST /api/boards/[id]/lists/[listId]/cards"],
+        "data_mapping": {
+          "list.title": "filename (without extension)",
+          "optional_card_title": "filename",
+          "card.attachments": "[{ type: 'file', path: file.path, displayName: filename }]"
+        }
+      },
+      "add_as_card": {
+        "scenario": "File is a task or work item to add to existing workflow",
+        "flow": "Right-click file → Add to Board → Add as New Card → Select Board → Select List → Creates card with file attached",
+        "api_calls": ["GET /api/boards", "GET /api/boards/[id]", "POST /api/boards/[id]/lists/[listId]/cards", "PATCH /api/boards/[id]/lists/[listId]/cards/[cardId]"],
+        "data_mapping": {
+          "card.title": "filename (without extension)",
+          "card.description": "file.path (full path for reference)",
+          "card.tags": "[file.extension]",
+          "card.attachments": "[{ type: 'file', path: file.path, displayName: filename }]"
+        }
+      },
+      "add_to_card": {
+        "scenario": "File is related reference for existing card",
+        "flow": "Right-click file → Add to Board → Add to Existing Card → Select Board → Select List → Select Card → Attaches file",
+        "api_calls": ["GET /api/boards", "GET /api/boards/[id]", "PATCH /api/boards/[id]/lists/[listId]/cards/[cardId]"],
+        "data_mapping": {
+          "append_attachment": "{ type: 'file', path: file.path, displayName: filename }",
+          "optional_tag": "file.extension"
+        }
+      }
+    },
+    "api_endpoints": {
+      "verified_exist": [
+        "GET /api/boards - List all boards",
+        "POST /api/boards - Create new board",
+        "GET /api/boards/[id] - Get board details",
+        "POST /api/boards/[id]/lists - Create new list",
+        "POST /api/boards/[id]/lists/[listId]/cards - Create new card",
+        "PATCH /api/boards/[id]/lists/[listId]/cards/[cardId] - Update card"
+      ]
+    },
+    "technical_challenges": [
+      "Performance: Loading all boards/lists/cards for deep menu nesting",
+      "UX: 5-level nested menu might be overwhelming",
+      "State Management: Need to cache board data during menu interaction",
+      "Error Handling: API failures mid-flow (board created but card fails)",
+      "File Access: Must work with both Electron (local) and browser (API) file access",
+      "Context Menu Integration: FileTree already has right-click menu for favorites/prompts"
+    ],
+    "optimizations": [
+      "Lazy load: Only fetch boards on menu open, lists on board hover, cards on list hover",
+      "Caching: Cache board/list data with 30s TTL",
+      "Visual feedback: Show spinner during API calls, success checkmark on completion"
+    ]
+  },
+  "created_at": "2026-01-19T00:00:00Z",
+  "created_by": "coderef-workflow",
+  "version": "1.0.0",
+  "scope_clarification": "This feature adds files from Explorer (not stubs) to boards. User can right-click any file in the Explorer and add it as a board/list/card or to an existing board/list/card."
+}

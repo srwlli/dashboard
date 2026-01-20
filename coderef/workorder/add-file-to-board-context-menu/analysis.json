@@ -1,0 +1,352 @@
+{
+  "feature_name": "add-file-to-board-context-menu",
+  "project_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
+  "analyzed_at": "2026-01-19T00:00:00Z",
+  "analyzer_version": "1.0.0 (manual analysis from .coderef)",
+  "scope_note": "Feature allows adding ANY file from Explorer to boards, not limited to stubs",
+  "project_overview": {
+    "total_elements": 5758,
+    "elements_by_type": {
+      "component": 281,
+      "function": 1656,
+      "method": 3417,
+      "constant": 160,
+      "class": 213,
+      "hook": 31
+    },
+    "total_files": 381,
+    "test_coverage": {
+      "files_with_tests": 80,
+      "files_without_tests": 301,
+      "coverage_percentage": 21
+    }
+  },
+  "foundation_docs": {
+    "available": [
+      "CLAUDE.md",
+      "README.md",
+      "coderef/foundation-docs/ARCHITECTURE.md",
+      "coderef/foundation-docs/API.md",
+      "coderef/foundation-docs/COMPONENTS.md",
+      "coderef/foundation-docs/SCHEMA.md"
+    ],
+    "missing": [],
+    "notes": "All foundation documentation exists. Strong documentation coverage."
+  },
+  "technology_stack": {
+    "framework": "Next.js 16 (App Router)",
+    "ui_library": "React 19",
+    "language": "TypeScript 5.3+",
+    "styling": "Tailwind CSS (custom ind-* design tokens)",
+    "package_manager": "npm workspaces (monorepo)",
+    "testing": "Jest + React Testing Library",
+    "runtime": "Electron (optional, for desktop app)"
+  },
+  "relevant_patterns": {
+    "component_patterns": [
+      {
+        "pattern": "Context providers",
+        "description": "7 nested context providers in layout.tsx (ThemeProvider, AccentColorProvider, SidebarProvider, ProjectsProvider, ExplorerProvider, SearchProvider, WorkflowContext)",
+        "relevance": "Feature needs WorkflowContext or new context for board management"
+      },
+      {
+        "pattern": "Right-click context menus",
+        "description": "ContextMenu component with SmartSubmenu support for nested menus",
+        "file": "packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "relevance": "Core component for implementing 'Add to Board' menu"
+      },
+      {
+        "pattern": "Client components",
+        "description": "Interactive components use 'use client' directive",
+        "relevance": "AddFileToBoardMenu will be a client component"
+      }
+    ],
+    "api_patterns": [
+      {
+        "pattern": "Standard response format",
+        "description": "{ success: boolean, data?: any, error?: string }",
+        "relevance": "All API calls must follow this format"
+      },
+      {
+        "pattern": "Next.js App Router API routes",
+        "description": "Export GET, POST, PUT, DELETE functions in route.ts files",
+        "file": "packages/dashboard/src/app/api/boards/**",
+        "relevance": "All board endpoints already exist and tested"
+      }
+    ],
+    "data_patterns": [
+      {
+        "pattern": "Filesystem-based storage",
+        "description": "No database - all data in ~/.coderef-dashboard/boards/",
+        "relevance": "Board creation writes to filesystem, need proper error handling"
+      },
+      {
+        "pattern": "localStorage persistence",
+        "description": "User preferences and state stored in localStorage",
+        "relevance": "Cache board data with TTL in localStorage"
+      }
+    ],
+    "testing_patterns": [
+      {
+        "pattern": "Co-located test files",
+        "description": "Test files in __tests__/ directories or .test.tsx alongside components",
+        "relevance": "Follow existing pattern for new test files"
+      },
+      {
+        "pattern": "Mock API calls with jest.fn()",
+        "description": "global.fetch = jest.fn(...)",
+        "relevance": "Mock all boards API endpoints in integration tests"
+      }
+    ]
+  },
+  "project_structure": {
+    "monorepo_packages": [
+      "packages/core - Shared types, hooks, utilities",
+      "packages/coderef-core - CodeRef scanning engine",
+      "packages/dashboard - Main Next.js application",
+      "packages/electron-app - Electron wrapper"
+    ],
+    "key_directories": [
+      "packages/dashboard/src/app - Next.js App Router pages",
+      "packages/dashboard/src/app/api - API routes",
+      "packages/dashboard/src/components - React components",
+      "packages/dashboard/src/contexts - Context providers",
+      "packages/dashboard/src/hooks - Custom React hooks",
+      "packages/dashboard/src/lib - Utility functions",
+      "packages/dashboard/src/types - TypeScript type definitions"
+    ],
+    "relevant_files": [
+      {
+        "path": "packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "purpose": "Base component for nested context menus",
+        "status": "exists",
+        "modifications_needed": "Verify 5-level nesting support"
+      },
+      {
+        "path": "packages/dashboard/src/components/coderef/FileTree.tsx",
+        "purpose": "Explorer FileTree component - integration point for right-click context menu",
+        "status": "exists",
+        "modifications_needed": "Add 'Add to Board' option to existing file context menu"
+      },
+      {
+        "path": "packages/dashboard/src/app/api/boards/**",
+        "purpose": "Board CRUD API endpoints",
+        "status": "exists (all 6 endpoints verified)",
+        "modifications_needed": "None - all endpoints exist"
+      },
+      {
+        "path": "packages/dashboard/src/types/boards.ts",
+        "purpose": "Board/List/Card type definitions",
+        "status": "exists",
+        "modifications_needed": "None - types complete"
+      }
+    ]
+  },
+  "risks_and_gaps": {
+    "risks": [
+      {
+        "risk": "Low test coverage (21%)",
+        "severity": "medium",
+        "mitigation": "Write comprehensive tests for new feature (target 90% coverage for new code)"
+      },
+      {
+        "risk": "FileTree already has context menu with existing items (Add to Favorites, Add to Prompt, Copy Path) - integration may conflict",
+        "severity": "low",
+        "mitigation": "Add 'Add to Board' as new menu item without breaking existing functionality"
+      },
+      {
+        "risk": "Performance with 50+ boards in menu",
+        "severity": "medium",
+        "mitigation": "Implement lazy-loading and 30s cache TTL"
+      },
+      {
+        "risk": "5-level nested menu UX complexity",
+        "severity": "medium",
+        "mitigation": "Consider modal dialog alternative, add keyboard shortcuts"
+      }
+    ],
+    "gaps": [
+      {
+        "gap": "No existing useBoards hook",
+        "impact": "Need to create hook for board data fetching",
+        "effort": "1.5 hours"
+      },
+      {
+        "gap": "No useBoardHierarchy hook",
+        "impact": "Need to create hook for lazy-loading lists/cards",
+        "effort": "2 hours"
+      },
+      {
+        "gap": "No file-to-board conversion helpers",
+        "impact": "Need to create helper functions for data mapping (filename → title, filepath → attachment)",
+        "effort": "1.5 hours"
+      },
+      {
+        "gap": "No AddFileToBoardMenu component",
+        "impact": "Core component to implement with 4 action handlers (Add as Board/List/Card, Add to Card)",
+        "effort": "11.5 hours (includes all 4 action handlers + FileTree integration)"
+      }
+    ]
+  },
+  "coding_standards": {
+    "component_structure": "Functional components with hooks, 'use client' directive for interactive components",
+    "naming_conventions": "camelCase for functions/variables, PascalCase for components/types",
+    "import_aliases": "@/ prefix for absolute imports (e.g., @/components/Component)",
+    "styling": "Tailwind CSS with custom ind-* design tokens (bg-ind-panel, text-ind-accent, etc.)",
+    "error_handling": "Try-catch blocks with user-friendly toast notifications",
+    "api_response_format": "{ success: boolean, data?: any, message?: string, error?: string }",
+    "testing": "Jest + React Testing Library, co-located test files, >= 90% coverage target"
+  },
+  "implementation_recommendations": {
+    "phase_sequencing": [
+      "Phase 1: Setup types and helper functions (low risk, foundational)",
+      "Phase 2: Core implementation (hooks, component, action handlers)",
+      "Phase 3: Testing (comprehensive unit and integration tests)",
+      "Phase 4: Documentation (resource sheets, changelog)"
+    ],
+    "critical_path": [
+      "SETUP-001: Create types (blocks SETUP-002, IMPL-001)",
+      "SETUP-002: Create helpers (blocks IMPL-003, IMPL-004)",
+      "IMPL-001: Create useBoards (blocks IMPL-002, IMPL-003)",
+      "IMPL-002: Create useBoardHierarchy (blocks IMPL-003, IMPL-006, IMPL-007)",
+      "IMPL-003: Create AddStubToBoardMenu (blocks all IMPL-004-007, IMPL-008)"
+    ],
+    "parallel_work_opportunities": [
+      "IMPL-004, IMPL-005, IMPL-006, IMPL-007 can be implemented in parallel after IMPL-003",
+      "TEST-001, TEST-002, TEST-003 can run in parallel",
+      "DOC-002, DOC-003, DOC-004 can run in parallel after DOC-001"
+    ],
+    "suggested_optimizations": [
+      "Lazy-load board data only on menu hover (reduce initial render time)",
+      "Cache board/list data with 30s TTL in localStorage (reduce API calls)",
+      "Show loading spinners during API calls (improve perceived performance)",
+      "Consider modal dialog for 'Add as New Card' path (reduce menu depth)"
+    ]
+  },
+  "existing_infrastructure": {
+    "reusable_components": [
+      {
+        "component": "ContextMenu",
+        "path": "packages/dashboard/src/components/coderef/ContextMenu.tsx",
+        "features": ["Nested submenus", "Smart viewport positioning", "Click-outside handling", "Escape key support"],
+        "usage": "Base component for AddStubToBoardMenu"
+      },
+      {
+        "component": "StubCard",
+        "path": "packages/dashboard/src/components/StubCard/index.tsx",
+        "features": ["Stub display", "Click handlers"],
+        "modifications": "Add onContextMenu support"
+      }
+    ],
+    "reusable_hooks": [
+      {
+        "hook": "useProjects",
+        "path": "packages/dashboard/src/contexts/ProjectsContext.tsx",
+        "features": ["Project registry", "Project CRUD operations"],
+        "usage": "Map stub.project to board.projectId"
+      }
+    ],
+    "reusable_utilities": [
+      {
+        "utility": "API response helpers",
+        "path": "packages/dashboard/src/types/api.ts",
+        "features": ["createSuccessResponse", "createErrorResponse", "ErrorCodes", "HttpStatus"],
+        "usage": "Use in all API calls"
+      }
+    ],
+    "api_endpoints": [
+      {
+        "endpoint": "GET /api/boards",
+        "file": "packages/dashboard/src/app/api/boards/route.ts",
+        "status": "tested",
+        "usage": "Fetch all boards for picker"
+      },
+      {
+        "endpoint": "POST /api/boards",
+        "file": "packages/dashboard/src/app/api/boards/route.ts",
+        "status": "tested",
+        "usage": "Create new board from stub"
+      },
+      {
+        "endpoint": "GET /api/boards/[id]",
+        "file": "packages/dashboard/src/app/api/boards/[id]/route.ts",
+        "status": "tested",
+        "usage": "Lazy-load board details (lists + cards)"
+      },
+      {
+        "endpoint": "POST /api/boards/[id]/lists",
+        "file": "packages/dashboard/src/app/api/boards/[id]/lists/route.ts",
+        "status": "tested",
+        "usage": "Create new list in board"
+      },
+      {
+        "endpoint": "POST /api/boards/[id]/lists/[listId]/cards",
+        "file": "packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
+        "status": "tested",
+        "usage": "Create new card in list"
+      },
+      {
+        "endpoint": "PATCH /api/boards/[id]/lists/[listId]/cards/[cardId]",
+        "file": "packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
+        "status": "tested",
+        "usage": "Update card (attachments, tags, description)"
+      }
+    ]
+  },
+  "estimated_complexity": {
+    "overall": "medium-high",
+    "rationale": "Feature requires 3-5 level nested menu navigation, lazy-loading, caching, and 4 distinct action handlers with multi-step API flows",
+    "complexity_factors": [
+      {
+        "factor": "Nested menu navigation",
+        "complexity": "high",
+        "reason": "5-level menu depth with dynamic data loading"
+      },
+      {
+        "factor": "API orchestration",
+        "complexity": "medium-high",
+        "reason": "'Add as New Board' requires 4 sequential API calls"
+      },
+      {
+        "factor": "State management",
+        "complexity": "medium",
+        "reason": "Need to cache board data with TTL and handle loading states"
+      },
+      {
+        "factor": "Error handling",
+        "complexity": "medium",
+        "reason": "Partial state on mid-flow failures (board created but card fails)"
+      },
+      {
+        "factor": "Testing",
+        "complexity": "medium",
+        "reason": "5 test files with comprehensive unit and integration coverage"
+      }
+    ]
+  },
+  "dependencies_check": {
+    "internal_dependencies": [
+      {
+        "dependency": "ContextMenu component",
+        "status": "available",
+        "notes": "Supports nested submenus via SmartSubmenu"
+      },
+      {
+        "dependency": "Board API endpoints",
+        "status": "available",
+        "notes": "All 6 endpoints exist and tested"
+      },
+      {
+        "dependency": "StubCard component",
+        "status": "available",
+        "notes": "May need to add onContextMenu support (verify)"
+      }
+    ],
+    "external_dependencies": [],
+    "prerequisite_tasks": [
+      "Verify StubCard supports onContextMenu event (if not, add in IMPL-008)",
+      "Verify ContextMenu supports 5-level nesting (likely yes, but verify)",
+      "Decide on cache strategy (localStorage vs React state with TTL)"
+    ]
+  }
+}
