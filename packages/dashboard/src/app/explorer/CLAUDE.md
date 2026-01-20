@@ -222,6 +222,48 @@ export default function CodeRefExplorerLayout({ children }: { children: ReactNod
 - Shows parent folders if children match
 - Empty query shows all nodes
 
+**Context Menu - Add to Board Feature (WO-FILE-BOARD-CTX-001):**
+
+Right-click any file in FileTree to access the "Add to Board" context menu with 3-5 level nested navigation:
+
+- **Menu Item:** "Add to Board" (Layers icon) - appears after "Add to Prompt", files only (not directories)
+- **Integration:** packages/dashboard/src/components/coderef/FileTreeNode.tsx (lines 23-30, 248, 504-527, 709-717, 758-766)
+- **Component:** AddFileToBoardMenu (486 lines)
+- **Resource Sheet:** `coderef/resources-sheets/features/Add-File-To-Board-RESOURCE-SHEET.md` (comprehensive documentation)
+
+**4 Action Types:**
+1. **Add as New Board** - Creates board → list ("To Do") → card with file attachment
+2. **Add as New List** - Creates list in selected board → optional card
+3. **Add as New Card** - Creates card in selected list with file attachment
+4. **Add to Existing Card** - Attaches file to existing card (duplicate detection)
+
+**Key Features:**
+- Lazy-loaded board/list/card pickers (30s cache TTL)
+- Automatic file data extraction (path, name, extension)
+- Smart defaults (board name = filename, tags = [extension])
+- Success/error feedback via alerts
+
+**User Flow Example:**
+```
+1. Right-click "Button.tsx" → Context Menu
+2. Click "Add to Board" → Action Menu
+3. Select "Add as New Card" → Board Picker (lazy-loads)
+4. Hover "Project Alpha" → List Picker (lazy-loads)
+5. Click "To Do" → Card Created
+6. Alert: "Created card \"Button\" in list \"To Do\""
+```
+
+**Files Created:**
+- `packages/dashboard/src/types/file-board-integration.ts` (162 lines)
+- `packages/dashboard/src/lib/boards/file-to-board-helpers.ts` (270 lines)
+- `packages/dashboard/src/hooks/useBoards.ts` (121 lines)
+- `packages/dashboard/src/hooks/useBoardHierarchy.ts` (191 lines)
+- `packages/dashboard/src/components/coderef/AddFileToBoardMenu.tsx` (486 lines)
+
+**Tests:**
+- `packages/dashboard/src/lib/boards/__tests__/file-to-board-helpers.test.ts` (39 tests ✅)
+- `packages/dashboard/src/hooks/__tests__/useBoards.test.ts` (7 tests ✅)
+
 ---
 
 ## Common Tasks
