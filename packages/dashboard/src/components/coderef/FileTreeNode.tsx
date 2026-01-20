@@ -27,6 +27,10 @@ import { loadFileContent, loadProjectTree } from '@/lib/coderef/hybrid-router';
 import { CodeRefApi } from '@/lib/coderef/api-access';
 import type { Attachment } from '@/components/PromptingWorkflow/types';
 import type { ContextMenuItem } from './ContextMenu';
+import AddFileToBoardMenu from './AddFileToBoardMenu';
+import { extractFileData } from '@/lib/boards/file-to-board-helpers';
+import type { FileData } from '@/types/file-board-integration';
+import { Layers } from 'lucide-react';
 
 /**
  * FileTreeNode Component Props
@@ -245,6 +249,7 @@ export function FileTreeNode({
   const [copiedPath, setCopiedPath] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
+  const [addToBoardMenu, setAddToBoardMenu] = useState<{ x: number; y: number; file: FileData } | null>(null);
   const { addAttachments } = useWorkflow();
   const { projects } = useProjects();
 
@@ -503,6 +508,40 @@ export function FileTreeNode({
     }
   };
 
+  const handleAddToBoard = () => {
+    if (!project || node.type === 'directory') return;
+
+    // Clean project path - remove [Directory: ...] wrapper if present
+    let projectPath = project.path;
+    if (projectPath.startsWith('[Directory: ') && projectPath.endsWith(']')) {
+      projectPath = projectPath.slice(12, -1);
+    }
+
+    // Construct full absolute path
+    const fullPath = `${projectPath}/${node.path}`;
+
+    // Extract file data
+    const fileData = extractFileData(fullPath);
+
+    // Close context menu and open AddFileToBoardMenu
+    setContextMenu(null);
+    setAddToBoardMenu({
+      x: contextMenu?.x || 0,
+      y: contextMenu?.y || 0,
+      file: fileData,
+    });
+  };
+
+  const handleAddToBoardSuccess = (result: any) => {
+    console.log('File added to board:', result.message);
+    alert(result.message);
+  };
+
+  const handleAddToBoardError = (error: Error) => {
+    console.error('Failed to add file to board:', error);
+    alert(`Failed to add file to board: ${error.message}`);
+  };
+
   // Recursively inject onClick handlers into move submenu
   const injectMoveHandlers = (items: any[]): ContextMenuItem[] => {
     return items.map((item: any) => {
@@ -659,6 +698,17 @@ export function FileTreeNode({
                   },
                 ]
               : []),
+            // Only show "Add to Board" for files (not directories)
+            ...(node.type === 'file' && project
+              ? [
+                  {
+                    label: 'Add to Board',
+                    icon: Layers,
+                    onClick: handleAddToBoard,
+                    iconClassName: '',
+                  },
+                ]
+              : []),
             // Copy Path - works for both files and directories
             ...(project
               ? [
@@ -709,6 +759,17 @@ export function FileTreeNode({
               : []),
           ]}
           onClose={() => setContextMenu(null)}
+        />
+      )}
+
+      {/* Add to Board menu */}
+      {addToBoardMenu && (
+        <AddFileToBoardMenu
+          file={addToBoardMenu.file}
+          position={{ x: addToBoardMenu.x, y: addToBoardMenu.y }}
+          onClose={() => setAddToBoardMenu(null)}
+          onSuccess={handleAddToBoardSuccess}
+          onError={handleAddToBoardError}
         />
       )}
     </div>
