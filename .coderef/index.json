@@ -1,15 +1,15 @@
 {
   "version": "2.0.0",
-  "generatedAt": "2026-01-17T21:16:02.152Z",
+  "generatedAt": "2026-01-20T00:32:52.209Z",
   "projectPath": "C:\\Users\\willh\\Desktop\\coderef-dashboard",
-  "totalElements": 5721,
+  "totalElements": 5758,
   "elementsByType": {
-    "component": 273,
-    "function": 1680,
-    "method": 3361,
+    "component": 281,
+    "function": 1656,
+    "method": 3417,
     "constant": 160,
-    "class": 217,
-    "hook": 30
+    "class": 213,
+    "hook": 31
   },
   "elements": [
     {
@@ -28079,14 +28079,14 @@
       "type": "component",
       "name": "PATCH",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 85,
+      "line": 87,
       "exported": false
     },
     {
       "type": "component",
       "name": "DELETE",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 215,
+      "line": 240,
       "exported": false
     },
     {
@@ -28128,7 +28128,7 @@
       "type": "function",
       "name": "saveListCards",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 74,
+      "line": 76,
       "exported": false
     },
     {
@@ -28149,112 +28149,147 @@
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 63,
+      "line": 65,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 64,
+      "line": 66,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 94,
+      "line": 96,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 109,
+      "line": 111,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 124,
+      "line": 126,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 127,
+      "line": 129,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 157,
+      "line": 159,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 171,
+      "line": 173,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 175,
+      "line": 177,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 179,
+      "line": 181,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 183,
+      "line": 185,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
+      "line": 197,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
+      "line": 198,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
+      "line": 204,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
+      "line": 206,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
+      "line": 207,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 203,
+      "line": 228,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 223,
+      "line": 248,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 238,
+      "line": 263,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/[cardId]/route.ts",
-      "line": 266,
+      "line": 291,
       "exported": false
     },
     {
       "type": "component",
       "name": "POST",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 85,
+      "line": 87,
       "exported": false
     },
     {
@@ -28296,7 +28331,7 @@
       "type": "function",
       "name": "saveListCards",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 74,
+      "line": 76,
       "exported": false
     },
     {
@@ -28317,42 +28352,175 @@
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 63,
+      "line": 65,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 64,
+      "line": 66,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 106,
+      "line": 108,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 118,
+      "line": 120,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 131,
+      "line": 133,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/cards/route.ts",
-      "line": 176,
+      "line": 178,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "POST",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 87,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getBoardsDir",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 17,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getBoardDir",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 25,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "loadBoard",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 32,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "saveBoard",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 49,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "loadListCards",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 57,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "saveListCards",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 76,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 38,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 39,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 65,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 66,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 109,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 122,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 138,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 146,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 148,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 157,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 158,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/lists/[listId]/reorder/route.ts",
+      "line": 179,
       "exported": false
     },
     {
@@ -28569,21 +28737,21 @@
       "type": "component",
       "name": "GET",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 87,
+      "line": 88,
       "exported": false
     },
     {
       "type": "component",
       "name": "PATCH",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 126,
+      "line": 127,
       "exported": false
     },
     {
       "type": "component",
       "name": "DELETE",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 191,
+      "line": 192,
       "exported": false
     },
     {
@@ -28646,13 +28814,6 @@
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 73,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
       "line": 74,
       "exported": false
     },
@@ -28660,63 +28821,70 @@
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 95,
+      "line": 75,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
+      "line": 96,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 114,
+      "line": 115,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 135,
+      "line": 136,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 147,
+      "line": 148,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 161,
+      "line": 162,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 165,
+      "line": 166,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 179,
+      "line": 180,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 199,
+      "line": 200,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/boards/[id]/route.ts",
-      "line": 221,
+      "line": 222,
       "exported": false
     },
     {
@@ -29620,6 +29788,20 @@
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/coderef/tree/route.ts",
       "line": 210,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "GET",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/resources/route.ts",
+      "line": 18,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/api/resources/route.ts",
+      "line": 47,
       "exported": false
     },
     {
@@ -30851,21 +31033,56 @@
       "type": "component",
       "name": "AssistantPage",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
-      "line": 17,
+      "line": 22,
       "exported": true
     },
     {
-      "type": "method",
-      "name": "if",
+      "type": "function",
+      "name": "handleWorkorderClick",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
-      "line": 58,
+      "line": 76,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleStubClick",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
+      "line": 81,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "closeWorkorderModal",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
+      "line": 89,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "closeStubModal",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
+      "line": 94,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
-      "line": 63,
+      "line": 83,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
+      "line": 114,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/assistant2/page.tsx",
+      "line": 119,
       "exported": false
     },
     {
@@ -30874,6 +31091,20 @@
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/boards/page.tsx",
       "line": 12,
       "exported": true
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/boards/page.tsx",
+      "line": 19,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/boards/page.tsx",
+      "line": 26,
+      "exported": false
     },
     {
       "type": "component",
@@ -31116,225 +31347,204 @@
     {
       "type": "class",
       "name": "ResourceScanner",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 27,
       "exported": false
     },
     {
       "type": "function",
       "name": "__init__",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 30,
       "exported": false
     },
     {
       "type": "function",
       "name": "get_git_timestamps",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 34,
       "exported": false
     },
     {
       "type": "function",
       "name": "get_filesystem_timestamps",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 59,
       "exported": false
     },
     {
       "type": "function",
       "name": "add_resource",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 70,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_mcp_tools",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 94,
       "exported": false
     },
     {
       "type": "function",
       "name": "_parse_server_file",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 120,
       "exported": false
     },
     {
       "type": "function",
       "name": "_categorize_tool",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 160,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_slash_commands",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 174,
       "exported": false
     },
     {
       "type": "function",
       "name": "_categorize_command",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 213,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_scripts",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 229,
       "exported": false
     },
     {
       "type": "function",
       "name": "_categorize_script",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 275,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_validators",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 289,
       "exported": false
     },
     {
       "type": "function",
       "name": "_categorize_validator",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 321,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_schemas",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 333,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_resource_sheets",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 358,
       "exported": false
     },
     {
       "type": "function",
       "name": "_categorize_resource_sheet",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 413,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_workflows",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 430,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_output_formats",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 467,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_dashboard_tabs",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 495,
       "exported": false
     },
     {
       "type": "function",
       "name": "scan_all",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 515,
       "exported": false
     },
     {
       "type": "function",
       "name": "write_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 540,
       "exported": false
     },
     {
       "type": "function",
       "name": "main",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/build-source-of-truth.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/build-source-of-truth.py",
       "line": 565,
       "exported": false
     },
     {
       "type": "function",
-      "name": "read_command_description",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/fix-csv.py",
-      "line": 26,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "load_existing_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/fix-csv.py",
-      "line": 39,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "find_mcp_command",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/fix-csv.py",
-      "line": 63,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "fix_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/fix-csv.py",
-      "line": 75,
-      "exported": false
-    },
-    {
-      "type": "function",
       "name": "read_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/merge-and-dedupe.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/merge-and-dedupe.py",
       "line": 22,
       "exported": false
     },
     {
       "type": "function",
       "name": "is_duplicate_assistant_command",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/merge-and-dedupe.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/merge-and-dedupe.py",
       "line": 40,
       "exported": false
     },
     {
       "type": "function",
       "name": "merge_csvs",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/merge-and-dedupe.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/merge-and-dedupe.py",
       "line": 54,
       "exported": false
     },
     {
       "type": "function",
       "name": "write_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/merge-and-dedupe.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/merge-and-dedupe.py",
       "line": 115,
       "exported": false
     },
     {
       "type": "function",
       "name": "main",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/merge-and-dedupe.py",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/merge-and-dedupe.py",
       "line": 142,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "validate_csv",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/coderef/validate-csv.py",
+      "line": 11,
       "exported": false
     },
     {
@@ -31343,391 +31553,6 @@
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/page.tsx",
       "line": 19,
       "exported": true
-    },
-    {
-      "type": "class",
-      "name": "ResourceExtractor",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 27,
-      "exported": false
-    },
-    {
-      "type": "class",
-      "name": "CSVValidator",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 353,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "__init__",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 30,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_mcp_tools",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 34,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_get_tool_arg",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 88,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_categorize_tool",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 96,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_slash_commands",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 106,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_extract_frontmatter_description",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 159,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_categorize_command",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 166,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_dashboard_tabs",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 176,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_scripts",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 194,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_workflows",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 217,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_outputs",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 227,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_validators",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 239,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_categorize_validator",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 280,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_schemas",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 292,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "extract_all",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 324,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "__init__",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 356,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "validate",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 360,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_check_column_count",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 370,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_check_duplicates",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 376,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_check_valid_types",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 385,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_check_valid_status",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 391,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_check_row_count",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 397,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "write_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 408,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "read_existing_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 430,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "merge_resources",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 459,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "main",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv-old.py",
-      "line": 475,
-      "exported": false
-    },
-    {
-      "type": "class",
-      "name": "TimestampExtractor",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 34,
-      "exported": false
-    },
-    {
-      "type": "class",
-      "name": "ResourceExtractor",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 141,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "get_git_created",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 38,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "get_git_updated",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 57,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "get_file_created",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 74,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "get_file_updated",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 83,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "get_yaml_date",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 92,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "get_timestamps",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 116,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "__init__",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 144,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_resource_sheets",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 149,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_parse_frontmatter",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 217,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_determine_server",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 228,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_extract_description",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 245,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_mcp_tools",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 270,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_get_tool_arg",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 325,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_categorize_tool",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 333,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "scan_commands",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 343,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "_categorize_command",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 406,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "generate_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 422,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "main",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 464,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "staticmethod",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 37,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "staticmethod",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 56,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "staticmethod",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 73,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "staticmethod",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 82,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "staticmethod",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 91,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "classmethod",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/update-resources-csv.py",
-      "line": 115,
-      "exported": false
-    },
-    {
-      "type": "function",
-      "name": "validate_csv",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/app/resources/validate-csv.py",
-      "line": 11,
-      "exported": false
     },
     {
       "type": "component",
@@ -31887,224 +31712,322 @@
       "type": "component",
       "name": "BoardCanvas",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 16,
+      "line": 17,
       "exported": true
     },
     {
       "type": "function",
       "name": "fetchBoard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 40,
+      "line": 44,
       "exported": false
     },
     {
       "type": "function",
       "name": "openCreateListModal",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 62,
+      "line": 71,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleCreateList",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 67,
+      "line": 76,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleUpdateList",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 98,
+      "line": 107,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleDeleteList",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 121,
+      "line": 130,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleCreateCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 142,
+      "line": 151,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleUpdateCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 168,
+      "line": 177,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleDeleteCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 204,
+      "line": 213,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleOpenNewWindow",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 239,
+      "line": 248,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleStartEditBoardName",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 267,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleSaveBoardName",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 277,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleCancelEditBoardName",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 317,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleDeleteBoard",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 325,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleDragEnd",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 259,
+      "line": 358,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 35,
+      "line": 39,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 48,
+      "line": 52,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 54,
+      "line": 63,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 84,
+      "line": 93,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 92,
+      "line": 101,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 110,
+      "line": 119,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 115,
+      "line": 124,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 131,
+      "line": 140,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 136,
+      "line": 145,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 157,
+      "line": 166,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 162,
+      "line": 171,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 175,
+      "line": 184,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 193,
+      "line": 202,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 198,
+      "line": 207,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 211,
+      "line": 220,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 225,
+      "line": 234,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 230,
+      "line": 239,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 301,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 283,
+      "line": 308,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 290,
+      "line": 341,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 348,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 302,
+      "line": 376,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
-      "line": 319,
+      "line": 380,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 396,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 440,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 447,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 458,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 474,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 482,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 494,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCanvas.tsx",
+      "line": 511,
       "exported": false
     },
     {
@@ -32118,7 +32041,7 @@
       "type": "function",
       "name": "handleDelete",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardCard.tsx",
-      "line": 28,
+      "line": 29,
       "exported": false
     },
     {
@@ -32181,56 +32104,56 @@
       "type": "component",
       "name": "BoardList",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 17,
+      "line": 18,
       "exported": true
     },
     {
       "type": "function",
       "name": "handleToggleCollapse",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 41,
+      "line": 55,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleOpenCreateCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 45,
+      "line": 59,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleOpenEditCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 50,
+      "line": 64,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleOpenListWindow",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 55,
+      "line": 69,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleCloseEditor",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 71,
+      "line": 85,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleSaveCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 76,
+      "line": 90,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/boards/BoardList.tsx",
-      "line": 77,
+      "line": 91,
       "exported": false
     },
     {
@@ -32748,175 +32671,196 @@
       "type": "component",
       "name": "FileTree",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 142,
+      "line": 148,
       "exported": true
     },
     {
       "type": "function",
       "name": "preloadMoveSubmenu",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 169,
+      "line": 176,
       "exported": false
     },
     {
       "type": "function",
       "name": "loadTree",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 198,
+      "line": 205,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleTreeRefresh",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 215,
+      "line": 222,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 170,
+      "line": 177,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 180,
+      "line": 187,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 189,
+      "line": 196,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 191,
+      "line": 198,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 205,
+      "line": 212,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 216,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
       "line": 223,
       "exported": false
     },
     {
       "type": "method",
-      "name": "if",
+      "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 224,
+      "line": 230,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 229,
+      "line": 231,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+      "line": 236,
       "exported": false
     },
     {
       "type": "method",
       "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 243,
+      "line": 250,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 248,
+      "line": 255,
       "exported": false
     },
     {
       "type": "method",
       "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 285,
+      "line": 273,
       "exported": false
     },
     {
       "type": "method",
-      "name": "catch",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+      "line": 278,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
       "line": 315,
       "exported": false
     },
     {
       "type": "method",
-      "name": "if",
+      "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 327,
+      "line": 345,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 332,
+      "line": 357,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 337,
+      "line": 362,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 341,
+      "line": 367,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 354,
+      "line": 372,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 363,
+      "line": 376,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 378,
+      "line": 389,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
-      "line": 399,
+      "line": 398,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+      "line": 413,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/FileTree.tsx",
+      "line": 434,
       "exported": false
     },
     {
@@ -33586,6 +33530,41 @@
     },
     {
       "type": "component",
+      "name": "QuickFileSearch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/QuickFileSearch.tsx",
+      "line": 52,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "handleKeyDown",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/QuickFileSearch.tsx",
+      "line": 62,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleClear",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/QuickFileSearch.tsx",
+      "line": 76,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "ResizableSidebar",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ResizableSidebar.tsx",
+      "line": 67,
+      "exported": true
+    },
+    {
+      "type": "component",
+      "name": "TreeActionsToolbar",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/TreeActionsToolbar.tsx",
+      "line": 49,
+      "exported": true
+    },
+    {
+      "type": "component",
       "name": "ViewModeToggle",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/coderef/ViewModeToggle.tsx",
       "line": 29,
@@ -33644,40 +33623,33 @@
       "type": "component",
       "name": "Header",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Header/index.tsx",
-      "line": 26,
+      "line": 27,
       "exported": true
     },
     {
       "type": "component",
       "name": "MobileNav",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 40,
+      "line": 41,
       "exported": true
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 95,
+      "line": 96,
       "exported": false
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 122,
+      "line": 123,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleEscape",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 45,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
       "line": 46,
       "exported": false
@@ -33686,7 +33658,14 @@
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
-      "line": 51,
+      "line": 47,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/MobileNav/index.tsx",
+      "line": 52,
       "exported": false
     },
     {
@@ -34423,6 +34402,55 @@
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/CommandsTab.tsx",
       "line": 143,
       "exported": true
+    },
+    {
+      "type": "component",
+      "name": "DynamicResourcesTable",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/DynamicResourcesTable.tsx",
+      "line": 11,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "fetchResources",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/DynamicResourcesTable.tsx",
+      "line": 25,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/DynamicResourcesTable.tsx",
+      "line": 32,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/DynamicResourcesTable.tsx",
+      "line": 38,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/DynamicResourcesTable.tsx",
+      "line": 116,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/DynamicResourcesTable.tsx",
+      "line": 124,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/resources/DynamicResourcesTable.tsx",
+      "line": 133,
+      "exported": false
     },
     {
       "type": "component",
@@ -35800,21 +35828,21 @@
       "type": "component",
       "name": "Sidebar",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
-      "line": 28,
+      "line": 29,
       "exported": true
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
-      "line": 68,
+      "line": 69,
       "exported": false
     },
     {
       "type": "component",
       "name": "Icon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/Sidebar/index.tsx",
-      "line": 86,
+      "line": 87,
       "exported": false
     },
     {
@@ -35835,14 +35863,63 @@
       "type": "component",
       "name": "StubCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubCard/index.tsx",
-      "line": 40,
+      "line": 41,
       "exported": true
     },
     {
       "type": "component",
       "name": "CategoryIcon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubCard/index.tsx",
-      "line": 41,
+      "line": 42,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "StubDetailModal",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubDetailModal/index.tsx",
+      "line": 12,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "getPriorityColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubDetailModal/index.tsx",
+      "line": 19,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getStatusColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubDetailModal/index.tsx",
+      "line": 34,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getCategoryColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubDetailModal/index.tsx",
+      "line": 49,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubDetailModal/index.tsx",
+      "line": 20,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubDetailModal/index.tsx",
+      "line": 35,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/StubDetailModal/index.tsx",
+      "line": 50,
       "exported": false
     },
     {
@@ -35926,14 +36003,119 @@
       "type": "component",
       "name": "WorkorderCard",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
-      "line": 39,
+      "line": 40,
       "exported": true
     },
     {
       "type": "component",
       "name": "StatusIcon",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
-      "line": 40,
+      "line": 45,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleCopyPath",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "line": 55,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleCopyContent",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "line": 66,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleShare",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "line": 78,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "line": 61,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "line": 73,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "line": 82,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "line": 92,
+      "exported": false
+    },
+    {
+      "type": "component",
+      "name": "WorkorderDetailModal",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 13,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "fetchDetails",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 29,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "getStatusColor",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 65,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 23,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 36,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 45,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 52,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "switch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/components/WorkorderDetailModal/index.tsx",
+      "line": 66,
       "exported": false
     },
     {
@@ -36325,7 +36507,7 @@
       "type": "hook",
       "name": "useSearch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 152,
+      "line": 153,
       "exported": true
     },
     {
@@ -36353,56 +36535,56 @@
       "type": "method",
       "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 54,
+      "line": 55,
       "exported": false
     },
     {
       "type": "method",
       "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 64,
+      "line": 65,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 66,
+      "line": 67,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 68,
+      "line": 69,
       "exported": false
     },
     {
       "type": "method",
       "name": "for",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 87,
+      "line": 88,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 123,
+      "line": 124,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 129,
+      "line": 130,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/contexts/SearchContext.tsx",
-      "line": 154,
+      "line": 155,
       "exported": false
     },
     {
@@ -36592,6 +36774,41 @@
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useServiceWorker.ts",
       "line": 38,
+      "exported": false
+    },
+    {
+      "type": "hook",
+      "name": "useSidebarResize",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useSidebarResize.ts",
+      "line": 62,
+      "exported": true
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useSidebarResize.ts",
+      "line": 76,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useSidebarResize.ts",
+      "line": 90,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useSidebarResize.ts",
+      "line": 91,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/hooks/useSidebarResize.ts",
+      "line": 119,
       "exported": false
     },
     {
@@ -37751,6 +37968,20 @@
     },
     {
       "type": "function",
+      "name": "fuzzyMatch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/fuzzyMatch.ts",
+      "line": 23,
+      "exported": true
+    },
+    {
+      "type": "function",
+      "name": "matchesFilePath",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/fuzzyMatch.ts",
+      "line": 40,
+      "exported": true
+    },
+    {
+      "type": "function",
       "name": "loadProjectTree",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/lib/coderef/hybrid-router.ts",
       "line": 18,
@@ -38492,6 +38723,13 @@
       "exported": false
     },
     {
+      "type": "function",
+      "name": "renderWidget",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.scroll.test.tsx",
+      "line": 90,
+      "exported": false
+    },
+    {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/__tests__/CodeRefExplorerWidget.state.test.tsx",
@@ -38677,91 +38915,91 @@
       "type": "component",
       "name": "CodeRefExplorerWidget",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 91,
+      "line": 95,
       "exported": true
     },
     {
       "type": "function",
       "name": "handleStorageChange",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 187,
+      "line": 204,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleProjectChange",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 228,
+      "line": 245,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleFileClick",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 241,
+      "line": 258,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleViewModeChange",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 247,
+      "line": 264,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleRefreshTree",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "line": 269,
+      "exported": false
+    },
+    {
+      "type": "function",
+      "name": "handleToggleSidebar",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "line": 274,
       "exported": false
     },
     {
       "type": "function",
       "name": "handleToggleFavorite",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 252,
+      "line": 278,
       "exported": false
     },
     {
       "type": "function",
       "name": "createGroup",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 277,
+      "line": 303,
       "exported": false
     },
     {
       "type": "function",
       "name": "deleteGroup",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 289,
+      "line": 315,
       "exported": false
     },
     {
       "type": "function",
       "name": "renameGroup",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 301,
+      "line": 327,
       "exported": false
     },
     {
       "type": "function",
       "name": "assignToGroup",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 320,
+      "line": 346,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 104,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 114,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "if",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 117,
+      "line": 111,
       "exported": false
     },
     {
@@ -38773,42 +39011,49 @@
     },
     {
       "type": "method",
-      "name": "catch",
+      "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 135,
+      "line": 131,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 149,
-      "exported": false
-    },
-    {
-      "type": "method",
-      "name": "catch",
-      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 153,
+      "line": 134,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 154,
+      "line": 138,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "line": 152,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 167,
+      "line": 166,
       "exported": false
     },
     {
       "type": "method",
       "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "line": 170,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
       "line": 171,
       "exported": false
@@ -38817,7 +39062,14 @@
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 172,
+      "line": 184,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "catch",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "line": 188,
       "exported": false
     },
     {
@@ -38831,28 +39083,35 @@
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 207,
+      "line": 206,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 235,
+      "line": 224,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 242,
+      "line": 252,
       "exported": false
     },
     {
       "type": "method",
       "name": "if",
       "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
-      "line": 256,
+      "line": 259,
+      "exported": false
+    },
+    {
+      "type": "method",
+      "name": "if",
+      "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/dashboard/src/widgets/coderef-explorer/CodeRefExplorerWidget.tsx",
+      "line": 282,
       "exported": false
     },
     {

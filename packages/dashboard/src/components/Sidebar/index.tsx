@@ -2,12 +2,13 @@
 
 import { usePathname } from 'next/navigation';
 import { useSidebar } from '@/contexts/SidebarContext';
-import { ChevronLeft, ChevronRight, Home, Layers, Zap, Settings, FolderTree, Radar, Network, FileText, BarChart3, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, Layers, Zap, Settings, FolderTree, Radar, Network, FileText, BarChart3, Users, Lightbulb } from 'lucide-react';
 import NavItem from './NavItem';
 
 const mainNavItems = [
   { label: 'Dashboard', href: '/', icon: Home },
   { label: 'Prompts', href: '/prompts', icon: Layers },
+  { label: 'Stubs', href: '/assistant2', icon: Lightbulb },
   { label: 'Sessions Hub', href: '/sessions', icon: Users },
   { label: 'Boards', href: '/boards', icon: Zap },
   { label: 'Explorer', href: '/explorer', icon: FolderTree },

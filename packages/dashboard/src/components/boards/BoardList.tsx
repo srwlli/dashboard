@@ -10,7 +10,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, ChevronDown, ChevronRight, MoreVertical, ExternalLink } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { BoardListProps, BoardCard as BoardCardType } from '@/types/boards';
 import { BoardCard } from './BoardCard';
 import { CardEditor } from './CardEditor';
@@ -43,14 +44,43 @@ export function BoardList({
     setShowMenu(false);
   }, [cards]);
 
-  // Make list droppable
-  const { setNodeRef, isOver } = useDroppable({
+  // Make list sortable (for list reordering)
+  const {
+    attributes: sortableAttributes,
+    listeners: sortableListeners,
+    setNodeRef: setSortableNodeRef,
+    transform,
+    transition,
+    isDragging: isListDragging,
+  } = useSortable({
     id: list.id,
     data: {
       type: 'list',
       list,
     },
   });
+
+  // Make list droppable (for card drops)
+  const { setNodeRef: setDroppableNodeRef, isOver } = useDroppable({
+    id: list.id,
+    data: {
+      type: 'list',
+      list,
+    },
+  });
+
+  // Combine refs for both sortable and droppable
+  const setNodeRef = (node: HTMLElement | null) => {
+    setSortableNodeRef(node);
+    setDroppableNodeRef(node);
+  };
+
+  // Style for list dragging
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isListDragging ? 0.5 : 1,
+  };
 
   async function handleToggleCollapse() {
     await onUpdateList(list.id, { collapsed: !list.collapsed });
@@ -106,13 +136,22 @@ export function BoardList({
   const sortedCards = [...cards].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="flex-shrink-0 w-[280px] sm:w-[300px] bg-ind-panel border-2 border-ind-border flex flex-col max-h-full">
-      {/* List Header */}
-      <div className="border-b-2 border-ind-border p-3">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex-shrink-0 w-[280px] sm:w-[300px] bg-ind-panel border-2 border-ind-border flex flex-col max-h-full"
+    >
+      {/* List Header - Drag Handle */}
+      <div
+        {...sortableAttributes}
+        {...sortableListeners}
+        className="border-b-2 border-ind-border p-3 cursor-grab active:cursor-grabbing"
+      >
         <div className="flex items-center justify-between gap-2">
           {/* Collapse Button */}
           <button
             onClick={handleToggleCollapse}
+            onPointerDown={(e) => e.stopPropagation()}
             className="flex-shrink-0 p-1 hover:bg-ind-border transition-colors"
           >
             {list.collapsed ? (
@@ -138,6 +177,7 @@ export function BoardList({
           <div className="relative flex-shrink-0">
             <button
               onClick={() => setShowMenu(!showMenu)}
+              onPointerDown={(e) => e.stopPropagation()}
               className="p-1 hover:bg-ind-border transition-colors"
             >
               <MoreVertical className="w-4 h-4 text-ind-text-muted" />

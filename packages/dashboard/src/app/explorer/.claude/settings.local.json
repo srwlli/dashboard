@@ -3,7 +3,12 @@
     "allow": [
       "Bash(pwsh C:Userswillh.mcp-serverspapertrailvalidatorssessionsvalidate.ps1 -Verbose)",
       "Bash(pwsh -File:*)",
-      "Bash(Get-Date -Format \"yyyy-MM-dd HH:mm:ss\")"
+      "Bash(Get-Date -Format \"yyyy-MM-dd HH:mm:ss\")",
+      "Bash(git add:*)",
+      "Bash(git reset:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm test:*)"
     ]
   },
   "enabledMcpjsonServers": [

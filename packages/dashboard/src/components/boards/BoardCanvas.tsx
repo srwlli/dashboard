@@ -9,8 +9,8 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, ExternalLink, X, MoreVertical, Edit2, Trash2 } from 'lucide-react';
-import { DndContext, closestCorners, DragEndEvent, DragOverEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+import { DndContext, closestCorners, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import type { Board, BoardCard, BoardCanvasProps, UpdateListRequest, CreateCardRequest, UpdateCardRequest } from '@/types/boards';
 import { BoardList } from './BoardList';
 
@@ -353,7 +353,7 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
 
   /**
    * Handle drag end event
-   * Supports both reordering within a list and moving between lists
+   * Supports list reordering, card reordering within a list, and moving cards between lists
    */
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -362,6 +362,65 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
 
     const activeData = active.data.current;
     const overData = over.data.current;
+
+    // Check if dragging a list
+    if (activeData?.type === 'list' && overData?.type === 'list') {
+      const oldIndex = sortedLists.findIndex((l) => l.id === active.id);
+      const newIndex = sortedLists.findIndex((l) => l.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
+
+      const reorderedLists = arrayMove(sortedLists, oldIndex, newIndex);
+
+      // OPTIMISTIC UPDATE: Update local state immediately (no flash!)
+      const updatedLists = reorderedLists.map((list, index) => ({
+        ...list,
+        order: index,
+      }));
+
+      // Store original state for rollback on error
+      const originalBoard = board;
+
+      // Apply optimistic update immediately
+      setBoard((prev) => prev ? { ...prev, lists: updatedLists } : null);
+
+      // Build batch update payload with new order values
+      const listOrders = reorderedLists.map((list, index) => ({
+        listId: list.id,
+        order: index,
+      }));
+
+      // Send single atomic batch update request (in background)
+      try {
+        const response = await fetch(
+          `/api/boards/${boardId}/reorder-lists`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ listOrders }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+          // Rollback on error
+          console.error('List reorder failed:', data.error);
+          setBoard(originalBoard);
+          alert(data.error?.message || 'Failed to reorder lists');
+        }
+        // Success: No need to refetch - optimistic update already applied!
+      } catch (err) {
+        // Rollback on network error
+        console.error('Failed to reorder lists:', err);
+        setBoard(originalBoard);
+        alert('Failed to reorder lists');
+      }
+
+      return; // Exit early - we're done with list reordering
+    }
 
     // Check if dragging a card
     if (activeData?.type !== 'card') return;
@@ -635,9 +694,13 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
           collisionDetection={closestCorners}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-4 p-4 h-full">
-            {/* Render Lists using BoardList component */}
-            {sortedLists.map((list) => {
+          <SortableContext
+            items={sortedLists.map((list) => list.id)}
+            strategy={horizontalListSortingStrategy}
+          >
+            <div className="flex gap-4 p-4 h-full">
+              {/* Render Lists using BoardList component */}
+              {sortedLists.map((list) => {
               const listCards = cards[list.id] || [];
 
               return (
@@ -666,6 +729,7 @@ export function BoardCanvas({ boardId }: BoardCanvasProps) {
               </button>
             </div>
           </div>
+          </SortableContext>
         </DndContext>
       </div>
 

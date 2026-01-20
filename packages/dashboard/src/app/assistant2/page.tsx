@@ -1,14 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { Clipboard, Lightbulb, RotateCw } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Clipboard, Lightbulb, RotateCw, ArrowUpDown } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { PageCard } from '@/components/PageCard';
 import TabNavigation from '@/components/TabNavigation';
 import WorkorderList from '@/components/WorkorderList';
 import StubList from '@/components/StubList';
+import WorkorderDetailModal from '@/components/WorkorderDetailModal';
+import StubDetailModal from '@/components/StubDetailModal';
 import { useWorkorders } from '@/hooks/useWorkorders';
 import { useStubs } from '@/hooks/useStubs';
+import { StubObject } from '@/types/stubs';
+
+type SortOrder = 'newest' | 'oldest';
 
 /**
  * Assistant Route
@@ -16,29 +21,80 @@ import { useStubs } from '@/hooks/useStubs';
  */
 export default function AssistantPage() {
   const [activeTab, setActiveTab] = useState<string>('workorders');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
+
+  // Modal state
+  const [selectedWorkorderId, setSelectedWorkorderId] = useState<string | null>(null);
+  const [selectedStub, setSelectedStub] = useState<StubObject | null>(null);
+  const [isWorkorderModalOpen, setIsWorkorderModalOpen] = useState(false);
+  const [isStubModalOpen, setIsStubModalOpen] = useState(false);
 
   const { workorders, byStatus, isLoading: workordersLoading, error: workordersError } = useWorkorders();
   const { stubs, isLoading: stubsLoading, error: stubsError } = useStubs();
 
+  // Sort workorders by date
+  const sortedWorkorders = useMemo(() => {
+    const sorted = [...workorders].sort((a, b) => {
+      const dateA = new Date(a.created).getTime();
+      const dateB = new Date(b.created).getTime();
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+    return sorted;
+  }, [workorders, sortOrder]);
+
+  // Sort stubs by date
+  const sortedStubs = useMemo(() => {
+    const sorted = [...stubs].sort((a, b) => {
+      const dateA = new Date(a.created).getTime();
+      const dateB = new Date(b.created).getTime();
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+    return sorted;
+  }, [stubs, sortOrder]);
+
   // Calculate stub breakdowns for inline stats
   const stubsByStatus = {
-    stub: stubs.filter(s => s.status === 'stub').length,
-    planned: stubs.filter(s => s.status === 'planned').length,
-    in_progress: stubs.filter(s => s.status === 'in_progress').length,
-    completed: stubs.filter(s => s.status === 'completed').length,
+    stub: sortedStubs.filter(s => s.status === 'stub').length,
+    planned: sortedStubs.filter(s => s.status === 'planned').length,
+    in_progress: sortedStubs.filter(s => s.status === 'in_progress').length,
+    completed: sortedStubs.filter(s => s.status === 'completed').length,
   };
 
   const stubsByPriority = {
-    low: stubs.filter(s => s.priority === 'low').length,
-    medium: stubs.filter(s => s.priority === 'medium').length,
-    high: stubs.filter(s => s.priority === 'high').length,
-    critical: stubs.filter(s => s.priority === 'critical').length,
+    low: sortedStubs.filter(s => s.priority === 'low').length,
+    medium: sortedStubs.filter(s => s.priority === 'medium').length,
+    high: sortedStubs.filter(s => s.priority === 'high').length,
+    critical: sortedStubs.filter(s => s.priority === 'critical').length,
   };
 
   const tabs = [
     { id: 'workorders', label: 'Workorders', icon: Clipboard },
     { id: 'stubs', label: 'Stubs', icon: Lightbulb },
   ];
+
+  // Click handlers
+  const handleWorkorderClick = (workorderId: string) => {
+    setSelectedWorkorderId(workorderId);
+    setIsWorkorderModalOpen(true);
+  };
+
+  const handleStubClick = (featureName: string) => {
+    const stub = sortedStubs.find(s => s.feature_name === featureName);
+    if (stub) {
+      setSelectedStub(stub);
+      setIsStubModalOpen(true);
+    }
+  };
+
+  const closeWorkorderModal = () => {
+    setIsWorkorderModalOpen(false);
+    setSelectedWorkorderId(null);
+  };
+
+  const closeStubModal = () => {
+    setIsStubModalOpen(false);
+    setSelectedStub(null);
+  };
 
   return (
     <PageLayout>
@@ -87,6 +143,42 @@ export default function AssistantPage() {
             onTabChange={setActiveTab}
           />
 
+          {/* Sort Order Toggle */}
+          <div className="bg-ind-panel border border-ind-border/50 rounded-lg p-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-ind-text-muted" />
+                <label className="text-xs font-semibold text-ind-text-muted">Sort by Date</label>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setSortOrder('newest')}
+                  className={`
+                    text-xs px-3 py-1 rounded-full transition-all duration-200
+                    ${sortOrder === 'newest'
+                      ? 'bg-ind-accent text-black font-semibold'
+                      : 'bg-ind-bg text-ind-text-muted border border-ind-border hover:border-ind-accent/50'
+                    }
+                  `}
+                >
+                  Newest First
+                </button>
+                <button
+                  onClick={() => setSortOrder('oldest')}
+                  className={`
+                    text-xs px-3 py-1 rounded-full transition-all duration-200
+                    ${sortOrder === 'oldest'
+                      ? 'bg-ind-accent text-black font-semibold'
+                      : 'bg-ind-bg text-ind-text-muted border border-ind-border hover:border-ind-accent/50'
+                    }
+                  `}
+                >
+                  Oldest First
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Workorders Tab */}
           {activeTab === 'workorders' && (
             <div>
@@ -95,7 +187,7 @@ export default function AssistantPage() {
                 {/* Total */}
                 <div className="text-xs sm:text-sm">
                   <span className="text-ind-text-muted">Total:</span>
-                  <span className="ml-1 font-semibold text-ind-accent">{workorders.length}</span>
+                  <span className="ml-1 font-semibold text-ind-accent">{sortedWorkorders.length}</span>
                 </div>
 
                 {/* Status Breakdown */}
@@ -115,10 +207,10 @@ export default function AssistantPage() {
               {/* Content */}
               <div>
                 <WorkorderList
-                  workorders={workorders}
+                  workorders={sortedWorkorders}
                   isLoading={workordersLoading}
                   error={workordersError}
-                  onWorkorderClick={(id) => console.log('Clicked workorder:', id)}
+                  onWorkorderClick={handleWorkorderClick}
                 />
               </div>
             </div>
@@ -132,11 +224,11 @@ export default function AssistantPage() {
                 {/* Total */}
                 <div className="text-xs sm:text-sm">
                   <span className="text-ind-text-muted">Total:</span>
-                  <span className="ml-1 font-semibold text-ind-accent">{stubs.length}</span>
+                  <span className="ml-1 font-semibold text-ind-accent">{sortedStubs.length}</span>
                 </div>
 
                 {/* Status Breakdown */}
-                {stubs.length > 0 && (
+                {sortedStubs.length > 0 && (
                   <>
                     <div className="h-3 w-px bg-ind-border/50"></div>
                     <div className="text-xs sm:text-sm">
@@ -181,16 +273,29 @@ export default function AssistantPage() {
               {/* Content */}
               <div className="min-w-0">
                 <StubList
-                  stubs={stubs}
+                  stubs={sortedStubs}
                   isLoading={stubsLoading}
                   error={stubsError}
-                  onStubClick={(name) => console.log('Clicked stub:', name)}
+                  onStubClick={handleStubClick}
                 />
               </div>
             </div>
           )}
         </div>
       </PageCard>
+
+      {/* Modals */}
+      <WorkorderDetailModal
+        workorderId={selectedWorkorderId}
+        isOpen={isWorkorderModalOpen}
+        onClose={closeWorkorderModal}
+      />
+
+      <StubDetailModal
+        stub={selectedStub}
+        isOpen={isStubModalOpen}
+        onClose={closeStubModal}
+      />
     </PageLayout>
   );
 }

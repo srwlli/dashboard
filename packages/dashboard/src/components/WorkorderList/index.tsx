@@ -81,9 +81,9 @@ export function WorkorderList({
 
   return (
     <div className="space-y-3">
-      {filteredWorkorders.map((workorder) => (
+      {filteredWorkorders.map((workorder, idx) => (
         <WorkorderCard
-          key={workorder.id}
+          key={`${workorder.id}-${workorder.path}-${idx}`}
           workorder={workorder}
           onClick={() => onWorkorderClick?.(workorder.id)}
         />

@@ -87,7 +87,7 @@ export function StubList({
     <div className="space-y-3 min-w-0 overflow-hidden">
       {filteredStubs.map((stub, idx) => (
         <StubCard
-          key={stub.id || stub.feature_name || idx}
+          key={`${stub.id}-${stub.path}-${idx}`}
           stub={stub}
           onClick={() => onStubClick?.(stub.feature_name)}
         />
