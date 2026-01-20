@@ -799,6 +799,38 @@ When `boardLists` is provided to CardEditor, a "Move to List" dropdown appears b
 
 **Breaking Changes:** None (redirects maintain compatibility)
 
+### Version 1.2.0 (2026-01-19) - WO-FILE-BOARD-CTX-001
+
+**Add from Explorer Feature:**
+
+Users can now add files from Explorer to Project Boards via right-click context menu with 3-5 level nested navigation.
+
+**4 Action Types:**
+1. **Add as New Board** - Creates board → initial list ("To Do") → initial card with file attachment
+2. **Add as New List** - Creates list in selected board → optional initial card
+3. **Add as New Card** - Creates card in selected list with file attachment
+4. **Add to Existing Card** - Attaches file to existing card (prevents duplicates)
+
+**Key Features:**
+- Lazy-loaded board/list/card pickers (30s cache TTL)
+- Automatic file metadata extraction (path → title, extension → tags, file → attachment)
+- Smart defaults: Board name = filename, List title = "To Do", Tags = [extension]
+- Duplicate detection when attaching to existing cards
+- Success/error feedback via alerts
+
+**Implementation Files:**
+- AddFileToBoardMenu.tsx (486 lines, 3-5 level nested menu)
+- file-to-board-helpers.ts (270 lines)
+- useBoards.ts (121 lines, 30s cache)
+- useBoardHierarchy.ts (191 lines, lazy-load)
+- FileTreeNode.tsx integration (+61 lines)
+
+**Test Coverage:** 46 unit tests (39 helpers + 7 hooks) ✅
+
+**Resource Sheet:** `coderef/resources-sheets/features/Add-File-To-Board-RESOURCE-SHEET.md`
+
+**Breaking Changes:** None
+
 ### Version 1.0.0 (2026-01-16)
 
 **Initial Release:**
