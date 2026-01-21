@@ -167,7 +167,7 @@ export default function AddFileToBoardMenu({
       }];
     }
 
-    if (boards.length === 0) {
+    if (!boards || boards.length === 0) {
       return [{
         label: 'No boards found',
         icon: Folder,
