@@ -41,9 +41,17 @@ export default function AddFileToBoardMenu({
   useEffect(() => {
     const fetchBoards = async () => {
       setBoardsLoading(true);
-      const fetchedBoards = await BoardTargetAdapter.fetchTargets();
-      setBoards(fetchedBoards);
-      setBoardsLoading(false);
+      try {
+        const fetchedBoards = await BoardTargetAdapter.fetchTargets();
+        console.log('[AddFileToBoardMenu] Fetched boards:', fetchedBoards, 'isArray:', Array.isArray(fetchedBoards));
+        // Ensure we always set an array
+        setBoards(Array.isArray(fetchedBoards) ? fetchedBoards : []);
+      } catch (error) {
+        console.error('[AddFileToBoardMenu] Error fetching boards:', error);
+        setBoards([]);
+      } finally {
+        setBoardsLoading(false);
+      }
     };
     fetchBoards();
   }, []);
