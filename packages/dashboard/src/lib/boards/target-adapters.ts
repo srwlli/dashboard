@@ -180,7 +180,8 @@ class BoardTargetAdapterClass implements TargetAdapter<Board> {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      return data.success ? data.data || [] : [];
+      // API returns { success, data: { boards, total } }
+      return data.success ? data.data.boards || [] : [];
     } catch (error) {
       console.error('Error fetching boards:', error);
       return [];
@@ -261,11 +262,18 @@ class BoardTargetAdapterClass implements TargetAdapter<Board> {
 
         const newList = listResult.data.list; // API returns { list, created } in data
 
-        // Create initial card
+        // Create initial card (use item.name as title since item is board data)
         await fetch(`/api/boards/${newBoard.id}/lists/${newList.id}/cards`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...item, listId: newList.id, order: 0 }),
+          body: JSON.stringify({
+            title: item.name || 'New Card',
+            description: '',
+            listId: newList.id,
+            order: 0,
+            tags: [],
+            attachments: []
+          }),
         });
 
       } else if (action === 'as_list') {
@@ -287,11 +295,18 @@ class BoardTargetAdapterClass implements TargetAdapter<Board> {
 
         const newList = listResult.data.list; // API returns { list, created } in data
 
-        // Create initial card in new list
+        // Create initial card in new list (use item.title as title since item is list data)
         await fetch(`/api/boards/${board.id}/lists/${newList.id}/cards`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...item, listId: newList.id, order: 0 }),
+          body: JSON.stringify({
+            title: item.title || 'New Card',
+            description: '',
+            listId: newList.id,
+            order: 0,
+            tags: [],
+            attachments: []
+          }),
         });
 
       } else if (action === 'as_card' && listId) {
