@@ -1,0 +1,40 @@
+{
+  "workorder_id": "WO-UNIFIED-ACTION-MODAL-001",
+  "feature_name": "unified-action-modal",
+  "created": "2026-01-23T07:00:00Z",
+  "description": "Replace right-click context menu with modal that hosts ALL actions (Copy Path, Share, Add to Target, etc.) for 100% consistent UX across all entity types",
+  "goal": "Consolidate all entity actions into UniversalEntityActionModal, eliminating ContextMenu component usage and providing complete action discoverability in a single modal interface",
+  "requirements": [
+    "Add 'Main Menu' step to UniversalEntityActionModal showing all available actions",
+    "Support immediate actions (Copy Path, Copy Content, Share, Add to Favorites) that execute and close modal",
+    "Support flow actions (Add to Target) that transition to multi-step selection",
+    "Add ActionMenuItem interface to distinguish immediate vs flow action types",
+    "Update StubCard to use modal instead of ContextMenu",
+    "Update WorkorderCard to use modal instead of ContextMenu",
+    "Update FileTreeNode to use modal instead of ContextMenu",
+    "Add back button navigation from Step 2 to Main Menu",
+    "Maintain toast notification pattern for all actions",
+    "Mobile-friendly click-based interaction (no hover required)",
+    "Keyboard navigation support (1-9 hotkeys optional)"
+  ],
+  "out_of_scope": [
+    "Search/filter actions in main menu (future enhancement)",
+    "Recent actions display (future enhancement)",
+    "Custom user-defined shortcuts (future enhancement)",
+    "Batch actions on multiple entities (future enhancement)",
+    "Action analytics tracking (future enhancement)",
+    "Removing ContextMenu.tsx component (keep for potential fallback)"
+  ],
+  "constraints": [
+    "Must maintain existing UniversalEntityActionModal architecture and props",
+    "No breaking changes to current 'Add to Target' flow",
+    "Must preserve all existing action handlers (handleCopyPath, handleShare, etc.)",
+    "Keep backward compatibility - support both direct target selection and main menu modes",
+    "Use existing toast notification system (Sonner)",
+    "Follow established design system (ind-* tokens)",
+    "No changes to target adapters or entity converters",
+    "Maintain TypeScript type safety throughout"
+  ],
+  "context_source": "user_provided",
+  "project_path": "C:\\Users\\willh\\Desktop\\coderef-dashboard"
+}

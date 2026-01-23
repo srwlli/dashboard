@@ -1,0 +1,341 @@
+{
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-UNIFIED-ACTION-MODAL-001",
+    "feature_name": "unified-action-modal",
+    "created_at": "2026-01-23T07:00:00Z",
+    "description": "Replace right-click context menu with modal that hosts ALL actions for 100% consistent UX",
+    "goal": "Consolidate all entity actions into UniversalEntityActionModal, eliminating ContextMenu usage",
+    "estimated_effort_hours": "6-8 hours",
+    "difficulty": "Medium (6/10)",
+    "phases": ["SETUP", "IMPL", "TEST", "DOC"]
+  },
+  "REQUIREMENTS": {
+    "functional": [
+      "Add 'Main Menu' step to UniversalEntityActionModal",
+      "Support immediate actions (Copy Path, Share) that execute and close",
+      "Support flow actions (Add to Target) that transition to multi-step",
+      "Update StubCard, WorkorderCard, FileTreeNode to use modal",
+      "Add back button navigation",
+      "Maintain toast notifications"
+    ],
+    "non_functional": [
+      "Mobile-friendly click-based interaction",
+      "Keyboard navigation support (1-9 hotkeys)",
+      "TypeScript type safety maintained",
+      "No breaking changes to existing flows",
+      "Performance: modal opens < 100ms"
+    ],
+    "constraints": [
+      "Maintain UniversalEntityActionModal architecture",
+      "Preserve existing action handlers",
+      "Use Sonner for toasts",
+      "Follow ind-* design tokens",
+      "No changes to target adapters/converters"
+    ]
+  },
+  "ARCHITECTURE": {
+    "components": {
+      "UniversalEntityActionModal": {
+        "path": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+        "current_lines": 637,
+        "changes": "Add main menu step, ActionMenuItem interface, immediate action support",
+        "new_props": ["actionMenuItems", "skipMainMenu"],
+        "new_state": "ModalStep = 'main_menu' | 'target_type' | 'action' | 'target_selection'"
+      },
+      "StubCard": {
+        "path": "packages/dashboard/src/components/StubCard/index.tsx",
+        "current_lines": 213,
+        "changes": "Replace ContextMenu with modal, define actionMenuItems array"
+      },
+      "WorkorderCard": {
+        "path": "packages/dashboard/src/components/WorkorderCard/index.tsx",
+        "current_lines": 200,
+        "changes": "Replace ContextMenu with modal, define actionMenuItems array"
+      },
+      "FileTreeNode": {
+        "path": "packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+        "changes": "Replace ContextMenu with modal, file-specific actions"
+      }
+    },
+    "new_interfaces": {
+      "ActionMenuItem": {
+        "fields": ["id", "label", "icon", "type (immediate | flow)", "onClick", "iconClassName"],
+        "purpose": "Define actions for main menu"
+      }
+    },
+    "flow_diagram": "Right-click → Modal opens → Main Menu (Step 1) → If immediate: execute & close | If flow: → Target Type (Step 2) → Action (Step 3) → Target Selection (Step 4)"
+  },
+  "DEPENDENCIES": {
+    "internal": [
+      "UniversalEntityActionModal (existing)",
+      "Target adapters (no changes)",
+      "Entity converters (no changes)",
+      "Toast system (Sonner)"
+    ],
+    "external": [
+      "lucide-react (icons)",
+      "sonner (toasts)"
+    ],
+    "prerequisite_tasks": [
+      "Understand current UniversalEntityActionModal implementation",
+      "Inventory all menu actions across components",
+      "Review ContextMenu usage patterns"
+    ]
+  },
+  "IMPLEMENTATION": {
+    "phases": [
+      {
+        "phase": "SETUP",
+        "description": "Preparation and analysis",
+        "tasks": [
+          {
+            "id": "SETUP-001",
+            "title": "Review UniversalEntityActionModal implementation",
+            "description": "Read and understand current modal flow (packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx lines 1-637). Identify state management, step transitions, and rendering logic.",
+            "file": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+            "estimated_hours": 0.5,
+            "dependencies": []
+          },
+          {
+            "id": "SETUP-002",
+            "title": "Inventory all menu actions",
+            "description": "Document all menu items from StubCard (lines 109-136), WorkorderCard (lines 107-134), and FileTreeNode. Create comprehensive list of immediate vs flow actions.",
+            "files": ["packages/dashboard/src/components/StubCard/index.tsx", "packages/dashboard/src/components/WorkorderCard/index.tsx", "packages/dashboard/src/components/coderef/FileTreeNode.tsx"],
+            "estimated_hours": 0.5,
+            "dependencies": []
+          }
+        ]
+      },
+      {
+        "phase": "IMPL",
+        "description": "Implementation of main menu and component updates",
+        "tasks": [
+          {
+            "id": "IMPL-001",
+            "title": "Add ActionMenuItem interface",
+            "description": "Create ActionMenuItem interface in UniversalEntityActionModal.tsx with fields: id (string), label (string), icon (LucideIcon), type ('immediate' | 'flow'), onClick (optional function), iconClassName (optional string). Add TypeScript documentation.",
+            "file": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+            "lines": "~15-30",
+            "estimated_hours": 0.5,
+            "dependencies": ["SETUP-001"]
+          },
+          {
+            "id": "IMPL-002",
+            "title": "Add main menu step to modal state",
+            "description": "Update ModalStep type to include 'main_menu'. Update modal props to add actionMenuItems (ActionMenuItem[]) and skipMainMenu (boolean). Update useState initialization to start at 'main_menu' by default.",
+            "file": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+            "lines": "~40-60",
+            "estimated_hours": 0.5,
+            "dependencies": ["IMPL-001"]
+          },
+          {
+            "id": "IMPL-003",
+            "title": "Implement main menu rendering",
+            "description": "Add main menu rendering logic in modal body. Create grid of action buttons with icons, labels, and chevron for flow actions. Handle onClick for immediate actions (execute + close) and flow actions (transition to target_type step).",
+            "file": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+            "lines": "~200-250",
+            "estimated_hours": 1.5,
+            "dependencies": ["IMPL-002"]
+          },
+          {
+            "id": "IMPL-004",
+            "title": "Add back button navigation",
+            "description": "Add back button to target type selection step (Step 2) that returns to main menu. Update modal header to show back button conditionally based on currentStep and skipMainMenu prop.",
+            "file": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+            "lines": "~100-120",
+            "estimated_hours": 0.5,
+            "dependencies": ["IMPL-003"]
+          },
+          {
+            "id": "IMPL-005",
+            "title": "Update StubCard to use modal",
+            "description": "Replace ContextMenu usage in StubCard (lines 109-176). Remove contextMenu state, keep modalOpen state. Define actionMenuItems array with 4 actions (Copy Path, Copy Content, Share, Add to Target). Update right-click handler to open modal directly.",
+            "file": "packages/dashboard/src/components/StubCard/index.tsx",
+            "lines": "~100-180",
+            "estimated_hours": 1,
+            "dependencies": ["IMPL-004"]
+          },
+          {
+            "id": "IMPL-006",
+            "title": "Update WorkorderCard to use modal",
+            "description": "Apply same pattern as StubCard to WorkorderCard (lines 107-176). Remove ContextMenu, define actionMenuItems, update right-click handler. Maintain same 4 actions as StubCard.",
+            "file": "packages/dashboard/src/components/WorkorderCard/index.tsx",
+            "lines": "~100-180",
+            "estimated_hours": 1,
+            "dependencies": ["IMPL-005"]
+          },
+          {
+            "id": "IMPL-007",
+            "title": "Update FileTreeNode to use modal",
+            "description": "Update FileTreeNode context menu logic. Define file-specific actionMenuItems (Copy Path, Add to Favorites, Add to Prompt, Add to Target). Handle different actions for files vs directories.",
+            "file": "packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+            "estimated_hours": 1.5,
+            "dependencies": ["IMPL-006"]
+          },
+          {
+            "id": "IMPL-008",
+            "title": "Add keyboard navigation (optional)",
+            "description": "Add keyboard event listeners to main menu for 1-9 number keys. Map keys to action indices. Add visual indicators (e.g., '1' badge) to action buttons. Handle Escape to close modal.",
+            "file": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+            "lines": "~350-400",
+            "estimated_hours": 1,
+            "dependencies": ["IMPL-007"],
+            "optional": true
+          }
+        ]
+      },
+      {
+        "phase": "TEST",
+        "description": "Testing and validation",
+        "tasks": [
+          {
+            "id": "TEST-001",
+            "title": "Test StubCard modal flow",
+            "description": "Manual testing: Right-click stub card, verify modal opens with main menu. Test all 4 actions (Copy Path, Copy Content, Share, Add to Target). Verify immediate actions close modal and show toasts. Verify flow action transitions to target selection.",
+            "estimated_hours": 0.5,
+            "dependencies": ["IMPL-005"]
+          },
+          {
+            "id": "TEST-002",
+            "title": "Test WorkorderCard modal flow",
+            "description": "Manual testing: Right-click workorder card, verify modal opens. Test all 4 actions same as StubCard. Verify consistency with StubCard UX.",
+            "estimated_hours": 0.5,
+            "dependencies": ["IMPL-006"]
+          },
+          {
+            "id": "TEST-003",
+            "title": "Test FileTreeNode modal flow",
+            "description": "Manual testing: Right-click files in explorer. Verify file-specific actions appear. Test Copy Path, Add to Favorites, Add to Prompt, Add to Target.",
+            "estimated_hours": 0.5,
+            "dependencies": ["IMPL-007"]
+          },
+          {
+            "id": "TEST-004",
+            "title": "Test back button navigation",
+            "description": "From target selection step, click back button. Verify returns to main menu. Test multiple back/forward flows. Ensure state is preserved correctly.",
+            "estimated_hours": 0.25,
+            "dependencies": ["IMPL-004"]
+          },
+          {
+            "id": "TEST-005",
+            "title": "Test mobile responsiveness",
+            "description": "Test on mobile viewport (320px, 375px, 768px). Verify modal is readable, buttons are tappable, no horizontal scroll. Test touch interactions.",
+            "estimated_hours": 0.5,
+            "dependencies": ["TEST-001", "TEST-002", "TEST-003"]
+          },
+          {
+            "id": "TEST-006",
+            "title": "Test keyboard navigation",
+            "description": "If IMPL-008 completed: Test 1-9 number keys select actions. Test Escape closes modal. Test Tab key navigation. Verify accessibility.",
+            "estimated_hours": 0.25,
+            "dependencies": ["IMPL-008"],
+            "optional": true
+          }
+        ]
+      },
+      {
+        "phase": "DOC",
+        "description": "Documentation updates",
+        "tasks": [
+          {
+            "id": "DOC-001",
+            "title": "Update coderef-dashboard-patterns skill",
+            "description": "Update .skills/coderef-dashboard-patterns.md to document new unified action modal pattern. Add section on ActionMenuItem interface, main menu step, and migration guide from ContextMenu.",
+            "file": ".skills/coderef-dashboard-patterns.md",
+            "estimated_hours": 0.5,
+            "dependencies": ["IMPL-007"]
+          },
+          {
+            "id": "DOC-002",
+            "title": "Create workorder README",
+            "description": "Create coderef/workorder/WO-UNIFIED-ACTION-MODAL-001/README.md documenting implementation, benefits, before/after comparison, and usage examples.",
+            "file": "coderef/workorder/WO-UNIFIED-ACTION-MODAL-001/README.md",
+            "estimated_hours": 0.5,
+            "dependencies": ["TEST-005"]
+          },
+          {
+            "id": "DOC-003",
+            "title": "Update CLAUDE.md",
+            "description": "Update CLAUDE.md to mention unified action modal pattern. Add to Additional Resources section. Update version to 0.8.2.",
+            "file": "CLAUDE.md",
+            "estimated_hours": 0.25,
+            "dependencies": ["DOC-001"]
+          }
+        ]
+      }
+    ],
+    "total_tasks": 18,
+    "optional_tasks": 2
+  },
+  "TESTING_STRATEGY": {
+    "manual_testing": {
+      "required": true,
+      "test_cases": [
+        "Right-click opens modal (not context menu)",
+        "Main menu displays all actions",
+        "Immediate actions execute and close modal",
+        "Flow actions transition to target selection",
+        "Back button returns to main menu",
+        "Toast notifications appear for all actions",
+        "Modal works on mobile (320px+)",
+        "Keyboard shortcuts work (if implemented)"
+      ]
+    },
+    "automated_testing": {
+      "required": false,
+      "future_enhancement": "Unit tests for ActionMenuItem interface, integration tests for modal flows"
+    }
+  },
+  "SUCCESS_CRITERIA": {
+    "must_have": [
+      "All components (StubCard, WorkorderCard, FileTreeNode) use modal instead of ContextMenu",
+      "Main menu displays all available actions",
+      "Immediate actions work (copy, share) with toast feedback",
+      "Flow actions work (Add to Target multi-step)",
+      "Back button navigation works",
+      "Mobile responsive (works on 320px+ screens)",
+      "No TypeScript errors",
+      "No breaking changes to existing flows"
+    ],
+    "nice_to_have": [
+      "Keyboard shortcuts (1-9) implemented",
+      "Smooth animations on open/close",
+      "Action success states (checkmarks)",
+      "Performance < 100ms modal open time"
+    ]
+  },
+  "RISKS": {
+    "technical": [
+      {
+        "risk": "User muscle memory expects context menu at cursor",
+        "severity": "Medium",
+        "mitigation": "Modal can be positioned near cursor initially, or use consistent center position",
+        "owner": "UX Review"
+      },
+      {
+        "risk": "Immediate actions need visual feedback before close",
+        "severity": "Low",
+        "mitigation": "Brief delay (200ms) showing success state before closing modal",
+        "owner": "Implementation"
+      }
+    ],
+    "timeline": [
+      {
+        "risk": "Estimated 6-8 hours may expand if edge cases found",
+        "severity": "Low",
+        "mitigation": "Timebox each task, defer nice-to-haves if needed",
+        "owner": "Project Management"
+      }
+    ]
+  },
+  "ROLLBACK_PLAN": {
+    "strategy": "Revert to ContextMenu usage",
+    "steps": [
+      "Restore ContextMenu imports in affected components",
+      "Revert UniversalEntityActionModal changes",
+      "Test that original context menu flow works",
+      "Document issues for future attempt"
+    ],
+    "estimated_rollback_time": "1 hour"
+  }
+}

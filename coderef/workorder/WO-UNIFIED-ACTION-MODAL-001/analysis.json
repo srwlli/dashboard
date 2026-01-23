@@ -1,0 +1,110 @@
+{
+  "workorder_id": "WO-UNIFIED-ACTION-MODAL-001",
+  "analyzed_at": "2026-01-23T07:00:00Z",
+  "project_structure": {
+    "total_elements": 5995,
+    "elements_by_type": {
+      "component": 290,
+      "function": 1717,
+      "method": 3566,
+      "constant": 164,
+      "class": 224,
+      "hook": 34
+    }
+  },
+  "technology_stack": {
+    "framework": "Next.js 16 (App Router)",
+    "ui_library": "React 19",
+    "language": "TypeScript 5.3+",
+    "styling": "Tailwind CSS (custom ind-* tokens)",
+    "architecture": "Monorepo (npm workspaces)",
+    "state_management": "React Context + Hooks",
+    "notifications": "Sonner (toast library)"
+  },
+  "existing_components": {
+    "UniversalEntityActionModal": {
+      "path": "packages/dashboard/src/components/coderef/UniversalEntityActionModal.tsx",
+      "lines": 637,
+      "purpose": "Universal modal for entity-target interactions",
+      "current_flow": "3-step: Target Type → Action → Target Selection",
+      "supports": ["5 target types", "3 entity types", "Type-safe generics"],
+      "modification_needed": true
+    },
+    "ContextMenu": {
+      "path": "packages/dashboard/src/components/coderef/ContextMenu.tsx",
+      "lines": 454,
+      "purpose": "Right-click context menu with nested submenus",
+      "currently_used_by": ["StubCard", "WorkorderCard", "FileTreeNode"],
+      "will_be_replaced": true
+    },
+    "StubCard": {
+      "path": "packages/dashboard/src/components/StubCard/index.tsx",
+      "lines": 213,
+      "menu_items": 4,
+      "actions": ["Copy Path", "Copy Content", "Share", "Add to Target"],
+      "modification_needed": true
+    },
+    "WorkorderCard": {
+      "path": "packages/dashboard/src/components/WorkorderCard/index.tsx",
+      "lines": 200,
+      "menu_items": 4,
+      "actions": ["Copy Path", "Copy Content", "Share", "Add to Target"],
+      "modification_needed": true
+    },
+    "FileTreeNode": {
+      "path": "packages/dashboard/src/components/coderef/FileTreeNode.tsx",
+      "menu_items": "varies by file type",
+      "actions": ["Copy Path", "Add to Favorites", "Add to Prompt", "Add to Target"],
+      "modification_needed": true
+    }
+  },
+  "coding_patterns": {
+    "modal_pattern": "Backdrop + modal structure with fixed positioning",
+    "state_management": "useState hooks for local state",
+    "toast_pattern": "toast.loading() → toast.success()/toast.error()",
+    "type_safety": "TypeScript generics with strict typing",
+    "design_tokens": "ind-* prefix for all colors (ind-bg, ind-panel, ind-accent, etc.)",
+    "responsive": "Mobile-first with sm:, md:, lg: breakpoints"
+  },
+  "identified_patterns": [
+    "Universal Target Selector Pattern - Modal-based target selection",
+    "Target Adapter Pattern - Pluggable CRUD operations",
+    "Entity Converter Pattern - Type-safe transformations",
+    "Context Menu Pattern - Static menu items with modal trigger",
+    "Toast Notification Pattern - Loading → Success/Error feedback"
+  ],
+  "risks_and_gaps": {
+    "risks": [
+      "User muscle memory expects right-click → small menu (mitigation: modal can be compact initially)",
+      "Modal positioning may feel different than cursor-based context menu (mitigation: position near cursor or use consistent center)",
+      "Immediate actions need visual feedback before modal closes (mitigation: brief delay with success state)",
+      "Keyboard shortcuts need to avoid conflicts (mitigation: use 1-9 which are typically available)"
+    ],
+    "gaps": [
+      "No existing 'main menu' step in UniversalEntityActionModal",
+      "No ActionMenuItem interface defined",
+      "No immediate vs flow action distinction",
+      "No back button navigation in modal",
+      "ContextMenu.tsx still in use (will remain for fallback)"
+    ]
+  },
+  "foundation_docs": {
+    "available": [
+      "CLAUDE.md - Project guidance",
+      ".skills/coderef-dashboard-patterns.md - Development patterns",
+      "coderef/workorder/WO-UNIVERSAL-CTX-MENU-001-DASHBOARD/ - Previous modal work"
+    ],
+    "missing": []
+  },
+  "test_coverage": {
+    "current": "Manual testing only",
+    "required": "10 entity-target combinations + general UX testing"
+  },
+  "estimated_complexity": {
+    "difficulty": "Medium (6/10)",
+    "effort_hours": "6-8 hours",
+    "phases": 3,
+    "components_modified": 4,
+    "new_interfaces": 1
+  }
+}
