@@ -449,6 +449,35 @@ The dashboard integrates with:
 - **Next.js dev server:** Port 3004 (configured in `package.json`)
 - **Electron dev mode:** Connects to `localhost:3004`
 
+### Skills Directory
+
+The `.skills/` directory contains **Vercel Skills** - reusable knowledge modules for AI agents:
+
+- **Location:** `.skills/` in project root
+- **Purpose:** Document project-specific patterns and best practices
+- **Usage:** AI agents automatically reference skills when generating code
+
+**Available Skills:**
+- `coderef-dashboard-patterns.md` - Complete guide to established development patterns
+  - Universal Target Selector Pattern
+  - Target Adapter Pattern
+  - Entity Converter Pattern
+  - Context Menu Pattern (legacy)
+  - **Unified Action Modal Pattern** (NEW - consolidates all entity actions into single modal)
+  - Design System conventions
+  - TypeScript best practices
+  - Anti-patterns to avoid
+
+**Adding Skills:**
+```bash
+# Browse available skills at https://skills.sh
+npx skills add <github-org>/<repo-name>
+
+# Or create custom skills manually in .skills/
+```
+
+See `.skills/README.md` for detailed documentation.
+
 ---
 
 ## Architecture Decisions
@@ -467,9 +496,11 @@ The dashboard integrates with:
 - **[API.md](coderef/foundation-docs/API.md)** - Complete API reference
 - **[COMPONENTS.md](coderef/foundation-docs/COMPONENTS.md)** - Component library
 - **[SCHEMA.md](coderef/foundation-docs/SCHEMA.md)** - TypeScript type definitions
+- **[.skills/README.md](.skills/README.md)** - Vercel Skills documentation
+- **[.skills/coderef-dashboard-patterns.md](.skills/coderef-dashboard-patterns.md)** - Development patterns guide
 
 ---
 
-**Version:** 0.8.0
-**Last Updated:** 2026-01-16
+**Version:** 0.8.2
+**Last Updated:** 2026-01-23
 **Maintained by:** CodeRef Team

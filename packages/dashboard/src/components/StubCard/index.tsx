@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Sparkles, Bug, TrendingUp, Lightbulb, Wrench, Beaker, Copy, FolderTree, Share2, Check, MoreVertical, LayoutGrid, Plus, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Bug, TrendingUp, Lightbulb, Wrench, Beaker, Copy, FolderTree, Share2, Check, MoreVertical, LayoutGrid } from 'lucide-react';
+import { toast } from 'sonner';
 import { StubObject } from '@/types/stubs';
 import { UnifiedCard } from '@/components/UnifiedCard';
-import { ContextMenu, ContextMenuItem } from '@/components/coderef/ContextMenu';
-import { useBoardsCache } from '@/hooks/useBoardsCache';
+import UniversalEntityActionModal, { type ActionMenuItem } from '@/components/coderef/UniversalEntityActionModal';
 
 interface StubCardProps {
   stub: StubObject;
@@ -44,10 +44,7 @@ export function StubCard({ stub, onClick }: StubCardProps) {
   const [copiedPath, setCopiedPath] = useState(false);
   const [copiedContent, setCopiedContent] = useState(false);
   const [shared, setShared] = useState(false);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
-  const [menuItems, setMenuItems] = useState<ContextMenuItem[]>([]);
-
-  const { boards, getBoardDetail, createBoard, createList, createCard } = useBoardsCache();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const CategoryIcon = categoryIcons[stub.category || ''] || categoryIcons.feature;
   const priorityColor = priorityColors[stub.priority || ''] || 'text-ind-text';
@@ -100,129 +97,45 @@ export function StubCard({ stub, onClick }: StubCardProps) {
     }
   };
 
-  const handleAddAsNewBoard = async () => {
-    const boardId = await createBoard({ name: stub.title || stub.feature_name });
-    if (!boardId) return;
-
-    const listId = await createList(boardId, { title: 'To Do', order: 0 });
-    if (!listId) return;
-
-    await createCard(boardId, {
-      listId,
-      title: stub.title || stub.feature_name || 'Untitled',
-      description: `Project: ${stub.target_project}\nPriority: ${stub.priority}\nStatus: ${stub.status}\nCategory: ${stub.category}\n\n${stub.description || ''}`,
-      order: 0,
-    });
-
-    setContextMenu(null);
-  };
-
-  const handleAddToList = async (boardId: string, listId: string) => {
-    const boardDetail = await getBoardDetail(boardId);
-    const cardsInList = boardDetail?.cards?.[listId] || [];
-
-    await createCard(boardId, {
-      listId,
-      title: stub.title || stub.feature_name || 'Untitled',
-      description: `Project: ${stub.target_project}\nPriority: ${stub.priority}\nStatus: ${stub.status}\nCategory: ${stub.category}\n\n${stub.description || ''}`,
-      order: cardsInList.length,
-    });
-
-    setContextMenu(null);
-  };
 
   const handleMenuClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setContextMenu({ x: e.clientX, y: e.clientY });
+    setModalOpen(true);
   };
 
-  // Build menu items including board submenu
-  useEffect(() => {
-    const buildMenu = async () => {
-      const items: ContextMenuItem[] = [
-        {
-          label: copiedPath ? 'Path Copied' : 'Copy Path',
-          icon: copiedPath ? Check : FolderTree,
-          onClick: handleCopyPath,
-          iconClassName: copiedPath ? 'text-green-500' : '',
-        },
-        {
-          label: copiedContent ? 'Content Copied' : 'Copy Content',
-          icon: copiedContent ? Check : Copy,
-          onClick: handleCopyContent,
-          iconClassName: copiedContent ? 'text-green-500' : '',
-        },
-        {
-          label: shared ? 'Shared' : 'Share',
-          icon: shared ? Check : Share2,
-          onClick: handleShare,
-          iconClassName: shared ? 'text-green-500' : '',
-        },
-      ];
-
-      // Build board submenu
-      const boardSubmenu: ContextMenuItem[] = [
-        {
-          label: 'Add as New Board',
-          icon: Plus,
-          onClick: handleAddAsNewBoard,
-        },
-      ];
-
-      if (boards.length > 0) {
-        const boardItems: ContextMenuItem[] = [];
-
-        for (const board of boards) {
-          const boardDetail = await getBoardDetail(board.id);
-          const listItems: ContextMenuItem[] = [];
-
-          if (boardDetail?.board?.lists) {
-            for (const list of boardDetail.board.lists) {
-              listItems.push({
-                label: list.title,
-                icon: FileText,
-                onClick: () => handleAddToList(board.id, list.id),
-              });
-            }
-          }
-
-          listItems.push({
-            label: 'Add to New List',
-            icon: Plus,
-            onClick: async () => {
-              const listId = await createList(board.id, {
-                title: 'New List',
-                order: boardDetail?.board?.lists.length || 0,
-              });
-              if (listId) await handleAddToList(board.id, listId);
-            },
-          });
-
-          boardItems.push({
-            label: board.name,
-            icon: LayoutGrid,
-            submenu: listItems,
-          });
-        }
-
-        boardSubmenu.push({
-          label: 'Add to Existing Board',
-          icon: LayoutGrid,
-          submenu: boardItems,
-        });
-      }
-
-      items.push({
-        label: 'Add to Board',
-        icon: LayoutGrid,
-        submenu: boardSubmenu,
-      });
-
-      setMenuItems(items);
-    };
-
-    buildMenu();
-  }, [boards, copiedPath, copiedContent, shared]);
+  // Action menu items for main menu
+  const actionMenuItems: ActionMenuItem[] = [
+    {
+      id: 'copy_path',
+      label: copiedPath ? 'Path Copied ✓' : 'Copy Path',
+      icon: copiedPath ? Check : FolderTree,
+      type: 'immediate',
+      onClick: handleCopyPath,
+      iconClassName: copiedPath ? 'text-green-500' : '',
+    },
+    {
+      id: 'copy_content',
+      label: copiedContent ? 'Content Copied ✓' : 'Copy Content',
+      icon: copiedContent ? Check : Copy,
+      type: 'immediate',
+      onClick: handleCopyContent,
+      iconClassName: copiedContent ? 'text-green-500' : '',
+    },
+    {
+      id: 'share',
+      label: shared ? 'Shared ✓' : 'Share',
+      icon: shared ? Check : Share2,
+      type: 'immediate',
+      onClick: handleShare,
+      iconClassName: shared ? 'text-green-500' : '',
+    },
+    {
+      id: 'add_to_target',
+      label: 'Add to Target',
+      icon: LayoutGrid,
+      type: 'flow',
+    },
+  ];
 
   return (
     <>
@@ -268,13 +181,23 @@ export function StubCard({ stub, onClick }: StubCardProps) {
       onClick={onClick}
     />
 
-      {/* Context Menu */}
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          items={menuItems}
-          onClose={() => setContextMenu(null)}
+      {/* Universal Entity Action Modal with Main Menu */}
+      {modalOpen && (
+        <UniversalEntityActionModal
+          isOpen={modalOpen}
+          entity={stub}
+          entityType="Stub"
+          availableTargets={['board', 'session', 'note']}
+          actionMenuItems={actionMenuItems}
+          onClose={() => setModalOpen(false)}
+          onSuccess={(targetType, _action, result) => {
+            console.log(`✅ Added stub to ${targetType}:`, result);
+            toast.success(`Added to ${targetType}!`);
+          }}
+          onError={(error) => {
+            console.error('❌ Failed to add stub:', error);
+            toast.error(error.message);
+          }}
         />
       )}
     </>

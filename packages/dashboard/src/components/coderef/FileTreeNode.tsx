@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { TreeNode } from '@/app/api/coderef/tree/route';
 import type { Project } from '@/lib/coderef/types';
 import {
@@ -23,11 +23,11 @@ import {
 import { ContextMenu } from './ContextMenu';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { useProjects } from '@/contexts/ProjectsContext';
-import { loadFileContent, loadProjectTree } from '@/lib/coderef/hybrid-router';
+import { loadFileContent } from '@/lib/coderef/hybrid-router';
 import { CodeRefApi } from '@/lib/coderef/api-access';
 import type { Attachment } from '@/components/PromptingWorkflow/types';
 import type { ContextMenuItem } from './ContextMenu';
-import AddFileToBoardMenu from './AddFileToBoardMenu';
+import UniversalEntityActionModal, { type ActionMenuItem } from './UniversalEntityActionModal';
 import { extractFileData } from '@/lib/boards/file-to-board-helpers';
 import type { FileData } from '@/types/file-board-integration';
 import { Layers } from 'lucide-react';
@@ -249,7 +249,8 @@ export function FileTreeNode({
   const [copiedPath, setCopiedPath] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
-  const [addToBoardMenu, setAddToBoardMenu] = useState<{ x: number; y: number; file: FileData } | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
   const { addAttachments } = useWorkflow();
   const { projects } = useProjects();
 
@@ -270,8 +271,14 @@ export function FileTreeNode({
     e.preventDefault();
     e.stopPropagation();
 
-    // Move submenu is pre-built in useEffect, show menu immediately
-    setContextMenu({ x: e.clientX, y: e.clientY });
+    // For files: Open modal with main menu (Copy Path, Add to Favorites, Add to Prompt, Add to Target)
+    // For directories: Show context menu with management actions (Rename, Move, Delete)
+    if (node.type === 'file' && project) {
+      handleOpenActionModal();
+    } else {
+      // Move submenu is pre-built in useEffect, show menu immediately for directories
+      setContextMenu({ x: e.clientX, y: e.clientY });
+    }
   };
 
   const handleToggleFavorite = (groupName?: string) => {
@@ -508,7 +515,7 @@ export function FileTreeNode({
     }
   };
 
-  const handleAddToBoard = () => {
+  const handleOpenActionModal = () => {
     if (!project || node.type === 'directory') return;
 
     // Clean project path - remove [Directory: ...] wrapper if present
@@ -523,24 +530,44 @@ export function FileTreeNode({
     // Extract file data
     const fileData = extractFileData(fullPath);
 
-    // Close context menu and open AddFileToBoardMenu
-    setContextMenu(null);
-    setAddToBoardMenu({
-      x: contextMenu?.x || 0,
-      y: contextMenu?.y || 0,
-      file: fileData,
-    });
+    // Open modal with main menu
+    setSelectedFile(fileData);
+    setModalOpen(true);
   };
 
-  const handleAddToBoardSuccess = (result: any) => {
-    console.log('File added to board:', result.message);
-    alert(result.message);
-  };
-
-  const handleAddToBoardError = (error: Error) => {
-    console.error('Failed to add file to board:', error);
-    alert(`Failed to add file to board: ${error.message}`);
-  };
+  // Action menu items for main menu (files only)
+  const actionMenuItems: ActionMenuItem[] = node.type === 'file' && project ? [
+    {
+      id: 'copy_path',
+      label: copiedPath ? 'Path Copied ✓' : 'Copy Path',
+      icon: copiedPath ? Check : FolderTree,
+      type: 'immediate',
+      onClick: handleCopyPath,
+      iconClassName: copiedPath ? 'text-green-500' : '',
+    },
+    {
+      id: 'add_to_favorites',
+      label: favorited ? 'Remove from Favorites' : 'Add to Favorites',
+      icon: Star,
+      type: 'immediate',
+      onClick: () => handleToggleFavorite(),
+      iconClassName: favorited ? 'fill-yellow-400 text-yellow-400' : '',
+    },
+    {
+      id: 'add_to_prompt',
+      label: 'Add to Prompt',
+      icon: Plus,
+      type: 'immediate',
+      onClick: handleAddToPrompt,
+      iconClassName: '',
+    },
+    {
+      id: 'add_to_target',
+      label: 'Add to Target',
+      icon: Layers,
+      type: 'flow',
+    },
+  ] : [];
 
   // Recursively inject onClick handlers into move submenu
   const injectMoveHandlers = (items: any[]): ContextMenuItem[] => {
@@ -646,80 +673,12 @@ export function FileTreeNode({
         </div>
       )}
 
-      {/* Context menu */}
+      {/* Context menu (for directories only - files use modal) */}
       {contextMenu && onToggleFavorite && (
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
           items={[
-            // If already favorited, show "Remove from Favorites"
-            ...(favorited
-              ? [
-                  {
-                    label: 'Remove from Favorites',
-                    icon: Star,
-                    onClick: () => handleToggleFavorite(),
-                    iconClassName: 'fill-yellow-400 text-yellow-400',
-                  },
-                ]
-              : // If not favorited, show "Add to Favorites" with group submenu
-                [
-                  {
-                    label: 'Add to Favorites',
-                    icon: Star,
-                    onClick: availableGroups.length === 0 ? () => handleToggleFavorite() : undefined,
-                    submenu:
-                      availableGroups.length > 0
-                        ? [
-                            {
-                              label: 'Ungrouped',
-                              icon: Star,
-                              onClick: () => handleToggleFavorite(),
-                              iconClassName: '',
-                            },
-                            ...availableGroups.map((group) => ({
-                              label: group.name,
-                              icon: Star,
-                              onClick: () => handleToggleFavorite(group.name),
-                              iconClassName: '',
-                            })),
-                          ]
-                        : undefined,
-                  },
-                ]),
-            // Only show "Add to Prompt" for files (not directories)
-            ...(node.type === 'file' && project
-              ? [
-                  {
-                    label: 'Add to Prompt',
-                    icon: Plus,
-                    onClick: handleAddToPrompt,
-                    iconClassName: '',
-                  },
-                ]
-              : []),
-            // Only show "Add to Board" for files (not directories)
-            ...(node.type === 'file' && project
-              ? [
-                  {
-                    label: 'Add to Board',
-                    icon: Layers,
-                    onClick: handleAddToBoard,
-                    iconClassName: '',
-                  },
-                ]
-              : []),
-            // Copy Path - works for both files and directories
-            ...(project
-              ? [
-                  {
-                    label: 'Copy Path',
-                    icon: copiedPath ? Check : FolderTree,
-                    onClick: handleCopyPath,
-                    iconClassName: copiedPath ? 'text-green-500' : '',
-                  },
-                ]
-              : []),
             // Rename - works for both files and directories
             ...(project
               ? [
@@ -762,14 +721,24 @@ export function FileTreeNode({
         />
       )}
 
-      {/* Add to Board menu */}
-      {addToBoardMenu && (
-        <AddFileToBoardMenu
-          file={addToBoardMenu.file}
-          position={{ x: addToBoardMenu.x, y: addToBoardMenu.y }}
-          onClose={() => setAddToBoardMenu(null)}
-          onSuccess={handleAddToBoardSuccess}
-          onError={handleAddToBoardError}
+      {/* Universal Entity Action Modal with Main Menu */}
+      {modalOpen && selectedFile && (
+        <UniversalEntityActionModal
+          isOpen={modalOpen}
+          entity={selectedFile}
+          entityType="File"
+          availableTargets={['board', 'prompt', 'favorite']}
+          actionMenuItems={actionMenuItems}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedFile(null);
+          }}
+          onSuccess={(targetType, _action, result) => {
+            console.log(`File added to ${targetType}:`, result);
+          }}
+          onError={(error) => {
+            console.error('Failed to add file to target:', error);
+          }}
         />
       )}
     </div>
